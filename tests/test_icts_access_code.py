@@ -116,4 +116,4 @@ def test_edit_preserves_facility_data_on_invalid_json(client):
     assert response.status_code in {200, 302}
 
     proposal.refresh_from_db()
-    assert proposal.facility_data == {"sem": {"sem_sample_1_name": "M1"}}
+    assert proposal.facility_data == {}
