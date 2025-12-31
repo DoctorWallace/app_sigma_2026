@@ -6,6 +6,13 @@ from django.urls import reverse
 from icts.models import AccessProposal
 
 
+ACK_DATA = {
+    "ack_empty_scope": "on",
+    "ack_empty_previous_experiments": "on",
+    "ack_empty_references": "on",
+}
+
+
 def _create_icts_user(username: str, email: str):
     User = get_user_model()
     user = User.objects.create_user(username=username, password="safe-pass", email=email)
@@ -48,7 +55,7 @@ def test_submit_uses_historical_count_for_sequence(client):
     )
 
     client.force_login(user)
-    client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
 
     proposal.refresh_from_db()
     assert proposal.user_sequence_number == 5

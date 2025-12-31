@@ -6,6 +6,13 @@ from django.urls import reverse
 from icts.models import AccessProposal, OLMATRequest, ProposalReview
 
 
+ACK_DATA = {
+    "ack_empty_scope": "on",
+    "ack_empty_previous_experiments": "on",
+    "ack_empty_references": "on",
+}
+
+
 def _create_user(username, email, group_names):
     User = get_user_model()
     user = User.objects.create_user(username=username, password="safe-pass", email=email)
@@ -25,7 +32,7 @@ def test_olmat_only_does_not_create_reviews(client):
     )
 
     client.force_login(user)
-    client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
 
     assert ProposalReview.objects.filter(proposal=proposal).count() == 0
 
@@ -115,7 +122,7 @@ def test_olmat_request_created_from_facility_data(client):
     )
 
     client.force_login(user)
-    client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
 
     olmat_request = OLMATRequest.objects.get(proposal=proposal)
     assert olmat_request.service_type == "research"

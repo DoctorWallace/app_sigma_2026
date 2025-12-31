@@ -6,6 +6,13 @@ from django.urls import reverse
 from icts.models import AccessProposal, ProposalReview
 
 
+ACK_DATA = {
+    "ack_empty_scope": "on",
+    "ack_empty_previous_experiments": "on",
+    "ack_empty_references": "on",
+}
+
+
 def _create_user(username, groups):
     User = get_user_model()
     user = User.objects.create_user(
@@ -28,7 +35,7 @@ def test_submit_without_techniques_stays_draft(client):
     )
 
     client.force_login(user)
-    response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
 
     assert response.status_code == 302
     proposal.refresh_from_db()
@@ -46,7 +53,7 @@ def test_submit_olmat_only_allowed_without_reviews(client):
     )
 
     client.force_login(user)
-    response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
 
     assert response.status_code == 302
     proposal.refresh_from_db()
@@ -65,7 +72,7 @@ def test_submit_icts_creates_reviews(client):
     )
 
     client.force_login(user)
-    response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
 
     assert response.status_code == 302
     proposal.refresh_from_db()
@@ -91,7 +98,7 @@ def test_submit_changes_requested_keeps_reviews(client):
     )
 
     client.force_login(user)
-    response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
 
     assert response.status_code == 302
     proposal.refresh_from_db()

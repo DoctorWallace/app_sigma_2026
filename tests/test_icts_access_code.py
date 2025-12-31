@@ -7,6 +7,13 @@ from icts.forms import ParticipantFormSet
 from icts.models import AccessProposal
 
 
+ACK_DATA = {
+    "ack_empty_scope": "on",
+    "ack_empty_previous_experiments": "on",
+    "ack_empty_references": "on",
+}
+
+
 def _create_icts_user(username: str, email: str):
     User = get_user_model()
     user = User.objects.create_user(username=username, password="safe-pass", email=email)
@@ -25,8 +32,8 @@ def test_access_code_sequence_per_user(client):
     proposal2 = AccessProposal.objects.create(applicant=user, title="P2", facility_sem=True)
 
     client.force_login(user)
-    client.post(reverse("icts:proposal_submit", args=[proposal1.pk]))
-    client.post(reverse("icts:proposal_submit", args=[proposal2.pk]))
+    client.post(reverse("icts:proposal_submit", args=[proposal1.pk]), ACK_DATA)
+    client.post(reverse("icts:proposal_submit", args=[proposal2.pk]), ACK_DATA)
 
     proposal1.refresh_from_db()
     proposal2.refresh_from_db()
@@ -56,7 +63,7 @@ def test_access_code_excludes_olmat(client):
     )
 
     client.force_login(user)
-    client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
 
     proposal.refresh_from_db()
     assert "OLMAT" not in (proposal.access_code or "")

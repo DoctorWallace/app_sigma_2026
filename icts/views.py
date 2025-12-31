@@ -278,6 +278,24 @@ def _validate_imp_data(proposal, facility_data):
     return errors
 
 
+def _require_text_or_ack(obj, post):
+    def _is_blank_text(value):
+        if value is None:
+            return True
+        if isinstance(value, str):
+            return value.strip() == ""
+        return False
+
+    missing = []
+    if _is_blank_text(getattr(obj, "scope", None)) and not post.get("ack_empty_scope"):
+        missing.append("scope")
+    if _is_blank_text(getattr(obj, "previous_experiments", None)) and not post.get("ack_empty_previous_experiments"):
+        missing.append("previous_experiments")
+    if _is_blank_text(getattr(obj, "references", None)) and not post.get("ack_empty_references"):
+        missing.append("references")
+    return missing
+
+
 def _count_participants_from_post(request, prefix):
     total_raw = request.POST.get(f"{prefix}-TOTAL_FORMS", "0")
     try:
@@ -1192,6 +1210,13 @@ def proposal_submit(request, pk):
         if imp_errors:
             for error in imp_errors:
                 messages.error(request, error)
+            return redirect("icts:proposal_detail", pk=obj.pk)
+        missing_sections = _require_text_or_ack(obj, request.POST)
+        if missing_sections:
+            messages.error(
+                request,
+                "Completa los textos o marca las confirmaciones antes de enviar.",
+            )
             return redirect("icts:proposal_detail", pk=obj.pk)
         obj.status = "submitted"
 

@@ -374,6 +374,34 @@
           </a>
           <form method="post" action="{% url 'icts:proposal_submit' obj.pk %}" class="submit-form">
             {% csrf_token %}
+            {% if not obj.scope or not obj.previous_experiments or not obj.references %}
+            <div class="submit-acks">
+              {% if not obj.scope %}
+              <div class="ack-item">
+                <label for="ack_empty_scope">
+                  <input type="checkbox" name="ack_empty_scope" id="ack_empty_scope">
+                  Confirmo que no anadire mas texto en Alcance.
+                </label>
+              </div>
+              {% endif %}
+              {% if not obj.previous_experiments %}
+              <div class="ack-item">
+                <label for="ack_empty_previous_experiments">
+                  <input type="checkbox" name="ack_empty_previous_experiments" id="ack_empty_previous_experiments">
+                  Confirmo que no anadire mas texto en Experimentos previos.
+                </label>
+              </div>
+              {% endif %}
+              {% if not obj.references %}
+              <div class="ack-item">
+                <label for="ack_empty_references">
+                  <input type="checkbox" name="ack_empty_references" id="ack_empty_references">
+                  Confirmo que no anadire mas texto en Referencias.
+                </label>
+              </div>
+              {% endif %}
+            </div>
+            {% endif %}
             <button type="submit" class="action-btn submit">
               <span class="btn-icon"><i class="bi bi-send"></i></span>
               <span class="btn-text">

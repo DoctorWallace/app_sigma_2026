@@ -8,6 +8,13 @@ from django.urls import reverse
 from icts.models import AccessProposal
 
 
+ACK_DATA = {
+    "ack_empty_scope": "on",
+    "ack_empty_previous_experiments": "on",
+    "ack_empty_references": "on",
+}
+
+
 def _create_icts_user(username: str, email: str):
     User = get_user_model()
     user = User.objects.create_user(username=username, password="safe-pass", email=email)
@@ -120,7 +127,7 @@ def test_imp_requires_species(client):
     assert response.status_code == 302
     proposal = AccessProposal.objects.get(applicant=user)
     client.force_login(user)
-    submit_response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    submit_response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
     assert submit_response.status_code == 302
     proposal.refresh_from_db()
     assert proposal.status == "draft"
@@ -135,7 +142,7 @@ def test_imp_requires_sample_identification(client):
     assert response.status_code == 302
     proposal = AccessProposal.objects.get(applicant=user)
     client.force_login(user)
-    submit_response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    submit_response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
     assert submit_response.status_code == 302
     proposal.refresh_from_db()
     assert proposal.status == "draft"
@@ -150,7 +157,7 @@ def test_imp_temperature_out_of_range(client):
     assert response.status_code == 302
     proposal = AccessProposal.objects.get(applicant=user)
     client.force_login(user)
-    submit_response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    submit_response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
     assert submit_response.status_code == 302
     proposal.refresh_from_db()
     assert proposal.status == "draft"
@@ -168,7 +175,7 @@ def test_imp_large_area_requires_room_temperature(client):
     assert response.status_code == 302
     proposal = AccessProposal.objects.get(applicant=user)
     client.force_login(user)
-    submit_response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]))
+    submit_response = client.post(reverse("icts:proposal_submit", args=[proposal.pk]), ACK_DATA)
     assert submit_response.status_code == 302
     proposal.refresh_from_db()
     assert proposal.status == "draft"
