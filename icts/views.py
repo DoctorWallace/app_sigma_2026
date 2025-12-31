@@ -129,6 +129,114 @@ def _filter_facility_data_by_selection(payload, proposal):
     return filtered
 
 
+# --- Technique drafts (session) -------------------------------------------------
+# The frontend saves per-technique drafts in the session via /save-technique-draft/.
+# When the final proposal POST arrives, facility_data_json may be empty/invalid
+# (e.g. due to a JS regression). To make the "sample requests" infallible,
+# we rehydrate/merge from session drafts here.
+#
+# NOTE: These keys are internal and MUST NOT be translated with i18n.
+_FACILITY_TECH_MAPPING = {
+    "sem": "facility_sem",
+    "fib": "facility_sem_fib",
+    "imp": "facility_imp",
+    "sims": "facility_sims",
+    "confocal": "facility_confocal",
+    "vdg": "facility_vdg",
+    "profilometer": "facility_profilometer",
+    "olmat": "facility_olmat",
+}
+
+
+def _get_selected_techniques(proposal):
+    return [
+        key for key, field in _FACILITY_TECH_MAPPING.items()
+        if getattr(proposal, field, False)
+    ]
+
+
+def _get_session_technique_draft_bucket(request, proposal_id):
+    """Return {technique_key: draft_dict} for the given proposal_id bucket.
+
+    - New proposal (create): proposal_id is "legacy"
+    - Edit: proposal_id is AccessProposal.pk
+
+    Supports older flat session shape: {"sem": {...}, "fib": {...}, ...}
+    """
+    technique_drafts = request.session.get("technique_drafts", {})
+    if not isinstance(technique_drafts, dict):
+        return {}
+
+    bucket = technique_drafts.get(str(proposal_id))
+    if isinstance(bucket, dict):
+        return bucket
+
+    # Compatibility: sometimes drafts were stored flat in session.
+    flat = {}
+    for tech in _FACILITY_TECH_MAPPING.keys():
+        value = technique_drafts.get(tech)
+        if isinstance(value, dict):
+            flat[tech] = value
+    return flat
+
+
+def _is_blank_value(value):
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip() == ""
+    if isinstance(value, (list, tuple, set, dict)):
+        return len(value) == 0
+    return False
+
+
+def _merge_technique_payload(base, draft):
+    """Merge two technique dicts, protecting against data loss.
+
+    Rules:
+    - For strings/lists/dicts: keep base unless blank, then take draft.
+    - For booleans: True wins (base OR draft). This protects against
+      frontend defaulting checkboxes to False.
+    """
+    if not isinstance(base, dict):
+        base = {}
+    if not isinstance(draft, dict):
+        return dict(base)
+
+    merged = dict(base)
+    for key, draft_value in draft.items():
+        base_value = merged.get(key)
+
+        if isinstance(base_value, bool) and isinstance(draft_value, bool):
+            merged[key] = base_value or draft_value
+            continue
+
+        if key not in merged or _is_blank_value(base_value):
+            merged[key] = draft_value
+
+    return merged
+
+
+def _apply_session_technique_drafts(request, proposal, payload, proposal_id):
+    """Merge session drafts into payload for selected techniques only."""
+    if not isinstance(payload, dict):
+        payload = {}
+
+    bucket = _get_session_technique_draft_bucket(request, proposal_id)
+    if not isinstance(bucket, dict) or not bucket:
+        return payload
+
+    for tech in _get_selected_techniques(proposal):
+        draft = bucket.get(tech)
+        if isinstance(draft, dict) and draft:
+            current = payload.get(tech)
+            if not isinstance(current, dict):
+                current = {}
+            payload[tech] = _merge_technique_payload(current, draft)
+
+    return payload
+
+
 def _selected_facility_techniques(proposal):
     return [tech for tech, field in FACILITY_TECH_MAP.items() if getattr(proposal, field, False)]
 
@@ -887,21 +995,14 @@ def proposal_create(request):
                 obj.email = request.user.email
                 if hasattr(request.user, "icts_profile") and request.user.icts_profile:
                     obj.organization = request.user.icts_profile.center
-            selected_techniques = _selected_facility_techniques(obj)
-            facility_data_updated = facility_data_parsed is not None
-            facility_data_payload, fallback_used = _fill_facility_data_from_drafts(
-                facility_data_payload,
-                selected_techniques,
+            base_facility_payload = facility_data_parsed if isinstance(facility_data_parsed, dict) else {}
+            base_facility_payload = _apply_session_technique_drafts(
                 request,
-                "legacy",
+                obj,
+                base_facility_payload,
+                proposal_id="legacy",
             )
-            if fallback_used:
-                facility_data_updated = True
-            if facility_data_updated:
-                logger.debug("facility_data_payload keys=%s", list(facility_data_payload.keys()))
-                facility_data_payload = _filter_facility_data_by_selection(facility_data_payload, obj)
-                logger.debug("facility_data_filtered keys=%s", list(facility_data_payload.keys()))
-                obj.facility_data = facility_data_payload
+            obj.facility_data = _filter_facility_data_by_selection(base_facility_payload, obj)
             obj.save()
             form.save_m2m()
 
@@ -1095,21 +1196,19 @@ def proposal_edit(request, pk):
 
         if form.is_valid() and formset.is_valid() and (attachment_formset.is_valid() if has_attach_mgmt else True):
             obj = form.save(commit=False)
-            selected_techniques = _selected_facility_techniques(obj)
-            facility_data_updated = facility_data_parsed is not None
-            facility_data_payload, fallback_used = _fill_facility_data_from_drafts(
-                facility_data_payload,
-                selected_techniques,
+            if isinstance(facility_data_parsed, dict):
+                base_facility_payload = facility_data_parsed
+            elif fd is not None:
+                base_facility_payload = {}
+            else:
+                base_facility_payload = obj.facility_data or {}
+            base_facility_payload = _apply_session_technique_drafts(
                 request,
-                obj.id,
+                obj,
+                base_facility_payload,
+                proposal_id=obj.pk,
             )
-            if fallback_used:
-                facility_data_updated = True
-            if facility_data_updated:
-                logger.debug("facility_data_payload keys=%s", list(facility_data_payload.keys()))
-                facility_data_payload = _filter_facility_data_by_selection(facility_data_payload, obj)
-                logger.debug("facility_data_filtered keys=%s", list(facility_data_payload.keys()))
-                obj.facility_data = facility_data_payload
+            obj.facility_data = _filter_facility_data_by_selection(base_facility_payload, obj)
             obj.save()
             form.save_m2m()
             formset.save()
