@@ -1,0 +1,215 @@
+{% extends "base_icts.html" %}
+{% load static %}
+
+{% block title %}SIGMACONF - Laboratorio Confocal{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-microscope"></i> SIGMACONF - Laboratorio Confocal
+                </h1>
+                {% if is_technician %}
+                    <a href="{% url 'sigmaconf:mcf_dashboard' %}" class="btn btn-primary">
+                        <i class="bi bi-speedometer2"></i> Metrología de superficies ópticas 3D (LO3)</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ total_solicitudes }}</h4>
+                            <p class="card-text">Total Solicitudes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-file-text fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ solicitudes_pendientes }}</h4>
+                            <p class="card-text">Pendientes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-clock fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ solicitudes_en_curso }}</h4>
+                            <p class="card-text">En Curso</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-gear fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ solicitudes_finalizadas }}</h4>
+                            <p class="card-text">Finalizadas</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-check-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-lightning"></i> Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a href="{% url 'sigmaconf:solicitud_create' %}" class="btn btn-success btn-lg w-100 mb-3">
+                                <i class="bi bi-plus-circle"></i> Nueva Solicitud
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'sigmaconf:solicitud_list' %}" class="btn btn-primary btn-lg w-100 mb-3">
+                                <i class="bi bi-list-ul"></i> Ver Todas las Solicitudes
+                            </a>
+                        </div>
+                        {% if is_technician %}
+                        <div class="col-md-4">
+                            <a href="{% url 'sigmaconf:estadisticas' %}" class="btn btn-info btn-lg w-100 mb-3">
+                                <i class="bi bi-graph-up"></i> Estadísticas
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solicitudes recientes -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock-history"></i> Solicitudes Recientes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if solicitudes_recientes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Material</th>
+                                        <th>Tipo</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for solicitud in solicitudes_recientes %}
+                                    <tr>
+                                        <td>CONF#{{ solicitud.pk }}</td>
+                                        <td>{{ solicitud.material|truncatechars:30 }}</td>
+                                        <td>{{ solicitud.get_tipo_microscopia_display }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if solicitud.estado == 'pendiente' %}bg-warning
+                                                {% elif solicitud.estado == 'aceptada' %}bg-info
+                                                {% elif solicitud.estado == 'en_curso' %}bg-primary
+                                                {% elif solicitud.estado == 'finalizada' %}bg-success
+                                                {% elif solicitud.estado == 'rechazada' %}bg-danger
+                                                {% endif %}">
+                                                {{ solicitud.get_estado_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ solicitud.creado_en|date:"d/m/Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'sigmaconf:solicitud_detail' solicitud.pk %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-inbox fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">No hay solicitudes recientes</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Solicitudes asignadas (solo para técnicos) -->
+        {% if is_technician and solicitudes_asignadas %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person-check"></i> Mis Solicitudes Asignadas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for solicitud in solicitudes_asignadas %}
+                    <div class="d-flex justify-content-between align-items-center mb-3 p-2 border rounded">
+                        <div>
+                            <h6 class="mb-1">CONF#{{ solicitud.pk }}</h6>
+                            <small class="text-muted">{{ solicitud.material|truncatechars:25 }}</small>
+                        </div>
+                        <div>
+                            <span class="badge 
+                                {% if solicitud.estado == 'aceptada' %}bg-info
+                                {% elif solicitud.estado == 'en_curso' %}bg-primary
+                                {% endif %}">
+                                {{ solicitud.get_estado_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

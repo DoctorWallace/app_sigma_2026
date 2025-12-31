@@ -1,0 +1,176 @@
+{% extends "sigmasem/base_sigmasem.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block sem_page_title %}Dashboard{% endblock %}
+
+{% block sem_content %}
+<div class="container">
+  <!-- Estadísticas -->
+  <div class="sem-stats">
+    <div class="sem-stat-card">
+      <div class="sem-stat-number">{{ total_analyses }}</div>
+      <div class="sem-stat-label">Total Análisis</div>
+    </div>
+    <div class="sem-stat-card">
+      <div class="sem-stat-number">{{ sem_analyses }}</div>
+      <div class="sem-stat-label">Análisis SEM</div>
+    </div>
+    <div class="sem-stat-card">
+      <div class="sem-stat-number">{{ fib_analyses }}</div>
+      <div class="sem-stat-label">Análisis FIB</div>
+    </div>
+    <div class="sem-stat-card">
+      <div class="sem-stat-number">{{ accepted_proposals.count }}</div>
+      <div class="sem-stat-label">Propuestas Aceptadas</div>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Acciones Rápidas</h2>
+    </div>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="{% url 'icts:sigmasem:create_analysis' %}" class="sem-btn sem-btn-primary">
+        <i class="bi bi-plus-circle"></i>
+        Crear Nuevo Análisis
+      </a>
+      <a href="{% url 'icts:sigmasem:analysis_list' %}" class="sem-btn sem-btn-success">
+        <i class="bi bi-list-ul"></i>
+        Ver Todos los Análisis
+      </a>
+      <a href="{% url 'icts:sigmasem:browse_files' %}" class="sem-btn sem-btn-info">
+        <i class="bi bi-folder2-open"></i>
+        Explorador de Archivos
+      </a>
+    </div>
+  </div>
+
+  <!-- Propuestas aceptadas disponibles -->
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Propuestas Aceptadas Disponibles</h2>
+    </div>
+    
+    {% if accepted_proposals %}
+    <div class="table-responsive">
+      <table class="sem-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Código de Acceso</th>
+            <th>Título</th>
+            <th>Cliente</th>
+            <th>Técnicas</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for proposal in accepted_proposals %}
+          <tr>
+            <td>#{{ proposal.id }}</td>
+            <td>
+              {% if proposal.access_code %}
+                <code style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                  {{ proposal.access_code }}
+                </code>
+              {% else %}
+                <span class="text-muted">Sin código</span>
+              {% endif %}
+            </td>
+            <td>{{ proposal.title|default:"(Sin título)" }}</td>
+            <td>{{ proposal.applicant.get_full_name|default:proposal.applicant.username }}</td>
+            <td>
+              {% if proposal.facility_sem %}
+                <span class="sem-badge sem-badge-sem">SEM</span>
+              {% endif %}
+              {% if proposal.facility_sem_fib %}
+                <span class="sem-badge sem-badge-fib">FIB</span>
+              {% endif %}
+            </td>
+            <td>{{ proposal.created_at|date:"d/m/Y" }}</td>
+            <td>
+              <a href="{% url 'icts:sigmasem:create_analysis' %}?proposal={{ proposal.id }}" 
+                 class="sem-btn sem-btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                <i class="bi bi-plus-circle"></i>
+                Crear Análisis
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 2rem; color: #6c757d;">
+      <p>No hay propuestas aceptadas disponibles para análisis SEM/FIB.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Análisis recientes -->
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Análisis Recientes</h2>
+    </div>
+    
+    {% if recent_analyses %}
+    <div class="table-responsive">
+      <table class="sem-table">
+        <thead>
+          <tr>
+            <th>Nº Registro</th>
+            <th>Tipo</th>
+            <th>Muestra</th>
+            <th>Cliente</th>
+            <th>Técnico</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for analysis in recent_analyses %}
+          <tr>
+            <td>
+              <code style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                {{ analysis.registration_number }}
+              </code>
+            </td>
+            <td>
+              <span class="sem-badge {% if analysis.analysis_type == 'sem' %}sem-badge-sem{% else %}sem-badge-fib{% endif %}">
+                {{ analysis.get_analysis_type_display }}
+              </span>
+            </td>
+            <td>{{ analysis.sample_name }}</td>
+            <td>{{ analysis.client }}</td>
+            <td>{{ analysis.technician.get_full_name|default:analysis.technician.username }}</td>
+            <td>{{ analysis.analysis_date|date:"d/m/Y" }}</td>
+            <td>
+              {% if analysis.completion_date %}
+                <span class="sem-badge sem-badge-success">Completado</span>
+              {% else %}
+                <span class="sem-badge sem-badge-warning">En Proceso</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'icts:sigmasem:analysis_detail' analysis.pk %}" 
+                 class="sem-btn sem-btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                <i class="bi bi-eye"></i>
+                Ver Detalle
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 2rem; color: #6c757d;">
+      <p>No hay análisis registrados aún.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

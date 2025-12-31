@@ -1,0 +1,93 @@
+{% extends "mec/panel_usuario.html" %}
+{% load role_filters %}
+
+{% block title %}Información Importante S-MEC{% endblock %}
+{% block page_title %}Información Importante{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Esta es la información relevante del lab SIGMA MEC
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-exclamation-triangle me-2"></i>Información Importante</h5>
+                        <p class="mb-0">Aquí encontrarás toda la información relevante para el laboratorio de propiedades mecánicas.</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-gear me-2"></i>
+                                        Equipos Disponibles
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>Máquina de tracción universal</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>Microdureza Vickers</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>Nanoindentador</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>Fatiga mecánica</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        Requisitos de Muestras
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-info-circle text-info me-2"></i>Dimensiones mínimas: 10x10x2 mm</li>
+                                        <li><i class="bi bi-info-circle text-info me-2"></i>Superficie pulida para nanoindentación</li>
+                                        <li><i class="bi bi-info-circle text-info me-2"></i>Documentación de procedencia</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-clock me-2"></i>
+                                        Tiempos de Procesamiento
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <strong>Tracción:</strong> 2-3 días
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Microdureza:</strong> 1 día
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Nanoindentación:</strong> 3-5 días
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

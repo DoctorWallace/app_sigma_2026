@@ -1,0 +1,93 @@
+{% load static %}
+{% load role_filters %}
+
+<nav class="sidebar">
+  <ul class="menu">
+    <!-- Primero: Mi panel para cualquier perfil -->
+    <li><a href="{% url 'icts:dashboard' %}"><i class="bi bi-speedometer2"></i> Mi Panel</a></li>
+
+    {% if request.user.is_authenticated %}
+      <li class="menu-sep"></li>
+
+      <!-- Usuario estándar (no revisor, no responsable, no manager) -->
+      {% if icts_role_name == "Usuario" %}
+        <li><a href="{% url 'icts:my_proposals' %}"><i class="bi bi-folder"></i> Mis propuestas</a></li>
+        <li><a href="{% url 'icts:proposal_create' %}"><i class="bi bi-plus-circle"></i> Nueva propuesta</a></li>
+      {% endif %}
+
+      <!-- Opciones específicas de REVISOR -->
+      {% if request.user|has_group:"Confocal Technicians" or request.user|has_group:"tecnico_responsable_s_conf" %}
+        <li><a href="{% url 'sigmaconf:mcf_dashboard' %}"><i class="bi bi-speedometer"></i> Metrología de superficies ópticas 3D (LO3)</a></li>
+        {% if request.GET.show_legacy %}
+          <li><a href="{% url 'sigmaconf:home' %}"><i class="bi bi-microscope"></i> Confocal (legacy) - Inicio</a></li>
+          <li><a href="{% url 'sigmaconf:solicitud_list' %}"><i class="bi bi-files"></i> Confocal (legacy) - Solicitudes</a></li>
+        {% endif %}
+      {% endif %}
+      {% if request.user|is_olmat_technician or request.user|has_group:"tecnico_responsable_s_olmat" or request.user|has_group:"olmat_technicians" %}
+        <li><a href="{% url 'icts:olmat_dashboard' %}"><i class="bi bi-droplet-half"></i> OLMAT - Panel tecnico</a></li>
+        <li><a href="{% url 'icts:olmat_requests_list' %}"><i class="bi bi-list-ul"></i> OLMAT - Solicitudes</a></li>
+      {% endif %}
+      {% if request.user|has_group:"revisores" and not request.user|is_responsable %}
+        <li><a href="{% url 'icts:reviewer_dashboard_new' %}"><i class="bi bi-clipboard-check"></i> Mi panel revisor</a></li>
+        <li><a href="{% url 'icts:reviewer_inbox' %}"><i class="bi bi-inbox"></i> Evaluaciones pendientes</a></li>
+        <li><a href="{% url 'icts:review_history' %}"><i class="bi bi-clock-history"></i> Historial de evaluaciones</a></li>
+        <li><a href="{% url 'icts:reviewer_mailbox' %}"><i class="bi bi-envelope"></i> Bandeja de entrada</a></li>
+      {% endif %}
+
+      {% if request.user|has_group:"responsables" %}
+        <li><a href="{% url 'icts:responsable_dashboard' %}"><i class="bi bi-gear"></i> Panel responsable</a></li>
+        <li><a href="{% url 'icts:pending_users' %}"><i class="bi bi-people"></i> Gestión de usuarios</a></li>
+        <li><a href="{% url 'icts:users_admin' %}"><i class="bi bi-person-gear"></i> Administración usuarios</a></li>
+      {% endif %}
+
+      {% if request.user|has_group:"managers" %}
+        <li><a href="{% url 'icts:manager_dashboard' %}"><i class="bi bi-graph-up-arrow"></i> Dashboard Analytics</a></li>
+        <li><a href="{% url 'icts:manager_export_page' %}"><i class="bi bi-file-earmark-excel"></i> Exportar Datos</a></li>
+      {% endif %}
+
+      {% if request.user.is_superuser %}
+        <li><a href="/admin/"><i class="bi bi-tools"></i> Administración</a></li>
+      {% endif %}
+
+      <li class="menu-sep"></li>
+      <!-- Bloque inferior común -->
+      <li><a href="{% url 'portal:home' %}"><i class="bi bi-house"></i> Mi Portal</a></li>
+      <li><a href="{% url 'icts:proposal_evaluation' %}"><i class="bi bi-file-text"></i> Proposal Evaluation Procedure</a></li>
+      <li><a href="{% url 'icts:reviewer_faq' %}"><i class="bi bi-question-circle"></i> FAQ Revisor</a></li>
+
+      <li class="menu-sep"></li>
+      <li><a href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right"></i> Salir</a></li>
+    {% else %}
+      <!-- Usuario anónimo: accesos comunes -->
+      <li class="menu-sep"></li>
+      <li><a href="{% url 'portal:home' %}"><i class="bi bi-house"></i> Portal SIGMA</a></li>
+      <li><a href="{% url 'accounts:login_icts' %}"><i class="bi bi-box-arrow-in-right"></i> Entrar</a></li>
+      <li><a href="{% url 'icts:register' %}"><i class="bi bi-person-plus"></i> Registrarse</a></li>
+      <li><a href="{% url 'portal:faq' %}"><i class="bi bi-question-circle"></i> FAQ ICTS</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
+<style>
+/* ==== Estilos para el menú incluido (icts/_sidebar.html) ==== */
+.sidebar .menu{ list-style:none; margin:0; padding:1rem; }
+.sidebar .menu li{ margin:.25rem 0; }
+.sidebar .menu a{
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  padding:.55rem .9rem;
+  border-radius:.5rem;
+  text-decoration:none;
+  color:#fff;
+  opacity:.92;
+  transition:all 0.2s ease;
+}
+.sidebar .menu a i{
+  font-size:1.1rem;
+  width:20px;
+  text-align:center;
+}
+.sidebar .menu a:hover{ background:rgba(255,255,255,.12); opacity:1; }
+.sidebar .menu .menu-sep{ border-top:1px solid rgba(255,255,255,.25); margin:.5rem 0; }
+</style>

@@ -1,0 +1,497 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+
+{% block page_title %}Nueva Solicitud{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<style>
+  .form-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin-right: 1rem;
+  }
+  .section-header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .coming-soon {
+    background-color: #ffc107;
+    color: #343a40;
+    padding: 0.2em 0.6em;
+    border-radius: 0.25rem;
+    font-size: 0.75em;
+    font-weight: bold;
+    margin-left: 0.5rem;
+  }
+  .header {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .header .title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+  }
+  .header .logos {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+  .header .logos img {
+    height: 70px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.08));
+  }
+  .role-badge {
+    padding: .35em .65em;
+    border-radius: .5rem;
+    font-size: .75em;
+    font-weight: 700;
+    color: #fff;
+    margin-left: .5rem;
+  }
+  .role-badge.tech {
+    background-color: #28a745;
+  }
+  .role-badge.user {
+    background-color: #28a745;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+    background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
+  }
+  .btn-secondary {
+    background: transparent;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-secondary:hover {
+    background: #6c757d;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header personalizado para el formulario -->
+<header class="header">
+  <div class="header-inner">
+    <h1 class="title">Nueva Solicitud</h1>
+    <div class="logos">
+      <img src="/media/Logos/sigma_mec.png" alt="S-MEC" style="height:70px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));margin-left:1rem;">
+      {% if request.user|has_group:'tecnico_responsable_s_mec' %}
+        <span class="role-badge tech">TÉCNICO</span>
+      {% else %}
+        <span class="role-badge user">USUARIO</span>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <!-- Sección de Requisitos (siempre visible primero) -->
+      <div class="card" id="requisitos-section">
+        <h2 style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;color:var(--text-primary)">
+          <i class="bi bi-info-circle" style="color:var(--accent);font-size:1.5rem"></i>
+          Requisitos para la Aceptación de las Muestras
+        </h2>
+        
+        <div style="color:#6c757d;line-height:1.6;margin-bottom:2rem;">
+          <div style="background:linear-gradient(135deg,#f8f9fa,#e9ecef);border:1px solid #dee2e6;border-radius:1rem;padding:2rem;margin-bottom:1.5rem;">
+            <h4 style="margin-bottom:1rem;color:#495057;display:flex;align-items:center;gap:.5rem;">
+              <i class="bi bi-exclamation-triangle" style="color:#ffc107"></i>
+              Información Importante
+            </h4>
+            <ul style="margin:1rem 0;padding-left:1.5rem">
+              <li style="margin-bottom:.5rem"><strong>Tamaño máximo de la muestra:</strong> debe caber en un área de 8 x 10cm².</li>
+              <li style="margin-bottom:.5rem"><strong>Espesor mínimo:</strong> cada espécimen debe tener un espesor (o el espesor de la capa endurecida para un espécimen endurecido superficialmente) que sea al menos diez veces mayor que la profundidad de la indentación. En el caso de la prueba Vickers, la profundidad de la muesca es aproximadamente 1/7 de la longitud de la diagonal. Por lo tanto, el grosor mínimo de la muestra debe ser de al menos aprox. 1,5 veces (1,43 veces) el tamaño de la diagonal de la muesca.</li>
+              <li style="margin-bottom:.5rem"><strong>Superficie:</strong> el ensayo se realiza sobre una superficie lisa y plana, por este motivo es conveniente que la muestra esté embutida, para garantizar que sea planoparalela. La superficie debe estar libre de óxidos, materias extrañas y, en particular, completamente libre de lubricantes. El acabado superficial debe permitir una determinación precisa de la longitud de la diagonal de la huella.</li>
+              <li style="margin-bottom:.5rem"><strong>Preparación:</strong> la preparación de la superficie debe realizarse de forma que impida cualquier daño o alteración de la dureza de la superficie debida a un excesivo calentamiento o trabajo en frío. Debido a la escasa profundidad de las huellas de microdureza Vickers, es imprescindible que se tomen precauciones específicas durante la preparación. Se recomienda utilizar un proceso de pulido / electropulido que sea adecuado al material a medir.</li>
+              <li style="margin-bottom:.5rem"><strong>Identificación:</strong> no se aceptará ninguna muestra que no esté preparada (embutida, pulida, planoparalela, etc.), insuficientemente identificada, o no se disponga de la información básica solicitada al cliente.</li>
+            </ul>
+            
+            <h4 style="margin:1.5rem 0 .75rem;color:#495057;display:flex;align-items:center;gap:.5rem;">
+              <i class="bi bi-hand-index" style="color:#17a2b8"></i>
+              Manipulación y Limpieza de las Muestras
+            </h4>
+            <p>Deben seguirse las siguientes pautas:</p>
+            <ul style="margin:1rem 0;padding-left:1.5rem">
+              <li style="margin-bottom:.5rem">Manejar las muestras con guantes limpios de látex o algodón, porque la grasa de los dedos puede dañarlas.</li>
+              <li style="margin-bottom:.5rem">Sujetar la muestra por los lados, no cogerla por la superficie donde se va a hacer la medida. Si se utilizan pinzas de plástico o metal, tener en cuenta el tipo de material para no dañarlo, y coger la muestra por los lados.</li>
+              <li style="margin-bottom:.5rem">Para quitar las posibles partículas de polvo sobre la superficie, utilizar una perilla de goma para eliminarlas con aire, nunca soplar.</li>
+              <li style="margin-bottom:.5rem">Si fuese necesario realizar una limpieza de la muestra, utilizar el producto adecuado (metanol, alcohol isopropílico, acetona, agua desionizada, etc.) según las indicaciones facilitadas por el cliente en la solicitud de análisis, y realizarla suavemente mediante el empleo de papel de calidad óptica.</li>
+              <li style="margin-bottom:.5rem">Evitar siempre en lo posible la limpieza de muestras con recubrimiento, porque el recubrimiento se puede dañar fácilmente.</li>
+              <li style="margin-bottom:.5rem">El tipo de "posible contaminación" determinará el producto que se debe utilizar.</li>
+            </ul>
+            
+            <div style="text-align:center;margin:1.5rem 0">
+              <img src="/media/mec/Picture1.png" alt="Requisitos de muestras" style="max-width:100%;height:auto;border-radius:.5rem;box-shadow:var(--shadow)">
+            </div>
+          </div>
+          
+          <!-- Checkbox de confirmación -->
+          <div style="background:#fff3cd;border:1px solid #ffeaa7;border-radius:.5rem;padding:1.5rem;text-align:center;">
+            <div style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1rem;">
+              <input type="checkbox" id="acepto-requisitos" style="width:1.5rem;height:1.5rem;">
+              <label for="acepto-requisitos" style="font-weight:600;color:#856404;font-size:1.1rem;margin:0;">
+                <i class="bi bi-check-circle" style="color:#28a745;margin-right:.5rem;"></i>
+                He leído y acepto los requisitos para la aceptación de las muestras
+              </label>
+            </div>
+            <p style="color:#856404;font-size:.9rem;margin:0;">
+              <i class="bi bi-info-circle" style="margin-right:.25rem;"></i>
+              Debe marcar esta casilla para continuar con la solicitud
+            </p>
+          </div>
+        </div>
+        
+        <!-- Botón para continuar -->
+        <div style="text-align:center;">
+          <button type="button" id="continuar-btn" class="btn btn-primary" disabled style="opacity:0.5;cursor:not-allowed;">
+            <i class="bi bi-arrow-right"></i>
+            Continuar con la Solicitud
+          </button>
+        </div>
+      </div>
+      
+      <!-- Formulario de Solicitud (oculto inicialmente) -->
+      <div class="card" id="formulario-section" style="display:none;">
+        <h2 style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;color:var(--text-primary)">
+          <i class="bi bi-gear" style="color:var(--accent);font-size:1.5rem"></i>
+          Solicitud de Ensayos Mecánicos
+        </h2>
+        
+        <form method="post" novalidate>
+          {% csrf_token %}
+          
+          <!-- Selección de Tipo de Ensayo -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-check-square"></i>
+              Seleccione el tipo de ensayo que desea realizar:
+            </label>
+            <div style="display:flex;gap:2rem;margin-top:1rem;">
+              <div class="form-check">
+                {{ form.ensayo_dureza }}
+                <label class="form-check-label" for="{{ form.ensayo_dureza.id_for_label }}">
+                  <i class="bi bi-diamond"></i>
+                  {{ form.ensayo_dureza.label }}
+                </label>
+              </div>
+              <div class="form-check">
+                {{ form.ensayo_maquina }}
+                <label class="form-check-label" for="{{ form.ensayo_maquina.id_for_label }}">
+                  <i class="bi bi-gear"></i>
+                  {{ form.ensayo_maquina.label }}
+                </label>
+                <span class="coming-soon">PRÓXIMAMENTE</span>
+              </div>
+            </div>
+            {% if form.ensayo_dureza.errors %}<div class="invalid-feedback d-block">{{ form.ensayo_dureza.errors }}</div>{% endif %}
+            {% if form.ensayo_maquina.errors %}<div class="invalid-feedback d-block">{{ form.ensayo_maquina.errors }}</div>{% endif %}
+          </div>
+          
+          <!-- Datos de la/s Muestra/s -->
+          <div class="card" style="margin-top:1.5rem">
+            <h3 style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;color:var(--text-primary)">
+              <i class="bi bi-collection" style="color:var(--accent);font-size:1.25rem"></i>
+              DATOS DE LA/S MUESTRA/S
+            </h3>
+            
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem">
+              <div class="form-group">
+                <label class="form-label" for="{{ form.material.id_for_label }}">
+                  <i class="bi bi-box"></i>
+                  {{ form.material.label }}
+                </label>
+                {{ form.material }}
+                {% if form.material.errors %}
+                  <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.material.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="{{ form.numero_muestras.id_for_label }}">
+                  <i class="bi bi-hash"></i>
+                  {{ form.numero_muestras.label }}
+                </label>
+                {{ form.numero_muestras }}
+                {% if form.numero_muestras.errors %}
+                  <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.numero_muestras.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="{{ form.referencia_muestras.id_for_label }}">
+                  <i class="bi bi-tag"></i>
+                  {{ form.referencia_muestras.label }}
+                </label>
+                {{ form.referencia_muestras }}
+                {% if form.referencia_muestras.errors %}
+                  <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.referencia_muestras.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="{{ form.tamano_muestra.id_for_label }}">
+                  <i class="bi bi-rulers"></i>
+                  {{ form.tamano_muestra.label }}
+                </label>
+                {{ form.tamano_muestra }}
+                <div class="help-text">{{ form.tamano_muestra.help_text }}</div>
+                {% if form.tamano_muestra.errors %}
+                  <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.tamano_muestra.errors.0 }}</div>
+                {% endif %}
+              </div>
+            </div>
+            
+            <!-- Sección dinámica para muestras individuales -->
+            <div id="muestras-individuales" style="display: none; margin-top: 1.5rem;">
+              <h4 style="color:#495057; margin:1.5rem 0 1rem; border-bottom:2px solid #007bff; padding-bottom:.5rem;">
+                <i class="bi bi-collection"></i> Descripción de Muestras Individuales
+              </h4>
+              <div id="muestras-container">
+                <!-- Se llenará dinámicamente con JavaScript -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- Parámetros del Ensayo de Dureza -->
+          <div class="card" id="dureza-params" style="margin-top:1.5rem">
+            <h3 style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;color:var(--text-primary)">
+              <i class="bi bi-diamond" style="color:var(--accent);font-size:1.25rem"></i>
+              Parámetros del Ensayo de Dureza
+            </h3>
+            
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem">
+              <div class="form-group">
+                <label class="form-label" for="{{ form.carga_ensayo.id_for_label }}">
+                  <i class="bi bi-speedometer2"></i>
+                  {{ form.carga_ensayo.label }}
+                </label>
+                {{ form.carga_ensayo }}
+                <div class="help-text">{{ form.carga_ensayo.help_text }}</div>
+                {% if form.carga_ensayo.errors %}
+                  <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.carga_ensayo.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="{{ form.numero_indentaciones.id_for_label }}">
+                  <i class="bi bi-grid-3x3"></i>
+                  {{ form.numero_indentaciones.label }}
+                </label>
+                {{ form.numero_indentaciones }}
+                <div class="help-text">{{ form.numero_indentaciones.help_text }}</div>
+                {% if form.numero_indentaciones.errors %}
+                  <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.numero_indentaciones.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="{{ form.dureza_esperada.id_for_label }}">
+                  <i class="bi bi-graph-up"></i>
+                  {{ form.dureza_esperada.label }}
+                </label>
+                {{ form.dureza_esperada }}
+                {% if form.dureza_esperada.errors %}
+                  <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.dureza_esperada.errors.0 }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <div class="form-check">
+                  {{ form.incluir_fotos }}
+                  <label class="form-check-label" for="{{ form.incluir_fotos.id_for_label }}">
+                    <i class="bi bi-camera"></i>
+                    {{ form.incluir_fotos.label }}
+                  </label>
+                  <div class="help-text">{{ form.incluir_fotos.help_text }}</div>
+                </div>
+                {% if form.incluir_fotos.errors %}
+                  <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.incluir_fotos.errors.0 }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Otros datos de interés -->
+          <div class="card" style="margin-top:1.5rem">
+            <h3 style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;color:var(--text-primary)">
+              <i class="bi bi-chat-text" style="color:var(--accent);font-size:1.25rem"></i>
+              Otros datos de interés o información relevante de la/s muestra/s
+            </h3>
+            
+            <div class="form-group">
+              <label class="form-label" for="{{ form.observaciones.id_for_label }}">
+                <i class="bi bi-file-text"></i>
+                {{ form.observaciones.label }}
+              </label>
+              {{ form.observaciones }}
+              {% if form.observaciones.errors %}
+                <div style="color:#dc3545;font-size:.875rem;margin-top:.25rem">{{ form.observaciones.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+          
+          <!-- Botones -->
+          <div style="display:flex;gap:.5rem;justify-content:flex-end;padding-top:1rem;border-top:1px solid #dee2e6;margin-top:2rem;">
+            <a class="btn btn-secondary" href="{% url 'mec:panel_usuario' %}">
+              <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-send"></i> Enviar Solicitud
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const aceptoCheckbox = document.getElementById('acepto-requisitos');
+    const continuarBtn = document.getElementById('continuar-btn');
+    const requisitosSection = document.getElementById('requisitos-section');
+    const formularioSection = document.getElementById('formulario-section');
+    
+    // Manejar el checkbox de aceptación
+    aceptoCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        continuarBtn.disabled = false;
+        continuarBtn.style.opacity = '1';
+        continuarBtn.style.cursor = 'pointer';
+      } else {
+        continuarBtn.disabled = true;
+        continuarBtn.style.opacity = '0.5';
+        continuarBtn.style.cursor = 'not-allowed';
+      }
+    });
+    
+    // Manejar el botón continuar
+    continuarBtn.addEventListener('click', function() {
+      if (aceptoCheckbox.checked) {
+        requisitosSection.style.display = 'none';
+        formularioSection.style.display = 'block';
+        // Scroll suave al formulario
+        formularioSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+    
+    // Mostrar/ocultar parámetros de dureza según selección
+    const durezaCheckbox = document.getElementById('{{ form.ensayo_dureza.id_for_label }}');
+    const durezaParams = document.getElementById('dureza-params');
+    const numeroMuestrasInput = document.getElementById('{{ form.numero_muestras.id_for_label }}');
+    const muestrasIndividuales = document.getElementById('muestras-individuales');
+    const muestrasContainer = document.getElementById('muestras-container');
+    
+    function toggleDurezaParams() {
+      if (durezaParams && durezaCheckbox) {
+        if (durezaCheckbox.checked) {
+          durezaParams.style.display = 'block';
+        } else {
+          durezaParams.style.display = 'none';
+        }
+      }
+    }
+    
+    function actualizarMuestras() {
+      const numero = parseInt(numeroMuestrasInput.value) || 0;
+      
+      if (numero > 1) {
+        muestrasIndividuales.style.display = 'block';
+        muestrasContainer.innerHTML = '';
+        
+        for (let i = 1; i <= numero; i++) {
+          const muestraDiv = document.createElement('div');
+          muestraDiv.className = 'card';
+          muestraDiv.style.marginBottom = '1rem';
+          muestraDiv.innerHTML = `
+            <h5 style="color:#007bff; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem;">
+              <i class="bi bi-vial"></i> Muestra ${i}
+            </h5>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+              <div class="form-group">
+                <label class="form-label" for="muestra_${i}_nombre">
+                  <i class="bi bi-tag"></i> Nombre/Identificación
+                </label>
+                <input type="text" name="muestra_${i}_nombre" id="muestra_${i}_nombre" 
+                       class="form-control" placeholder="Nombre o código de la muestra" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="muestra_${i}_descripcion">
+                  <i class="bi bi-file-text"></i> Descripción
+                </label>
+                <textarea name="muestra_${i}_descripcion" id="muestra_${i}_descripcion" 
+                          class="form-control" rows="2" placeholder="Descripción de la muestra"></textarea>
+              </div>
+            </div>
+          `;
+          muestrasContainer.appendChild(muestraDiv);
+        }
+      } else {
+        muestrasIndividuales.style.display = 'none';
+      }
+    }
+    
+    if (durezaCheckbox) {
+      durezaCheckbox.addEventListener('change', toggleDurezaParams);
+      toggleDurezaParams(); // Estado inicial
+    }
+    
+    if (numeroMuestrasInput) {
+      numeroMuestrasInput.addEventListener('input', actualizarMuestras);
+      actualizarMuestras(); // Estado inicial
+    }
+  });
+</script>
+{% endblock %}

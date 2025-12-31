@@ -1,0 +1,78 @@
+{% extends "base_dtf.html" %}
+{% load static %}
+{% load role_filters %}
+
+{% block title %}{% block mec_title %}Sigma MEC{% endblock %} - SIGMA DTF{% endblock %}
+
+{% block sidebar_logo %}
+<img src="{% get_media_prefix %}Logos/sigma_mec.png" alt="Sigma MEC" class="sidebar-logo">
+{% endblock %}
+
+{% block sidebar_title %}S-MEC{% endblock %}
+{% block sidebar_subtitle %}Propiedades Mecánicas{% endblock %}
+
+{% block lab_nav %}
+{% if request.user.is_authenticated %}
+    {% if request.user|has_group:'tecnico_responsable_s_mec' or request.user.is_superuser %}
+        <!-- Navegación para técnicos -->
+        <div class="nav-section">
+            <div class="nav-title">Panel Técnico</div>
+            <a href="{% url 'mec:panel_tecnico' %}" class="nav-item {% if 'panel_tecnico' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i>
+                <span>Mi Panel</span>
+            </a>
+            <a href="{% url 'mec:inbox' %}" class="nav-item {% if 'inbox' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-inbox"></i>
+                <span>Solicitudes</span>
+            </a>
+        </div>
+    {% else %}
+        <!-- Navegación para usuarios -->
+        <div class="nav-section">
+            <div class="nav-title">Panel Usuario</div>
+            <a href="{% url 'mec:panel_usuario' %}" class="nav-item {% if 'panel_usuario' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i>
+                <span>Mi Panel</span>
+            </a>
+            <a href="{% url 'mec:solicitud_create' %}" class="nav-item {% if 'solicitud_create' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-plus-circle"></i>
+                <span>Nueva Solicitud</span>
+            </a>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block role_badge %}
+{% if request.user.is_authenticated %}
+    {% if request.user|has_group:'tecnico_responsable_s_mec' or request.user.is_superuser %}
+        <span class="role-badge tech">
+            <i class="bi bi-wrench"></i>
+            Técnico
+        </span>
+    {% else %}
+        <span class="role-badge user">
+            <i class="bi bi-person"></i>
+            Usuario
+        </span>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block lab_logo %}
+<img src="{% get_media_prefix %}Logos/sigma_mec.png" alt="S-MEC" class="lab-logo">
+{% endblock %}
+
+{% block header_back %}
+{% if request.user|has_group:'tecnico_responsable_s_mec' or request.user.is_superuser %}
+    <a href="{% url 'mec:panel_tecnico' %}" class="back-btn">
+        <i class="bi bi-arrow-left"></i>
+        <span>Mi Panel</span>
+    </a>
+{% else %}
+    <a href="{% url 'mec:panel_usuario' %}" class="back-btn">
+        <i class="bi bi-arrow-left"></i>
+        <span>Mi Panel</span>
+    </a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}{% if is_editing %}Editar incidencia{% else %}Nueva incidencia{% endif %}{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Controles intermedios / Incidencias{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_incident_list' %}">Incidencias</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{% if is_editing %}Editar{% else %}Nueva{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">{% if is_editing %}Editar incidencia{% else %}Nueva incidencia{% endif %}</h2>
+      <div class="lo3-card-subtitle">Completa los datos para el control intermedio o incidencia.</div>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+      <div>
+        {{ form.incident_type.label_tag }}
+        {{ form.incident_type }}
+      </div>
+      <div>
+        {{ form.severity.label_tag }}
+        {{ form.severity }}
+      </div>
+      <div>
+        {{ form.status.label_tag }}
+        {{ form.status }}
+      </div>
+      <div>
+        {{ form.equipment.label_tag }}
+        {{ form.equipment }}
+      </div>
+      <div>
+        {{ form.session.label_tag }}
+        {{ form.session }}
+      </div>
+      <div>
+        {{ form.title.label_tag }}
+        {{ form.title }}
+      </div>
+    </div>
+    <div style="margin-top: 1rem;">
+      {{ form.description.label_tag }}
+      {{ form.description }}
+    </div>
+    <div style="margin-top: 1rem;">
+      {{ form.corrective_actions.label_tag }}
+      {{ form.corrective_actions }}
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button type="submit" class="lo3-btn lo3-btn-primary">
+        <i class="bi bi-check2-circle"></i>
+        Guardar
+      </button>
+      <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_incident_list' %}">
+        <i class="bi bi-x-circle"></i>
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,394 @@
+{% load static %}
+{% load role_filters %}
+{% load i18n %}
+{% get_media_prefix as MEDIA_URL %}
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}&#x03A3;IGMA ICTS{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    {% block extra_head %}{% endblock %}
+    <style>
+      :root{
+        --primary:#1a365d; --primary-dark:#0f2a4a; --primary-light:#2d5a8b;
+        --accent:#17a2b8; --accent-light:#20c997;
+        --bg-main: #e0ebf1; --bg-card: #ffffff; --bg-sidebar:#2d3748;
+        --text:#2d3748; --muted: #634b4d; --border: #000fff;
+        --shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+        --shadow-lg:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);
+        --gradient-primary:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      }
+      *{box-sizing:border-box;margin:0;padding:0}
+      html,body{height:100%;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-main);color:var(--text);line-height:1.6}
+
+      .app{display:flex;min-height:100vh}
+      .sidebar{width:320px;background:var(--bg-sidebar);position:fixed;height:100vh;overflow:hidden;z-index:1000;box-shadow:var(--shadow-lg);display:flex;flex-direction:column}
+      .sidebar-header{background:var(--gradient-primary);padding:2rem 1.5rem 1.5rem;text-align:center;border-radius:0 0 1rem 1rem}
+      .logo{width:80px;height:80px;border-radius:16px;border:3px solid rgba(255,255,255,.2);object-fit:cover;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+      .brand-title{color:#fff;font-size:1.5rem;font-weight:700;margin:.75rem 0 .25rem}
+      .brand-sub{color: rgb(255, 255, 255);font-size:.9rem;font-weight:500}
+      .banner{height:220px;position:relative;overflow:hidden;background:var(--gradient-primary);border-radius:0 0 1rem 1rem;margin:1rem 0}
+      .slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease-in-out;background-size:cover;background-position:center}
+      .slide.active{opacity:1}
+      .overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,54,93,.6),rgba(15,42,74,.75));display:flex;align-items:center;justify-content:center;color: #ffffff;padding:1rem;text-align:center}
+      .banner-text{font-size:1.05rem;font-weight:700}
+      .nav{padding:.5rem 0;overflow-y:auto;flex:1}
+      .main{flex:1;margin-left:320px;display:flex;flex-direction:column;min-height:100vh}
+
+      .header{background:var(--bg-card);border-bottom:1px solid var(--border);padding:1rem 2rem;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}
+      .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+      .title{font-size:1.75rem;font-weight:900;margin:0}
+      .clock{font-size:1.1rem;font-weight:600;color:var(--primary-dark);letter-spacing:.03em}
+      .logos{display:flex;align-items:center;gap:.5rem}
+      .logos img{height:60px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));margin-right:1rem}
+      .content{flex:1;max-width:1200px;margin:0 auto;width:100%;padding:2rem}
+      .card{background:var(--bg-card);border:1px solid var(--border);border-radius:1rem;padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+      .footer{background:var(--bg-sidebar);color:rgba(255,255,255,.8);text-align:center;padding:1.25rem;margin-top:auto}
+
+      .toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:1100;background:var(--primary);color:#fff;border:none;border-radius:.5rem;padding:.6rem .8rem;line-height:1;font-size:0}
+      .toggle::before{content:"\2630";font-size:1.25rem;vertical-align:middle}
+      .overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}
+
+      /* Navegación como DTF */
+      .nav-title{color:rgba(255,255,255,.6);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:0 1.5rem;margin:.75rem 0 .25rem}
+      .nav-item{display:block;padding:.75rem 1.5rem;color:rgba(255,255,255,.9);text-decoration:none;font-weight:700;border-left:3px solid transparent;transition:.2s}
+      .nav-item:hover{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--accent);transform:translateX(4px)}
+      .nav-item i{font-size:1.1rem;width:20px;text-align:center;margin-right:0.5rem}
+
+      /* Responsive */
+      @media (max-width:1024px){
+        .sidebar{transform:translateX(-100%);transition:transform .3s}
+        .sidebar.open{transform:translateX(0)}
+        .overlay-bg.open{display:block}
+        .main{margin-left:0}
+        .toggle{display:block}
+      }
+
+      /* Páginas sin sidebar */
+      body.no-sidebar .sidebar{display:none}
+      body.no-sidebar .main{margin-left:0}
+      body.no-sidebar .toggle, body.no-sidebar .overlay-bg{display:none}
+
+      /* Estilos útiles en el header */
+      .top-actions{ display:flex; gap:.5rem; align-items:center; margin-left:.5rem }
+      .chip{
+        display:inline-flex; align-items:center; gap:.35rem;
+        padding:.35rem .65rem; border:1px solid #dee2e6; border-radius:999px;
+        text-decoration:none; color:#212529; background:#ffffff;
+        box-shadow:0 2px 4px rgba(0,0,0,0.1); font-weight:600;
+      }
+      .chip:hover{ background: #871936; color:#212529; border-color:var(--primary) }
+      .role-chip{
+        padding:.35rem .65rem; border-radius:999px; font-weight:700;
+        background:var(--primary); color:#ffffff; box-shadow:0 2px 4px rgba(0,0,0,0.2);
+        text-shadow:none; border:1px solid rgba(255,255,255,0.2);
+      }
+      .lang-switcher{
+        display:inline-flex; align-items:center; gap:.35rem; margin-right:.5rem;
+        font-size:.85rem; font-weight:700;
+      }
+      .lang-switcher select{
+        border:1px solid #dee2e6; border-radius:.35rem; padding:.2rem .4rem;
+        background:#ffffff; color:#212529; font-weight:700;
+      }
+      .lang-label{ color:#212529; font-weight:700; }
+
+      .nav-item.active{
+        color:#fff;
+        background:rgba(255,255,255,.12);
+        border-left-color:var(--accent);
+      }
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+
+  <body class="{% block body_class %}{% endblock %}">
+    <button class="toggle" onclick="toggleSidebar()">☰</button>
+    <div class="overlay-bg" onclick="closeSidebar()"></div>
+
+    <div class="app">
+      {# ===== Sidebar (único) ===== #}
+      {% block sidebar %}
+      <aside class="sidebar" role="navigation" aria-label="Menú lateral ICTS">
+        <div class="sidebar-header">
+          <img class="logo" src="{{ MEDIA_URL }}Logos/logo_sigma_icts2.png" alt="SIGMA ICTS">
+          <div class="brand-title">SIGMA ICTS</div>
+          <div class="brand-sub">Sistema de Gestión de Accesos y Muestras a la ICTS del Laboratorio Nacional de Fusión (CIEMAT)</div>
+        </div>
+
+        <div class="banner" id="ictsBanner">
+          <div class="slide active" style="background-image:url('{{ MEDIA_URL }}SEM_FIB/SEM1.png')"><div class="overlay"><div class="banner-text">SEM/EDX/EBSD</div></div></div>
+          <div class="slide" style="background-image:url('{{ MEDIA_URL }}SEM_FIB/FIB.png')"><div class="overlay"><div class="banner-text">FIB</div></div></div>
+          <div class="slide" style="background-image:url('{{ MEDIA_URL }}sims_implant/sims.png')"><div class="overlay"><div class="banner-text">SIMS</div></div></div>
+          <div class="slide" style="background-image:url('{{ MEDIA_URL }}Confocal/leica.png')"><div class="overlay"><div class="banner-text">Confocal</div></div></div>
+        </div>
+
+        <nav class="nav">
+          {% if request.user.is_authenticated %}
+            <a class="nav-item" href="{% url 'portal:home' %}">
+              <i class="bi bi-house"></i>
+              Portal SIGMA
+            </a>
+            <div class="nav-title">Navegación</div>
+            
+            <!-- Usuario estándar (no revisor, no responsable, no manager, no técnico) -->
+            {% if not request.user|is_reviewer and not request.user|is_responsable and not request.user|is_manager and not request.user|is_sem_technician and not request.user|is_confocal_technician and not request.user|is_imp_technician and not request.user|is_vdg_technician and not request.user.is_superuser %}
+              <a class="nav-item" href="{% url 'icts:dashboard' %}">
+                <i class="bi bi-speedometer2"></i>
+                Mi panel
+              </a>
+              <a class="nav-item" href="{% url 'icts:my_proposals' %}">
+                <i class="bi bi-folder"></i>
+                Mis propuestas
+              </a>
+              <a class="nav-item" href="{% url 'icts:proposal_create' %}">
+                <i class="bi bi-plus-circle"></i>
+                Nueva propuesta
+              </a>
+            {% endif %}
+
+            <!-- Opciones específicas de REVISOR -->
+            {% if request.user|is_reviewer and not request.user|is_responsable %}
+              <a class="nav-item" href="{% url 'icts:reviewer_dashboard_new' %}">
+                <i class="bi bi-clipboard-check"></i>
+                Mi panel revisor
+              </a>
+              <a class="nav-item" href="{% url 'icts:reviewer_inbox' %}">
+                <i class="bi bi-inbox"></i>
+                Evaluaciones pendientes
+              </a>
+              <a class="nav-item" href="{% url 'icts:review_history' %}">
+                <i class="bi bi-clock-history"></i>
+                Historial de evaluaciones
+              </a>
+              <a class="nav-item" href="{% url 'icts:reviewer_mailbox' %}">
+                <i class="bi bi-envelope"></i>
+                Bandeja de entrada
+              </a>
+            {% endif %}
+
+            {% if request.user|is_responsable %}
+              <a class="nav-item" href="{% url 'icts:responsable_dashboard' %}">
+                <i class="bi bi-gear"></i>
+                Panel responsable
+              </a>
+            {% endif %}
+
+            {% if request.user|is_manager %}
+              <a class="nav-item" href="{% url 'icts:manager_dashboard' %}">
+                <i class="bi bi-graph-up"></i>
+                Panel manager
+              </a>
+            {% endif %}
+
+            {% if request.user|is_confocal_technician or request.user.is_staff %}
+              <div class="nav-title">LO3</div>
+              <a class="nav-item {% if request.resolver_match.url_name == 'lo3_home' %}active{% endif %}" href="{% url 'sigmaconf:lo3_home' %}">
+                <i class="bi bi-grid"></i>
+                Portal LO3
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'mcf_dashboard' or request.resolver_match.url_name == 'mcf_create_session' or request.resolver_match.url_name == 'mcf_create_session_from_proposal' or request.resolver_match.url_name == 'mcf_session_detail' or request.resolver_match.url_name == 'mcf_add_sample' or request.resolver_match.url_name == 'mcf_finish_session' or request.resolver_match.url_name == 'mcf_sample_edit' %}active{% endif %}" href="{% url 'sigmaconf:mcf_dashboard' %}">
+                <i class="bi bi-inboxes"></i>
+                Solicitudes de análisis
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'lo3_results' %}active{% endif %}" href="{% url 'sigmaconf:lo3_results' %}">
+                <i class="bi bi-clipboard-check"></i>
+                Resultados
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'lo3_communications_list' or request.resolver_match.url_name == 'lo3_communications_detail' %}active{% endif %}" href="{% url 'sigmaconf:lo3_communications_list' %}">
+                <i class="bi bi-chat-dots"></i>
+                Comunicaciones
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'lo3_equipment_list' or request.resolver_match.url_name == 'lo3_equipment_detail' or request.resolver_match.url_name == 'lo3_equipment_create' or request.resolver_match.url_name == 'lo3_equipment_edit' %}active{% endif %}" href="{% url 'sigmaconf:lo3_equipment_list' %}">
+                <i class="bi bi-hdd-stack"></i>
+                Fichas de equipos
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'lo3_calibration_list' or request.resolver_match.url_name == 'lo3_calibration_create' or request.resolver_match.url_name == 'lo3_calibration_edit' %}active{% endif %}" href="{% url 'sigmaconf:lo3_calibration_list' 'interna' %}">
+                <i class="bi bi-activity"></i>
+                Calibraciones
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'lo3_reference_material_list' or request.resolver_match.url_name == 'lo3_reference_material_detail' or request.resolver_match.url_name == 'lo3_reference_material_create' or request.resolver_match.url_name == 'lo3_reference_material_edit' %}active{% endif %}" href="{% url 'sigmaconf:lo3_reference_material_list' %}">
+                <i class="bi bi-boxes"></i>
+                Materiales de referencia
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'lo3_incident_list' or request.resolver_match.url_name == 'lo3_incident_detail' or request.resolver_match.url_name == 'lo3_incident_create' or request.resolver_match.url_name == 'lo3_incident_edit' %}active{% endif %}" href="{% url 'sigmaconf:lo3_incident_list' %}">
+                <i class="bi bi-exclamation-diamond"></i>
+                Incidencias
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'lo3_habilitation_list' or request.resolver_match.url_name == 'lo3_habilitation_detail' or request.resolver_match.url_name == 'lo3_habilitation_create' %}active{% endif %}" href="{% url 'sigmaconf:lo3_habilitation_list' %}">
+                <i class="bi bi-patch-check"></i>
+                Habilitaciones
+              </a>
+            {% endif %}
+
+            {% if request.user|is_vdg_technician or request.user.is_staff %}
+              <div class="nav-title">L07 (VDG)</div>
+              <a class="nav-item {% if request.resolver_match.url_name == 'vdg_home' %}active{% endif %}" href="{% url 'sigmavdg:vdg_home' %}">
+                <i class="bi bi-lightning-charge"></i>
+                Portal L07 (VDG)
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'vdg_dashboard' or request.resolver_match.url_name == 'vdg_create_session' or request.resolver_match.url_name == 'vdg_create_session_from_proposal' or request.resolver_match.url_name == 'vdg_session_detail' or request.resolver_match.url_name == 'vdg_add_sample' or request.resolver_match.url_name == 'vdg_finish_session' or request.resolver_match.url_name == 'vdg_sample_edit' or request.resolver_match.url_name == 'vdg_session_update' %}active{% endif %}" href="{% url 'sigmavdg:vdg_dashboard' %}">
+                <i class="bi bi-inboxes"></i>
+                Solicitudes de análisis
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'vdg_equipment_list' or request.resolver_match.url_name == 'vdg_equipment_detail' or request.resolver_match.url_name == 'vdg_equipment_create' or request.resolver_match.url_name == 'vdg_equipment_edit' %}active{% endif %}" href="{% url 'sigmavdg:vdg_equipment_list' %}">
+                <i class="bi bi-hdd-stack"></i>
+                Fichas de equipos
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'vdg_item_list' or request.resolver_match.url_name == 'vdg_item_movements' or request.resolver_match.url_name == 'vdg_item_create' or request.resolver_match.url_name == 'vdg_item_movement_create' or request.resolver_match.url_name == 'vdg_item_movement_receive' %}active{% endif %}" href="{% url 'sigmavdg:vdg_item_movements' %}">
+                <i class="bi bi-box-seam"></i>
+                Control de items
+              </a>
+            {% endif %}
+
+            {% if request.user|is_imp_technician or request.user.is_staff %}
+              <div class="nav-title">Ion Implanter</div>
+              <a class="nav-item {% if request.resolver_match.url_name == 'imp_dashboard' or request.resolver_match.url_name == 'imp_create_session' or request.resolver_match.url_name == 'imp_create_session_from_proposal' or request.resolver_match.url_name == 'imp_session_detail' or request.resolver_match.url_name == 'imp_add_sample' or request.resolver_match.url_name == 'imp_sample_edit' %}active{% endif %}" href="{% url 'sigmaimp:imp_dashboard' %}">
+                <i class="bi bi-inboxes"></i>
+                Solicitudes de análisis
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'imp_results' %}active{% endif %}" href="{% url 'sigmaimp:imp_results' %}">
+                <i class="bi bi-clipboard-check"></i>
+                Resultados
+              </a>
+              <a class="nav-item {% if request.resolver_match.url_name == 'imp_communications_list' or request.resolver_match.url_name == 'imp_communications_detail' %}active{% endif %}" href="{% url 'sigmaimp:imp_communications_list' %}">
+                <i class="bi bi-chat-dots"></i>
+                Comunicaciones
+              </a>
+            {% endif %}
+
+            <!-- Opciones específicas de TÉCNICOS SEM/FIB -->
+            {% if request.user|is_sem_technician %}
+              <a class="nav-item" href="{% url 'icts:sigmasem:dashboard' %}">
+                <i class="bi bi-microscope"></i>
+                SIGMA SEM/FIB
+              </a>
+            {% endif %}
+
+            {% if request.user.is_superuser %}
+              <a class="nav-item" href="/admin/">
+                <i class="bi bi-tools"></i>
+                Administración
+              </a>
+            {% endif %}
+
+            <div class="nav-title">Recursos</div>
+            <a class="nav-item" href="{% url 'icts:proposal_evaluation' %}">
+              <i class="bi bi-file-text"></i>
+              Proposal Evaluation Procedure
+            </a>
+            <a class="nav-item" href="{% url 'icts:reviewer_faq' %}">
+              <i class="bi bi-question-circle"></i>
+              FAQ Revisor
+            </a>
+          {% else %}
+            <a class="nav-item" href="{% url 'portal:home' %}">
+              <i class="bi bi-house"></i>
+              Portal SIGMA
+            </a>
+            <a class="nav-item" href="{% url 'accounts:login_icts' %}">
+              <i class="bi bi-box-arrow-in-right"></i>
+              Entrar
+            </a>
+            <a class="nav-item" href="{% url 'icts:register' %}">
+              <i class="bi bi-person-plus"></i>
+              Registrarse
+            </a>
+            <a class="nav-item" href="{% url 'portal:faq' %}">
+              <i class="bi bi-question-circle"></i>
+              FAQ ICTS
+            </a>
+          {% endif %}
+        </nav>
+      </aside>
+      {% endblock %}
+
+      {# ===== Main ===== #}
+      <main class="main">
+        <header class="header">
+          <div class="header-inner">
+            <h1 class="title">{% block page_title %}&#x03A3;IGMA ICTS{% endblock %}</h1>
+            <div class="logos">
+              {% block top_right_logos %}
+                {% if 'SEM' in page_title or 'FIB' in page_title or 'sigmasem' in request.path %}
+                  <img src="{{ MEDIA_URL }}Logos/sigma_sem.png" alt="S-SEM">
+                {% elif 'S-LAB' in page_title or 'sigmalab' in request.path %}
+                  <img src="{{ MEDIA_URL }}Logos/sigma_lab.png" alt="S-LAB">
+                {% elif 'S-MEC' in page_title or 'mec' in request.path %}
+                  <img src="{{ MEDIA_URL }}Logos/sigma_mec.png" alt="S-MEC">
+                {% elif 'S-SIMS' in page_title or 'SIMS' in page_title %}
+                  <img src="{{ MEDIA_URL }}Logos/logo_sigma_imp_sims.png" alt="S-SIMS">
+                {% elif 'S-D&P' in page_title or 'DP' in page_title %}
+                  <img src="{{ MEDIA_URL }}Logos/sigma_DP3.png" alt="S-D&P">
+                {% endif %}
+                {% if "/sigmaconf/" not in request.path and "/sigmasem/" not in request.path and "/sigmavdg/" not in request.path and "/sigmaimp/" not in request.path and "/dtf/lab/" not in request.path and "/dtf/mec/" not in request.path and "/dtf/dp/" not in request.path and "/dtf/optics/" not in request.path %}
+                  {% get_current_language as CURRENT_LANGUAGE %}
+                  <form class="lang-switcher" action="{% url 'set_language' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <label class="lang-label" for="language-select">{% trans "Idioma" %}</label>
+                    <select id="language-select" name="language" onchange="this.form.submit()">
+                      <option value="en" {% if CURRENT_LANGUAGE|slice:":2" == "en" %}selected{% endif %}>EN</option>
+                      <option value="fr" {% if CURRENT_LANGUAGE|slice:":2" == "fr" %}selected{% endif %}>FR</option>
+                      <option value="es" {% if CURRENT_LANGUAGE|slice:":2" == "es" %}selected{% endif %}>ES</option>
+                    </select>
+                  </form>
+                {% endif %}
+                {% include "icts/_topbar_actions.html" %}
+                <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF">
+                <img src="{{ MEDIA_URL }}Logos/sol_icts.png.jpg" alt="ICTS">
+              {% endblock %}
+            </div>
+          </div>
+        </header>
+
+        <section class="content">
+          {% block content %}{% endblock %}
+        </section>
+
+        <footer class="footer">
+          CIEMAT – Infraestructura Científica y Tecnológica Singular - ICTS
+          <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF">
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function(){
+        const slides = document.querySelectorAll('#ictsBanner .slide');
+        if(!slides.length) return;
+        let i=0;
+        setInterval(()=>{
+          slides[i].classList.remove('active');
+          i=(i+1)%slides.length;
+          slides[i].classList.add('active');
+        }, 4000);
+      })();
+      function toggleSidebar(){
+        const sb = document.querySelector('.sidebar');
+        const ov = document.querySelector('.overlay-bg');
+        const btn = document.querySelector('.toggle');
+        const willOpen = !sb.classList.contains('open');
+        sb.classList.toggle('open');
+        ov.classList.toggle('open');
+        if(btn){ btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false'); }
+      }
+      function closeSidebar(){
+        const sb = document.querySelector('.sidebar');
+        const ov = document.querySelector('.overlay-bg');
+        const btn = document.querySelector('.toggle');
+        sb.classList.remove('open');
+        ov.classList.remove('open');
+        if(btn){ btn.setAttribute('aria-expanded','false'); }
+      }
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape'){ closeSidebar(); }
+      });
+      {% block extra_js %}{% endblock %}
+    </script>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Equipos LO3{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Fichas de equipos{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>Equipos</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">Fichas de equipos</div>
+    <div class="lo3-page-meta">
+      <span>{{ equipment_list|length }} equipos registrados</span>
+    </div>
+  </div>
+  <div>
+    <a class="lo3-btn lo3-btn-primary" href="{% url 'sigmaconf:lo3_equipment_create' %}">
+      <i class="bi bi-plus-circle"></i>
+      Nuevo equipo
+    </a>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Listado de equipos</h2>
+      <div class="lo3-card-subtitle">Accede a documentación y estado de los equipos LO3.</div>
+    </div>
+  </div>
+
+  {% if equipment_list %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Equipo</th>
+            <th>Fabricante</th>
+            <th>Modelo</th>
+            <th>Ubicación</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for equipment in equipment_list %}
+            <tr>
+              <td><strong>{{ equipment.name }}</strong></td>
+              <td>{{ equipment.manufacturer|default:"-" }}</td>
+              <td>{{ equipment.model|default:"-" }}</td>
+              <td>{{ equipment.location|default:"-" }}</td>
+              <td>
+                {% if equipment.status == "active" %}
+                  <span class="lo3-badge lo3-badge--success">Activo</span>
+                {% elif equipment.status == "maintenance" %}
+                  <span class="lo3-badge lo3-badge--warning">Mantenimiento</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--muted">Inactivo</span>
+                {% endif %}
+              </td>
+              <td>
+                <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_equipment_detail' equipment.pk %}">
+                  <i class="bi bi-eye"></i>
+                  Ver ficha
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-hdd-stack"></i>
+      <div>No hay equipos registrados.</div>
+      <small>Agrega el primer equipo LO3 para iniciar el registro.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,451 @@
+{% extends "sigmaoptics/base_optics.html" %}
+
+{% block optics_page_title %}Detalle del Análisis - {{ analisis.nombre }}{% endblock %}
+
+{% block optics_content %}
+<div class="container">
+  <!-- Header del análisis -->
+  <div class="optics-card">
+    <div class="analisis-header">
+      <div class="analisis-title-section">
+        <h2 class="analisis-title">
+          <i class="bi bi-graph-up"></i>
+          {{ analisis.nombre }}
+        </h2>
+        <span class="status-badge status-{{ analisis.estado }}">
+          {{ analisis.get_estado_display }}
+        </span>
+      </div>
+      <div class="analisis-actions">
+        <a href="{% url 'sigmaoptics:analisis_list' %}" class="optics-btn optics-btn-secondary">
+          <i class="bi bi-arrow-left"></i>
+          Volver a la Lista
+        </a>
+      </div>
+    </div>
+    
+    {% if analisis.descripcion %}
+      <div class="analisis-description">
+        <p>{{ analisis.descripcion }}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Información del análisis -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="optics-card">
+        <h3 class="optics-card-title">
+          <i class="bi bi-info-circle"></i>
+          Información del Análisis
+        </h3>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Técnico:</label>
+            <span>{{ analisis.tecnico.get_full_name|default:analisis.tecnico.username }}</span>
+          </div>
+          <div class="info-item">
+            <label>Archivo original:</label>
+            <span>{{ analisis.archivo_datos.name|slice:"-50:" }}</span>
+          </div>
+          <div class="info-item">
+            <label>Tipo de archivo:</label>
+            <span>{{ analisis.get_tipo_archivo_display }}</span>
+          </div>
+          <div class="info-item">
+            <label>Separador:</label>
+            <span>{{ analisis.separador }}</span>
+          </div>
+          <div class="info-item">
+            <label>Decimal:</label>
+            <span>{{ analisis.decimal }}</span>
+          </div>
+          <div class="info-item">
+            <label>Codificación:</label>
+            <span>{{ analisis.codificacion }}</span>
+          </div>
+          <div class="info-item">
+            <label>Creado:</label>
+            <span>{{ analisis.creado_en|date:"d/m/Y H:i" }}</span>
+          </div>
+          {% if analisis.procesado_en %}
+            <div class="info-item">
+              <label>Procesado:</label>
+              <span>{{ analisis.procesado_en|date:"d/m/Y H:i" }}</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="optics-card">
+        <h3 class="optics-card-title">
+          <i class="bi bi-bar-chart"></i>
+          Estadísticas
+        </h3>
+        
+        <div class="stats-grid">
+          {% if analisis.num_muestras %}
+            <div class="stat-item">
+              <div class="stat-number">{{ analisis.num_muestras }}</div>
+              <div class="stat-label">Muestras</div>
+            </div>
+          {% endif %}
+          
+          {% if analisis.duracion_minutos %}
+            <div class="stat-item">
+              <div class="stat-number">{{ analisis.duracion_minutos|floatformat:1 }}</div>
+              <div class="stat-label">Minutos</div>
+            </div>
+          {% endif %}
+          
+          {% if analisis.columnas_detectadas %}
+            <div class="stat-item full-width">
+              <div class="stat-label">Columnas detectadas:</div>
+              <div class="columns-detected">{{ analisis.columnas_detectadas }}</div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archivos generados -->
+  {% if analisis.estado == 'completado' %}
+    <div class="optics-card">
+      <h3 class="optics-card-title">
+        <i class="bi bi-files"></i>
+        Archivos Generados
+      </h3>
+      
+      <div class="files-grid">
+        {% if analisis.archivo_csv_limpio %}
+          <div class="file-card">
+            <div class="file-icon">
+              <i class="bi bi-file-earmark-spreadsheet"></i>
+            </div>
+            <div class="file-info">
+              <h4>CSV Limpio</h4>
+              <p>Datos procesados en formato CSV</p>
+            </div>
+            <div class="file-actions">
+              <a href="{{ analisis.archivo_csv_limpio.url }}" class="optics-btn optics-btn-primary" target="_blank">
+                <i class="bi bi-download"></i>
+                Descargar
+              </a>
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if analisis.archivo_espectro %}
+          <div class="file-card">
+            <div class="file-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="file-info">
+              <h4>Espectro</h4>
+              <p>Gráfica del espectro óptico</p>
+            </div>
+            <div class="file-actions">
+              <a href="{{ analisis.archivo_espectro.url }}" class="optics-btn optics-btn-primary" target="_blank">
+                <i class="bi bi-eye"></i>
+                Ver
+              </a>
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if analisis.archivo_transmitancia %}
+          <div class="file-card">
+            <div class="file-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="file-info">
+              <h4>Transmitancia</h4>
+              <p>Gráfica de transmitancia</p>
+            </div>
+            <div class="file-actions">
+              <a href="{{ analisis.archivo_transmitancia.url }}" class="optics-btn optics-btn-primary" target="_blank">
+                <i class="bi bi-eye"></i>
+                Ver
+              </a>
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if analisis.archivo_absorbancia %}
+          <div class="file-card">
+            <div class="file-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="file-info">
+              <h4>Absorbancia</h4>
+              <p>Gráfica de absorbancia</p>
+            </div>
+            <div class="file-actions">
+              <a href="{{ analisis.archivo_absorbancia.url }}" class="optics-btn optics-btn-primary" target="_blank">
+                <i class="bi bi-eye"></i>
+                Ver
+              </a>
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if analisis.archivo_overview %}
+          <div class="file-card">
+            <div class="file-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="file-info">
+              <h4>Resumen</h4>
+              <p>Gráfica de resumen general</p>
+            </div>
+            <div class="file-actions">
+              <a href="{{ analisis.archivo_overview.url }}" class="optics-btn optics-btn-primary" target="_blank">
+                <i class="bi bi-eye"></i>
+                Ver
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% elif analisis.estado == 'error' %}
+    <div class="optics-card">
+      <div class="error-state">
+        <i class="bi bi-exclamation-triangle error-icon"></i>
+        <h3>Error en el Procesamiento</h3>
+        <p>Hubo un error al procesar el archivo. Por favor, verifica la configuración y vuelve a intentar.</p>
+        <a href="{% url 'sigmaoptics:crear_analisis_datos' %}" class="optics-btn optics-btn-primary">
+          <i class="bi bi-arrow-clockwise"></i>
+          Crear Nuevo Análisis
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="optics-card">
+      <div class="processing-state">
+        <i class="bi bi-hourglass-split processing-icon"></i>
+        <h3>Procesando...</h3>
+        <p>El análisis está siendo procesado. Esta página se actualizará automáticamente.</p>
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.analisis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.analisis-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.analisis-title {
+  color: #1e40af;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-procesando {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-completado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.analisis-description {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  color: #6b7280;
+}
+
+.info-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.info-item span {
+  color: #6b7280;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.stat-item.full-width {
+  grid-column: 1 / -1;
+  text-align: left;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.columns-detected {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.file-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.file-icon {
+  font-size: 2rem;
+  color: #3b82f6;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1e40af;
+  font-size: 1.1rem;
+}
+
+.file-info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.file-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.error-state, .processing-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.error-icon, .processing-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.error-icon {
+  color: #ef4444;
+}
+
+.processing-icon {
+  color: #3b82f6;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+  margin-top: 1rem;
+}
+</style>
+
+{% if analisis.estado == 'procesando' %}
+<script>
+// Auto-refresh para análisis en procesamiento
+setTimeout(function() {
+  location.reload();
+}, 5000);
+</script>
+{% endif %}
+{% endblock %}
+

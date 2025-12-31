@@ -1,0 +1,70 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}{% if is_editing %}Editar equipo{% else %}Nuevo equipo{% endif %}{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Fichas de equipos{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_equipment_list' %}">Equipos</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{% if is_editing %}Editar{% else %}Nuevo{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">{% if is_editing %}Editar equipo{% else %}Nuevo equipo{% endif %}</h2>
+      <div class="lo3-card-subtitle">Completa los datos del equipo LO3.</div>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+      <div>
+        {{ form.name.label_tag }}
+        {{ form.name }}
+      </div>
+      <div>
+        {{ form.manufacturer.label_tag }}
+        {{ form.manufacturer }}
+      </div>
+      <div>
+        {{ form.model.label_tag }}
+        {{ form.model }}
+      </div>
+      <div>
+        {{ form.serial_number.label_tag }}
+        {{ form.serial_number }}
+      </div>
+      <div>
+        {{ form.location.label_tag }}
+        {{ form.location }}
+      </div>
+      <div>
+        {{ form.status.label_tag }}
+        {{ form.status }}
+      </div>
+    </div>
+    <div style="margin-top: 1rem;">
+      {{ form.description.label_tag }}
+      {{ form.description }}
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button type="submit" class="lo3-btn lo3-btn-primary">
+        <i class="bi bi-check2-circle"></i>
+        Guardar
+      </button>
+      <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_equipment_list' %}">
+        <i class="bi bi-x-circle"></i>
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

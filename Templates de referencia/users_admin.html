@@ -1,0 +1,93 @@
+{% extends "base_generic.html" %}
+{% block title %}Usuarios | SIGMA-ICTS{% endblock %}
+
+{% block content %}
+<div class="card" style="padding:20px;">
+  <h2 style="margin:0 0 10px 0;">Cuentas pendientes de validar</h2>
+  {% if pending_users %}
+    <table style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr>
+          <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Nombre</th>
+          <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Email</th>
+          <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Alta</th>
+          <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;width:220px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in pending_users %}
+        <tr>
+          <td style="padding:8px;border-top:1px solid #e5e8ef;">
+            {% if u.applicant_profile and u.applicant_profile.full_name %}
+              {{ u.applicant_profile.full_name }}
+            {% else %}
+              {{ u.get_full_name|default:u.username }}
+            {% endif %}
+          </td>
+          <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ u.email }}</td>
+          <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ u.date_joined|date:"Y-m-d H:i" }}</td>
+          <td style="padding:8px;border-top:1px solid #e5e8ef;">
+            <div style="display:flex;gap:8px;">
+              <form method="post" action="{% url 'icts:approve_user' u.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn">Aprobar (activar)</button>
+              </form>
+              <form method="post" action="{% url 'icts:reject_user' u.id %}" onsubmit="return confirm('¿Seguro que quieres eliminar esta cuenta? Esta acción no se puede deshacer.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Rechazar (eliminar)</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No hay cuentas pendientes en este momento.</p>
+  {% endif %}
+</div>
+
+
+<div class="card" style="padding:20px;">
+  <h2 style="margin:0 0 10px 0;">Todos los usuarios</h2>
+  <p class="muted" style="margin:0 0 10px 0;">Pulsa en los encabezados para ordenar.</p>
+  <table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr>
+        <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">
+          <a href="?sort=name&dir={% if sort == 'name' and dir == 'asc' %}desc{% else %}asc{% endif %}">Nombre</a>
+        </th>
+        <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">
+          <a href="?sort=email&dir={% if sort == 'email' and dir == 'asc' %}desc{% else %}asc{% endif %}">Email</a>
+        </th>
+        <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;width:150px;">
+          <a href="?sort=joined&dir={% if sort == 'joined' and dir == 'asc' %}desc{% else %}asc{% endif %}">Alta</a>
+        </th>
+        <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;width:150px;">
+          <a href="?sort=last_login&dir={% if sort == 'last_login' and dir == 'asc' %}desc{% else %}asc{% endif %}">Último acceso</a>
+        </th>
+        <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;width:90px;">
+          <a href="?sort=active&dir={% if sort == 'active' and dir == 'asc' %}desc{% else %}asc{% endif %}">Activo</a>
+        </th>
+        <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;width:90px;">
+          <a href="?sort=staff&dir={% if sort == 'staff' and dir == 'asc' %}desc{% else %}asc{% endif %}">Staff</a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users_list %}
+      <tr>
+        <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ u.name }}</td>
+        <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ u.email }}</td>
+        <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ u.joined|date:"Y-m-d H:i" }}</td>
+        <td style="padding:8px;border-top:1px solid #e5e8ef;">{% if u.last_login %}{{ u.last_login|date:"Y-m-d H:i" }}{% else %}-{% endif %}</td>
+        <td style="padding:8px;border-top:1px solid #e5e8ef;">{% if u.active %}Sí{% else %}No{% endif %}</td>
+        <td style="padding:8px;border-top:1px solid #e5e8ef;">{% if u.staff %}Sí{% else %}No{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="muted">Sin usuarios.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,291 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Reportar incidencia{% endblock %}
+{% block page_title %}Reportar incidencia del laboratorio{% endblock %}
+
+{% block extra_css %}
+<style>
+  .incident-form {
+    max-width: 800px;
+  }
+  .form-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-section h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+  }
+  .priority-info {
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .priority-info h4 {
+    color: #0056b3;
+    margin-bottom: 0.5rem;
+  }
+  .priority-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .priority-example {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.75rem;
+  }
+  .priority-example h5 {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+  }
+  .priority-example p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .required {
+    color: #dc3545;
+  }
+  .help-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card incident-form">
+  <h2 style="margin:0 0 1rem; color: #dc3545;">
+    <i class="bi bi-exclamation-triangle"></i> Reportar incidencia del laboratorio
+  </h2>
+  
+  <!-- Información sobre prioridades -->
+  <div class="priority-info">
+    <h4><i class="bi bi-info-circle"></i> Guía de prioridades</h4>
+    <p>Selecciona la prioridad según el impacto en las operaciones del laboratorio:</p>
+    <div class="priority-examples">
+      <div class="priority-example">
+        <h5 style="color: #dc3545;">🔴 Crítica</h5>
+        <p>Riesgo de seguridad, fallo total de equipos críticos, evacuación</p>
+      </div>
+      <div class="priority-example">
+        <h5 style="color: #fd7e14;">🟠 Alta</h5>
+        <p>Equipos importantes fuera de servicio, problemas de suministros</p>
+      </div>
+      <div class="priority-example">
+        <h5 style="color: #ffc107;">🟡 Media</h5>
+        <p>Problemas menores que afectan el trabajo diario</p>
+      </div>
+      <div class="priority-example">
+        <h5 style="color: #28a745;">🟢 Baja</h5>
+        <p>Mejoras, mantenimiento preventivo, problemas cosméticos</p>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" id="incident-form">
+    {% csrf_token %}
+    
+    <!-- Información básica -->
+    <div class="form-section">
+      <h3><i class="bi bi-info-circle"></i> Información básica</h3>
+      
+      <div class="form-group">
+        <label for="{{ form.titulo.id_for_label }}" class="form-label">
+          <i class="bi bi-tag"></i> Título de la incidencia <span class="required">*</span>
+        </label>
+        {{ form.titulo|add_class:"form-control" }}
+        {% if form.titulo.errors %}
+          <div class="text-danger">
+            {% for error in form.titulo.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="help-text">Título descriptivo y conciso de la incidencia</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+          <i class="bi bi-file-text"></i> Descripción detallada <span class="required">*</span>
+        </label>
+        {{ form.descripcion|add_class:"form-control" }}
+        {% if form.descripcion.errors %}
+          <div class="text-danger">
+            {% for error in form.descripcion.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="help-text">Describe detalladamente qué ha ocurrido, cuándo y cómo</div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label for="{{ form.categoria.id_for_label }}" class="form-label">
+            <i class="bi bi-folder"></i> Categoría <span class="required">*</span>
+          </label>
+          {{ form.categoria|add_class:"form-control" }}
+          {% if form.categoria.errors %}
+            <div class="text-danger">
+              {% for error in form.categoria.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div class="form-group">
+          <label for="{{ form.prioridad.id_for_label }}" class="form-label">
+            <i class="bi bi-flag"></i> Prioridad <span class="required">*</span>
+          </label>
+          {{ form.prioridad|add_class:"form-control" }}
+          {% if form.prioridad.errors %}
+            <div class="text-danger">
+              {% for error in form.prioridad.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Ubicación y contexto -->
+    <div class="form-section">
+      <h3><i class="bi bi-geo-alt"></i> Ubicación y contexto</h3>
+      
+      <div class="form-group">
+        <label for="{{ form.ubicacion.id_for_label }}" class="form-label">
+          <i class="bi bi-geo-alt"></i> Ubicación específica
+        </label>
+        {{ form.ubicacion|add_class:"form-control" }}
+        {% if form.ubicacion.errors %}
+          <div class="text-danger">
+            {% for error in form.ubicacion.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="help-text">Especifica dónde ocurrió la incidencia (ej: Laboratorio 1, Sala de equipos, etc.)</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.equipos_afectados.id_for_label }}" class="form-label">
+          <i class="bi bi-gear"></i> Equipos o sistemas afectados
+        </label>
+        {{ form.equipos_afectados|add_class:"form-control" }}
+        {% if form.equipos_afectados.errors %}
+          <div class="text-danger">
+            {% for error in form.equipos_afectados.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="help-text">Lista los equipos, sistemas o servicios afectados</div>
+      </div>
+    </div>
+
+    <!-- Impacto y acciones -->
+    <div class="form-section">
+      <h3><i class="bi bi-exclamation-circle"></i> Impacto y acciones</h3>
+      
+      <div class="form-group">
+        <label for="{{ form.impacto_operaciones.id_for_label }}" class="form-label">
+          <i class="bi bi-graph-down"></i> Impacto en las operaciones
+        </label>
+        {{ form.impacto_operaciones|add_class:"form-control" }}
+        {% if form.impacto_operaciones.errors %}
+          <div class="text-danger">
+            {% for error in form.impacto_operaciones.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="help-text">Describe cómo esta incidencia afecta al trabajo del laboratorio</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="{{ form.acciones_inmediatas.id_for_label }}" class="form-label">
+          <i class="bi bi-lightning"></i> Acciones inmediatas
+        </label>
+        {{ form.acciones_inmediatas|add_class:"form-control" }}
+        {% if form.acciones_inmediatas.errors %}
+          <div class="text-danger">
+            {% for error in form.acciones_inmediatas.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="help-text">Acciones que has tomado o recomiendas tomar inmediatamente</div>
+      </div>
+    </div>
+
+    <!-- Archivo adjunto -->
+    <div class="form-section">
+      <h3><i class="bi bi-paperclip"></i> Archivo adjunto</h3>
+      
+      <div class="form-group">
+        <label for="{{ form.archivo_adjunto.id_for_label }}" class="form-label">
+          <i class="bi bi-paperclip"></i> Archivo adjunto
+        </label>
+        {{ form.archivo_adjunto }}
+        {% if form.archivo_adjunto.errors %}
+          <div class="text-danger">
+            {% for error in form.archivo_adjunto.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="help-text">Puedes adjuntar fotos, documentos o cualquier archivo relevante (máx. 10MB)</div>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+      <button type="submit" class="cta" style="background: #dc3545; color: white;" onclick="return confirmReport()">
+        <i class="bi bi-send"></i> Reportar incidencia
+      </button>
+      <a href="{% url 'sigmalab:panel-usuario' %}" class="cta" style="background: var(--accent);">
+        <i class="bi bi-arrow-left"></i> Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+function confirmReport() {
+    const titulo = document.getElementById('id_titulo').value.trim();
+    const descripcion = document.getElementById('id_descripcion').value.trim();
+    const categoria = document.getElementById('id_categoria').value;
+    const prioridad = document.getElementById('id_prioridad').value;
+    
+    if (!titulo || !descripcion || !categoria || !prioridad) {
+        alert('Por favor, completa todos los campos obligatorios.');
+        return false;
+    }
+    
+    return confirm('¿Estás seguro de que quieres reportar esta incidencia?\\n\\nUna vez enviada, será revisada por el personal técnico.');
+}
+</script>
+{% endblock %}

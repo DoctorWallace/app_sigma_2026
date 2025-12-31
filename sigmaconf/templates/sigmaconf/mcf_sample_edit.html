@@ -1,0 +1,166 @@
+{% extends "base_icts.html" %}
+
+{% block title %}Registro de muestra{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h4 mb-0">
+      {% if editing %}Editar muestra{% else %}Añadir muestra{% endif %}
+    </h1>
+    <a class="btn btn-secondary" href="{% url 'sigmaconf:mcf_session_detail' session.pk %}">Volver</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form.identification.label_tag }}
+            {{ form.identification }}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+          </div>
+        </div>
+        <div class="mb-3">
+          {{ form.details.label_tag }}
+          {{ form.details }}
+        </div>
+        <div class="row">
+          <div class="col-md-3 mb-3">
+            {{ form.received_date.label_tag }}
+            {{ form.received_date }}
+          </div>
+          <div class="col-md-3 mb-3">
+            {{ form.analysis_date.label_tag }}
+            {{ form.analysis_date }}
+          </div>
+          <div class="col-md-3 mb-3">
+            {{ form.return_date.label_tag }}
+            {{ form.return_date }}
+          </div>
+          <div class="col-md-3 mb-3">
+            {{ form.report_delivery_date.label_tag }}
+            {{ form.report_delivery_date }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form.operator_name.label_tag }}
+            {{ form.operator_name }}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form.report_code.label_tag }}
+            {{ form.report_code }}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-3 form-check">
+            {{ form.roughness }} {{ form.roughness.label_tag }}
+          </div>
+          <div class="col-md-3 form-check">
+            {{ form.image_2d }} {{ form.image_2d.label_tag }}
+          </div>
+          <div class="col-md-3 form-check">
+            {{ form.image_3d }} {{ form.image_3d.label_tag }}
+          </div>
+          <div class="col-md-3 form-check">
+            {{ form.thickness }} {{ form.thickness.label_tag }}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            {{ form.indicator_i1.label_tag }}
+            {{ form.indicator_i1 }}
+          </div>
+          <div class="col-md-6">
+            {{ form.indicator_i2.label_tag }}
+            {{ form.indicator_i2 }}
+          </div>
+        </div>
+        <div class="mb-3">
+          {{ form.observations.label_tag }}
+          {{ form.observations }}
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  {% if editing %}
+  <div class="card mt-4">
+    <div class="card-body">
+      <h2 class="h5">Adjuntos de la muestra</h2>
+      {% if attachments %}
+        <div class="table-responsive mt-3">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Subido por</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for attachment in attachments %}
+              <tr>
+                <td>{{ attachment.get_attachment_type_display }}</td>
+                <td>{{ attachment.description|default:"-" }}</td>
+                <td>{{ attachment.uploaded_by.get_full_name|default:attachment.uploaded_by.username|default:"-" }}</td>
+                <td>{{ attachment.created_at|date:"d/m/Y H:i" }}</td>
+                <td>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'sigmaconf:mcf_attachment_download' attachment.pk %}">
+                      <i class="bi bi-download"></i>
+                      Descargar
+                    </a>
+                    <form method="post" action="{% url 'sigmaconf:mcf_attachment_delete' attachment.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash"></i>
+                        Eliminar
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted mt-3">No hay adjuntos cargados.</p>
+      {% endif %}
+
+      <form method="post" action="{% url 'sigmaconf:mcf_sample_attachment_add' sample.pk %}" enctype="multipart/form-data" class="mt-4">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            {{ attachment_form.attachment_type.label_tag }}
+            {{ attachment_form.attachment_type }}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ attachment_form.description.label_tag }}
+            {{ attachment_form.description }}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ attachment_form.file.label_tag }}
+            {{ attachment_form.file }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-upload"></i>
+          Subir adjunto
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

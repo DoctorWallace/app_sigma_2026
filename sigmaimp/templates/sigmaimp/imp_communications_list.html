@@ -1,0 +1,46 @@
+{% extends "base_icts.html" %}
+
+{% block title %}SIGMA IMP{% endblock %}
+{% block page_title %}SIGMA IMP - Comunicaciones{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Comunicaciones</h2>
+  {% if entries %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Solicitud</th>
+          <th>Solicitante</th>
+          <th>Ultimo mensaje</th>
+          <th>No leidos</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in entries %}
+          <tr>
+            <td>{{ entry.proposal.access_code|default:entry.proposal.id }}</td>
+            <td>{{ entry.proposal.applicant }}</td>
+            <td>
+              {% if entry.last_message %}
+                {{ entry.last_message.body|truncatechars:80 }}
+              {% else %}
+                Sin mensajes
+              {% endif %}
+            </td>
+            <td>{{ entry.unread_count }}</td>
+            <td>
+              <a class="btn btn-outline-primary btn-sm" href="{% url 'sigmaimp:imp_communications_detail' entry.proposal.id %}">
+                Ver conversacion
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay conversaciones.</p>
+  {% endif %}
+</div>
+{% endblock %}

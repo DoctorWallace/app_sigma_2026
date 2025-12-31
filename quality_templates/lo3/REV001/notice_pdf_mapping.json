@@ -1,0 +1,22 @@
+{
+  "document": "lo3_notice_pdf",
+  "revision": "REV001",
+  "placeholders": {
+    "applicant_name": "access_proposal.contact_person || applicant.get_full_name || applicant.username",
+    "center": "access_proposal.applicant.icts_profile.center",
+    "address": "access_proposal.applicant.icts_profile.address",
+    "date": "session.completion_date",
+    "lot_code": "session.lot_code",
+    "access_code": "access_proposal.access_code",
+    "responsible_title": "settings.LO3_RESPONSIBLE_TITLE",
+    "responsible_name": "settings.LO3_RESPONSIBLE_NAME"
+  },
+  "required_fragments": [
+    "Metrolog",
+    "superficies",
+    "SIGMA ICTS",
+    "lote: {lot_code}",
+    "solicitud {access_code}"
+  ],
+  "forbidden_fragments": ["Y:\\", "C:\\"]
+}

@@ -1,0 +1,16 @@
+A la atención de D/Dña {applicant_name}
+{center}
+{address}
+
+Madrid, {date}
+
+Estimado Sr/Sra.:
+
+Adjunto le enviamos el resultado de las determinaciones efectuadas mediante Metrología de superficies ópticas 3D del lote: {lot_code}.
+
+Puede encontrar dichos informes en su cuenta de usuario SIGMA ICTS, asociados a la solicitud {access_code}.
+
+Un cordial saludo
+
+{responsible_title}
+{responsible_name}

@@ -1,0 +1,48 @@
+{% extends "base_icts.html" %}
+
+{% block title %}SIGMA IMP{% endblock %}
+{% block page_title %}Conversacion {{ proposal.access_code|default:proposal.id }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Conversacion</h2>
+  <p><strong>Solicitud:</strong> {{ proposal.access_code|default:proposal.id }} - {{ proposal.title }}</p>
+  <p><strong>Solicitante:</strong> {{ proposal.applicant }}</p>
+</div>
+
+<div class="card">
+  <h3>Mensajes</h3>
+  {% if messages %}
+    <div>
+      {% for msg in messages %}
+        <div class="card" style="margin-bottom:1rem;">
+          <div><strong>{{ msg.sender|default:"Sistema" }}</strong> - {{ msg.created_at }}</div>
+          <div style="margin-top:.5rem;white-space:pre-wrap;">{{ msg.body }}</div>
+          {% if msg.attachments.all %}
+            <div style="margin-top:.5rem;">
+              <strong>Adjuntos:</strong>
+              <ul>
+                {% for attachment in msg.attachments.all %}
+                  <li><a href="{{ attachment.file.url }}">{{ attachment.filename }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No hay mensajes todavia.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Nuevo mensaje</h3>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">Enviar</button>
+    <a class="btn btn-outline-secondary" href="{% url 'sigmaimp:imp_communications_list' %}">Volver</a>
+  </form>
+</div>
+{% endblock %}

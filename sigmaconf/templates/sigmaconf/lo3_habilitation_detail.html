@@ -1,0 +1,104 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Habilitación{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Habilitaciones{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_habilitation_list' %}">Habilitaciones</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{{ person_name|default:"Habilitación" }}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">{{ person_name|default:"Habilitación" }}</div>
+    <div class="lo3-page-meta">
+      <span>Equipo: {{ habilitation.equipment.name }}</span>
+      <span>Emisión: {{ habilitation.issued_at|date:"d/m/Y" }}</span>
+      {% if habilitation.valid_until %}
+        <span>Validez: {{ habilitation.valid_until|date:"d/m/Y" }}</span>
+      {% endif %}
+    </div>
+    <div style="margin-top: 0.75rem;">
+      {% if habilitation.status == "revoked" %}
+        <span class="lo3-badge lo3-badge--danger">Revocada</span>
+      {% else %}
+        <span class="lo3-badge lo3-badge--success">Activa</span>
+      {% endif %}
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_habilitation_list' %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+    {% if habilitation.certificate_pdf %}
+      <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_habilitation_download' habilitation.pk %}">
+        <i class="bi bi-file-earmark-pdf"></i>
+        Descargar certificado
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Datos del investigador</h2>
+      <div class="lo3-card-subtitle">Información de habilitación.</div>
+    </div>
+  </div>
+  <div class="lo3-stat-grid">
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ habilitation.ciemat_id|default:"-" }}</div>
+      <div class="lo3-stat-label">ID CIEMAT</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ habilitation.department_division|default:"-" }}</div>
+      <div class="lo3-stat-label">Departamento</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ habilitation.center_university|default:"-" }}</div>
+      <div class="lo3-stat-label">Centro</div>
+    </div>
+  </div>
+  {% if habilitation.revoke_reason %}
+    <div style="margin-top: 1.5rem;">
+      <strong>Motivo de revocación</strong>
+      <p class="text-muted">{{ habilitation.revoke_reason }}</p>
+    </div>
+  {% endif %}
+</div>
+
+{% if can_revoke and habilitation.status != "revoked" %}
+  <div class="lo3-card">
+    <div class="lo3-card-header">
+      <div>
+        <h2 class="lo3-card-title">Revocar habilitación</h2>
+        <div class="lo3-card-subtitle">Marca la habilitación como revocada.</div>
+      </div>
+    </div>
+    <form method="post" action="{% url 'sigmaconf:lo3_habilitation_revoke' habilitation.pk %}">
+      {% csrf_token %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+        <div>
+          <label for="revoke_reason" class="form-label">Motivo (opcional)</label>
+          <textarea name="revoke_reason" id="revoke_reason" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+      <div style="margin-top: 1rem;">
+        <button type="submit" class="lo3-btn lo3-btn-ghost">
+          <i class="bi bi-x-circle"></i>
+          Revocar
+        </button>
+      </div>
+    </form>
+  </div>
+{% endif %}
+{% endblock %}

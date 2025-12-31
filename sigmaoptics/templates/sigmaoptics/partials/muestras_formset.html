@@ -1,0 +1,31 @@
+{{ formset.management_form }}
+{% for form in formset %}
+  <div class="muestra-form">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="optics-form-group">
+          <label class="optics-form-label">
+            <i class="bi bi-tag"></i>
+            Identificación de la muestra
+          </label>
+          {{ form.identificacion }}
+          {% if form.identificacion.errors %}
+            <div class="text-danger">{{ form.identificacion.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="optics-form-group">
+          <label class="optics-form-label">
+            <i class="bi bi-file-text"></i>
+            Descripción
+          </label>
+          {{ form.descripcion }}
+          {% if form.descripcion.errors %}
+            <div class="text-danger">{{ form.descripcion.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}

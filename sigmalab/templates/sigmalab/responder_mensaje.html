@@ -1,0 +1,179 @@
+{% extends "base_dtf.html" %}
+{% block title %}Responder Mensaje - S-LAB{% endblock %}
+{% block page_title %}Responder Mensaje{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:800px; margin:0 auto;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <h3 style="margin:0;">Responder Mensaje</h3>
+    <a class="btn btn-outline-secondary" href="{% url 'sigmalab:detalle-mensaje' mensaje_original.id %}">
+      <i class="bi bi-arrow-left"></i> Volver al Mensaje
+    </a>
+  </div>
+
+  <!-- Mensaje original -->
+  <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:.5rem; padding:1rem; margin-bottom:1.5rem;">
+    <h4 style="margin:0 0 .75rem; color:#495057; font-size:1rem;">Mensaje Original:</h4>
+    <div style="background:#fff; border:1px solid #e9ecef; border-radius:.375rem; padding:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
+        <strong>{{ mensaje_original.remitente.get_full_name|default:mensaje_original.remitente.username }}</strong>
+        <span style="color:#6c757d; font-size:.85rem;">{{ mensaje_original.fecha_envio|date:"d/m/Y H:i" }}</span>
+      </div>
+      <div style="color:#495057; font-weight:500; margin-bottom:.5rem;">{{ mensaje_original.asunto }}</div>
+      <div style="color:#6c757d; font-size:.9rem; white-space: pre-wrap;">{{ mensaje_original.contenido|truncatewords:50 }}</div>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    
+    <!-- Destinatario -->
+    <div class="form-group">
+      <label for="{{ form.destinatario.id_for_label }}" class="form-label">{{ form.destinatario.label }}</label>
+      {{ form.destinatario }}
+      {% if form.destinatario.errors %}
+        <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+          {% for error in form.destinatario.errors %}{{ error }}{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Asunto -->
+    <div class="form-group">
+      <label for="{{ form.asunto.id_for_label }}" class="form-label">{{ form.asunto.label }}</label>
+      {{ form.asunto }}
+      {% if form.asunto.errors %}
+        <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+          {% for error in form.asunto.errors %}{{ error }}{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Tipo de mensaje -->
+    <div class="form-group">
+      <label for="{{ form.tipo_mensaje.id_for_label }}" class="form-label">{{ form.tipo_mensaje.label }}</label>
+      {{ form.tipo_mensaje }}
+      {% if form.tipo_mensaje.errors %}
+        <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+          {% for error in form.tipo_mensaje.errors %}{{ error }}{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Solicitud relacionada -->
+    <div class="form-group">
+      <label for="{{ form.solicitud.id_for_label }}" class="form-label">{{ form.solicitud.label }}</label>
+      {{ form.solicitud }}
+      {% if form.solicitud.errors %}
+        <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+          {% for error in form.solicitud.errors %}{{ error }}{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Contenido -->
+    <div class="form-group">
+      <label for="{{ form.contenido.id_for_label }}" class="form-label">{{ form.contenido.label }}</label>
+      {{ form.contenido }}
+      {% if form.contenido.errors %}
+        <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+          {% for error in form.contenido.errors %}{{ error }}{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Botones -->
+    <div style="display:flex; gap:.5rem; justify-content:flex-end; padding-top:1rem; border-top:1px solid #dee2e6;">
+      <a class="btn btn-outline-secondary" href="{% url 'sigmalab:detalle-mensaje' mensaje_original.id %}">
+        <i class="bi bi-x-circle"></i> Cancelar
+      </a>
+      <button type="submit" class="btn">
+        <i class="bi bi-send"></i> Enviar Respuesta
+      </button>
+    </div>
+  </form>
+</div>
+
+<style>
+/* Estilos generales */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-input:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-input::placeholder {
+  color: #6c757d;
+  opacity: 1;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  color: #fff;
+  background-color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  background-color: transparent;
+  border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+</style>
+{% endblock %}

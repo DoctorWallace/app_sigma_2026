@@ -1,0 +1,88 @@
+{% extends "base_dtf.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-hand-holding me-2"></i>{{ titulo }}
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.equipo.id_for_label }}" class="form-label">
+                                {{ form.equipo.label }}
+                            </label>
+                            {{ form.equipo|add_class:"form-control" }}
+                            {% if form.equipo.errors %}
+                                <div class="text-danger">{{ form.equipo.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.dias_prestamo.id_for_label }}" class="form-label">
+                                {{ form.dias_prestamo.label }}
+                            </label>
+                            {{ form.dias_prestamo|add_class:"form-control" }}
+                            {% if form.dias_prestamo.errors %}
+                                <div class="text-danger">{{ form.dias_prestamo.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                Máximo 30 días de préstamo.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.proposito_uso.id_for_label }}" class="form-label">
+                                {{ form.proposito_uso.label }}
+                            </label>
+                            {{ form.proposito_uso|add_class:"form-control" }}
+                            {% if form.proposito_uso.errors %}
+                                <div class="text-danger">{{ form.proposito_uso.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones_prestamo.id_for_label }}" class="form-label">
+                                {{ form.observaciones_prestamo.label }}
+                            </label>
+                            {{ form.observaciones_prestamo|add_class:"form-control" }}
+                            {% if form.observaciones_prestamo.errors %}
+                                <div class="text-danger">{{ form.observaciones_prestamo.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Información importante:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>El préstamo será notificado automáticamente al técnico responsable.</li>
+                                <li>Debes devolver el equipo en la fecha estimada.</li>
+                                <li>Si no devuelves el equipo a tiempo, tu cuenta puede ser bloqueada.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'sigmalab:equipos_lista' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-hand-holding me-1"></i>Solicitar Préstamo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

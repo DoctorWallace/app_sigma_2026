@@ -1,0 +1,42 @@
+{% extends "base_dtf.html" %}
+{% block title %}Σ-LAB · Dashboard{% endblock %}
+{% block page_title %}Σ-LAB · Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+  .stats-grid{
+    display:grid; gap:1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .stat-card{
+    background:var(--bg-card); border:1px solid var(--border);
+    border-radius:1rem; padding:1.25rem; box-shadow:var(--shadow);
+  }
+  .stat-title{ color:var(--text-secondary); margin:0 0 .25rem; font-weight:700 }
+  .stat-value{ font-size:1.8rem; font-weight:900; margin:0 }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h2 style="margin-bottom:.75rem;">Resumen</h2>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <p class="stat-title">Total de muestras</p>
+        <p class="stat-value">{{ total }}</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-title">Mis muestras</p>
+        <p class="stat-value">{{ mine }}</p>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+      <a class="cta" href="{% url 'sigmalab:sample-list' %}">Ver muestras</a>
+      <a class="cta" href="{% url 'sigmalab:sample-create' %}" style="background:var(--accent)">Nueva muestra</a>
+      <a class="cta" href="/dtf/">← Volver a DTF</a>
+    </div>
+  </div>
+{% endblock %}
+

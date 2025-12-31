@@ -1,0 +1,178 @@
+{% extends "base_icts.html" %}
+{% load static %}
+
+{% block title %}Lista de Solicitudes Confocal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-list-ul"></i> Lista de Solicitudes Confocal
+                </h1>
+                <a href="{% url 'sigmaconf:solicitud_create' %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Nueva Solicitud
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select name="estado" id="estado" class="form-select">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente" {% if estado_filter == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                <option value="aceptada" {% if estado_filter == 'aceptada' %}selected{% endif %}>Aceptada</option>
+                                <option value="en_curso" {% if estado_filter == 'en_curso' %}selected{% endif %}>En Curso</option>
+                                <option value="finalizada" {% if estado_filter == 'finalizada' %}selected{% endif %}>Finalizada</option>
+                                <option value="rechazada" {% if estado_filter == 'rechazada' %}selected{% endif %}>Rechazada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tipo_microscopia" class="form-label">Tipo de Microscopía</label>
+                            <select name="tipo_microscopia" id="tipo_microscopia" class="form-select">
+                                <option value="">Todos los tipos</option>
+                                <option value="confocal_laser" {% if tipo_filter == 'confocal_laser' %}selected{% endif %}>Confocal Láser</option>
+                                <option value="confocal_spinning" {% if tipo_filter == 'confocal_spinning' %}selected{% endif %}>Confocal Spinning Disk</option>
+                                <option value="super_resolucion" {% if tipo_filter == 'super_resolucion' %}selected{% endif %}>Super Resolución</option>
+                                <option value="multifoton" {% if tipo_filter == 'multifoton' %}selected{% endif %}>Multifotón</option>
+                                <option value="otra" {% if tipo_filter == 'otra' %}selected{% endif %}>Otra</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Búsqueda</label>
+                            <input type="text" name="search" id="search" class="form-control" 
+                                   placeholder="Buscar por material, procedencia, solicitante..." 
+                                   value="{{ search }}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de solicitudes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-file-text"></i> Solicitudes ({{ page_obj.paginator.count }} total)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if page_obj %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Material</th>
+                                        <th>Tipo</th>
+                                        <th>Solicitante</th>
+                                        <th>Estado</th>
+                                        <th>Técnico</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for solicitud in page_obj %}
+                                    <tr>
+                                        <td>CONF#{{ solicitud.pk }}</td>
+                                        <td>{{ solicitud.material|truncatechars:30 }}</td>
+                                        <td>{{ solicitud.get_tipo_microscopia_display }}</td>
+                                        <td>{{ solicitud.solicitante.get_full_name }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if solicitud.estado == 'pendiente' %}bg-warning
+                                                {% elif solicitud.estado == 'aceptada' %}bg-info
+                                                {% elif solicitud.estado == 'en_curso' %}bg-primary
+                                                {% elif solicitud.estado == 'finalizada' %}bg-success
+                                                {% elif solicitud.estado == 'rechazada' %}bg-danger
+                                                {% endif %}">
+                                                {{ solicitud.get_estado_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if solicitud.tecnico_asignado %}
+                                                {{ solicitud.tecnico_asignado.get_full_name }}
+                                            {% else %}
+                                                <span class="text-muted">Sin asignar</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ solicitud.creado_en|date:"d/m/Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'sigmaconf:solicitud_detail' solicitud.pk %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if page_obj.has_other_pages %}
+                        <nav aria-label="Paginación de solicitudes">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if tipo_filter %}&tipo_microscopia={{ tipo_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if tipo_filter %}&tipo_microscopia={{ tipo_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if tipo_filter %}&tipo_microscopia={{ tipo_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if tipo_filter %}&tipo_microscopia={{ tipo_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Última</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-muted"></i>
+                            <h5 class="text-muted mt-3">No se encontraron solicitudes</h5>
+                            <p class="text-muted">No hay solicitudes que coincidan con los filtros aplicados.</p>
+                            <a href="{% url 'sigmaconf:solicitud_create' %}" class="btn btn-success">
+                                <i class="bi bi-plus-circle"></i> Crear Primera Solicitud
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

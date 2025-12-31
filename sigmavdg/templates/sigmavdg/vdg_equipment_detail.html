@@ -1,0 +1,237 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Equipo {{ equipment.code }}{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Ficha de equipo{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_equipment_list' %}">Fichas de equipos</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>{{ equipment.code }}</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-page-header">
+  <div>
+    <div class="vdg-page-title">Equipo {{ equipment.code }}</div>
+    <div class="vdg-page-meta">
+      <span>{{ equipment.description|default:"Sin descripcion" }}</span>
+      {% if equipment.is_reference %}
+        <span class="vdg-badge vdg-badge--info">Patron</span>
+      {% endif %}
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a class="vdg-btn vdg-btn-secondary" href="{% url 'sigmavdg:vdg_equipment_list' %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+    {% if can_edit %}
+      <a class="vdg-btn vdg-btn-primary" href="{% url 'sigmavdg:vdg_equipment_edit' equipment.id %}">
+        <i class="bi bi-pencil-square"></i>
+        Editar ficha
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+  <a class="vdg-btn vdg-btn-ghost" href="#ficha">Ficha</a>
+  <a class="vdg-btn vdg-btn-ghost" href="#documentos">Documentos</a>
+  <a class="vdg-btn vdg-btn-ghost" href="#incidencias">Incidencias</a>
+</div>
+
+<div id="ficha" class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Ficha tecnica</h2>
+      <div class="vdg-card-subtitle">Datos principales del equipo.</div>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="vdg-table">
+      <tbody>
+        <tr><th>Codigo</th><td>{{ equipment.code }}</td></tr>
+        <tr><th>Descripcion</th><td>{{ equipment.description|default:"-" }}</td></tr>
+        <tr><th>Responsable</th><td>{{ equipment.responsible|default:"-" }}</td></tr>
+        <tr><th>Localizacion</th><td>{{ equipment.location|default:"-" }}</td></tr>
+        <tr><th>Fecha recepcion</th><td>{{ equipment.received_date|date:"d/m/Y"|default:"-" }}</td></tr>
+        <tr><th>Fecha baja</th><td>{{ equipment.decommission_date|date:"d/m/Y"|default:"-" }}</td></tr>
+        <tr><th>Marca</th><td>{{ equipment.brand|default:"-" }}</td></tr>
+        <tr><th>Modelo</th><td>{{ equipment.model|default:"-" }}</td></tr>
+        <tr><th>Serie</th><td>{{ equipment.serial_number|default:"-" }}</td></tr>
+        <tr><th>Rango</th><td>{{ equipment.range|default:"-" }}</td></tr>
+        <tr><th>Resolucion</th><td>{{ equipment.resolution|default:"-" }}</td></tr>
+        <tr><th>Tolerancia</th><td>{{ equipment.tolerance|default:"-" }}</td></tr>
+        <tr><th>Observaciones</th><td>{{ equipment.observations|default:"-" }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="documentos" class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Documentos</h2>
+      <div class="vdg-card-subtitle">Certificados y documentos asociados.</div>
+    </div>
+  </div>
+
+  {% if documents %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Notas</th>
+            <th>Archivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in documents %}
+            <tr>
+              <td>{{ doc.get_doc_type_display }}</td>
+              <td>{{ doc.date|date:"d/m/Y"|default:"-" }}</td>
+              <td>{{ doc.notes|default:"-" }}</td>
+              <td>
+                <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_equipment_document_download' doc.id %}">
+                  <i class="bi bi-download"></i>
+                  Descargar
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vdg-empty">
+      <i class="bi bi-file-earmark"></i>
+      <div>No hay documentos registrados.</div>
+    </div>
+  {% endif %}
+
+  {% if can_edit %}
+    <div style="margin-top: 1.5rem;">
+      <h3 class="vdg-card-title" style="font-size: 1rem;">Subir documento</h3>
+      <form method="post" action="{% url 'sigmavdg:vdg_equipment_document_add' equipment.id %}" enctype="multipart/form-data" style="margin-top: 1rem;">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+          <div>
+            {{ document_form.doc_type.label_tag }}
+            {{ document_form.doc_type }}
+          </div>
+          <div>
+            {{ document_form.date.label_tag }}
+            {{ document_form.date }}
+          </div>
+          <div>
+            {{ document_form.file.label_tag }}
+            {{ document_form.file }}
+          </div>
+          <div style="grid-column: 1 / -1;">
+            {{ document_form.notes.label_tag }}
+            {{ document_form.notes }}
+          </div>
+        </div>
+        <div style="margin-top: 1rem;">
+          <button type="submit" class="vdg-btn vdg-btn-primary">
+            <i class="bi bi-upload"></i>
+            Subir documento
+          </button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+</div>
+
+<div id="incidencias" class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Incidencias</h2>
+      <div class="vdg-card-subtitle">Registro de incidencias asociadas al equipo.</div>
+    </div>
+  </div>
+
+  {% if incidents %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Severidad</th>
+            <th>Estado</th>
+            <th>Descripcion</th>
+            <th>Adjunto</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for incident in incidents %}
+            <tr>
+              <td>{{ incident.date|date:"d/m/Y" }}</td>
+              <td>{{ incident.get_severity_display }}</td>
+              <td>{{ incident.get_status_display }}</td>
+              <td>{{ incident.description|truncatechars:80 }}</td>
+              <td>
+                {% if incident.attachment %}
+                  <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_equipment_incident_download' incident.id %}">
+                    <i class="bi bi-download"></i>
+                    Descargar
+                  </a>
+                {% else %}
+                  <span class="vdg-badge vdg-badge--muted">Sin archivo</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vdg-empty">
+      <i class="bi bi-exclamation-circle"></i>
+      <div>No hay incidencias registradas.</div>
+    </div>
+  {% endif %}
+
+  {% if can_edit %}
+    <div style="margin-top: 1.5rem;">
+      <h3 class="vdg-card-title" style="font-size: 1rem;">Registrar incidencia</h3>
+      <form method="post" action="{% url 'sigmavdg:vdg_equipment_incident_add' equipment.id %}" enctype="multipart/form-data" style="margin-top: 1rem;">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+          <div>
+            {{ incident_form.date.label_tag }}
+            {{ incident_form.date }}
+          </div>
+          <div>
+            {{ incident_form.severity.label_tag }}
+            {{ incident_form.severity }}
+          </div>
+          <div>
+            {{ incident_form.status.label_tag }}
+            {{ incident_form.status }}
+          </div>
+          <div>
+            {{ incident_form.attachment.label_tag }}
+            {{ incident_form.attachment }}
+          </div>
+          <div style="grid-column: 1 / -1;">
+            {{ incident_form.description.label_tag }}
+            {{ incident_form.description }}
+          </div>
+        </div>
+        <div style="margin-top: 1rem;">
+          <button type="submit" class="vdg-btn vdg-btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Registrar incidencia
+          </button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

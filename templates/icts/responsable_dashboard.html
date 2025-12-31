@@ -1,0 +1,262 @@
+{% extends 'icts/base_generic.html' %}
+
+{% block title %}Panel del Responsable{% endblock %}
+{% block page_title %}👨‍💼 Panel del Responsable{% endblock %}
+
+{% block page_content %}
+<!-- Estadísticas generales -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">📊 Resumen General</h2>
+  </div>
+  
+  <div class="d-flex gap-4" style="flex-wrap: wrap; margin-bottom: 1rem;">
+    <div class="badge blue">Borradores: {{ stats.draft }}</div>
+    <div class="badge yellow">Enviadas: {{ stats.submitted }}</div>
+    <div class="badge info">En revisión: {{ stats.under_review }}</div>
+    <div class="badge green">Aprobadas: {{ stats.approved }}</div>
+    <div class="badge red">Rechazadas: {{ stats.rejected }}</div>
+  </div>
+</div>
+
+<!-- Semáforo de revisiones -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">🚦 Semáforo de Revisiones</h2>
+    <p class="muted">Estado de las propuestas según número de revisiones recibidas</p>
+  </div>
+  
+  <div class="d-flex gap-4" style="flex-wrap: wrap;">
+    <div class="badge red">
+      🔴 0 revisiones: {{ review_buckets.rojo_0 }}
+    </div>
+    <div class="badge yellow">
+      🟡 1–3 revisiones: {{ review_buckets.amarillo_1_3 }}
+    </div>
+    <div class="badge green">
+      🟢 ≥4 revisiones (puedes decidir): {{ review_buckets.verde_4mas }}
+    </div>
+  </div>
+  
+  {% if review_buckets.rojo_0 > 0 %}
+    <div class="alert warning mt-4">
+      <strong>⚠️ Atención:</strong> Hay {{ review_buckets.rojo_0 }} propuestas sin revisiones. 
+      Considera asignar más revisores o contactar con los revisores actuales.
+    </div>
+  {% endif %}
+</div>
+
+<!-- Propuestas pendientes de decisión -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">⏳ Pendientes de Decisión</h2>
+    <p class="muted">Propuestas que requieren tu decisión final</p>
+  </div>
+  
+  {% if pendientes %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Solicitante</th>
+            <th>Revisiones</th>
+            <th>Revisores que han valorado</th>
+            <th>Creada</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in pendientes %}
+          <tr>
+            <td><strong>#{{ p.id }}</strong></td>
+            <td>
+              <strong>{{ p.title }}</strong>
+              {% if p.scope %}
+                <br><small class="muted">{{ p.scope|truncatechars:100 }}</small>
+              {% endif %}
+            </td>
+            <td>
+              {{ p.applicant.get_full_name|default:p.applicant.username }}
+              <br><small class="muted">{{ p.applicant.email }}</small>
+            </td>
+            <td>
+              {% if p.num_reviews >= 4 %}
+                <span class="badge green">{{ p.num_reviews }}</span>
+              {% elif p.num_reviews >= 1 %}
+                <span class="badge yellow">{{ p.num_reviews }}</span>
+              {% else %}
+                <span class="badge red">0</span>
+              {% endif %}
+            </td>
+            <td>
+              <small class="muted">{{ p.reviewers_done }}</small>
+            </td>
+            <td>
+              <small>{{ p.created_at|date:"Y-m-d H:i" }}</small>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <a href="{% url 'icts:proposal_detail' p.id %}" class="btn btn-primary">
+                  👁️ Ver
+                </a>
+                {% if p.num_reviews >= 4 %}
+                  <a href="{% url 'icts:proposal_decide' p.id %}" class="btn btn-success">
+                    ⚖️ Decidir
+                  </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert info">
+      <strong>✅ No hay propuestas pendientes</strong><br>
+      Todas las propuestas han sido procesadas o están en proceso de revisión.
+    </div>
+  {% endif %}
+</div>
+
+<!-- Últimas decisiones -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">📋 Últimas Decisiones</h2>
+    <p class="muted">Historial de decisiones recientes</p>
+  </div>
+  
+  {% if ultimas %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Decisión</th>
+            <th>Responsable</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in ultimas %}
+          <tr>
+            <td><strong>#{{ d.id }}</strong></td>
+            <td>
+              <strong>{{ d.title }}</strong>
+              {% if d.scope %}
+                <br><small class="muted">{{ d.scope|truncatechars:100 }}</small>
+              {% endif %}
+            </td>
+            <td>
+              {% if d.status == 'accepted' %}
+                <span class="badge green">✅ Aprobada</span>
+              {% else %}
+                <span class="badge red">❌ Rechazada</span>
+              {% endif %}
+            </td>
+            <td>
+              {{ d.applicant.get_full_name|default:d.applicant.username }}
+            </td>
+            <td>
+              <small>{{ d.created_at|date:"Y-m-d H:i" }}</small>
+            </td>
+            <td>
+              <a href="{% url 'icts:proposal_detail' d.id %}" class="btn btn-secondary">
+                👁️ Ver
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert info">
+      <strong>📝 Sin decisiones registradas</strong><br>
+      Aún no se han tomado decisiones finales sobre propuestas.
+    </div>
+  {% endif %}
+</div>
+
+<!-- Estadísticas de revisión por revisor -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">👥 Actividad de Revisores</h2>
+    <p class="muted">Rendimiento de los revisores del sistema</p>
+  </div>
+  
+  {% if reviewer_stats %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Revisor</th>
+            <th>Revisiones Completadas</th>
+            <th>Pendientes</th>
+            <th>Última Actividad</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reviewer in reviewer_stats %}
+          <tr>
+            <td>
+              <strong>{{ reviewer.user.get_full_name|default:reviewer.user.username }}</strong>
+              <br><small class="muted">{{ reviewer.user.email }}</small>
+            </td>
+            <td>
+              <span class="badge green">{{ reviewer.completed_reviews }}</span>
+            </td>
+            <td>
+              {% if reviewer.pending_reviews > 0 %}
+                <span class="badge yellow">{{ reviewer.pending_reviews }}</span>
+              {% else %}
+                <span class="badge green">0</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if reviewer.last_review %}
+                <small>{{ reviewer.last_review|date:"Y-m-d H:i" }}</small>
+              {% else %}
+                <small class="muted">Sin actividad</small>
+              {% endif %}
+            </td>
+            <td>
+              {% if reviewer.pending_reviews > 3 %}
+                <span class="badge red">Sobrecargado</span>
+              {% elif reviewer.pending_reviews > 0 %}
+                <span class="badge yellow">Activo</span>
+              {% else %}
+                <span class="badge green">Disponible</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert info">
+      <strong>👥 Sin datos de revisores</strong><br>
+      No hay información de actividad de revisores disponible.
+    </div>
+  {% endif %}
+</div>
+
+<!-- Acciones rápidas -->
+<div class="actions">
+  <a href="{% url 'icts:manager_dashboard' %}" class="btn btn-primary">
+    📊 Dashboard Manager
+  </a>
+  <a href="{% url 'icts:users_admin' %}" class="btn btn-secondary">
+    👥 Gestión de Usuarios
+  </a>
+  <a href="{% url 'icts:dashboard' %}" class="btn btn-secondary">
+    🏠 Volver al Dashboard
+  </a>
+</div>
+{% endblock %}

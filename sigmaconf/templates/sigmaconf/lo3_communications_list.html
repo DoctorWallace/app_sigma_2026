@@ -1,0 +1,79 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Comunicaciones LO3{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Comunicaciones con el cliente{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  {% if lo3_is_tech %}
+    <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+    <span class="lo3-breadcrumbs-sep">/</span>
+  {% endif %}
+  <span>Comunicaciones</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Comunicaciones</h2>
+      <div class="lo3-card-subtitle">Mensajes organizados por solicitud aceptada.</div>
+    </div>
+  </div>
+
+  {% if entries %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Solicitud</th>
+            <th>Propuesta</th>
+            <th>Solicitante</th>
+            <th>Último mensaje</th>
+            <th>No leídos</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+            <tr>
+              <td><strong>{{ entry.proposal.access_code|default:"-" }}</strong></td>
+              <td>{{ entry.proposal.title|default:"(Sin título)" }}</td>
+              <td>{{ entry.proposal.applicant.get_full_name|default:entry.proposal.applicant.username }}</td>
+              <td>
+                {% if entry.last_message %}
+                  <div class="text-muted small">{{ entry.last_message.created_at|date:"d/m/Y H:i" }}</div>
+                  <div>{{ entry.last_message.body|truncatechars:80 }}</div>
+                {% else %}
+                  <span class="text-muted">Sin mensajes</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if entry.unread_count %}
+                  <span class="lo3-badge lo3-badge--warning">{{ entry.unread_count }}</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--muted">0</span>
+                {% endif %}
+              </td>
+              <td>
+                <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_communications_detail' entry.proposal.pk %}">
+                  <i class="bi bi-chat-dots"></i>
+                  Ver conversación
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-chat-dots"></i>
+      <div>No hay comunicaciones disponibles.</div>
+      <small>Las solicitudes aceptadas aparecerán aquí.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

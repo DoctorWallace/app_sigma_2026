@@ -1,0 +1,40 @@
+{
+  "document": "mcf_register",
+  "revision": "REV001",
+  "headers": [
+    "Código solicitud",
+    "Lote (MCF-aa-nnn)",
+    "Identificación muestra",
+    "Fecha recepción",
+    "Fecha análisis",
+    "Operador",
+    "Rugosidad",
+    "Imagen 2D",
+    "Imagen 3D",
+    "Espesor",
+    "Fecha devolución",
+    "Informe",
+    "Fecha entrega informe",
+    "Observaciones",
+    "I1",
+    "I2"
+  ],
+  "fields": {
+    "Código solicitud": "access_proposal.access_code",
+    "Lote (MCF-aa-nnn)": "lot_code",
+    "Identificación muestra": "samples.identification",
+    "Fecha recepción": "samples.received_date",
+    "Fecha análisis": "samples.analysis_date",
+    "Operador": "samples.operator_name",
+    "Rugosidad": "samples.roughness",
+    "Imagen 2D": "samples.image_2d",
+    "Imagen 3D": "samples.image_3d",
+    "Espesor": "samples.thickness",
+    "Fecha devolución": "samples.return_date",
+    "Informe": "samples.report_code || session.report_code",
+    "Fecha entrega informe": "samples.report_delivery_date",
+    "Observaciones": "samples.observations",
+    "I1": "samples.indicator_i1",
+    "I2": "samples.indicator_i2"
+  }
+}

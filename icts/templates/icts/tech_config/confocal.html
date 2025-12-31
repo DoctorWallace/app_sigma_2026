@@ -1,0 +1,81 @@
+{% extends "icts/tech_config/base_tech_config.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+  .tech-header {
+    background: linear-gradient(135deg, #e83e8c, #c2185b);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tech-config-container">
+  <div class="tech-header">
+    <h1>
+      <i class="bi bi-binoculars tech-icon"></i>
+      Configurar Metrología de superficies ópticas 3D
+    </h1>
+  </div>
+  
+  <div class="tech-content">
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle"></i>
+      <div>
+        <strong>Configuración LO3</strong><br>
+        Completa la información específica para metrología óptica 3D.
+      </div>
+    </div>
+    
+    <form method="post" id="tech-config-form">
+      {% csrf_token %}
+      <input type="hidden" name="tech_slug" value="confocal">
+      
+      <div class="form-section">
+        <h3><i class="bi bi-binoculars"></i> Parámetros LO3</h3>
+        {% include "icts/forms/_confocal.html" %}
+      </div>
+      
+      <div class="action-buttons">
+        <a href="{% url 'icts:proposal_create' %}" class="btn-back">
+          <i class="bi bi-arrow-left"></i> Volver al Formulario
+        </a>
+        <button type="submit" class="btn-save-tech">
+          <i class="bi bi-check-circle"></i> Guardar configuración
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('tech-config-form');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = form.querySelector('.btn-save-tech');
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Guardando...';
+    submitBtn.disabled = true;
+    
+    setTimeout(() => {
+      const formData = new FormData(form);
+      const techData = {};
+      
+      for (let [key, value] of formData.entries()) {
+        if (key !== 'csrfmiddlewaretoken' && key !== 'tech_slug') {
+          techData[key] = value;
+        }
+      }
+      
+      sessionStorage.setItem('tech_config_confocal', JSON.stringify(techData));
+      alert('¡Configuración LO3 guardada correctamente!');
+      window.location.href = "{% url 'icts:proposal_create' %}";
+    }, 1000);
+  });
+});
+</script>
+{% endblock %}
+
+

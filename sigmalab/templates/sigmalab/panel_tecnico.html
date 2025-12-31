@@ -1,0 +1,198 @@
+{% extends "base_dtf.html" %}
+{% block title %}S-LAB · Panel de Técnico{% endblock %}
+{% block page_title %}S-LAB · Panel de Técnico{% endblock %}
+
+{% block content %}
+<!-- Navegación principal -->
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;align-items:center;justify-content:space-between">
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <a class="btn" href="{% url 'sigmalab:bandeja-tecnico' %}"><i class="bi bi-inbox"></i> Bandeja</a>
+      <a class="btn btn-secondary" href="{% url 'sigmalab:todas-solicitudes' %}"><i class="bi bi-list-check"></i> Todas</a>
+      <a class="btn" href="{% url 'sigmalab:usuarios-overview' %}"><i class="bi bi-people"></i> Usuarios</a>
+      <a class="btn btn-outline-primary" href="{% url 'sigmalab:gestionar-becarios' %}"><i class="bi bi-person-plus"></i> Usuarios Externos</a>
+      <a class="btn btn-success" href="{% url 'sigmalab:indicadores_calidad' %}"><i class="bi bi-graph-up-arrow"></i> Indicadores</a>
+    </div>
+    <div class="chip" style="background:#eef2ff;border-color:#c7d2fe">Panel de técnico S-LAB</div>
+  </div>
+</div>
+
+<!-- Resumen del perfil del usuario -->
+<div class="card" style="margin-bottom:1rem;">
+  <h3 style="margin-bottom:.75rem"><i class="bi bi-person-circle"></i> Resumen del Perfil</h3>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+    <div class="profile-item">
+      <div class="profile-label">Nombre</div>
+      <div class="profile-value">{{ user.get_full_name|default:user.username }}</div>
+    </div>
+    <div class="profile-item">
+      <div class="profile-label">Email</div>
+      <div class="profile-value">{{ user.email }}</div>
+    </div>
+    <div class="profile-item">
+      <div class="profile-label">Último acceso</div>
+      <div class="profile-value">{{ user.last_login|date:"d/m/Y H:i"|default:"Nunca" }}</div>
+    </div>
+    <div class="profile-item">
+      <div class="profile-label">Estado</div>
+      <div class="profile-value">
+        {% if user.is_active %}
+          <span class="status-badge status-active">Activo</span>
+        {% else %}
+          <span class="status-badge status-inactive">Inactivo</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Resumen de solicitudes -->
+<div class="card" style="margin-bottom:1rem;">
+  <h3 style="margin-bottom:.75rem"><i class="bi bi-graph-up"></i> Resumen de Solicitudes</h3>
+  <div class="kpi-grid">
+    <div class="kpi kpi-pending"><div class="num">{{ contadores.pendientes }}</div><div class="lbl">Pendientes</div></div>
+    <div class="kpi kpi-accepted"><div class="num">{{ contadores.aceptadas }}</div><div class="lbl">Aceptadas</div></div>
+    <div class="kpi kpi-inprogress"><div class="num">{{ contadores.en_curso|default:0 }}</div><div class="lbl">En curso</div></div>
+    <div class="kpi kpi-rejected"><div class="num">{{ contadores.rechazadas }}</div><div class="lbl">Rechazadas</div></div>
+  </div>
+</div>
+
+<!-- Últimas 3 solicitudes recientes -->
+<div class="card" style="margin-bottom:1rem;">
+  <h3 style="margin-bottom:.75rem"><i class="bi bi-clock-history"></i> Últimas 3 Solicitudes Recientes</h3>
+  <div class="recent-list">
+    {% for s in recientes|slice:":3" %}
+      <div class="recent-item">
+        <div class="recent-info">
+          <div class="recent-title">
+            SOL#{{ s.id }} · {{ s.solicitante.first_name }} {{ s.solicitante.last_name|default:s.solicitante.username }}
+            {% if s.becario_asociado %}
+              <span class="becario-badge">({{ s.becario_asociado.nombre_completo }})</span>
+            {% endif %}
+          </div>
+          <div class="recent-meta">
+            <span class="badge badge-{{ s.estado }}">{{ s.get_estado_display }}</span> · 
+            {{ s.creado_en|date:"d/m/Y H:i" }}
+            {% if s.material %}
+              · {{ s.material|truncatechars:30 }}
+            {% endif %}
+          </div>
+        </div>
+        <div class="recent-actions">
+          <a class="btn btn-sm" href="{% url 'sigmalab:detalle-solicitud' s.id %}">Ver</a>
+          {% if s.estado == 'aceptada' %}
+            <a class="btn btn-sm btn-success" href="{% url 'sigmalab:entrar-laboratorio-solicitud' s.id %}">
+              <i class="bi bi-door-open"></i> Entrar al Lab
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="muted">No hay solicitudes recientes.</div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Resumen de incidencias -->
+<div class="card" style="margin-bottom:1rem;">
+  <h3 style="margin-bottom:.75rem"><i class="bi bi-exclamation-triangle"></i> Resumen de Incidencias</h3>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1rem;">
+    <div class="incident-item">
+      <div class="incident-number">{{ incidencias_abiertas|default:0 }}</div>
+      <div class="incident-label">Abiertas</div>
+    </div>
+    <div class="incident-item">
+      <div class="incident-number">{{ incidencias_en_proceso|default:0 }}</div>
+      <div class="incident-label">En proceso</div>
+    </div>
+    <div class="incident-item">
+      <div class="incident-number">{{ incidencias_resueltas|default:0 }}</div>
+      <div class="incident-label">Resueltas</div>
+    </div>
+  </div>
+  <div style="margin-top:1rem;">
+    <a class="btn btn-outline-warning" href="{% url 'sigmalab:reportar-incidencia' %}">
+      <i class="bi bi-plus-circle"></i> Reportar Incidencia
+    </a>
+    <a class="btn btn-outline-info" href="{% url 'sigmalab:inbox-incidencias' %}">
+      <i class="bi bi-inbox"></i> Ver Todas
+    </a>
+  </div>
+</div>
+
+<!-- Acceso directo a laboratorio -->
+<div class="card">
+  <h3 style="margin-bottom:.75rem"><i class="bi bi-door-open"></i> Acceso Directo al Laboratorio</h3>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+    <div class="lab-access-item">
+      <h4>Solicitudes Aceptadas</h4>
+      <p>Gestionar solicitudes listas para iniciar trabajo</p>
+      <a class="btn btn-success" href="{% url 'sigmalab:solicitudes-aceptadas' %}">
+        <i class="bi bi-play-circle"></i> Ver Aceptadas
+      </a>
+    </div>
+    <div class="lab-access-item">
+      <h4>Entrada al Laboratorio</h4>
+      <p>Marcar inicio de trabajo en muestras</p>
+      <a class="btn btn-primary" href="{% url 'sigmalab:entrar-laboratorio' %}">
+        <i class="bi bi-door-open"></i> Entrar al Lab
+      </a>
+      <a class="btn btn-outline-primary" href="{% url 'sigmalab:inbox-mensajes' %}">
+        <i class="bi bi-envelope"></i> Mensajes
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem}
+.kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:.75rem;padding:1rem;text-align:center;box-shadow:var(--shadow)}
+.kpi .num{font-size:2rem;font-weight:900}
+.kpi .lbl{color:#4a5568;font-weight:700}
+.kpi-pending{border-left:4px solid #ffc107}
+.kpi-accepted{border-left:4px solid #28a745}
+.kpi-inprogress{border-left:4px solid #17a2b8}
+.kpi-rejected{border-left:4px solid #dc3545}
+
+/* Perfil del usuario */
+.profile-item{background:#f8f9fa;border:1px solid #dee2e6;border-radius:.5rem;padding:1rem;text-align:center}
+.profile-label{font-size:.875rem;color:#6c757d;font-weight:600;margin-bottom:.25rem}
+.profile-value{font-weight:700;color:#495057}
+.status-badge{padding:.25rem .5rem;border-radius:.25rem;font-size:.75rem;font-weight:600}
+.status-active{background:#d4edda;color:#155724}
+.status-inactive{background:#f8d7da;color:#721c24}
+
+/* Solicitudes recientes */
+.recent-list{display:flex;flex-direction:column;gap:.75rem}
+.recent-item{display:flex;justify-content:space-between;gap:1rem;align-items:center;border:1px solid var(--border);border-radius:.5rem;padding:1rem;background:var(--bg-main)}
+.recent-title{font-weight:700}
+.recent-meta{color:#4a5568;font-size:.875rem}
+.badge{padding:.25rem .5rem;border-radius:.35rem;font-size:.75rem;font-weight:600}
+.badge-pendiente{background:#fff3cd;color:#856404}
+.badge-aceptada{background:#d4edda;color:#155724}
+.badge-en_curso{background:#cce5ff;color:#004085}
+.badge-rechazada{background:#f8d7da;color:#721c24}
+.badge-finalizada{background:#d1ecf1;color:#0c5460}
+.becario-badge{background:#e3f2fd;color:#1976d2;padding:.125rem .375rem;border-radius:.25rem;font-size:.75rem;font-weight:600}
+
+/* Incidencias */
+.incident-item{background:#fff3cd;border:1px solid #ffeaa7;border-radius:.5rem;padding:1rem;text-align:center}
+.incident-number{font-size:1.5rem;font-weight:900;color:#856404}
+.incident-label{color:#856404;font-weight:600;font-size:.875rem}
+
+/* Acceso al laboratorio */
+.lab-access-item{background:#e3f2fd;border:1px solid #bbdefb;border-radius:.5rem;padding:1.5rem;text-align:center}
+.lab-access-item h4{margin:0 0 .5rem;color:#1976d2}
+.lab-access-item p{margin:0 0 1rem;color:#424242;font-size:.875rem}
+
+/* Botones pequeños */
+.btn-sm{padding:.375rem .75rem;font-size:.875rem;border-radius:.25rem}
+
+/* Responsive */
+@media (max-width:768px) {
+  .recent-item{flex-direction:column;align-items:stretch;gap:.5rem}
+  .recent-actions{display:flex;gap:.5rem;justify-content:center}
+}
+</style>
+{% endblock %}

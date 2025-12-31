@@ -1,0 +1,49 @@
+{% extends "base_icts.html" %}
+{% block title %}{{ facility }} · Información{% endblock %}
+{% block page_title %}{{ facility }}{% endblock %}
+
+{% block content %}
+{% if facility_template %}
+  <!-- Botón de volver -->
+  <div class="container" style="margin-bottom:1rem;">
+    <a href="{% url 'icts:home' %}" class="chip" style="text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:999px;color:var(--text);background:var(--bg-card);transition:all 0.2s;font-weight:600;box-shadow:var(--shadow)">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
+  
+  <!-- Template específico de la instalación -->
+  {% include facility_template %}
+  
+  <!-- Botón de volver (final) -->
+  <div class="container" style="margin-top:2rem; text-align:center;">
+    <a href="{% url 'icts:home' %}" class="chip" style="text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;padding:.65rem 1.25rem;border:1px solid var(--border);border-radius:999px;color:var(--text);background:var(--bg-card);transition:all 0.2s;font-weight:600">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
+{% else %}
+  <!-- Template genérico para instalaciones sin información específica -->
+  <div class="card" style="max-width:900px;margin:0 auto">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
+      <a href="javascript:history.back()" class="chip" style="text-decoration:none;display:inline-flex;align-items:center;padding:.35rem .65rem;border:1px solid var(--border);border-radius:999px;color:var(--text);background:var(--bg-card)">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
+    </div>
+
+    <h3 style="margin:0 0 .5rem 0">{{ facility }}</h3>
+    <p>Esta página ofrece información básica de la técnica seleccionada. Próximamente añadiremos detalles de equipos, capacidades y condiciones de acceso.</p>
+
+    <ul style="margin-top:1rem">
+      <li>Equipo/Configuración 1 (genérico)</li>
+      <li>Equipo/Configuración 2 (genérico)</li>
+      <li>Equipo/Configuración 3 (genérico)</li>
+    </ul>
+
+    <div style="margin-top:1rem">
+      <a class="chip" href="{% url 'accounts:login_icts' %}?next={% url 'icts:dashboard' %}" style="text-decoration:none;display:inline-flex;align-items:center;padding:.45rem .85rem;border:1px solid var(--border);border-radius:999px;color:#fff;background:var(--primary)">
+        <i class="bi bi-box-arrow-in-right"></i> Entrar en SIGMA ICTS
+      </a>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+

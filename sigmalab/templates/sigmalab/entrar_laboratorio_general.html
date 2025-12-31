@@ -1,0 +1,111 @@
+{% extends "base_dtf.html" %}
+{% block title %}Entrada al Laboratorio - S-LAB{% endblock %}
+{% block page_title %}Entrada al Laboratorio{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap;">
+    <h3 style="margin:0;">Gestión de Entrada al Laboratorio</h3>
+    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+      <a class="btn btn-outline-secondary" href="{% url 'sigmalab:panel-tecnico' %}">
+        <i class="bi bi-arrow-left"></i> Volver al panel
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="background:#e3f2fd; border:1px solid #2196f3; border-radius:.5rem; padding:1rem; margin-bottom:1rem;">
+    <h4 style="color:#1976d2; margin:0;"><i class="bi bi-info-circle"></i> Información</h4>
+    <p style="color:#1976d2; margin:.5rem 0 0;">
+      Selecciona una solicitud aceptada para marcar el inicio del trabajo en el laboratorio. 
+      Esto cambiará el estado a "En curso" y registrará la fecha de inicio.
+    </p>
+  </div>
+  
+  {% if solicitudes %}
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:#f8f9fa; border-bottom:2px solid #dee2e6;">
+            <th style="padding:.75rem; text-align:left; font-weight:600;">ID</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Solicitante</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Material</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Muestras</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Fecha Aceptada</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in solicitudes %}
+            <tr style="border-bottom:1px solid #dee2e6;">
+              <td style="padding:.75rem;">
+                <strong>#{{ solicitud.id }}</strong>
+                {% if solicitud.becario_asociado %}
+                  <br><small style="color:#1976d2;">Becario: {{ solicitud.becario_asociado.nombre_completo }}</small>
+                {% endif %}
+              </td>
+              <td style="padding:.75rem;">
+                <strong>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</strong>
+                <br><small style="color:#6c757d;">{{ solicitud.solicitante.email }}</small>
+              </td>
+              <td style="padding:.75rem;">{{ solicitud.material|default:"Sin especificar" }}</td>
+              <td style="padding:.75rem;">{{ solicitud.numero_muestras }}</td>
+              <td style="padding:.75rem;">{{ solicitud.actualizado_en|date:"d/m/Y H:i" }}</td>
+              <td style="padding:.75rem;">
+                <div style="display:flex; gap:.25rem; flex-wrap:wrap;">
+                  <a class="btn-small" href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}" style="background:#17a2b8; color:white; text-decoration:none; padding:.25rem .5rem; border-radius:.25rem; font-size:.8rem;">
+                    <i class="bi bi-eye"></i> Ver
+                  </a>
+                  <a class="btn-small" href="{% url 'sigmalab:entrar-laboratorio-solicitud' solicitud.id %}" style="background:#28a745; color:white; text-decoration:none; padding:.25rem .5rem; border-radius:.25rem; font-size:.8rem;">
+                    <i class="bi bi-door-open"></i> Entrar al Lab
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align:center; padding:2rem; color:#6c757d;">
+      <i class="bi bi-check-circle" style="font-size:3rem; margin-bottom:1rem; display:block; color:#28a745;"></i>
+      <h4>No hay solicitudes aceptadas</h4>
+      <p>Todas las solicitudes están siendo procesadas o ya han iniciado trabajo.</p>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.btn-small {
+  display:inline-flex;
+  align-items:center;
+  gap:.25rem;
+  text-decoration:none;
+  font-size:.8rem;
+  font-weight:600;
+  border-radius:.25rem;
+  transition:all .2s ease;
+}
+
+.btn-small:hover {
+  transform:translateY(-1px);
+  box-shadow:0 2px 4px rgba(0,0,0,.1);
+}
+
+@media (max-width:768px) {
+  .card {
+    margin:0 -.5rem 1rem;
+    border-radius:0;
+  }
+  
+  table {
+    font-size:.9rem;
+  }
+  
+  th, td {
+    padding:.5rem !important;
+  }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}{% if is_editing %}Editar material{% else %}Nuevo material{% endif %}{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Materiales de referencia{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_reference_material_list' %}">Materiales</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{% if is_editing %}Editar{% else %}Nuevo{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">{% if is_editing %}Editar material{% else %}Nuevo material{% endif %}</h2>
+      <div class="lo3-card-subtitle">Datos del material de referencia LO3.</div>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+      <div>
+        {{ form.code.label_tag }}
+        {{ form.code }}
+      </div>
+      <div>
+        {{ form.description.label_tag }}
+        {{ form.description }}
+      </div>
+      <div>
+        {{ form.catalog_reference.label_tag }}
+        {{ form.catalog_reference }}
+      </div>
+      <div>
+        {{ form.responsible.label_tag }}
+        {{ form.responsible }}
+      </div>
+      <div>
+        {{ form.location.label_tag }}
+        {{ form.location }}
+      </div>
+      <div>
+        {{ form.reception_date.label_tag }}
+        {{ form.reception_date }}
+      </div>
+      <div>
+        {{ form.expiry_date.label_tag }}
+        {{ form.expiry_date }}
+      </div>
+      <div>
+        {{ form.status.label_tag }}
+        {{ form.status }}
+      </div>
+    </div>
+    <div style="margin-top: 1rem;">
+      {{ form.observations.label_tag }}
+      {{ form.observations }}
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button type="submit" class="lo3-btn lo3-btn-primary">
+        <i class="bi bi-check2-circle"></i>
+        Guardar
+      </button>
+      <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_reference_material_list' %}">
+        <i class="bi bi-x-circle"></i>
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

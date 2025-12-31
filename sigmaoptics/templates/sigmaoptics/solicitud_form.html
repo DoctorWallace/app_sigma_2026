@@ -1,0 +1,295 @@
+{% extends "sigmaoptics/base_optics.html" %}
+
+{% block optics_page_title %}Nueva Solicitud - Sigma Optics{% endblock %}
+
+{% block optics_content %}
+<div class="container">
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">
+        <i class="bi bi-microscope"></i>
+        Nueva Solicitud de Análisis Óptico
+      </h2>
+      <p class="text-muted">Complete la información solicitada para crear su solicitud de análisis</p>
+    </div>
+
+    <form method="post" id="solicitud-form">
+      {% csrf_token %}
+      
+      <!-- Datos generales -->
+      <div class="form-section">
+        <h4 class="section-title">
+          <i class="bi bi-info-circle"></i>
+          Información General
+        </h4>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label for="{{ form.material.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-box"></i>
+                Material *
+              </label>
+              {{ form.material }}
+              {% if form.material.errors %}
+                <div class="text-danger">{{ form.material.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label for="{{ form.numero_muestras.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-hash"></i>
+                Número de muestras *
+              </label>
+              {{ form.numero_muestras }}
+              {% if form.numero_muestras.errors %}
+                <div class="text-danger">{{ form.numero_muestras.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="optics-form-group">
+              <label for="{{ form.referencia_muestras.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-tag"></i>
+                Referencia de las muestras
+              </label>
+              {{ form.referencia_muestras }}
+              {% if form.referencia_muestras.errors %}
+                <div class="text-danger">{{ form.referencia_muestras.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tamaño de muestra -->
+      <div class="form-section">
+        <h4 class="section-title">
+          <i class="bi bi-rulers"></i>
+          Dimensiones de la Muestra
+        </h4>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="optics-form-group">
+              <label class="optics-form-label">{{ form.tipo_tamano.label }}</label>
+              <div class="radio-group">
+                {{ form.tipo_tamano }}
+              </div>
+              {% if form.tipo_tamano.errors %}
+                <div class="text-danger">{{ form.tipo_tamano.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="row" id="diametro-fields">
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label for="{{ form.diametro_muestra.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-circle"></i>
+                {{ form.diametro_muestra.label }}
+              </label>
+              {{ form.diametro_muestra }}
+              {% if form.diametro_muestra.errors %}
+                <div class="text-danger">{{ form.diametro_muestra.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="row" id="lados-fields" style="display: none;">
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label for="{{ form.lado1_muestra.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-square"></i>
+                {{ form.lado1_muestra.label }}
+              </label>
+              {{ form.lado1_muestra }}
+              {% if form.lado1_muestra.errors %}
+                <div class="text-danger">{{ form.lado1_muestra.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label for="{{ form.lado2_muestra.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-square"></i>
+                {{ form.lado2_muestra.label }}
+              </label>
+              {{ form.lado2_muestra }}
+              {% if form.lado2_muestra.errors %}
+                <div class="text-danger">{{ form.lado2_muestra.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medidas a realizar -->
+      <div class="form-section">
+        <h4 class="section-title">
+          <i class="bi bi-gear"></i>
+          Configuración del Análisis
+        </h4>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label for="{{ form.medidas_realizar.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-clipboard-data"></i>
+                Medidas a realizar *
+              </label>
+              {{ form.medidas_realizar }}
+              {% if form.medidas_realizar.errors %}
+                <div class="text-danger">{{ form.medidas_realizar.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label class="optics-form-label">{{ form.formato_resultado.label }}</label>
+              <div class="radio-group">
+                {{ form.formato_resultado }}
+              </div>
+              {% if form.formato_resultado.errors %}
+                <div class="text-danger">{{ form.formato_resultado.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Otros datos -->
+      <div class="form-section">
+        <h4 class="section-title">
+          <i class="bi bi-chat-text"></i>
+          Información Adicional
+        </h4>
+        <div class="optics-form-group">
+          <label for="{{ form.otros_datos.id_for_label }}" class="optics-form-label">
+            <i class="bi bi-info-square"></i>
+            Otros datos de interés o información relevante
+          </label>
+          {{ form.otros_datos }}
+          {% if form.otros_datos.errors %}
+            <div class="text-danger">{{ form.otros_datos.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Muestras dinámicas -->
+      <div class="form-section" id="muestras-container">
+        <h4 class="section-title">
+          <i class="bi bi-collection"></i>
+          Muestras Individuales
+        </h4>
+        <div id="muestras-formset">
+          {{ formset.management_form }}
+          {% for form in formset %}
+            <div class="muestra-form">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="optics-form-group">
+                    <label class="optics-form-label">
+                      <i class="bi bi-tag"></i>
+                      Identificación de la muestra
+                    </label>
+                    {{ form.identificacion }}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="optics-form-group">
+                    <label class="optics-form-label">
+                      <i class="bi bi-file-text"></i>
+                      Descripción
+                    </label>
+                    {{ form.descripcion }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button type="submit" class="optics-btn optics-btn-primary">
+          <i class="bi bi-check-circle"></i>
+          Crear Solicitud
+        </button>
+        <a href="{% url 'sigmaoptics:solicitud_list' %}" class="optics-btn optics-btn-secondary">
+          <i class="bi bi-arrow-left"></i>
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const numeroMuestrasInput = document.getElementById('id_numero_muestras');
+    const muestrasContainer = document.getElementById('muestras-formset');
+    const tipoTamanoInputs = document.querySelectorAll('input[name="tipo_tamano"]');
+    const diametroFields = document.getElementById('diametro-fields');
+    const ladosFields = document.getElementById('lados-fields');
+    
+    // Función para actualizar el formulario de muestras
+    function updateMuestrasForm() {
+        const numeroMuestras = parseInt(numeroMuestrasInput.value) || 1;
+        
+        // Obtener el token CSRF
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Hacer petición AJAX para obtener el formset actualizado
+        fetch('{% url "sigmaoptics:get_muestras_form" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: `numero_muestras=${numeroMuestras}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.html) {
+                muestrasContainer.innerHTML = data.html;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    
+    // Función para mostrar/ocultar campos de tamaño
+    function toggleTamanoFields() {
+        const selectedType = document.querySelector('input[name="tipo_tamano"]:checked');
+        if (selectedType) {
+            if (selectedType.value === 'diametro') {
+                diametroFields.style.display = 'block';
+                ladosFields.style.display = 'none';
+            } else if (selectedType.value === 'lados') {
+                diametroFields.style.display = 'none';
+                ladosFields.style.display = 'block';
+            }
+        }
+    }
+    
+    // Event listeners
+    if (numeroMuestrasInput) {
+        numeroMuestrasInput.addEventListener('input', updateMuestrasForm);
+        updateMuestrasForm();
+    }
+    
+    if (tipoTamanoInputs.length > 0) {
+        tipoTamanoInputs.forEach(input => {
+            input.addEventListener('change', toggleTamanoFields);
+        });
+        toggleTamanoFields(); // Inicializar
+    }
+});
+</script>
+{% endblock %}

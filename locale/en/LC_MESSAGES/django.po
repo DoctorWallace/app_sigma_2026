@@ -1,0 +1,322 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SIGMA ICTS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-29 00:00+0000\n"
+"PO-Revision-Date: 2025-12-29 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Idioma"
+msgstr "Language"
+
+msgid "Editar propuesta"
+msgstr "Edit proposal"
+
+msgid "Nueva propuesta"
+msgstr "New proposal"
+
+msgid "Guardar Borrador"
+msgstr "Save Draft"
+
+msgid "Cancelar"
+msgstr "Cancel"
+
+msgid "Guardar"
+msgstr "Save"
+
+msgid "Mi Panel"
+msgstr "My Dashboard"
+
+msgid "Mi Panel de Usuario"
+msgstr "My User Dashboard"
+
+msgid "Borradores"
+msgstr "Drafts"
+
+msgid "Enviadas"
+msgstr "Submitted"
+
+msgid "Evaluadas"
+msgstr "Reviewed"
+
+msgid "Análisis"
+msgstr "Analyses"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Nueva Propuesta"
+msgstr "New Proposal"
+
+msgid "Ver Todas"
+msgstr "View All"
+
+msgid "Actividad por Mes"
+msgstr "Activity by Month"
+
+msgid "Mis propuestas"
+msgstr "My proposals"
+
+msgid "Listado"
+msgstr "List"
+
+msgid "Borrador"
+msgstr "Draft"
+
+msgid "En Revisión"
+msgstr "In review"
+
+msgid "Aprobada"
+msgstr "Approved"
+
+msgid "Rechazada"
+msgstr "Rejected"
+
+msgid "Creada"
+msgstr "Created"
+
+msgid "Ver"
+msgstr "View"
+
+msgid "Editar"
+msgstr "Edit"
+
+msgid "Eliminar"
+msgstr "Delete"
+
+msgid "Dashboard del Revisor"
+msgstr "Reviewer Dashboard"
+
+msgid "Mi panel revisor"
+msgstr "Reviewer dashboard"
+
+msgid "Resumen"
+msgstr "Summary"
+
+msgid "Pendientes"
+msgstr "Pending"
+
+msgid "Completadas"
+msgstr "Completed"
+
+msgid "Aprobadas"
+msgstr "Approved"
+
+msgid "Rechazadas"
+msgstr "Rejected"
+
+msgid "Para ver tus evaluaciones pendientes, usa el menú Evaluaciones pendientes."
+msgstr "To view your pending reviews, use the Pending reviews menu."
+
+msgid "Para consultar el historial completo, usa Historial de evaluaciones."
+msgstr "To see the full history, use Review history."
+
+msgid "Ir a Evaluaciones pendientes"
+msgstr "Go to Pending reviews"
+
+msgid "Ir al Historial"
+msgstr "Go to History"
+
+msgid "Evaluaciones recientes"
+msgstr "Recent reviews"
+
+msgid "Cambios solicitados"
+msgstr "Changes requested"
+
+msgid "Pendiente"
+msgstr "Pending"
+
+msgid "No hay evaluaciones recientes"
+msgstr "No recent reviews"
+
+msgid "Evaluaciones pendientes"
+msgstr "Pending reviews"
+
+msgid "Propuestas enviadas"
+msgstr "Submitted proposals"
+
+msgid "(Sin título)"
+msgstr "(Untitled)"
+
+msgid "No hay propuestas pendientes."
+msgstr "No pending proposals."
+
+msgid "Mis revisiones"
+msgstr "My reviews"
+
+msgid "Aún no has emitido revisiones."
+msgstr "You haven't submitted any reviews yet."
+
+msgid "ID #%(proposal_id)s - %(created_at)s"
+msgstr "ID #%(proposal_id)s - %(created_at)s"
+
+msgid "Estado: %(decision)s - ID #%(proposal_id)s"
+msgstr "Status: %(decision)s - ID #%(proposal_id)s"
+
+msgid "Evaluar"
+msgstr "Review"
+
+msgid "Bandeja de entrada - Revisor"
+msgstr "Inbox - Reviewer"
+
+msgid "Bandeja de entrada"
+msgstr "Inbox"
+
+msgid "Esta funcionalidad está en desarrollo. Aquí podrás enviar mensajes al Responsable o al Usuario."
+msgstr "This feature is under development. Here you will be able to message the Responsible or the User."
+
+msgid "Escribe tu mensaje..."
+msgstr "Write your message..."
+
+msgid "Destinatario"
+msgstr "Recipient"
+
+msgid "Responsable"
+msgstr "Responsible"
+
+msgid "Usuario"
+msgstr "User"
+
+msgid "Enviar"
+msgstr "Send"
+
+msgid "Revisar propuesta"
+msgstr "Review proposal"
+
+msgid "Evaluación de Propuesta"
+msgstr "Proposal Evaluation"
+
+msgid "Solicitante"
+msgstr "Applicant"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Fecha"
+msgstr "Date"
+
+msgid "Estado"
+msgstr "Status"
+
+msgid "¿Es viable técnicamente esta propuesta?"
+msgstr "Is this proposal technically feasible?"
+
+msgid "Sí, es viable"
+msgstr "Yes, it's feasible"
+
+msgid "No es viable"
+msgstr "Not feasible"
+
+msgid "Calidad Científica (1-5)"
+msgstr "Scientific Quality (1-5)"
+
+msgid "Selecciona una puntuación"
+msgstr "Select a score"
+
+msgid "Muy baja"
+msgstr "Very low"
+
+msgid "Baja"
+msgstr "Low"
+
+msgid "Media"
+msgstr "Average"
+
+msgid "Alta"
+msgstr "High"
+
+msgid "Excelente"
+msgstr "Excellent"
+
+msgid "Necesidad de Infraestructura (1-5)"
+msgstr "Need for Infrastructure (1-5)"
+
+msgid "No necesita"
+msgstr "Not needed"
+
+msgid "Necesidad baja"
+msgstr "Low need"
+
+msgid "Necesidad media"
+msgstr "Medium need"
+
+msgid "Necesidad alta"
+msgstr "High need"
+
+msgid "Crítica"
+msgstr "Critical"
+
+msgid "Potencial Industrial (1-5)"
+msgstr "Industrial Potential (1-5)"
+
+msgid "Sin interés"
+msgstr "No interest"
+
+msgid "Bajo interés"
+msgstr "Low interest"
+
+msgid "Interés medio"
+msgstr "Medium interest"
+
+msgid "Alto interés"
+msgstr "High interest"
+
+msgid "Muy alto interés"
+msgstr "Very high interest"
+
+msgid "Recomendación Final"
+msgstr "Final Recommendation"
+
+msgid "Selecciona tu recomendación"
+msgstr "Select your recommendation"
+
+msgid "Aprobar - La propuesta cumple con los criterios"
+msgstr "Approve - The proposal meets the criteria"
+
+msgid "Solicitar cambios - Necesita modificaciones menores"
+msgstr "Request changes - Minor modifications needed"
+
+msgid "Rechazar - No cumple con los criterios"
+msgstr "Reject - Does not meet the criteria"
+
+msgid "Comentarios Detallados"
+msgstr "Detailed Comments"
+
+msgid "Proporciona comentarios detallados sobre tu evaluación, incluyendo fortalezas, debilidades y recomendaciones..."
+msgstr "Provide detailed comments about your evaluation, including strengths, weaknesses, and recommendations..."
+
+msgid "Enviar Evaluación"
+msgstr "Submit Review"
+
+msgid "Volver a la bandeja"
+msgstr "Back to inbox"
+
+msgid "Bienvenido/a %(name)s"
+msgstr "Welcome %(name)s"
+
+msgid "Desde aquí puedes gestionar tus propuestas ICTS."
+msgstr "From here you can manage your ICTS proposals."
+
+msgid "Rol: %(role)s"
+msgstr "Role: %(role)s"
+
+msgid "Enviadas / En revisión"
+msgstr "Submitted / In review"
+
+msgid "No tienes borradores."
+msgstr "You have no drafts."
+
+msgid "No tienes propuestas enviadas."
+msgstr "You have no submitted proposals."
+
+msgid "Ver informe"
+msgstr "View report"
+
+msgid "Aún no tienes propuestas evaluadas."
+msgstr "You don't have evaluated proposals yet."

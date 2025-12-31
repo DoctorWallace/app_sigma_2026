@@ -1,0 +1,53 @@
+async function detectFile(file) {
+  const fd = new FormData();
+  fd.append("archivo", file);
+  const resp = await fetch("{% url 'sigmadp_detectar' %}", {method:"POST", body: fd, headers: {"X-CSRFToken": "{{ csrf_token }}" }});
+  const data = await resp.json();
+  if (!data.ok) throw new Error(data.error || "Fallo en detección");
+  const p = data.props;
+  document.getElementById("det_encoding").value = p.encoding;
+  document.getElementById("det_separator").value = p.separator;
+  document.getElementById("det_decimal").value  = p.decimal;
+  document.getElementById("det_header").value   = (p.header ?? "");
+  // sugerir al usuario (sin bloquear) los valores detectados
+  const sepInput = document.getElementById("{{ form.separador.id_for_label }}");
+  const decInput = document.getElementById("{{ form.decimal.id_for_label }}");
+  const encInput = document.getElementById("{{ form.codificacion.id_for_label }}");
+  if (sepInput && !sepInput.value) sepInput.value = (p.separator === "whitespace" ? "\\s+" : p.separator);
+  if (decInput && !decInput.value) decInput.value = p.decimal;
+  if (encInput && !encInput.value) encInput.value = p.encoding;
+  // previsualización
+  const head = document.getElementById("prev-head");
+  const body = document.getElementById("prev-body");
+  head.innerHTML = ""; body.innerHTML = "";
+  const cols = p.columns;
+  const trh = document.createElement("tr");
+  cols.forEach(c => { const th = document.createElement("th"); th.textContent = c; trh.appendChild(th); });
+  head.appendChild(trh);
+  p.preview.forEach(row => {
+    const tr = document.createElement("tr");
+    cols.forEach(c => { const td = document.createElement("td"); td.textContent = (row[c] ?? ""); tr.appendChild(td); });
+    body.appendChild(tr);
+  });
+  document.getElementById("preview-table").style.display = "block";
+  // activar submit
+  document.getElementById("submit-btn").disabled = false;
+}
+
+fileInput.addEventListener('change', async (e) => {
+  if (e.target.files.length > 0) {
+    showFilePreview(e.target.files[0]);
+    try { await detectFile(e.target.files[0]); }
+    catch (err) { console.error(err); alert("No se pudo detectar el archivo. Revisa separador/decimal/codificación."); }
+  }
+});
+
+dragDropArea.addEventListener('drop', async (e) => {
+  e.preventDefault(); dragDropArea.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    fileInput.files = files; showFilePreview(files[0]);
+    try { await detectFile(files[0]); }
+    catch (err) { console.error(err); alert("No se pudo detectar el archivo."); }
+  }
+});

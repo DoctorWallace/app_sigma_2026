@@ -1,0 +1,340 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Sesión {{ session.lot_code }}{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Registro de ensayos LO3{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  {% if read_only %}
+    <a href="{% url 'sigmaconf:lo3_results' %}">Resultados</a>
+  {% else %}
+    <a href="{% url 'sigmaconf:mcf_dashboard' %}">Solicitudes de análisis</a>
+  {% endif %}
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>Sesión {{ session.lot_code }}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">Sesión {{ session.lot_code }}</div>
+    <div class="lo3-page-meta">
+      <span>Solicitud: {{ session.access_proposal.access_code|default:"-" }}</span>
+      <span>Propuesta: {{ session.access_proposal.title|default:"(Sin título)" }}</span>
+      <span>Técnico: {{ session.technician.get_full_name|default:session.technician.username }}</span>
+    </div>
+    <div style="margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+      {% if session.status == "completed" %}
+        <span class="lo3-badge lo3-badge--success">Completada</span>
+      {% else %}
+        <span class="lo3-badge lo3-badge--warning">En curso</span>
+      {% endif %}
+      <span class="lo3-badge lo3-badge--info">Reporte {{ session.report_code }}</span>
+      {% if session.completion_date %}
+        <span class="lo3-badge lo3-badge--muted">Finalizada {{ session.completion_date|date:"d/m/Y" }}</span>
+      {% endif %}
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a class="lo3-btn lo3-btn-secondary" href="{% url back_url %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+    <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_export_excel' session.pk %}">
+      <i class="bi bi-file-earmark-excel"></i>
+      Registro Excel
+    </a>
+    {% if session.status == "completed" and session.notice_pdf %}
+      <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_notice_download' session.pk %}">
+        <i class="bi bi-file-earmark-pdf"></i>
+        Aviso PDF
+      </a>
+    {% endif %}
+    {% if session.final_report_pdf %}
+      <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_final_report_download' session.pk %}">
+        <i class="bi bi-file-earmark-pdf"></i>
+        Informe final PDF
+      </a>
+    {% endif %}
+    {% if not read_only %}
+      <a class="lo3-btn lo3-btn-primary" href="{% url 'sigmaconf:mcf_add_sample' session.pk %}">
+        <i class="bi bi-plus-circle"></i>
+        Añadir muestra
+      </a>
+      {% if session.status == "in_progress" %}
+        <form method="post" action="{% url 'sigmaconf:mcf_finish_session' session.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="lo3-btn lo3-btn-primary">
+            <i class="bi bi-check2-circle"></i>
+            Finalizar sesión
+          </button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+<div class="lo3-stat-grid">
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ sample_stats.total }}</div>
+    <div class="lo3-stat-label">Muestras registradas</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ sample_stats.declared }}</div>
+    <div class="lo3-stat-label">Declaradas</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ sample_stats.extra }}</div>
+    <div class="lo3-stat-label">No declaradas</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ sample_stats.analyzed }}</div>
+    <div class="lo3-stat-label">Con análisis</div>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Documentos</h2>
+      <div class="lo3-card-subtitle">Aviso de resultados e informe final de la sesión.</div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+      <div>
+        <strong>Aviso de resultados</strong>
+        <div class="text-muted small">
+          {% if session.notice_pdf %}
+            Generado {{ session.completion_date|date:"d/m/Y"|default:"-" }}
+          {% else %}
+            Pendiente de generación
+          {% endif %}
+        </div>
+      </div>
+      {% if session.notice_pdf %}
+        <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_notice_download' session.pk %}">
+          <i class="bi bi-file-earmark-pdf"></i>
+          Descargar aviso PDF
+        </a>
+      {% else %}
+        <span class="lo3-badge lo3-badge--muted">Pendiente</span>
+      {% endif %}
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+      <div>
+        <strong>Informe final</strong>
+        <div class="text-muted small">
+          {% if session.final_report_uploaded_at %}
+            Subido {{ session.final_report_uploaded_at|date:"d/m/Y" }}
+            {% if session.final_report_uploaded_by %}
+              por {{ session.final_report_uploaded_by.get_full_name|default:session.final_report_uploaded_by.username }}
+            {% endif %}
+          {% else %}
+            Pendiente de subida
+          {% endif %}
+        </div>
+      </div>
+      {% if session.final_report_pdf %}
+        <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_final_report_download' session.pk %}">
+          <i class="bi bi-file-earmark-pdf"></i>
+          Descargar informe final
+        </a>
+      {% else %}
+        <span class="lo3-badge lo3-badge--muted">Pendiente</span>
+      {% endif %}
+    </div>
+    {% if not read_only %}
+      <div style="border-top: 1px solid var(--lo3-border); padding-top: 1rem;">
+        <form method="post" action="{% url 'sigmaconf:mcf_final_report_upload' session.pk %}" enctype="multipart/form-data" style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
+          {% csrf_token %}
+          <div style="flex: 1 1 240px;">
+            {{ final_report_form.file }}
+          </div>
+          <button type="submit" class="lo3-btn lo3-btn-primary">
+            <i class="bi bi-upload"></i>
+            Subir informe final (PDF)
+          </button>
+        </form>
+        <small class="text-muted">Solo se aceptan archivos PDF.</small>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Adjuntos</h2>
+      <div class="lo3-card-subtitle">Fotos y archivos asociados a la sesión o a las muestras.</div>
+    </div>
+  </div>
+
+  {% if attachments %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Nivel</th>
+            <th>Muestra</th>
+            <th>Descripción</th>
+            <th>Subido por</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for attachment in attachments %}
+            <tr>
+              <td>{{ attachment.get_attachment_type_display }}</td>
+              <td>{% if attachment.sample %}Muestra{% else %}Sesión{% endif %}</td>
+              <td>{% if attachment.sample %}#{{ attachment.sample.sequence }}{% else %}-{% endif %}</td>
+              <td>{{ attachment.description|default:"-" }}</td>
+              <td>{{ attachment.uploaded_by.get_full_name|default:attachment.uploaded_by.username|default:"-" }}</td>
+              <td>{{ attachment.created_at|date:"d/m/Y H:i" }}</td>
+              <td>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                  <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_attachment_download' attachment.pk %}">
+                    <i class="bi bi-download"></i>
+                    Descargar
+                  </a>
+                  {% if not read_only %}
+                    <form method="post" action="{% url 'sigmaconf:mcf_attachment_delete' attachment.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="lo3-btn lo3-btn-ghost">
+                        <i class="bi bi-trash"></i>
+                        Eliminar
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-paperclip"></i>
+      <div>No hay adjuntos registrados.</div>
+      <small>Sube archivos para documentar resultados o evidencias.</small>
+    </div>
+  {% endif %}
+
+  {% if not read_only %}
+    <div style="margin-top: 1.5rem;">
+      <h3 class="lo3-card-title" style="font-size: 1rem;">Subir adjunto de sesión</h3>
+      <form method="post" action="{% url 'sigmaconf:mcf_session_attachment_add' session.pk %}" enctype="multipart/form-data" style="margin-top: 1rem;">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+          <div>
+            {{ attachment_form.attachment_type.label_tag }}
+            {{ attachment_form.attachment_type }}
+          </div>
+          <div>
+            {{ attachment_form.description.label_tag }}
+            {{ attachment_form.description }}
+          </div>
+          <div>
+            {{ attachment_form.file.label_tag }}
+            {{ attachment_form.file }}
+          </div>
+        </div>
+        <div style="margin-top: 1rem;">
+          <button type="submit" class="lo3-btn lo3-btn-primary">
+            <i class="bi bi-upload"></i>
+            Subir adjunto
+          </button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Registro de ensayos</h2>
+      <div class="lo3-card-subtitle">Devolución muestra: fecha de retorno al solicitante. Entrega informe: fecha de entrega del informe.</div>
+    </div>
+  </div>
+
+  {% if samples %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Origen</th>
+            <th>Identificación</th>
+            <th class="d-none d-md-table-cell">Nombre</th>
+            <th class="d-none d-lg-table-cell">Recepción</th>
+            <th>Análisis</th>
+            <th class="d-none d-lg-table-cell">Operador</th>
+            <th class="d-none d-md-table-cell">Rug.</th>
+            <th class="d-none d-md-table-cell">2D</th>
+            <th class="d-none d-md-table-cell">3D</th>
+            <th class="d-none d-md-table-cell">Esp.</th>
+            <th class="d-none d-lg-table-cell">Devolución</th>
+            <th class="d-none d-lg-table-cell">Informe</th>
+            <th class="d-none d-lg-table-cell">Entrega informe</th>
+            <th class="d-none d-xl-table-cell">Obs.</th>
+            <th class="d-none d-md-table-cell">I1</th>
+            <th class="d-none d-md-table-cell">I2</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in samples %}
+            <tr>
+              <td>{{ sample.sequence }}</td>
+              <td>
+                {% if sample.source == "session" %}
+                  <span class="lo3-badge lo3-badge--warning">No declarada</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--muted">Declarada</span>
+                {% endif %}
+              </td>
+              <td>{{ sample.identification }}</td>
+              <td class="d-none d-md-table-cell">{{ sample.name|default:"-" }}</td>
+              <td class="d-none d-lg-table-cell">{{ sample.received_date|date:"Y-m-d"|default:"-" }}</td>
+              <td>{{ sample.analysis_date|date:"Y-m-d"|default:"-" }}</td>
+              <td class="d-none d-lg-table-cell">{{ sample.operator_name|default:"-" }}</td>
+              <td class="d-none d-md-table-cell">{% if sample.roughness %}<span class="lo3-badge lo3-badge--info">OK</span>{% else %}&mdash;{% endif %}</td>
+              <td class="d-none d-md-table-cell">{% if sample.image_2d %}<span class="lo3-badge lo3-badge--info">OK</span>{% else %}&mdash;{% endif %}</td>
+              <td class="d-none d-md-table-cell">{% if sample.image_3d %}<span class="lo3-badge lo3-badge--info">OK</span>{% else %}&mdash;{% endif %}</td>
+              <td class="d-none d-md-table-cell">{% if sample.thickness %}<span class="lo3-badge lo3-badge--info">OK</span>{% else %}&mdash;{% endif %}</td>
+              <td class="d-none d-lg-table-cell">{{ sample.return_date|date:"Y-m-d"|default:"-" }}</td>
+              <td class="d-none d-lg-table-cell">{{ sample.report_code|default:"-" }}</td>
+              <td class="d-none d-lg-table-cell">{{ sample.report_delivery_date|date:"Y-m-d"|default:"-" }}</td>
+              <td class="d-none d-xl-table-cell" title="{{ sample.observations|default:'' }}">{{ sample.observations|default:"-"|truncatechars:80 }}</td>
+              <td class="d-none d-md-table-cell">{{ sample.indicator_i1 }}</td>
+              <td class="d-none d-md-table-cell">{{ sample.indicator_i2 }}</td>
+              <td>
+                {% if not read_only %}
+                  <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_sample_edit' sample.pk %}">
+                    <i class="bi bi-pencil-square"></i>
+                    Editar
+                  </a>
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-clipboard-x"></i>
+      <div>No hay muestras registradas.</div>
+      <small>Agrega muestras para completar el registro LO3.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

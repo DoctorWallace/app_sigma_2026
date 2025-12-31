@@ -1,0 +1,164 @@
+{% extends "base_dtf.html" %}
+{% block title %}Σ-LAB · Usuarios{% endblock %}
+{% block page_title %}Σ-LAB · Usuarios{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <a class="cta" href="{% url 'sigmalab:panel-tecnico' %}">← Volver al panel</a>
+    <a class="cta" href="{% url 'sigmalab:todas-solicitudes' %}">Ver todas las solicitudes</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem;">
+  <h3>Altas recientes</h3>
+  <ul style="margin-top:.5rem;">
+    {% for u in recientes %}
+      <li>{{ u.first_name }} {{ u.last_name|default:u.username }} · {{ u.email }} · {{ u.date_joined|date:"Y-m-d H:i" }} · Solicitudes: <strong>{{ u.num_solicitudes }}</strong></li>
+    {% empty %}
+      <li>—</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card">
+  <h3>Usuarios y Estado de Información Importante</h3>
+  <div style="margin-top:.5rem;">
+    {% for info in usuarios_info %}
+      <div class="user-info-card" style="border: 1px solid #ddd; margin-bottom: 1rem; padding: 1rem; border-radius: 5px;">
+        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.5rem;">
+          <div>
+            <strong>{{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}</strong> · {{ info.usuario.email }} · 
+            Registrado: {{ info.usuario.date_joined|date:"Y-m-d" }} · 
+            Solicitudes: <strong>{{ info.usuario.num_solicitudes }}</strong>
+          </div>
+          <div>
+            {% if info.completado %}
+              <span class="badge bg-success">
+                <i class="bi bi-check-circle"></i> Completado
+              </span>
+            {% else %}
+              <span class="badge bg-warning">
+                <i class="bi bi-clock"></i> Pendiente
+              </span>
+            {% endif %}
+          </div>
+        </div>
+        
+        {% if info.completado %}
+          <div style="font-size: 0.9em; color: #666;">
+            <strong>Horarios de acceso:</strong><br>
+            Inicio: {{ info.inicio|date:"d/m/Y H:i" }} | 
+            Fin: {{ info.fin|date:"d/m/Y H:i" }}
+          </div>
+        {% elif info.inicio %}
+          <div style="font-size: 0.9em; color: #666;">
+            <strong>Inicio:</strong> {{ info.inicio|date:"d/m/Y H:i" }} (en progreso)
+          </div>
+        {% endif %}
+        
+        <div style="margin-top: 0.5rem;">
+          <strong>Secciones accedidas:</strong>
+          {% if info.accesos %}
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+              {% for acceso in info.accesos %}
+                <span class="badge bg-primary">
+                  {{ acceso.get_seccion_display }} ({{ acceso.accedido_en|date:"d/m H:i" }})
+                </span>
+              {% endfor %}
+            </div>
+          {% else %}
+            <span class="text-muted">Ninguna</span>
+          {% endif %}
+        </div>
+        
+        <!-- Información del perfil DTF -->
+        {% if info.profile %}
+          <div style="margin-top: 0.5rem; font-size: 0.9em; color: #666;">
+            <strong>Perfil DTF:</strong><br>
+            {% if info.profile.is_ciemat %}
+              <span class="badge bg-info">CIEMAT</span> - {{ info.profile.departamento }} - Matrícula: {{ info.profile.matricula }}
+            {% else %}
+              <span class="badge bg-secondary">Externo</span>
+            {% endif %}
+          </div>
+        {% endif %}
+        
+        <!-- Estado de restricciones -->
+        {% if info.profile %}
+          <div style="margin-top: 0.5rem;">
+            {% if info.profile.acceso_s_lab_restringido %}
+              <span class="badge bg-danger">
+                <i class="bi bi-lock"></i> S-LAB Restringido
+              </span>
+            {% else %}
+              <span class="badge bg-success">
+                <i class="bi bi-unlock"></i> S-LAB Activo
+              </span>
+            {% endif %}
+            
+            {% if info.profile.acceso_s_mec_restringido %}
+              <span class="badge bg-danger">
+                <i class="bi bi-lock"></i> S-MEC Restringido
+              </span>
+            {% else %}
+              <span class="badge bg-success">
+                <i class="bi bi-unlock"></i> S-MEC Activo
+              </span>
+            {% endif %}
+          </div>
+          
+          {% if info.profile.motivo_restriccion %}
+            <div style="margin-top: 0.5rem; font-size: 0.9em; color: #dc3545;">
+              <strong>Motivo restricción:</strong> {{ info.profile.motivo_restriccion }}<br>
+              <strong>Fecha:</strong> {{ info.profile.restriccion_fecha|date:"d/m/Y H:i" }}
+              {% if info.profile.restriccion_por %}
+                <strong>Por:</strong> {{ info.profile.restriccion_por.first_name }} {{ info.profile.restriccion_por.last_name|default:info.profile.restriccion_por.username }}
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endif %}
+        
+        <!-- Acciones de gestión -->
+        <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          {% if info.profile %}
+            {% if info.profile.acceso_s_lab_restringido %}
+              <a href="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_lab' 'quitar' %}" 
+                 class="btn btn-sm btn-success" 
+                 onclick="return confirm('¿Quitar restricción de S-LAB para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')">
+                <i class="bi bi-unlock"></i> Quitar restricción S-LAB
+              </a>
+            {% else %}
+              <a href="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_lab' 'aplicar' %}" 
+                 class="btn btn-sm btn-warning" 
+                 onclick="return confirm('¿Aplicar restricción de S-LAB para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')">
+                <i class="bi bi-lock"></i> Restringir S-LAB
+              </a>
+            {% endif %}
+            
+            {% if info.profile.acceso_s_mec_restringido %}
+              <a href="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_mec' 'quitar' %}" 
+                 class="btn btn-sm btn-success" 
+                 onclick="return confirm('¿Quitar restricción de S-MEC para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')">
+                <i class="bi bi-unlock"></i> Quitar restricción S-MEC
+              </a>
+            {% else %}
+              <a href="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_mec' 'aplicar' %}" 
+                 class="btn btn-sm btn-warning" 
+                 onclick="return confirm('¿Aplicar restricción de S-MEC para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')">
+                <i class="bi bi-lock"></i> Restringir S-MEC
+              </a>
+            {% endif %}
+          {% endif %}
+          
+          <a href="{% url 'sigmalab:crear-usuario' %}" class="btn btn-sm btn-primary">
+            <i class="bi bi-person-plus"></i> Crear Usuario TFM/TFG
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <p>No hay usuarios.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

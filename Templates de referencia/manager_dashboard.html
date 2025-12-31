@@ -1,0 +1,861 @@
+{% extends 'base_generic.html' %}
+{% load roles %}
+
+{% block extra_head %}
+  <!-- Anti-cache meta tags -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="cache-timestamp" content="{{ timestamp }}">
+  <meta name="version" content="manager-dashboard-v2.0">
+{% endblock %}
+
+{% block title %}Manager Dashboard - ICTS-SIGMA{% endblock %}
+
+{% block content %}
+<div class="manager-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h1 class="dashboard-title">📊 Dashboard de Gestión ICTS-SIGMA</h1>
+        <p class="dashboard-subtitle">Análisis del funcionamiento y estadísticas de la infraestructura</p>
+      </div>
+      <div class="header-stats">
+        <div class="header-stat">
+          <div class="stat-number">{{ total_proposals }}</div>
+          <div class="stat-label">Total Propuestas</div>
+        </div>
+        <div class="header-stat">
+          <div class="stat-number">{{ approval_rate }}%</div>
+          <div class="stat-label">Tasa Aprobación</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Stats Grid -->
+  <div class="main-stats-grid">
+    <!-- Estados de Propuestas -->
+    <div class="stat-card primary">
+      <div class="stat-header">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_proposals }}</div>
+          <div class="stat-label">Total Propuestas</div>
+        </div>
+      </div>
+      <div class="stat-breakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-label">Aprobadas</span>
+          <span class="breakdown-value success">{{ approved_proposals }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">En Revisión</span>
+          <span class="breakdown-value warning">{{ submitted_proposals }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Borradores</span>
+          <span class="breakdown-value info">{{ draft_proposals }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Rechazadas</span>
+          <span class="breakdown-value danger">{{ rejected_proposals }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sistema de Revisión -->
+    <div class="stat-card warning">
+      <div class="stat-header">
+        <div class="stat-icon">⚖️</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_reviews }}</div>
+          <div class="stat-label">Total Revisiones</div>
+        </div>
+      </div>
+      <div class="stat-breakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-label">Pendientes</span>
+          <span class="breakdown-value warning">{{ pending_reviews }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Completadas</span>
+          <span class="breakdown-value success">{{ completed_reviews }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Promedio/Propuesta</span>
+          <span class="breakdown-value">{{ avg_reviews_per_proposal }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Necesitan Revisión</span>
+          <span class="breakdown-value danger">{{ proposals_need_reviews }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usuarios del Sistema -->
+    <div class="stat-card secondary">
+      <div class="stat-header">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_users }}</div>
+          <div class="stat-label">Usuarios Totales</div>
+        </div>
+      </div>
+      <div class="stat-breakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-label">Investigadores</span>
+          <span class="breakdown-value">{{ active_researchers }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Revisores</span>
+          <span class="breakdown-value">{{ reviewers_count }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Responsables</span>
+          <span class="breakdown-value">{{ responsables_count }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actividad Reciente -->
+    <div class="stat-card accent">
+      <div class="stat-header">
+        <div class="stat-icon">🕒</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ recent_proposals }}</div>
+          <div class="stat-label">Últimos 30 días</div>
+        </div>
+      </div>
+      <div class="stat-breakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-label">Esta semana</span>
+          <span class="breakdown-value accent">{{ weekly_proposals }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Enviadas (30d)</span>
+          <span class="breakdown-value">{{ recent_submissions }}</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Tiempo Revisión</span>
+          <span class="breakdown-value">{{ avg_review_time_days }} días</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <!-- Técnicas Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">🔬 Uso por Técnica Analítica</h3>
+        <p class="chart-subtitle">Distribución de solicitudes por equipamiento</p>
+      </div>
+      <div class="chart-content">
+        {% for technique in technique_stats %}
+          <div class="chart-bar-row">
+            <div class="chart-label">{{ technique.name }}</div>
+            <div class="chart-bar-container">
+              <div class="chart-bar technique" style="width: {{ technique.percentage }}%"></div>
+              <div class="chart-value">{{ technique.count }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Yearly Trends Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">📅 Tendencia Temporal</h3>
+        <p class="chart-subtitle">Propuestas por año de proyecto</p>
+      </div>
+      <div class="chart-content">
+        {% for year_data in yearly_stats %}
+          <div class="chart-bar-row">
+            <div class="chart-label">{{ year_data.year }}</div>
+            <div class="chart-bar-container">
+              <div class="chart-bar yearly" style="width: {{ year_data.percentage }}%"></div>
+              <div class="chart-value">{{ year_data.count }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Section -->
+  <div class="kpi-section">
+    <h2 class="section-title">📈 Indicadores Clave de Rendimiento (KPIs)</h2>
+    
+    <div class="kpi-grid">
+      <div class="kpi-card success">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-content">
+          <div class="kpi-value">{{ approval_rate }}%</div>
+          <div class="kpi-label">Tasa de Aprobación</div>
+          <div class="kpi-description">Porcentaje de propuestas aprobadas</div>
+        </div>
+      </div>
+
+      <div class="kpi-card danger">
+        <div class="kpi-icon">❌</div>
+        <div class="kpi-content">
+          <div class="kpi-value">{{ rejection_rate }}%</div>
+          <div class="kpi-label">Tasa de Rechazo</div>
+          <div class="kpi-description">Porcentaje de propuestas rechazadas</div>
+        </div>
+      </div>
+
+      <div class="kpi-card info">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-content">
+          <div class="kpi-value">{{ avg_review_time_days }}</div>
+          <div class="kpi-label">Días Promedio</div>
+          <div class="kpi-description">Tiempo medio de revisión</div>
+        </div>
+      </div>
+
+      <div class="kpi-card warning">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-content">
+          <div class="kpi-value">{{ proposals_need_reviews }}</div>
+          <div class="kpi-label">Requieren Atención</div>
+          <div class="kpi-description">Propuestas con pocas revisiones</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Techniques Section -->
+  <div class="top-section">
+    <h2 class="section-title">🏆 Técnicas Más Demandadas</h2>
+    
+    <div class="top-techniques-grid">
+      {% for technique in top_techniques %}
+        <div class="top-technique-card rank-{{ forloop.counter }}">
+          <div class="rank-badge">#{{ forloop.counter }}</div>
+          <div class="technique-info">
+            <div class="technique-name">{{ technique.name }}</div>
+            <div class="technique-stats">
+              <span class="technique-count">{{ technique.count }} solicitudes</span>
+              <div class="technique-bar">
+                <div class="technique-fill" style="width: {{ technique.percentage }}%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Alerts Section -->
+  <div class="alerts-section">
+    <h2 class="section-title">🚨 Alertas del Sistema</h2>
+    
+    <div class="alerts-grid">
+      {% if proposals_need_reviews > 0 %}
+        <div class="alert-card warning">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <div class="alert-title">Propuestas con Pocas Revisiones</div>
+            <div class="alert-message">{{ proposals_need_reviews }} propuestas necesitan más revisiones para completar el proceso</div>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if pending_reviews > 5 %}
+        <div class="alert-card info">
+          <div class="alert-icon">📝</div>
+          <div class="alert-content">
+            <div class="alert-title">Carga de Trabajo Alta</div>
+            <div class="alert-message">{{ pending_reviews }} propuestas están pendientes de revisión</div>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if avg_review_time_days > 14 %}
+        <div class="alert-card danger">
+          <div class="alert-icon">⏰</div>
+          <div class="alert-content">
+            <div class="alert-title">Tiempo de Revisión Elevado</div>
+            <div class="alert-message">El tiempo promedio de revisión ({{ avg_review_time_days }} días) supera el objetivo</div>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if not proposals_need_reviews and not pending_reviews > 5 and not avg_review_time_days > 14 %}
+        <div class="alert-card success">
+          <div class="alert-icon">✅</div>
+          <div class="alert-content">
+            <div class="alert-title">Sistema Funcionando Correctamente</div>
+            <div class="alert-message">Todos los indicadores están dentro de los parámetros normales</div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Future Analytics Section -->
+  <div class="future-section">
+    <div class="future-card">
+      <div class="future-header">
+        <h3 class="future-title">🚧 Análisis Avanzado</h3>
+        <p class="future-subtitle">Próximas funcionalidades de análisis</p>
+      </div>
+      
+      <div class="future-content">
+        <div class="future-features">
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div class="feature-text">Gráficos interactivos con filtros temporales</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📈</div>
+            <div class="feature-text">Análisis de tendencias y predicciones</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📋</div>
+            <div class="feature-text">Reportes exportables en PDF/Excel</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-text">Métricas de satisfacción de usuarios</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🔍</div>
+            <div class="feature-text">Análisis detallado por investigador/institución</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-text">Dashboard en tiempo real con actualizaciones automáticas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Manager Dashboard Styles */
+.manager-dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header */
+.dashboard-header {
+  background: var(--gradient-primary);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.header-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.header-stat {
+  text-align: center;
+  background: rgba(255,255,255,0.1);
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.header-stat .stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.header-stat .stat-label {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+/* Main Stats Grid */
+.main-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.stat-card.primary { border-left-color: var(--primary); }
+.stat-card.success { border-left-color: var(--success); }
+.stat-card.warning { border-left-color: var(--warning); }
+.stat-card.info { border-left-color: var(--info); }
+.stat-card.secondary { border-left-color: var(--secondary); }
+.stat-card.accent { border-left-color: var(--accent); }
+.stat-card.danger { border-left-color: var(--danger); }
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  opacity: 0.8;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.stat-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+}
+
+.breakdown-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.breakdown-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.breakdown-value.success { color: var(--success); }
+.breakdown-value.warning { color: var(--warning); }
+.breakdown-value.info { color: var(--info); }
+.breakdown-value.danger { color: var(--danger); }
+.breakdown-value.accent { color: var(--accent); }
+
+/* Charts Section */
+.charts-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.chart-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.chart-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.chart-subtitle {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.chart-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.chart-label {
+  min-width: 120px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.chart-bar-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.chart-bar {
+  height: 1.5rem;
+  border-radius: 0.75rem;
+  min-width: 2px;
+  transition: all 0.3s ease;
+}
+
+.chart-bar.technique {
+  background: var(--gradient-primary);
+}
+
+.chart-bar.yearly {
+  background: var(--gradient-secondary);
+}
+
+.chart-value {
+  min-width: 30px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  font-size: 0.875rem;
+}
+
+/* KPI Section */
+.kpi-section, .top-section, .alerts-section {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.kpi-card.success { border-left: 4px solid var(--success); }
+.kpi-card.danger { border-left: 4px solid var(--danger); }
+.kpi-card.info { border-left: 4px solid var(--info); }
+.kpi-card.warning { border-left: 4px solid var(--warning); }
+
+.kpi-icon {
+  font-size: 3rem;
+  opacity: 0.8;
+}
+
+.kpi-content {
+  flex: 1;
+}
+
+.kpi-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.kpi-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0.5rem 0;
+}
+
+.kpi-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Top Techniques */
+.top-techniques-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.top-technique-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.top-technique-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.top-technique-card.rank-1 { border-left: 4px solid #FFD700; }
+.top-technique-card.rank-2 { border-left: 4px solid #C0C0C0; }
+.top-technique-card.rank-3 { border-left: 4px solid #CD7F32; }
+
+.rank-badge {
+  background: var(--gradient-primary);
+  color: white;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.technique-info {
+  flex: 1;
+}
+
+.technique-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.technique-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.technique-count {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.technique-bar {
+  height: 0.5rem;
+  background: var(--border);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.technique-fill {
+  height: 100%;
+  background: var(--gradient-accent);
+  border-radius: 0.25rem;
+  transition: width 0.3s ease;
+}
+
+/* Alerts Section */
+.alerts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.alert-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border-left: 4px solid var(--border);
+}
+
+.alert-card.success { border-left-color: var(--success); }
+.alert-card.warning { border-left-color: var(--warning); }
+.alert-card.info { border-left-color: var(--info); }
+.alert-card.danger { border-left-color: var(--danger); }
+
+.alert-icon {
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.alert-message {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Future Section */
+.future-section {
+  margin-bottom: 2rem;
+}
+
+.future-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  border: 2px dashed var(--border);
+}
+
+.future-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.future-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.future-subtitle {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.future-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-main);
+  border-radius: 0.5rem;
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+.feature-text {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .manager-dashboard {
+    padding: 1rem;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .header-stats {
+    justify-content: center;
+  }
+  
+  .main-stats-grid, .kpi-grid, .top-techniques-grid, .alerts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .charts-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-label {
+    min-width: 80px;
+    font-size: 0.8rem;
+  }
+  
+  .future-features {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Movimientos VDG{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Control de entradas y salidas{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_home' %}">Portal VDG</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>Movimientos</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Movimientos de items</h2>
+      <div class="vdg-card-subtitle">Registro de salidas y entradas del laboratorio.</div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+      <a class="vdg-btn vdg-btn-secondary" href="{% url 'sigmavdg:vdg_item_list' %}">
+        <i class="bi bi-box"></i>
+        Ver items
+      </a>
+      <a class="vdg-btn vdg-btn-primary" href="{% url 'sigmavdg:vdg_item_movement_create' %}">
+        <i class="bi bi-box-arrow-up"></i>
+        Registrar salida
+      </a>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+    <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_item_movements' %}">Todos</a>
+    <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_item_movements' %}?pending=1">Pendientes</a>
+    {% if show_pending %}
+      <span class="vdg-badge vdg-badge--warning">Filtro activo</span>
+    {% endif %}
+  </div>
+
+  {% if movements %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Fecha salida</th>
+            <th>Motivo</th>
+            <th>Destino</th>
+            <th>Fecha entrada</th>
+            <th>Estado</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for movement in movements %}
+            <tr>
+              <td><strong>{{ movement.item.code }}</strong></td>
+              <td>{{ movement.fecha_salida|date:"d/m/Y" }}</td>
+              <td>{{ movement.motivo_salida }}</td>
+              <td>{{ movement.destino|default:"-" }}</td>
+              <td>{{ movement.fecha_entrada|date:"d/m/Y"|default:"-" }}</td>
+              <td>
+                {% if movement.fecha_entrada %}
+                  <span class="vdg-badge vdg-badge--success">Recibido</span>
+                {% else %}
+                  <span class="vdg-badge vdg-badge--warning">Pendiente</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if not movement.fecha_entrada %}
+                  <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_item_movement_receive' movement.id %}">
+                    <i class="bi bi-box-arrow-in-down"></i>
+                    Registrar entrada
+                  </a>
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vdg-empty">
+      <i class="bi bi-arrow-left-right"></i>
+      <div>No hay movimientos registrados.</div>
+      <small>Registra una salida para iniciar el control.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

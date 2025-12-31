@@ -1,0 +1,379 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load role_filters %}
+
+{% block title %}Nueva Solicitud S-DP{% endblock %}
+{% block page_title %}Nueva Solicitud{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-thermometer-half me-2"></i>
+                        Solicitud de Análisis S-DP
+                    </h3>
+                    <p class="text-muted mb-0">Complete el formulario para solicitar análisis de desorción térmica</p>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="solicitud-form">
+                        {% csrf_token %}
+                        
+                        <!-- Selección de Técnicas -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-gear me-2"></i>
+                                            Selección de Técnicas
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check p-3 border rounded">
+                                                    <input class="form-check-input" type="checkbox" name="tecnica_desorcion" id="tecnica_desorcion" value="1">
+                                                    <label class="form-check-label" for="tecnica_desorcion">
+                                                        <i class="bi bi-thermometer-half text-primary me-2"></i>
+                                                        <strong>Desorción Térmica (TDS)</strong>
+                                                        <small class="d-block text-muted mt-1">Análisis de desorción térmica con espectrometría de masas</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check p-3 border rounded bg-light">
+                                                    <input class="form-check-input" type="checkbox" name="tecnica_permeacion" id="tecnica_permeacion" disabled>
+                                                    <label class="form-check-label text-muted" for="tecnica_permeacion">
+                                                        <i class="bi bi-droplet text-secondary me-2"></i>
+                                                        <strong>Permeación</strong>
+                                                        <small class="d-block text-muted mt-1">Disponible próximamente</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Número de Muestras -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-collection me-2"></i>
+                                            Configuración de Muestras
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label for="numero_muestras" class="form-label">
+                                                    <i class="bi bi-hash me-1"></i>
+                                                    Número de Muestras
+                                                </label>
+                                                <input type="number" class="form-control" id="numero_muestras" name="numero_muestras" 
+                                                       min="1" max="10" value="1" onchange="actualizarMuestras()">
+                                                <div class="form-text">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    Máximo 10 muestras por solicitud
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check p-3 border rounded bg-light">
+                                                    <input class="form-check-input" type="checkbox" id="condiciones_globales" onchange="toggleCondicionesGlobales()">
+                                                    <label class="form-check-label" for="condiciones_globales">
+                                                        <i class="bi bi-globe text-success me-2"></i>
+                                                        <strong>Condiciones globales para todas las muestras</strong>
+                                                        <small class="d-block text-muted mt-1">Las mismas condiciones experimentales para todas las muestras</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor de Muestras -->
+                        <div id="muestras-container">
+                            <!-- Las muestras se generarán dinámicamente aquí -->
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-warning">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="{% url 'sigmadp:panel_usuario' %}" class="btn btn-outline-secondary btn-lg">
+                                                <i class="bi bi-arrow-left me-2"></i>
+                                                Cancelar
+                                            </a>
+                                            <div class="text-center">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    Revisa todos los datos antes de enviar
+                                                </small>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="bi bi-send me-2"></i>
+                                                Enviar Solicitud
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let condicionesGlobales = false;
+let condicionesAnteriores = {};
+
+function actualizarMuestras() {
+    const numeroMuestras = parseInt(document.getElementById('numero_muestras').value);
+    const container = document.getElementById('muestras-container');
+    container.innerHTML = '';
+
+    for (let i = 1; i <= numeroMuestras; i++) {
+        const muestraDiv = crearMuestraDiv(i);
+        container.appendChild(muestraDiv);
+    }
+}
+
+function crearMuestraDiv(numero) {
+    const div = document.createElement('div');
+    div.className = 'muestra-card mb-4';
+    div.id = `muestra-${numero}`;
+    
+    div.innerHTML = `
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="bi bi-vial me-2"></i>
+                    Muestra ${numero}
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Información Básica -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-tag me-1"></i>
+                            Nombre de la Muestra
+                        </label>
+                        <input type="text" class="form-control" name="muestra_${numero}_nombre" 
+                               placeholder="Nombre de la muestra ${numero}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-box me-1"></i>
+                            Material
+                        </label>
+                        <input type="text" class="form-control" name="muestra_${numero}_material" 
+                               placeholder="Material de la muestra ${numero}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            Procedencia
+                        </label>
+                        <input type="text" class="form-control" name="muestra_${numero}_procedencia" 
+                               placeholder="Procedencia de la muestra ${numero}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-shapes me-1"></i>
+                            Geometría
+                        </label>
+                        <input type="text" class="form-control" name="muestra_${numero}_geometria" 
+                               placeholder="Circular, cuadrada, etc.">
+                    </div>
+                </div>
+
+                <!-- Condiciones Experimentales -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="mb-3">
+                            <i class="bi bi-thermometer-half me-2"></i>
+                            Condiciones Experimentales
+                        </h6>
+                    </div>
+                    
+                    ${numero > 1 ? `
+                    <div class="col-12 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="condiciones_iguales_${numero}" 
+                                   onchange="copiarCondicionesAnteriores(${numero})">
+                            <label class="form-check-label" for="condiciones_iguales_${numero}">
+                                <strong>Condiciones iguales a la muestra anterior</strong>
+                            </label>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-thermometer-high me-1"></i>
+                            Temperatura Máxima [°C]
+                        </label>
+                        <input type="number" class="form-control" name="muestra_${numero}_temperatura_maxima" 
+                               step="any" max="900" placeholder="Máximo 900°C">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-arrow-up-circle me-1"></i>
+                            Tasa Calentamiento [°C/min]
+                        </label>
+                        <input type="number" class="form-control" name="muestra_${numero}_tasa_calentamiento" 
+                               step="any" max="15" placeholder="Máximo 15°C/min">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-arrow-down-circle me-1"></i>
+                            Tasa Enfriamiento [°C/min]
+                        </label>
+                        <input type="number" class="form-control" name="muestra_${numero}_tasa_enfriamiento" 
+                               step="any" max="15" placeholder="Máximo 15°C/min">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-clock me-1"></i>
+                            Tiempo Permanencia [min]
+                        </label>
+                        <input type="number" class="form-control" name="muestra_${numero}_tiempo_permanencia" 
+                               step="any" placeholder="Minutos">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-scale me-1"></i>
+                            Masa a Registrar [uma]
+                        </label>
+                        <select class="form-control" name="muestra_${numero}_masa_registrar">
+                            <option value="">Seleccionar masa...</option>
+                            <option value="2">Masa 2 uma</option>
+                            <option value="3">Masa 3 uma</option>
+                            <option value="4">Masa 4 uma</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-rulers me-1"></i>
+                            Espesor [mm]
+                        </label>
+                        <input type="number" class="form-control" name="muestra_${numero}_espesor" 
+                               step="any" min="0.1" max="10" placeholder="0.1 - 10 mm">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-square me-1"></i>
+                            Tamaño [cm²]
+                        </label>
+                        <input type="number" class="form-control" name="muestra_${numero}_tamaño" 
+                               step="any" min="0.5" placeholder="Mínimo 0.5 cm²">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-chat-text me-1"></i>
+                            Observaciones
+                        </label>
+                        <textarea class="form-control" name="muestra_${numero}_observaciones" 
+                                  rows="2" placeholder="Observaciones específicas para esta muestra"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return div;
+}
+
+function toggleCondicionesGlobales() {
+    const checkbox = document.getElementById('condiciones_globales');
+    condicionesGlobales = checkbox.checked;
+    
+    if (condicionesGlobales) {
+        // Ocultar campos de condiciones en todas las muestras excepto la primera
+        const muestras = document.querySelectorAll('.muestra-card');
+        for (let i = 1; i < muestras.length; i++) {
+            const camposCondiciones = muestras[i].querySelectorAll('input[name*="_temperatura_"], input[name*="_tasa_"], input[name*="_tiempo_"], select[name*="_masa_"]');
+            camposCondiciones.forEach(campo => {
+                campo.style.display = 'none';
+                campo.previousElementSibling.style.display = 'none';
+            });
+        }
+    } else {
+        // Mostrar todos los campos
+        const camposCondiciones = document.querySelectorAll('input[name*="_temperatura_"], input[name*="_tasa_"], input[name*="_tiempo_"], select[name*="_masa_"]');
+        camposCondiciones.forEach(campo => {
+            campo.style.display = '';
+            if (campo.previousElementSibling) {
+                campo.previousElementSibling.style.display = '';
+            }
+        });
+    }
+}
+
+function copiarCondicionesAnteriores(numeroMuestra) {
+    const checkbox = document.getElementById(`condiciones_iguales_${numeroMuestra}`);
+    if (!checkbox.checked) return;
+
+    const muestraAnterior = numeroMuestra - 1;
+    const campos = ['temperatura_maxima', 'tasa_calentamiento', 'tasa_enfriamiento', 'tiempo_permanencia', 'masa_registrar'];
+    
+    campos.forEach(campo => {
+        const valorAnterior = document.querySelector(`input[name="muestra_${muestraAnterior}_${campo}"], select[name="muestra_${muestraAnterior}_${campo}"]`);
+        const campoActual = document.querySelector(`input[name="muestra_${numeroMuestra}_${campo}"], select[name="muestra_${numeroMuestra}_${campo}"]`);
+        
+        if (valorAnterior && campoActual) {
+            if (campo === 'masa_registrar') {
+                campoActual.value = valorAnterior.value;
+            } else {
+                campoActual.value = valorAnterior.value;
+            }
+        }
+    });
+}
+
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarMuestras();
+});
+</script>
+
+<style>
+.muestra-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #ffffff;
+}
+
+.muestra-card .card-header {
+    background: linear-gradient(135deg, #f8fafa 0%, #e2e8f0 100%);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.form-check-input:checked {
+    background-color: #155d27;
+    border-color: #155d27;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #155d27 0%, #40c057 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0d4a1f 0%, #2d8f47 100%);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,289 @@
+{% extends "sigmaoptics/base_optics.html" %}
+
+{% block optics_page_title %}Análisis de Datos - Sigma Optics{% endblock %}
+
+{% block optics_content %}
+<div class="container">
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">
+        <i class="bi bi-graph-up"></i>
+        Análisis de Datos Ópticos
+      </h2>
+      <div class="optics-card-actions">
+        <a href="{% url 'sigmaoptics:crear_analisis_datos' %}" class="optics-btn optics-btn-primary">
+          <i class="bi bi-plus-circle"></i>
+          Nuevo Análisis
+        </a>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-section">
+      <form method="get" class="row g-3">
+        <div class="col-md-4">
+          <label for="estado" class="form-label">Estado</label>
+          <select name="estado" id="estado" class="form-select">
+            <option value="">Todos los estados</option>
+            {% for value, label in estados %}
+              <option value="{{ value }}" {% if estado_actual == value %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <button type="submit" class="optics-btn optics-btn-secondary">
+            <i class="bi bi-funnel"></i>
+            Filtrar
+          </button>
+          <a href="{% url 'sigmaoptics:analisis_list' %}" class="optics-btn optics-btn-outline">
+            <i class="bi bi-x-circle"></i>
+            Limpiar
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lista de análisis -->
+    {% if analisis %}
+      <div class="analisis-grid">
+        {% for item in analisis %}
+          <div class="analisis-card">
+            <div class="analisis-header">
+              <h4 class="analisis-title">{{ item.nombre }}</h4>
+              <span class="status-badge status-{{ item.estado }}">
+                {{ item.get_estado_display }}
+              </span>
+            </div>
+            
+            <div class="analisis-content">
+              {% if item.descripcion %}
+                <p class="analisis-description">{{ item.descripcion|truncatechars:100 }}</p>
+              {% endif %}
+              
+              <div class="analisis-meta">
+                <div class="meta-item">
+                  <i class="bi bi-file-earmark"></i>
+                  <span>{{ item.get_tipo_archivo_display }}</span>
+                </div>
+                <div class="meta-item">
+                  <i class="bi bi-calendar"></i>
+                  <span>{{ item.creado_en|date:"d/m/Y H:i" }}</span>
+                </div>
+                {% if item.num_muestras %}
+                  <div class="meta-item">
+                    <i class="bi bi-collection"></i>
+                    <span>{{ item.num_muestras }} muestras</span>
+                  </div>
+                {% endif %}
+              </div>
+              
+              {% if item.columnas_detectadas %}
+                <div class="analisis-columns">
+                  <strong>Columnas detectadas:</strong>
+                  <span class="columns-list">{{ item.columnas_detectadas }}</span>
+                </div>
+              {% endif %}
+            </div>
+            
+            <div class="analisis-actions">
+              <a href="{% url 'sigmaoptics:analisis_detail' item.pk %}" class="optics-btn optics-btn-primary">
+                <i class="bi bi-eye"></i>
+                Ver Detalles
+              </a>
+              
+              {% if item.estado == 'completado' %}
+                {% if item.archivo_csv_limpio %}
+                  <a href="{{ item.archivo_csv_limpio.url }}" class="optics-btn optics-btn-secondary" target="_blank">
+                    <i class="bi bi-download"></i>
+                    CSV
+                  </a>
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Paginación -->
+      {% if analisis.has_other_pages %}
+        <nav aria-label="Paginación de análisis">
+          <ul class="pagination justify-content-center">
+            {% if analisis.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1{% if estado_actual %}&estado={{ estado_actual }}{% endif %}">
+                  <i class="bi bi-chevron-double-left"></i>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ analisis.previous_page_number }}{% if estado_actual %}&estado={{ estado_actual }}{% endif %}">
+                  <i class="bi bi-chevron-left"></i>
+                </a>
+              </li>
+            {% endif %}
+            
+            <li class="page-item active">
+              <span class="page-link">
+                Página {{ analisis.number }} de {{ analisis.paginator.num_pages }}
+              </span>
+            </li>
+            
+            {% if analisis.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ analisis.next_page_number }}{% if estado_actual %}&estado={{ estado_actual }}{% endif %}">
+                  <i class="bi bi-chevron-right"></i>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ analisis.paginator.num_pages }}{% if estado_actual %}&estado={{ estado_actual }}{% endif %}">
+                  <i class="bi bi-chevron-double-right"></i>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    {% else %}
+      <div class="empty-state">
+        <i class="bi bi-graph-up empty-icon"></i>
+        <h3>No hay análisis de datos</h3>
+        <p>Comienza creando tu primer análisis de datos ópticos.</p>
+        <a href="{% url 'sigmaoptics:crear_analisis_datos' %}" class="optics-btn optics-btn-primary">
+          <i class="bi bi-plus-circle"></i>
+          Crear Análisis
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.analisis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.analisis-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.analisis-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.analisis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.analisis-title {
+  color: #1e40af;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-procesando {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-completado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.analisis-content {
+  margin-bottom: 1.5rem;
+}
+
+.analisis-description {
+  color: #6b7280;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.analisis-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.meta-item i {
+  color: #3b82f6;
+}
+
+.analisis-columns {
+  background: #f8fafc;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.columns-list {
+  color: #6b7280;
+  font-family: monospace;
+}
+
+.analisis-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.filters-section {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+</style>
+{% endblock %}
+

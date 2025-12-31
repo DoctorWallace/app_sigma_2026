@@ -1,0 +1,119 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Incidencias LO3{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Controles intermedios / Incidencias{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>Incidencias</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">Incidencias</div>
+    <div class="lo3-page-meta">
+      <span>{{ incidents|length }} registros</span>
+    </div>
+  </div>
+  <div>
+    <a class="lo3-btn lo3-btn-primary" href="{% url 'sigmaconf:lo3_incident_create' %}">
+      <i class="bi bi-plus-circle"></i>
+      Nueva incidencia
+    </a>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Listado</h2>
+      <div class="lo3-card-subtitle">Filtra por tipo, estado o severidad.</div>
+    </div>
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+      <select name="type" class="form-control">
+        <option value="">Tipo</option>
+        <option value="control_intermedio" {% if filters.type == "control_intermedio" %}selected{% endif %}>Control intermedio</option>
+        <option value="incidencia" {% if filters.type == "incidencia" %}selected{% endif %}>Incidencia</option>
+      </select>
+      <select name="status" class="form-control">
+        <option value="">Estado</option>
+        <option value="open" {% if filters.status == "open" %}selected{% endif %}>Abierta</option>
+        <option value="in_progress" {% if filters.status == "in_progress" %}selected{% endif %}>En progreso</option>
+        <option value="closed" {% if filters.status == "closed" %}selected{% endif %}>Cerrada</option>
+      </select>
+      <select name="severity" class="form-control">
+        <option value="">Severidad</option>
+        <option value="low" {% if filters.severity == "low" %}selected{% endif %}>Baja</option>
+        <option value="medium" {% if filters.severity == "medium" %}selected{% endif %}>Media</option>
+        <option value="high" {% if filters.severity == "high" %}selected{% endif %}>Alta</option>
+      </select>
+      <button type="submit" class="lo3-btn lo3-btn-secondary">Filtrar</button>
+    </form>
+  </div>
+
+  {% if incidents %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Título</th>
+            <th>Severidad</th>
+            <th>Estado</th>
+            <th>Equipo</th>
+            <th>Sesión</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for incident in incidents %}
+            <tr>
+              <td>{{ incident.get_incident_type_display }}</td>
+              <td><strong>{{ incident.title }}</strong></td>
+              <td>
+                {% if incident.severity == "high" %}
+                  <span class="lo3-badge lo3-badge--danger">Alta</span>
+                {% elif incident.severity == "medium" %}
+                  <span class="lo3-badge lo3-badge--warning">Media</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--muted">Baja</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if incident.status == "closed" %}
+                  <span class="lo3-badge lo3-badge--success">Cerrada</span>
+                {% elif incident.status == "in_progress" %}
+                  <span class="lo3-badge lo3-badge--warning">En progreso</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--info">Abierta</span>
+                {% endif %}
+              </td>
+              <td>{{ incident.equipment.name|default:"-" }}</td>
+              <td>{% if incident.session %}{{ incident.session.lot_code }}{% else %}-{% endif %}</td>
+              <td>{{ incident.created_at|date:"d/m/Y" }}</td>
+              <td>
+                <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_incident_detail' incident.pk %}">
+                  <i class="bi bi-eye"></i>
+                  Ver
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-exclamation-diamond"></i>
+      <div>No hay incidencias registradas.</div>
+      <small>Registra una incidencia o control intermedio para empezar.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

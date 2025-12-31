@@ -1,0 +1,92 @@
+{% load static %}
+{% load role_filters %}
+<aside class="sidebar" role="navigation" aria-label="Menú lateral SIGMA DTF">
+  <div class="sidebar-header">
+    <img class="logo" src="/media/Logos/logo_sigma_dtf.png" alt="SIGMA DTF">
+    <div class="brand-title">SIGMA DTF</div>
+    <div class="brand-sub">Laboratorios y Servicios de la División de Tecnologías para la Fusión</div>
+  </div>
+
+  <div class="banner" id="dtfBanner">
+    <a class="slide active" href="{% url 'dtf:lab_info' 'dp' %}" style="background-image:url('/media/Permeacion_desorcion/Permeation-tests.png')">
+      <span class="overlay"><span class="banner-text">S-DP · Desorción y permeación</span></span>
+    </a>
+    <div class="slide" style="background-image:url('/media/mec/Mechanical-properties.jpg')">
+      <span class="overlay"><span class="banner-text">S-MEC · Propiedades mecánicas</span></span>
+    </div>
+    <div class="slide" style="background-image:url('/media/mec/Micromechanical-properties.png')">
+      <span class="overlay"><span class="banner-text">Micromecánica de precisión</span></span>
+    </div>
+    <div class="slide" style="background-image:url('/media/sims_implant/Low-kV-implantation.png')">
+      <span class="overlay"><span class="banner-text">SIGMA SIMS·Implant</span></span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    {% if request.user.is_authenticated %}
+      <a class="nav-item" href="{% url 'portal:home' %}"><i class="bi bi-house"></i> Portal SIGMA</a>
+      
+      {# Para técnicos de S-LAB #}
+      {% if request.user|has_group:'tecnico_responsable_s_lab' %}
+        <div class="nav-title">Panel Técnico S-LAB</div>
+        <a class="nav-item" href="{% url 'sigmalab:inbox-incidencias' %}"><i class="bi bi-inbox"></i> Inbox incidencias</a>
+        <a class="nav-item" href="{% url 'sigmalab:panel-tecnico' %}"><i class="bi bi-speedometer2"></i> Mi Panel Técnico</a>
+      {# Para técnicos de S-MEC #}
+      {% elif request.user|has_group:'tecnico_responsable_s_mec' %}
+        <div class="nav-title">Panel Técnico S-MEC</div>
+        <a class="nav-item" href="{% url 'mec:inbox' %}"><i class="bi bi-inbox"></i> Bandeja de entrada</a>
+        <a class="nav-item" href="{% url 'mec:ficha_equipo' %}"><i class="bi bi-info-circle"></i> Ficha de equipo</a>
+        <a class="nav-item" href="{% url 'mec:necesidades' %}"><i class="bi bi-journal-check"></i> Necesidades</a>
+      {# Para técnicos de S-DP #}
+      {% elif request.user|has_group:'tecnico_responsable_s_dp' %}
+        <div class="nav-title">Panel Técnico S-DP</div>
+        <a class="nav-item" href="{% url 'sigmadp:bandeja_entrada_termica' %}"><i class="bi bi-inbox"></i> Bandeja de entrada</a>
+        <a class="nav-item" href="{% url 'sigmadp:representacion_resultados' %}"><i class="bi bi-graph-up"></i> Representación Resultados</a>
+        <a class="nav-item" href="{% url 'sigmadp:inbox' %}"><i class="bi bi-envelope"></i> Mensajes S-DP</a>
+        <a class="nav-item" href="{% url 'sigmadp:ficha_equipo' %}"><i class="bi bi-gear"></i> Ficha Equipo</a>
+        <a class="nav-item" href="{% url 'sigmadp:necesidades' %}"><i class="bi bi-clipboard-check"></i> Necesidades</a>
+      {# Para técnicos de S-OPTICS #}
+      {% elif request.user|has_group:'tecnico_responsable_s_optics' %}
+        <div class="nav-title">Panel Técnico S-OPTICS</div>
+        <a class="nav-item" href="{% url 'sigmaoptics:panel_tecnico' %}"><i class="bi bi-speedometer2"></i> Mi Panel Técnico</a>
+        <a class="nav-item" href="{% url 'sigmaoptics:solicitud_list' %}"><i class="bi bi-list-ul"></i> Solicitudes</a>
+        <a class="nav-item" href="{% url 'sigmaoptics:solicitud_create' %}"><i class="bi bi-plus-circle"></i> Nueva Solicitud</a>
+      {% else %}
+        {# Para usuarios normales #}
+        <div class="nav-title">Navegación</div>
+        <a class="nav-item" href="/dtf/"><i class="bi bi-speedometer2"></i> Mi Panel DTF</a>
+        <a class="nav-item" href="/dtf/lab/"><i class="bi bi-flask"></i> S-LAB</a>
+        <a class="nav-item" href="/dtf/mec/"><i class="bi bi-gear"></i> S-MEC</a>
+        <a class="nav-item" href="/dtf/dp/"><i class="bi bi-thermometer-half"></i> S-DP</a>
+        <a class="nav-item" href="/dtf/optics/"><i class="bi bi-eye"></i> S-OPTICS</a>
+      {% endif %}
+      
+      {# Enlaces comunes #}
+      <a class="nav-item" href="{% url 'sigmalab:reportar-incidencia' %}"><i class="bi bi-exclamation-triangle"></i> Reportar incidencia</a>
+      <a class="nav-item" href="{% url 'portal:faq' %}"><i class="bi bi-question-circle"></i> FAQ DTF</a>
+      
+      {# Cerrar sesión #}
+      <div class="nav-title">Sesión</div>
+      <a class="nav-item" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+    {% else %}
+      {# Usuario no autenticado - CTA links #}
+      <div class="nav-title">Accesos</div>
+      <a class="nav-item {% if request.path == cta_links.portal|default:'' %}active{% endif %}"
+         href="{{ cta_links.portal|default:'/' }}">
+        <i class="bi bi-house"></i> Portal SIGMA
+      </a>
+      <a class="nav-item {% if request.path == cta_links.login|default:'' %}active{% endif %}"
+         href="{{ cta_links.login|default:'#' }}">
+        <i class="bi bi-box-arrow-in-right"></i> Entrar
+      </a>
+      <a class="nav-item {% if request.path == cta_links.register|default:'' %}active{% endif %}"
+         href="{{ cta_links.register|default:'#' }}">
+        <i class="bi bi-person-plus"></i> Registrarse
+      </a>
+      <a class="nav-item {% if request.resolver_match.url_name == 'faq' %}active{% endif %}"
+         href="{% url 'portal:faq' %}">
+        <i class="bi bi-question-circle"></i> FAQ DTF
+      </a>
+    {% endif %}
+  </nav>
+</aside>

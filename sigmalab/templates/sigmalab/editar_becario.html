@@ -1,0 +1,222 @@
+{% extends "base_dtf.html" %}
+{% block title %}Editar {{ becario.nombre_completo }} - S-LAB{% endblock %}
+{% block page_title %}Editar Becario{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:800px; margin:0 auto;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <h3 style="margin:0;">Editar: {{ becario.nombre_completo }}</h3>
+    <a class="btn btn-outline-secondary" href="{% url 'sigmalab:detalle-becario' becario.id %}">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- Información personal -->
+    <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:.5rem; padding:1.5rem; margin-bottom:1.5rem;">
+      <h4 style="color:#495057; margin-bottom:1rem; border-bottom:2px solid #007bff; padding-bottom:.5rem;">
+        <i class="bi bi-person"></i> Información Personal
+      </h4>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+        <div>
+          <label for="{{ form.nombre.id_for_label }}" class="form-label">{{ form.nombre.label }}</label>
+          {{ form.nombre }}
+          {% if form.nombre.errors %}
+            <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+              {% for error in form.nombre.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="{{ form.apellidos.id_for_label }}" class="form-label">{{ form.apellidos.label }}</label>
+          {{ form.apellidos }}
+          {% if form.apellidos.errors %}
+            <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+              {% for error in form.apellidos.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div>
+          <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+              {% for error in form.email.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="{{ form.telefono.id_for_label }}" class="form-label">{{ form.telefono.label }}</label>
+          {{ form.telefono }}
+          {% if form.telefono.errors %}
+            <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+              {% for error in form.telefono.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Información académica -->
+    <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:.5rem; padding:1.5rem; margin-bottom:1.5rem;">
+      <h4 style="color:#495057; margin-bottom:1rem; border-bottom:2px solid #007bff; padding-bottom:.5rem;">
+        <i class="bi bi-mortarboard"></i> Información Académica
+      </h4>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+        <div>
+          <label for="{{ form.tipo_becario.id_for_label }}" class="form-label">{{ form.tipo_becario.label }}</label>
+          {{ form.tipo_becario }}
+          {% if form.tipo_becario.errors %}
+            <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+              {% for error in form.tipo_becario.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="{{ form.institucion_origen.id_for_label }}" class="form-label">{{ form.institucion_origen.label }}</label>
+          {{ form.institucion_origen }}
+          {% if form.institucion_origen.errors %}
+            <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+              {% for error in form.institucion_origen.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Fechas de asociación -->
+    <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:.5rem; padding:1.5rem; margin-bottom:1.5rem;">
+      <h4 style="color:#495057; margin-bottom:1rem; border-bottom:2px solid #007bff; padding-bottom:.5rem;">
+        <i class="bi bi-calendar"></i> Fechas de Asociación
+      </h4>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div>
+          <label for="{{ form.fecha_inicio.id_for_label }}" class="form-label">{{ form.fecha_inicio.label }}</label>
+          {{ form.fecha_inicio }}
+          {% if form.fecha_inicio.errors %}
+            <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+              {% for error in form.fecha_inicio.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="{{ form.fecha_fin.id_for_label }}" class="form-label">{{ form.fecha_fin.label }}</label>
+          {{ form.fecha_fin }}
+          {% if form.fecha_fin.errors %}
+            <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+              {% for error in form.fecha_fin.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+          <small style="color:#6c757d; font-size:.8rem;">Opcional - Dejar vacío si no hay fecha de finalización</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Permisos y observaciones -->
+    <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:.5rem; padding:1.5rem; margin-bottom:1.5rem;">
+      <h4 style="color:#495057; margin-bottom:1rem; border-bottom:2px solid #007bff; padding-bottom:.5rem;">
+        <i class="bi bi-gear"></i> Permisos y Observaciones
+      </h4>
+      
+      <div style="margin-bottom:1rem;">
+        <div style="display:flex; align-items:center; gap:.5rem;">
+          {{ form.puede_solicitar_autonomo }}
+          <label for="{{ form.puede_solicitar_autonomo.id_for_label }}" style="margin:0; font-weight:600;">
+            {{ form.puede_solicitar_autonomo.label }}
+          </label>
+        </div>
+        <small style="color:#6c757d; font-size:.8rem; margin-left:1.5rem;">
+          Si está marcado, el becario podrá realizar solicitudes de forma autónoma
+        </small>
+        {% if form.puede_solicitar_autonomo.errors %}
+          <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+            {% for error in form.puede_solicitar_autonomo.errors %}{{ error }}{% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      
+      <div>
+        <label for="{{ form.observaciones.id_for_label }}" class="form-label">{{ form.observaciones.label }}</label>
+        {{ form.observaciones }}
+        {% if form.observaciones.errors %}
+          <div style="color:#dc3545; font-size:.875rem; margin-top:.25rem;">
+            {% for error in form.observaciones.errors %}{{ error }}{% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div style="display:flex; gap:.5rem; justify-content:flex-end; padding-top:1rem; border-top:1px solid #dee2e6;">
+      <a class="btn btn-outline-secondary" href="{% url 'sigmalab:detalle-becario' becario.id %}">
+        <i class="bi bi-x-circle"></i> Cancelar
+      </a>
+      <button type="submit" class="btn">
+        <i class="bi bi-check-circle"></i> Guardar Cambios
+      </button>
+    </div>
+  </form>
+</div>
+
+<style>
+.form-label {
+  display: block;
+  margin-bottom: .5rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.form-input {
+  width: 100%;
+  padding: .75rem;
+  border: 1px solid #ced4da;
+  border-radius: .375rem;
+  font-size: 1rem;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.form-input:focus {
+  border-color: #007bff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-check-input {
+  width: 1rem;
+  height: 1rem;
+  margin-top: .25rem;
+  vertical-align: top;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 1px solid rgba(0, 0, 0, .25);
+  appearance: none;
+  color-adjust: exact;
+}
+
+.form-check-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+@media (max-width: 768px) {
+  .card {
+    margin: 0 -.5rem;
+    border-radius: 0;
+  }
+  
+  div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
+{% endblock %}

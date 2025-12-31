@@ -1,0 +1,247 @@
+{% extends 'icts/base_generic.html' %}
+
+{% block title %}Panel del Revisor{% endblock %}
+{% block page_title %}👨‍🔬 Panel del Revisor{% endblock %}
+
+{% block page_content %}
+<!-- KPIs del revisor -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">📊 Mi Actividad de Revisión</h2>
+  </div>
+  
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+    <div class="card" style="margin: 0; text-align: center;">
+      <h3 style="margin-top: 0; color: var(--warning);">⏳ Pendientes</h3>
+      <p style="font-size: 2rem; margin: 0.5rem 0; font-weight: 700; color: var(--warning);">{{ kpis.pending }}</p>
+    </div>
+    <div class="card" style="margin: 0; text-align: center;">
+      <h3 style="margin-top: 0; color: var(--success);">✅ Completadas</h3>
+      <p style="font-size: 2rem; margin: 0.5rem 0; font-weight: 700; color: var(--success);">{{ kpis.done }}</p>
+    </div>
+    <div class="card" style="margin: 0; text-align: center;">
+      <h3 style="margin-top: 0; color: var(--info);">👍 Aprobadas</h3>
+      <p style="font-size: 2rem; margin: 0.5rem 0; font-weight: 700; color: var(--info);">{{ kpis.approved }}</p>
+    </div>
+    <div class="card" style="margin: 0; text-align: center;">
+      <h3 style="margin-top: 0; color: var(--danger);">👎 Rechazadas</h3>
+      <p style="font-size: 2rem; margin: 0.5rem 0; font-weight: 700; color: var(--danger);">{{ kpis.rejected }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Propuestas pendientes de evaluar -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">⏳ Pendientes de Evaluar</h2>
+    <p class="muted">Propuestas que requieren tu revisión</p>
+  </div>
+  
+  {% if pendientes %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Solicitante</th>
+            <th>Centro</th>
+            <th>Facilidades</th>
+            <th>Creada</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for review in pendientes %}
+          <tr>
+            <td><strong>#{{ review.proposal.id }}</strong></td>
+            <td>
+              <strong>{{ review.proposal.title }}</strong>
+              {% if review.proposal.scope %}
+                <br><small class="muted">{{ review.proposal.scope|truncatechars:100 }}</small>
+              {% endif %}
+            </td>
+            <td>
+              {{ review.proposal.applicant.get_full_name|default:review.proposal.applicant.username }}
+              <br><small class="muted">{{ review.proposal.applicant.email }}</small>
+            </td>
+            <td>
+              {% if review.proposal.applicant.icts_profile %}
+                <small>{{ review.proposal.applicant.icts_profile.center|default:"-" }}</small>
+              {% else %}
+                <small class="muted">-</small>
+              {% endif %}
+            </td>
+            <td>
+              {% for facility in review.proposal.facilities.all %}
+                <span class="badge blue">{{ facility.name }}</span>
+              {% empty %}
+                <small class="muted">Sin facilidades</small>
+              {% endfor %}
+            </td>
+            <td>
+              <small>{{ review.proposal.created_at|date:"Y-m-d H:i" }}</small>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <a href="{% url 'icts:review_start' review.proposal.id %}" class="btn btn-primary">
+                  📝 Evaluar
+                </a>
+                <a href="{% url 'icts:proposal_detail' review.proposal.id %}" 
+                   class="btn btn-secondary" 
+                   target="_blank" 
+                   rel="noopener">
+                  👁️ Ver propuesta
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert success">
+      <strong>✅ No tienes solicitudes pendientes</strong><br>
+      ¡Excelente trabajo! Has completado todas tus revisiones asignadas.
+    </div>
+  {% endif %}
+</div>
+
+<!-- Evaluaciones completadas -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">✅ Evaluaciones Completadas</h2>
+    <p class="muted">Historial de tus revisiones realizadas</p>
+  </div>
+  
+  {% if hechas %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Decisión</th>
+            <th>Puntuación</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for review in hechas %}
+          <tr>
+            <td><strong>#{{ review.proposal.id }}</strong></td>
+            <td>
+              <strong>{{ review.proposal.title }}</strong>
+              {% if review.proposal.scope %}
+                <br><small class="muted">{{ review.proposal.scope|truncatechars:100 }}</small>
+              {% endif %}
+            </td>
+            <td>
+              {% if review.decision == 'approve' %}
+                <span class="badge green">✅ Aprobar</span>
+              {% elif review.decision == 'request_changes' %}
+                <span class="badge yellow">🔄 Solicitar cambios</span>
+              {% elif review.decision == 'reject' %}
+                <span class="badge red">❌ Rechazar</span>
+              {% else %}
+                <span class="badge blue">⏳ Pendiente</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if review.score_scientific_quality %}
+                <small>
+                  Científica: {{ review.score_scientific_quality }}/5<br>
+                  Infraestructura: {{ review.score_need_infrastructure|default:"-" }}/5<br>
+                  Industrial: {{ review.score_industrial_potential|default:"-" }}/5
+                </small>
+              {% else %}
+                <small class="muted">Sin puntuación</small>
+              {% endif %}
+            </td>
+            <td>
+              <small>{{ review.updated_at|date:"Y-m-d H:i" }}</small>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <a href="{% url 'icts:review_start' review.proposal.id %}" class="btn btn-secondary">
+                  ✏️ Editar
+                </a>
+                <a href="{% url 'icts:proposal_detail' review.proposal.id %}" 
+                   class="btn btn-info" 
+                   target="_blank" 
+                   rel="noopener">
+                  👁️ Ver
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert info">
+      <strong>📝 Sin evaluaciones completadas</strong><br>
+      Aún no has completado ninguna evaluación.
+    </div>
+  {% endif %}
+</div>
+
+<!-- Estadísticas personales -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">📈 Mis Estadísticas</h2>
+    <p class="muted">Rendimiento y tendencias de revisión</p>
+  </div>
+  
+  <div class="d-flex gap-4" style="flex-wrap: wrap;">
+    <div class="badge blue">
+      Total revisadas: {{ kpis.done }}
+    </div>
+    <div class="badge green">
+      Tasa aprobación: {{ approval_rate }}%
+    </div>
+    <div class="badge yellow">
+      Promedio tiempo: {{ avg_review_time }} días
+    </div>
+    <div class="badge info">
+      Última actividad: {{ last_activity|date:"Y-m-d" }}
+    </div>
+  </div>
+  
+  {% if kpis.done > 0 %}
+    <div class="mt-4">
+      <h4>Distribución de decisiones:</h4>
+      <div class="d-flex gap-2" style="flex-wrap: wrap;">
+        <div class="badge green">
+          Aprobadas: {{ kpis.approved }} ({{ approved_percentage }}%)
+        </div>
+        <div class="badge yellow">
+          Con cambios: {{ kpis.request_changes|default:0 }} ({{ changes_percentage }}%)
+        </div>
+        <div class="badge red">
+          Rechazadas: {{ kpis.rejected }} ({{ rejected_percentage }}%)
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Acciones rápidas -->
+<div class="actions">
+  <a href="{% url 'icts:reviewer_inbox' %}" class="btn btn-primary">
+    📝 Bandeja de Revisión
+  </a>
+  <a href="{% url 'icts:manager_dashboard' %}" class="btn btn-secondary">
+    📊 Dashboard Manager
+  </a>
+  <a href="{% url 'icts:responsable_dashboard' %}" class="btn btn-info">
+    👨‍💼 Dashboard Responsable
+  </a>
+  <a href="{% url 'icts:dashboard' %}" class="btn btn-secondary">
+    🏠 Volver al Dashboard
+  </a>
+</div>
+{% endblock %}

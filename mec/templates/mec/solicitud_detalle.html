@@ -1,0 +1,61 @@
+{% extends "base_dtf.html" %}
+{% block title %}MEC#{{ s.id }} · Detalle{% endblock %}
+{% block page_title %}MEC#{{ s.id }} · Detalle{% endblock %}
+{% block content %}
+<style>
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+  .k{font-weight:700;color:var(--text-secondary)}
+  .btn{display:inline-flex;gap:.35rem;align-items:center;padding:.35rem .6rem;border:1px solid var(--border);border-radius:.5rem;text-decoration:none}
+</style>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h3 style="margin:0">Solicitud</h3>
+    <a href="#" class="btn" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</a>
+  </div>
+  <div class="grid" style="margin-top:1rem">
+    <div><span class="k">Solicitante:</span> {{ s.solicitante }}</div>
+    <div><span class="k">Estado:</span> {{ s.get_estado_display }}</div>
+    <div><span class="k">Material:</span> {{ s.material|default:"-" }}</div>
+    <div><span class="k">Procedencia:</span> {{ s.procedencia|default:"-" }}</div>
+    <div><span class="k">Nº muestras:</span> {{ s.numero_muestras }}</div>
+  </div>
+  <div style="margin-top:1rem">
+    <span class="k">Ensayos:</span>
+    {% if s.ensayo_dureza %}<span class="tag">Dureza</span>{% endif %}
+    {% if s.ensayo_traccion %}<span class="tag">Tracción</span>{% endif %}
+    {% if s.ensayo_fatiga %}<span class="tag">Fatiga</span>{% endif %}
+    {% if s.ensayo_creep_fatiga %}<span class="tag">Creep-Fatiga</span>{% endif %}
+  </div>
+  {% if s.nombres.all %}
+  <div style="margin-top:1rem">
+    <span class="k">Muestras:</span>
+    {% for n in s.nombres.all %}
+      <span class="tag">{{ n.nombre }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Diario</h3>
+  <form method="post" action="{% url 'mec:evento_crear' s.pk %}" style="margin-bottom:1rem">
+    {% csrf_token %}
+    <textarea name="texto" class="form-input" rows="3" placeholder="Añadir nota/evento"></textarea>
+    <div style="margin-top:.5rem"><button class="btn" type="submit"><i class="bi bi-plus-circle"></i> Añadir</button></div>
+  </form>
+  {% if eventos %}
+    <ul style="list-style:none;padding:0;margin:0">
+      {% for e in eventos %}
+        <li style="padding:.5rem 0;border-bottom:1px solid var(--border)">
+          <div class="k">{{ e.creado_en|date:"d/m/Y H:i" }} · {{ e.autor }}</div>
+          <div>{{ e.texto|linebreaksbr }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">Sin entradas todavía.</div>
+  {% endif %}
+</div>
+{% endblock %}
+

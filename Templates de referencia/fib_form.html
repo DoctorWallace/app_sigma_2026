@@ -1,0 +1,71 @@
+{% extends "base_generic.html" %}
+
+{% block title %}FIB details | SIGMA-Lab{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2 class="page-title">FIB — Details for: {{ proposal.title }}</h2>
+
+  <div class="muted" style="margin-bottom:10px">
+    <strong>REQUIREMENTS FOR SAMPLE ACCEPTANCE</strong>
+    <ul class="mb-1">
+      <li>Mirror polished or at least with 2500 grit SiC sandpaper.</li>
+      <li>Do not exceed a maximum height of 2 cm, a width of 4 cm and, a length of 4 cm.</li>
+      <li>Provide a clean sample, wrapped in foil or cloth (avoid plastic) and legible identification.</li>
+      <li>Conductive sample.</li>
+    </ul>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>SAMPLE DESCRIPTION</legend>
+      {{ sample_formset.management_form }}
+      {% for sf in sample_formset %}
+        <div class="card" style="margin:8px 0;padding:8px">
+          <div class="grid">
+            <p><label>{{ sf.identification.label }}</label>{{ sf.identification }}</p>
+            <p><label>{{ sf.name.label }}</label>{{ sf.name }}</p>
+          </div>
+          <p><label>{{ sf.details.label }}</label>{{ sf.details }}</p>
+          {% if sf.DELETE %}<label style="color:#b00020">{{ sf.DELETE }} Remove</label>{% endif %}
+        </div>
+      {% endfor %}
+    </fieldset>
+
+    <fieldset>
+      <legend>SAMPLE SAFE HANDLING</legend>
+      <div class="grid">
+        <p>{{ form.toxic }} {{ form.toxic.label }}</p>
+        <p>{{ form.corrosive }} {{ form.corrosive.label }}</p>
+        <p>{{ form.irritating }} {{ form.irritating.label }}</p>
+        <p>{{ form.radioactive }} {{ form.radioactive.label }}</p>
+      </div>
+      <p><label>{{ form.safe_comments.label }}</label>{{ form.safe_comments }}</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>IMPORTANT INFORMATION</legend>
+      <div class="grid">
+        <p>{{ form.specific_area }} {{ form.specific_area.label }}</p>
+        <p><label>{{ form.area_description.label }}</label>{{ form.area_description }}</p>
+
+        <p>{{ form.specific_dimensions }} {{ form.specific_dimensions.label }}</p>
+        <p><label>{{ form.depth_um.label }}</label>{{ form.depth_um }}</p>
+        <p><label>{{ form.length_um.label }}</label>{{ form.length_um }}</p>
+
+        <p>{{ form.conductive }} {{ form.conductive.label }}</p>
+        <p>{{ form.final_low_voltage }} {{ form.final_low_voltage.label }}</p>
+        <p>{{ form.sensitive_ga }} {{ form.sensitive_ga.label }}</p>
+      </div>
+      <p><label>{{ form.further_comments.label }}</label>{{ form.further_comments }}</p>
+    </fieldset>
+
+    <div class="actions">
+      <button class="btn" type="submit">Save FIB details</button>
+      <a class="btn secondary" href="{% url 'icts:proposal_edit' proposal.pk %}">Back to proposal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

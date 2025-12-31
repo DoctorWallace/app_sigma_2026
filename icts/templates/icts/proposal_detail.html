@@ -1,0 +1,1161 @@
+{% extends "base_icts.html" %}
+{% load role_filters %}
+{% block title %}Detalle de propuesta - {{ obj.title|default:"Sin título" }}{% endblock %}
+{% block page_title %}Detalle de Propuesta{% endblock %}
+
+{% block content %}
+<div class="proposal-detail-container">
+  
+  <!-- Header de la propuesta -->
+  <div class="proposal-header">
+    <div class="proposal-title-section">
+      <h1 class="proposal-title">{{ obj.title|default:"(Sin título)" }}</h1>
+      <div class="proposal-meta">
+        <div class="meta-item">
+          <span class="meta-label">ID:</span>
+          <span class="meta-value">#{{ obj.id }}</span>
+        </div>
+        {% if obj.access_code %}
+        <div class="meta-item access-code-item {% if obj.status == 'submitted' %}access-code-temporary{% elif obj.status == 'accepted' %}access-code-approved{% endif %}">
+          <span class="meta-label">Código de Acceso:</span>
+          <span class="meta-value access-code">{{ obj.access_code }}</span>
+          {% if obj.status == 'submitted' %}
+          <span class="access-code-status">(Temporal)</span>
+          {% elif obj.status == 'accepted' %}
+          <span class="access-code-status">(Aprobado)</span>
+          {% endif %}
+        </div>
+        {% endif %}
+        <div class="meta-item">
+          <span class="meta-label">Solicitante:</span>
+          <span class="meta-value">{{ obj.applicant.get_full_name|default:obj.applicant.get_username }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Creada:</span>
+          <span class="meta-value">{{ obj.created_at|date:"d/m/Y H:i" }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="proposal-status-section">
+      <span class="status-badge status-{{ obj.status }}">
+        {% if obj.status == 'draft' %}📝 Borrador
+        {% elif obj.status == 'submitted' %}📤 En Revisión
+        {% elif obj.status == 'changes_requested' %}?? Cambios solicitados
+        {% elif obj.status == 'accepted' %}✅ Aceptada
+        {% elif obj.status == 'rejected' %}❌ Rechazada
+        {% else %}{{ obj.get_status_display }}{% endif %}
+      </span>
+    </div>
+  </div>
+
+  <div class="proposal-content">
+    
+    <!-- Columna principal -->
+    <div class="proposal-main">
+      
+      <!-- Información del proyecto -->
+      <div class="info-section">
+        <h3 class="section-title">📊 Información del Proyecto</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label class="info-label">Descripción:</label>
+            <div class="info-value">{{ obj.scope|default:"(Sin descripción)" }}</div>
+          </div>
+          {% if obj.project_name %}
+          <div class="info-item">
+            <label class="info-label">Proyecto de financiación:</label>
+            <div class="info-value">{{ obj.project_name }}</div>
+          </div>
+          {% endif %}
+          {% if obj.project_type %}
+          <div class="info-item">
+            <label class="info-label">Tipo de proyecto:</label>
+            <div class="info-value">{{ obj.project_type }}</div>
+          </div>
+          {% endif %}
+          {% if obj.funding_source %}
+          <div class="info-item">
+            <label class="info-label">Fuente de financiación:</label>
+            <div class="info-value">{{ obj.funding_source }}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Instalaciones solicitadas -->
+      <div class="info-section">
+        <h3 class="section-title"><i class="bi bi-building"></i> Instalaciones Solicitadas</h3>
+        <div class="facilities-list">
+          {% if obj.facility_sem %}<span class="facility-tag"><i class="bi bi-search"></i> SEM/EDX</span>{% endif %}
+          {% if obj.facility_sem_fib %}<span class="facility-tag"><i class="bi bi-lightning-charge"></i> FIB</span>{% endif %}
+          {% if obj.facility_imp %}<span class="facility-tag"><i class="bi bi-bullseye"></i> Ion Implanter</span>{% endif %}
+          {% if obj.facility_sims %}<span class="facility-tag"><i class="bi bi-graph-up"></i> SIMS</span>{% endif %}
+          {% if obj.facility_confocal %}<span class="facility-tag"><i class="bi bi-eye"></i> Metrología de superficies ópticas 3D</span>{% endif %}
+          {% if obj.facility_vdg %}<span class="facility-tag"><i class="bi bi-lightning"></i> VDG</span>{% endif %}
+          {% if obj.facility_profilometer %}<span class="facility-tag"><i class="bi bi-rulers"></i> Profilometer</span>{% endif %}
+          {% if not obj.facility_sem and not obj.facility_sem_fib and not obj.facility_imp and not obj.facility_sims and not obj.facility_confocal and not obj.facility_vdg and not obj.facility_profilometer %}
+            <span class="no-facilities">No se han seleccionado instalaciones específicas</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if obj.facility_olmat %}
+      <div class="info-section">
+        <h3 class="section-title"><i class="bi bi-droplet-half"></i> Solicitud OLMAT (flujo independiente)</h3>
+        {% if olmat_request %}
+          <div class="info-grid">
+            <div class="info-item">
+              <label class="info-label">Estado OLMAT:</label>
+              <div class="info-value">
+                <span class="badge {% if olmat_request.status == 'approved' %}bg-success{% elif olmat_request.status == 'rejected' %}bg-danger{% elif olmat_request.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+                  {{ olmat_request.get_status_display }}
+                </span>
+              </div>
+            </div>
+            {% if olmat_request.access_code %}
+            <div class="info-item">
+              <label class="info-label">Código OLMAT:</label>
+              <div class="info-value access-code">{{ olmat_request.access_code }}</div>
+            </div>
+            {% endif %}
+            <div class="info-item">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'icts:olmat_request_detail' olmat_request.id %}">
+                <i class="bi bi-box-arrow-up-right"></i> Ver solicitud OLMAT
+              </a>
+            </div>
+          </div>
+        {% else %}
+          <p class="text-muted">La parte OLMAT se gestionará aparte por el equipo técnico. No se ha generado todavía una solicitud OLMAT.</p>
+        {% endif %}
+      </div>
+      {% endif %}
+      {% if facility_data_view %}
+      <div class="info-section">
+        <h3 class="section-title">Datos por técnica</h3>
+        <div class="technique-data-container">
+          {% for tech in facility_data_view %}
+            <div class="technique-card">
+              <div class="technique-header">
+                <h4 class="technique-title">{{ tech.tech_label }}</h4>
+              </div>
+              <div class="technique-content">
+                {% if tech.general_fields %}
+                  <div class="sample-section">
+                    <h5 class="sample-title">Campos generales</h5>
+                    <div class="sample-data">
+                      {% for field in tech.general_fields %}
+                        <div class="data-row">
+                          <span class="data-label">{{ field.label }}:</span>
+                          <span class="data-value">{{ field.value }}</span>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endif %}
+                {% for sample in tech.samples %}
+                  <div class="sample-section">
+                    <h5 class="sample-title">Sample {{ sample.index }}</h5>
+                    <div class="sample-data">
+                      {% for field in sample.fields %}
+                        <div class="data-row">
+                          <span class="data-label">{{ field.label }}:</span>
+                          <span class="data-value">{{ field.value }}</span>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% elif facility_data_raw %}
+      <div class="info-section">
+        <h3 class="section-title">Datos por técnica</h3>
+        <pre class="technique-raw">{{ facility_data_raw }}</pre>
+      </div>
+      {% endif %}
+
+      <!-- Información del solicitante -->
+      {% if obj.applicant_is_different %}
+      <div class="info-section">
+        <h3 class="section-title">👤 Información del Solicitante</h3>
+        <div class="info-grid">
+          {% if obj.organization %}
+          <div class="info-item">
+            <label class="info-label">Organización:</label>
+            <div class="info-value">{{ obj.organization }}</div>
+          </div>
+          {% endif %}
+          {% if obj.contact_person %}
+          <div class="info-item">
+            <label class="info-label">Persona de contacto:</label>
+            <div class="info-value">{{ obj.contact_person }}</div>
+          </div>
+          {% endif %}
+          {% if obj.email %}
+          <div class="info-item">
+            <label class="info-label">Email:</label>
+            <div class="info-value">{{ obj.email }}</div>
+          </div>
+          {% endif %}
+          {% if obj.phone %}
+          <div class="info-item">
+            <label class="info-label">Teléfono:</label>
+            <div class="info-value">{{ obj.phone }}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Participantes -->
+      <div class="info-section">
+        <h3 class="section-title">👥 Participantes</h3>
+        {% if obj.participants.all %}
+          <div class="participants-list">
+            {% for participant in obj.participants.all %}
+            <div class="participant-item">
+              <div class="participant-name">{{ participant.name }}</div>
+              {% if participant.center %}
+              <div class="participant-center">{{ participant.center }}</div>
+              {% endif %}
+              {% if participant.address %}
+              <div class="participant-address">{{ participant.address }}</div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="no-participants">No hay participantes añadidos</div>
+        {% endif %}
+      </div>
+
+      <!-- Información adicional -->
+      {% if obj.previous_experiments or obj.references %}
+      <div class="info-section">
+        <h3 class="section-title">📚 Información Adicional</h3>
+        {% if obj.previous_experiments %}
+        <div class="info-item">
+          <label class="info-label">Experimentos previos:</label>
+          <div class="info-value">{{ obj.previous_experiments }}</div>
+        </div>
+        {% endif %}
+        {% if obj.references %}
+        <div class="info-item">
+          <label class="info-label">Referencias:</label>
+          <div class="info-value">{{ obj.references }}</div>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if obj.status == 'changes_requested' and obj.responsable_comment %}
+      <div class="info-section">
+        <h3 class="section-title">Comentario del responsable</h3>
+        <div class="info-item">
+          <div class="info-value">{{ obj.responsable_comment }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Archivos adjuntos -->
+      {% if obj.attachments.all %}
+      <div class="info-section">
+        <h3 class="section-title">📎 Archivos Adjuntos</h3>
+        <div class="attachments-list">
+          {% for attachment in obj.attachments.all %}
+          <div class="attachment-item">
+            <span class="attachment-icon">📄</span>
+            <span class="attachment-name">{{ attachment.name }}</span>
+            <a href="{{ attachment.file.url }}" class="attachment-download" target="_blank">⬇️ Descargar</a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Revisiones -->
+      <div class="info-section">
+        <h3 class="section-title"><i class="bi bi-search"></i> Evaluaciones</h3>
+        {% if is_responsable_user and review_summary %}
+        <div class="review-summary">
+          <div class="summary-header">Resumen de revisiones</div>
+          <div class="summary-meta">Revisiones completas: {{ review_summary.completed_count }}</div>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <span class="summary-label">Calidad cientifica (avg)</span>
+              <span class="summary-value">{{ review_summary.avg_scientific|default:"-" }}</span>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Necesidad infraestructura (avg)</span>
+              <span class="summary-value">{{ review_summary.avg_infrastructure|default:"-" }}</span>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Potencial industrial (avg)</span>
+              <span class="summary-value">{{ review_summary.avg_industrial|default:"-" }}</span>
+            </div>
+          </div>
+          <div class="summary-comments">
+            <div class="summary-header">Comentarios por revisor</div>
+            {% if review_summary_comments %}
+            <div class="summary-comments-list">
+              {% for entry in review_summary_comments %}
+              <div class="summary-comment">
+                <div class="summary-comment-header">
+                  <span class="summary-comment-name">{{ entry.reviewer.get_full_name|default:entry.reviewer.get_username }}</span>
+                  <span class="summary-comment-date">{{ entry.updated_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div class="summary-comment-body">{{ entry.comment }}</div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-comments">No hay comentarios.</div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+        {% if reviews %}
+          <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-item">
+              <div class="review-header">
+                <div class="reviewer-info">
+                  <span class="reviewer-name">{% if is_applicant and not is_staff_role %}Revisor {{ forloop.counter }}{% else %}{{ review.reviewer.get_full_name|default:review.reviewer.get_username }}{% endif %}</span>
+                  <span class="review-date">{{ review.updated_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                <span class="review-decision decision-{{ review.decision }}">
+                  {% if review.decision == 'approve' %}<i class="bi bi-check-circle text-success"></i> Aprobado
+                  {% elif review.decision == 'reject' %}<i class="bi bi-x-circle text-danger"></i> Rechazado
+                  {% elif review.decision == 'request_changes' %}<i class="bi bi-arrow-clockwise text-warning"></i> Cambios solicitados
+                  {% else %}<i class="bi bi-clock text-muted"></i> Pendiente{% endif %}
+                </span>
+              </div>
+              {% if review.comments %}
+              <div class="review-comments">{{ review.comments }}</div>
+              {% endif %}
+              {% if review.score_scientific_quality or review.score_need_infrastructure or review.score_industrial_potential %}
+              <div class="review-scores">
+                {% if review.score_scientific_quality %}
+                <span class="score-item">Calidad científica: {{ review.score_scientific_quality }}/5</span>
+                {% endif %}
+                {% if review.score_need_infrastructure %}
+                <span class="score-item">Necesidad infraestructura: {{ review.score_need_infrastructure }}/5</span>
+                {% endif %}
+                {% if review.score_industrial_potential %}
+                <span class="score-item">Potencial industrial: {{ review.score_industrial_potential }}/5</span>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="no-reviews">Aún no hay evaluaciones</div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- Columna lateral -->
+    <div class="proposal-sidebar">
+
+      <!-- Acciones del usuario -->
+      {% if obj.applicant_id == request.user.id %}
+      {% if obj.status == 'draft' or obj.status == 'changes_requested' %}
+      <div class="action-card">
+        <h4 class="action-title"><i class="bi bi-lightning"></i> Acciones</h4>
+        <div class="action-buttons">
+          <a href="{% url 'icts:proposal_edit' obj.pk %}" class="action-btn edit">
+            <span class="btn-icon"><i class="bi bi-pencil"></i></span>
+            <span class="btn-text">Editar</span>
+          </a>
+          <form method="post" action="{% url 'icts:proposal_submit' obj.pk %}" class="submit-form">
+            {% csrf_token %}
+            <button type="submit" class="action-btn submit">
+              <span class="btn-icon"><i class="bi bi-send"></i></span>
+              <span class="btn-text">
+                {% if obj.status == 'changes_requested' %}Reenviar a Revision{% else %}Enviar a Revision{% endif %}
+              </span>
+            </button>
+          </form>
+        </div>
+        <div class="action-note">
+          {% if obj.status == 'changes_requested' %}
+            <small>Puedes actualizarla y reenviarla cuando este lista.</small>
+          {% else %}
+            <small>Una vez enviada, no podras editarla hasta que sea evaluada.</small>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
+
+      <!-- Decisión del responsable -->
+      {% if can_decide %}
+      <div class="action-card decision-card">
+        <h4 class="action-title"><i class="bi bi-bullseye"></i> Decisión Final</h4>
+        <form method="post" action="{% url 'icts:proposal_decide' obj.pk %}">
+          {% csrf_token %}
+          <div class="decision-form">
+            <select name="final_decision" class="decision-select">
+              <option value="">Seleccionar decisión</option>
+              <option value="accepted"><i class="bi bi-check-circle"></i> Aceptar</option>
+              <option value="rejected"><i class="bi bi-x-circle"></i> Rechazar</option>
+              <option value="changes_requested"><i class="bi bi-arrow-clockwise"></i> Solicitar cambios</option>
+            </select>
+            <textarea name="responsable_comment" class="decision-comment" rows="3" placeholder="Comentario para el solicitante (obligatorio si solicitas cambios)"></textarea>
+            <button type="submit" class="decision-btn">Aplicar</button>
+          </div>
+        </form>
+      </div>
+      {% endif %}
+
+      <!-- Navegación -->
+      <div class="navigation-card">
+        {% if request.user|is_manager %}
+          <a href="{% url 'icts:manager_dashboard' %}" class="nav-link">
+            <span class="nav-icon">??</span>
+            <span class="nav-text">Mi Panel</span>
+          </a>
+        {% elif request.user|is_responsable %}
+          <a href="{% url 'icts:responsable_dashboard' %}" class="nav-link">
+            <span class="nav-icon">??</span>
+            <span class="nav-text">Mi Panel</span>
+          </a>
+        {% elif request.user|is_reviewer %}
+          <a href="{% url 'icts:reviewer_dashboard_new' %}" class="nav-link">
+            <span class="nav-icon">??</span>
+            <span class="nav-text">Mi Panel</span>
+          </a>
+          <a href="{% url 'icts:reviewer_inbox' %}" class="nav-link">
+            <span class="nav-icon">??</span>
+            <span class="nav-text">Evaluaciones pendientes</span>
+          </a>
+        {% else %}
+          <a href="{% url 'icts:dashboard' %}" class="nav-link">
+            <span class="nav-icon">??</span>
+            <span class="nav-text">Mi Panel</span>
+          </a>
+          <a href="{% url 'icts:my_proposals' %}" class="nav-link">
+            <span class="nav-icon">??</span>
+            <span class="nav-text">Mis Propuestas</span>
+          </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+.proposal-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header de la propuesta */
+.proposal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.proposal-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.proposal-meta {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.meta-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.meta-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.access-code-item {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.access-code-temporary {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%) !important;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3) !important;
+}
+
+.access-code-approved {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+}
+
+.access-code-item .meta-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.access-code {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.access-code-status {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-left: 0.5rem;
+}
+
+.status-badge {
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.status-draft { background: #e9ecef; color: #6c757d; }
+.status-submitted { background: #d1ecf1; color: #0c5460; }
+.status-changes_requested { background: #fff3cd; color: #856404; }
+.status-accepted { background: #d4edda; color: #155724; }
+.status-rejected { background: #f8d7da; color: #721c24; }
+
+/* Contenido principal */
+.proposal-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+}
+
+.proposal-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Secciones de información */
+.info-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.info-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Lista de instalaciones */
+.facilities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.facility-tag {
+  background: var(--primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.no-facilities {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Lista de participantes */
+.participants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.participant-item {
+  padding: 1rem;
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.participant-name {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.participant-center, .participant-address {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.no-participants {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Archivos adjuntos */
+.attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.attachment-icon {
+  font-size: 1.2rem;
+}
+
+.attachment-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.attachment-download {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.attachment-download:hover {
+  color: var(--primary-dark);
+}
+
+/* Evaluaciones */
+.review-summary {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.summary-header {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.summary-meta {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.summary-value {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-comments {
+  margin-top: 0.5rem;
+}
+
+.summary-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.summary-comment {
+  padding: 0.75rem;
+  background: var(--bg-card);
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary);
+}
+
+.summary-comment-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.summary-comment-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-comment-body {
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.no-comments {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.review-item {
+  padding: 1rem;
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.reviewer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.reviewer-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.review-date {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.review-decision {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.decision-approve { background: #d4edda; color: #155724; }
+.decision-reject { background: #f8d7da; color: #721c24; }
+.decision-request_changes { background: #fff3cd; color: #856404; }
+.decision-pending { background: #e2e3e5; color: #6c757d; }
+
+.review-comments {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-card);
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary);
+  white-space: pre-wrap;
+}
+
+.review-scores {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.score-item {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.no-reviews {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Sidebar */
+.proposal-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.action-card, .navigation-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.action-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.action-btn.edit {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.action-btn.edit:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.action-btn.submit {
+  background: var(--primary);
+  color: white;
+}
+
+.action-btn.submit:hover {
+  background: var(--primary-dark);
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+}
+
+.action-note {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 0.5rem;
+  color: #856404;
+  font-size: 0.9rem;
+}
+
+/* Decisión del responsable */
+.decision-card {
+  border: 2px solid var(--primary);
+}
+
+.decision-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.decision-select {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-card);
+  font-weight: 600;
+}
+
+.decision-comment {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-card);
+  resize: vertical;
+}
+
+.decision-btn {
+  padding: 0.75rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.decision-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* Navegación */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.nav-icon {
+  font-size: 1.1rem;
+}
+
+/* Estilos para datos por técnica */
+.technique-data-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.technique-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.technique-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.technique-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.technique-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.technique-content {
+  padding: 1.5rem;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f1f3f4;
+  gap: 1rem;
+}
+
+.data-row:last-child {
+  border-bottom: none;
+}
+
+.data-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.data-value {
+  color: var(--muted);
+  text-align: right;
+  flex: 1;
+  word-break: break-word;
+}
+
+.sample-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary);
+}
+
+.sample-section:last-child {
+  margin-bottom: 0;
+}
+
+.sample-title {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sample-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sample-data .data-row {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.sample-data .data-row:last-child {
+  border-bottom: none;
+}
+.technique-raw {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .proposal-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .proposal-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .proposal-meta {
+    justify-content: space-between;
+  }
+  
+  .technique-data-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .proposal-header {
+    padding: 1rem;
+  }
+  
+  .proposal-title {
+    font-size: 1.5rem;
+  }
+  
+  .proposal-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .info-section {
+    padding: 1rem;
+  }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base_dtf.html" %}
+
+{% block title %}Notificaciones de Préstamos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-bell me-2"></i>Notificaciones de Préstamos
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    {% if notificaciones %}
+                    <div class="list-group">
+                        {% for notificacion in notificaciones %}
+                        <div class="list-group-item {% if not notificacion.enviada %}list-group-item-light{% endif %}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-{% if notificacion.tipo == 'prestamo_realizado' %}hand-holding{% elif notificacion.tipo == 'equipo_devuelto' %}undo{% elif notificacion.tipo == 'equipo_vencido' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                                    {{ notificacion.get_tipo_display }}
+                                </h6>
+                                <small class="text-muted">{{ notificacion.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1">{{ notificacion.mensaje }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <strong>Préstamo:</strong> {{ notificacion.prestamo.equipo.nombre }} - {{ notificacion.prestamo.usuario.get_full_name }}
+                                </small>
+                                {% if not notificacion.enviada %}
+                                <a href="{% url 'sigmalab:notificacion_marcar_leida' notificacion.id %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-check me-1"></i>Marcar como Leída
+                                </a>
+                                {% else %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>Leída
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No tienes notificaciones de préstamos.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

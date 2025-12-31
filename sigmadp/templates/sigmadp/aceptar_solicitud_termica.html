@@ -1,0 +1,68 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Aceptar Solicitud Térmica DP-T#{{ solicitud.pk }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-check-circle"></i>
+                        Aceptar Solicitud Térmica DP-T#{{ solicitud.pk }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Resumen de la solicitud -->
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> Resumen de la Solicitud</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Muestra:</strong> {{ solicitud.nombre_muestra }}</p>
+                                <p><strong>Material:</strong> {{ solicitud.material }}</p>
+                                <p><strong>Temperatura:</strong> {{ solicitud.temperatura_maxima }}ºC</p>
+                                <p><strong>Masa:</strong> {{ solicitud.get_masa_registrar_display }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Solicitante:</strong> {{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</p>
+                                <p><strong>Fecha:</strong> {{ solicitud.creado_en|date:"d/m/Y H:i" }}</p>
+                                <p><strong>Espesor:</strong> {{ solicitud.espesor_muestra }} mm</p>
+                                <p><strong>Tamaño:</strong> {{ solicitud.tamaño_muestra }} cm²</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmación -->
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Confirmación</h5>
+                        <p>¿Estás seguro de que quieres <strong>aceptar</strong> esta solicitud térmica?</p>
+                        <p>Al aceptar la solicitud:</p>
+                        <ul>
+                            <li>Se asignará como técnico responsable</li>
+                            <li>El estado cambiará a "Aceptada"</li>
+                            <li>El solicitante podrá acceder al laboratorio</li>
+                            <li>Podrás iniciar el ensayo cuando esté listo</li>
+                        </ul>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check"></i>
+                                Sí, Aceptar Solicitud
+                            </button>
+                            <a href="{% url 'sigmadp:bandeja_entrada_termica' %}" class="btn btn-secondary btn-lg ml-2">
+                                <i class="fas fa-arrow-left"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

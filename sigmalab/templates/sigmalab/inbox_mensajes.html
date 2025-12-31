@@ -1,0 +1,170 @@
+{% extends "base_dtf.html" %}
+{% block title %}Mensajes Internos - S-LAB{% endblock %}
+{% block page_title %}Mensajes Internos{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <h3 style="margin:0;">Bandeja de Entrada</h3>
+    <a class="btn" href="{% url 'sigmalab:enviar-mensaje' %}">
+      <i class="bi bi-plus-circle"></i> Nuevo Mensaje
+    </a>
+  </div>
+
+  <!-- Estadísticas -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+    <div style="background:#e3f2fd; border:1px solid #2196f3; border-radius:.5rem; padding:1rem; text-align:center;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#1976d2;">{{ stats.total_recibidos }}</div>
+      <div style="color:#1976d2; font-size:.9rem;">Total Recibidos</div>
+    </div>
+    <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:.5rem; padding:1rem; text-align:center;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#856404;">{{ stats.no_leidos }}</div>
+      <div style="color:#856404; font-size:.9rem;">No Leídos</div>
+    </div>
+    <div style="background:#f8d7da; border:1px solid #dc3545; border-radius:.5rem; padding:1rem; text-align:center;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#721c24;">{{ stats.urgentes }}</div>
+      <div style="color:#721c24; font-size:.9rem;">Urgentes</div>
+    </div>
+    <div style="background:#d1e7dd; border:1px solid #28a745; border-radius:.5rem; padding:1rem; text-align:center;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#155724;">{{ stats.total_enviados }}</div>
+      <div style="color:#155724; font-size:.9rem;">Enviados</div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+    <a class="chip" href="?" style="{% if not tipo_filtro and not estado_filtro %}background:#e6fffa;border-color:#b2f5ea{% endif %}">Todos</a>
+    <a class="chip" href="?estado=no_leidos" style="{% if estado_filtro == 'no_leidos' %}background:#fff3cd;border-color:#ffe69c{% endif %}">No Leídos</a>
+    <a class="chip" href="?estado=leidos" style="{% if estado_filtro == 'leidos' %}background:#d1e7dd;border-color:#badbcc{% endif %}">Leídos</a>
+    <a class="chip" href="?tipo=urgencia" style="{% if tipo_filtro == 'urgencia' %}background:#f8d7da;border-color:#f5c2c7{% endif %}">Urgentes</a>
+    <a class="chip" href="?tipo=consulta" style="{% if tipo_filtro == 'consulta' %}background:#cff4fc;border-color:#b6effb{% endif %}">Consultas</a>
+  </div>
+
+  <!-- Mensajes Recibidos -->
+  <h4 style="margin:1.5rem 0 .75rem; color:#495057; border-bottom:2px solid #dee2e6; padding-bottom:.5rem;">
+    <i class="bi bi-inbox"></i> Mensajes Recibidos
+  </h4>
+  
+  <div style="display:flex; flex-direction:column; gap:.5rem;">
+    {% for mensaje in mensajes_recibidos %}
+      <div class="mensaje-item" style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border); border-radius:.5rem; padding:.75rem 1rem; background:var(--bg-card); {% if not mensaje.leido %}border-left:4px solid #007bff;{% endif %}">
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:.5rem; margin-bottom:.25rem;">
+            <span style="font-weight:600; color:#495057;">{{ mensaje.remitente.get_full_name|default:mensaje.remitente.username }}</span>
+            <span class="badge" style="background:{{ mensaje.get_tipo_display_color }}; color:white; font-size:.7rem;">
+              {{ mensaje.get_tipo_mensaje_display }}
+            </span>
+            {% if mensaje.es_urgente %}
+              <span style="color:#dc3545; font-size:.8rem;"><i class="bi bi-exclamation-triangle"></i> URGENTE</span>
+            {% endif %}
+            {% if not mensaje.leido %}
+              <span style="background:#007bff; color:white; border-radius:50%; width:8px; height:8px; display:inline-block;"></span>
+            {% endif %}
+          </div>
+          <div style="font-weight:500; color:#343a40; margin-bottom:.25rem;">{{ mensaje.asunto }}</div>
+          <div style="color:#6c757d; font-size:.85rem;">
+            {{ mensaje.fecha_envio|date:"d/m/Y H:i" }} · {{ mensaje.tiempo_transcurrido }}
+            {% if mensaje.solicitud %}
+              · <span style="color:#007bff;">SOL#{{ mensaje.solicitud.id }}</span>
+            {% endif %}
+          </div>
+        </div>
+        <div style="display:flex; gap:.5rem;">
+          <a class="btn btn-sm" href="{% url 'sigmalab:detalle-mensaje' mensaje.id %}">
+            <i class="bi bi-eye"></i> Ver
+          </a>
+          <a class="btn btn-sm btn-outline-primary" href="{% url 'sigmalab:responder-mensaje' mensaje.id %}">
+            <i class="bi bi-reply"></i> Responder
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div style="text-align:center; padding:2rem; color:#6c757d;">
+        <i class="bi bi-inbox" style="font-size:2rem; margin-bottom:.5rem; display:block;"></i>
+        No hay mensajes recibidos.
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Mensajes Enviados -->
+  <h4 style="margin:2rem 0 .75rem; color:#495057; border-bottom:2px solid #dee2e6; padding-bottom:.5rem;">
+    <i class="bi bi-send"></i> Mensajes Enviados
+  </h4>
+  
+  <div style="display:flex; flex-direction:column; gap:.5rem;">
+    {% for mensaje in mensajes_enviados %}
+      <div class="mensaje-item" style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border); border-radius:.5rem; padding:.75rem 1rem; background:var(--bg-card); opacity:.8;">
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:.5rem; margin-bottom:.25rem;">
+            <span style="font-weight:600; color:#495057;">→ {{ mensaje.destinatario.get_full_name|default:mensaje.destinatario.username }}</span>
+            <span class="badge" style="background:{{ mensaje.get_tipo_display_color }}; color:white; font-size:.7rem;">
+              {{ mensaje.get_tipo_mensaje_display }}
+            </span>
+          </div>
+          <div style="font-weight:500; color:#343a40; margin-bottom:.25rem;">{{ mensaje.asunto }}</div>
+          <div style="color:#6c757d; font-size:.85rem;">
+            {{ mensaje.fecha_envio|date:"d/m/Y H:i" }} · {{ mensaje.tiempo_transcurrido }}
+            {% if mensaje.solicitud %}
+              · <span style="color:#007bff;">SOL#{{ mensaje.solicitud.id }}</span>
+            {% endif %}
+          </div>
+        </div>
+        <div style="display:flex; gap:.5rem;">
+          <a class="btn btn-sm" href="{% url 'sigmalab:detalle-mensaje' mensaje.id %}">
+            <i class="bi bi-eye"></i> Ver
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div style="text-align:center; padding:2rem; color:#6c757d;">
+        <i class="bi bi-send" style="font-size:2rem; margin-bottom:.5rem; display:block;"></i>
+        No hay mensajes enviados.
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+.mensaje-item:hover {
+  background-color: #f8f9fa !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #495057;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  background-color: #fff;
+  transition: all 0.15s ease-in-out;
+}
+
+.chip:hover {
+  color: #495057;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+}
+</style>
+{% endblock %}

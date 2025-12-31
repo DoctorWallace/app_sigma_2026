@@ -1,0 +1,32 @@
+{% extends "base_icts.html" %}
+
+{% block title %}Crear sesión LO3{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h4 mb-0">Crear sesión - Metrología de superficies ópticas 3D</h1>
+    <a class="btn btn-secondary" href="{% url 'sigmaconf:mcf_dashboard' %}">Volver</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.access_proposal.label_tag }}
+          {{ form.access_proposal }}
+          {% if form.access_proposal.errors %}
+            <div class="text-danger small">{{ form.access_proposal.errors }}</div>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Crear sesión</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="mt-4 text-muted">
+    Propuestas disponibles: {{ available_proposals|length }}
+  </div>
+</div>
+{% endblock %}

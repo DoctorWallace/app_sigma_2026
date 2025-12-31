@@ -1,0 +1,40 @@
+{% extends "base_generic.html" %}
+{% block title %}Ion Implanter details | SIGMA-Lab{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 class="page-title">Ion Implanter — Details for: {{ proposal.title }}</h2>
+
+  <div class="muted" style="margin-bottom:20px">
+    <strong>REQUIREMENTS FOR SAMPLE ACCEPTANCE</strong>
+    <ul>
+      <li>Sample must be clean, solid material suitable for ion implantation.</li>
+      <li>Maximum dimensions: 100×100×20 mm. Minimum dimensions: 10×10×2 mm.</li>
+      <li>Sample must be accompanied with complete and legible identification.</li>
+      <li>Avoid plastic wrapping - use metallic paper or cloth.</li>
+      <li>Specify target elements and desired dose/energy parameters.</li>
+    </ul>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>MEASUREMENT SETUP</legend>
+      <p><label>{{ form.samples_description.label }}</label>{{ form.samples_description }}</p>
+      <div class="grid">
+        <p>{{ form.survey_required }} {{ form.survey_required.label }}</p>
+        <p>{{ form.depth_profile }} {{ form.depth_profile.label }}</p>
+      </div>
+      <p><label>{{ form.high_res_regions.label }}</label>{{ form.high_res_regions }}</p>
+      <p><label>{{ form.sputter_ion.label }}</label>{{ form.sputter_ion }}</p>
+      <p><label>{{ form.notes.label }}</label>{{ form.notes }}</p>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" class="btn">Save Ion Implanter details</button>
+      <a class="btn secondary" href="{% url 'icts:proposal_edit' proposal.pk %}">Back to proposal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+

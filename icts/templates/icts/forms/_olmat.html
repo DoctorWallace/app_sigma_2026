@@ -1,0 +1,279 @@
+﻿<!-- Formulario especifico para OLMAT -->
+<div class="olmat-form">
+  <h5><i class="bi bi-gear"></i> Configuracion OLMAT</h5>
+
+  <div class="olmat-guidelines alert alert-secondary">
+    <h6><i class="bi bi-info-circle"></i> Application instructions for OLMAT HHF device</h6>
+    <p>Incluye en tu solicitud:</p>
+    <ul>
+      <li>Short description of the activity (1-2 pages) con motivacion, objetivos y heat load / irradiation requirements (si se conocen).</li>
+      <li>Description of the resources required:</li>
+      <ul>
+        <li>OLMAT diagnostics: thermocouples, IR pyrometry and thermography (1 ms), fast camera, optical spectroscopy, Langmuir probes.</li>
+        <li>Sample preparation at OLMAT laboratory: liquid metal wetting, sample holder design, etc.</li>
+        <li>Use of NBI beam, laser or both.</li>
+      </ul>
+      <li>Preferred dates and degree of flexibility.</li>
+    </ul>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="olmat_service_type" class="form-label">Tipo de servicio *</label>
+        <select class="form-select" id="olmat_service_type" name="olmat_service_type" required>
+          <option value="">Selecciona el tipo de servicio</option>
+          <option value="technical">Servicio tecnico (5.000 EUR)</option>
+          <option value="research">Servicio de investigacion (10.305 EUR)</option>
+        </select>
+        <div class="form-text">Servicio tecnico: operacion y preparacion de muestras. Servicio de investigacion: soporte cientifico y analisis.</div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label">Fechas preferidas</label>
+        <input type="hidden" id="olmat_preferred_dates" name="olmat_preferred_dates" value="">
+        <div id="olmat-date-rows" class="date-rows">
+          <div class="date-row" data-row="0">
+            <input type="date" class="form-control" data-role="start">
+            <span class="date-sep">a</span>
+            <input type="date" class="form-control" data-role="end">
+            <button type="button" class="btn btn-outline-danger btn-sm remove-date" aria-label="Eliminar periodo">&times;</button>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-olmat-date">
+          <i class="bi bi-plus-circle"></i> Anadir periodo
+        </button>
+        <div class="form-text">Propone uno o varios periodos no consecutivos.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="olmat_activity_description" class="form-label">Short description (1-2 pages) *</label>
+    <textarea class="form-control olmat-wide-textarea" id="olmat_activity_description" name="olmat_activity_description" rows="5" required placeholder="Motivacion, objetivos y heat load / irradiation requirements"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label for="olmat_irradiation_requirements" class="form-label">Heat load / irradiation requirements</label>
+    <textarea class="form-control olmat-wide-textarea" id="olmat_irradiation_requirements" name="olmat_irradiation_requirements" rows="4" placeholder="Flujo termico previsto, duracion de pulsos, restricciones"></textarea>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label">OLMAT diagnostics necesarios</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_thermocouples" name="olmat_diagnostics" value="thermocouples">
+          <label class="form-check-label" for="olmat_thermocouples">Thermocouples</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_pyrometry" name="olmat_diagnostics" value="pyrometry">
+          <label class="form-check-label" for="olmat_pyrometry">IR pyrometry</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_thermography" name="olmat_diagnostics" value="thermography">
+          <label class="form-check-label" for="olmat_thermography">IR thermography (1 ms)</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_fast_camera" name="olmat_diagnostics" value="fast_camera">
+          <label class="form-check-label" for="olmat_fast_camera">Fast camera</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_optical_spectroscopy" name="olmat_diagnostics" value="optical_spectroscopy">
+          <label class="form-check-label" for="olmat_optical_spectroscopy">Optical spectroscopy</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_langmuir_probes" name="olmat_diagnostics" value="langmuir_probes">
+          <label class="form-check-label" for="olmat_langmuir_probes">Langmuir probes</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label">Sample preparation (lab OLMAT)</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_liquid_metal_wetting" name="olmat_sample_prep" value="liquid_metal_wetting">
+          <label class="form-check-label" for="olmat_liquid_metal_wetting">Liquid metal wetting</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_sample_holder_design" name="olmat_sample_prep" value="sample_holder_design">
+          <label class="form-check-label" for="olmat_sample_holder_design">Sample holder design</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_sample_prep_other" name="olmat_sample_prep" value="other">
+          <label class="form-check-label" for="olmat_sample_prep_other">Other prep (etc.)</label>
+        </div>
+        <textarea class="form-control mt-2" id="olmat_sample_prep_notes" name="olmat_sample_prep_notes" rows="2" placeholder="Describe otras preparaciones necesarias" style="display:none;"></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Use of beam</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_nbi_beam" name="olmat_beam_usage" value="nbi">
+          <label class="form-check-label" for="olmat_nbi_beam">NBI beam</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_laser_beam" name="olmat_beam_usage" value="laser">
+          <label class="form-check-label" for="olmat_laser_beam">Laser</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="olmat_both_beams" name="olmat_beam_usage" value="both">
+          <label class="form-check-label" for="olmat_both_beams">Both</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="olmat_flexibility" class="form-label">Grado de flexibilidad</label>
+        <select class="form-select" id="olmat_flexibility" name="olmat_flexibility">
+          <option value="high">Alta flexibilidad</option>
+          <option value="medium">Flexibilidad media</option>
+          <option value="low">Baja flexibilidad</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="olmat_additional_requirements" class="form-label">Requisitos adicionales</label>
+        <textarea class="form-control olmat-wide-textarea" id="olmat_additional_requirements" name="olmat_additional_requirements" rows="4" placeholder="Aclaraciones tecnicas, referencias, etc."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.olmat-form h5{display:flex;align-items:center;gap:.5rem;margin-bottom:1.2rem;font-weight:600;}
+.olmat-guidelines{border-radius:0.75rem;background:#f1f5f9;border:1px solid #d0d8e3;color:#1e293b;margin-bottom:1rem;}
+.olmat-guidelines h6{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;font-weight:600;}
+.olmat-guidelines ul{margin-left:1.2rem;margin-bottom:.5rem;}
+.olmat-guidelines ul ul{margin-top:.35rem;}
+.olmat-guidelines a{color:#0d6efd;text-decoration:none;}
+.olmat-guidelines a:hover{text-decoration:underline;}
+.olmat-wide-textarea{min-height:140px;}
+.date-rows{display:flex;flex-direction:column;gap:.5rem;}
+.date-row{display:flex;align-items:center;gap:.5rem;}
+.date-row input[type="date"]{flex:1;}
+.date-sep{color:#6c757d;font-weight:600;}
+.remove-date{border-radius:50%;width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;}
+</style>
+
+<script>
+(function(){
+  function updatePreferredDates(root){
+    const hidden = root.querySelector('#olmat_preferred_dates');
+    const rows = root.querySelectorAll('.date-row');
+    const parts = [];
+    rows.forEach(function(row){
+      const start = row.querySelector('input[data-role="start"]').value;
+      const end = row.querySelector('input[data-role="end"]').value;
+      if(start || end){
+        parts.push([start || '', end || ''].join(' to '));
+      }
+    });
+    if(hidden){ hidden.value = parts.join('; '); }
+  }
+
+  function addDateRow(root){
+    const container = root.querySelector('#olmat-date-rows');
+    if(!container) return;
+    const idx = container.querySelectorAll('.date-row').length;
+    const row = document.createElement('div');
+    row.className = 'date-row';
+    row.setAttribute('data-row', idx);
+    row.innerHTML = `
+      <input type="date" class="form-control" data-role="start">
+      <span class="date-sep">a</span>
+      <input type="date" class="form-control" data-role="end">
+      <button type="button" class="btn btn-outline-danger btn-sm remove-date" aria-label="Eliminar periodo">&times;</button>
+    `;
+    container.appendChild(row);
+    attachRowListeners(row, root);
+    updatePreferredDates(root);
+  }
+
+  function attachRowListeners(row, root){
+    const inputs = row.querySelectorAll('input[type="date"]');
+    inputs.forEach(function(inp){
+      inp.addEventListener('change', function(){ updatePreferredDates(root); });
+    });
+    const removeBtn = row.querySelector('.remove-date');
+    if(removeBtn){
+      removeBtn.addEventListener('click', function(){
+        const container = root.querySelector('#olmat-date-rows');
+        if(container && container.querySelectorAll('.date-row').length > 1){
+          row.remove();
+          updatePreferredDates(root);
+        }
+      });
+    }
+  }
+
+  function initDateRanges(root){
+    const container = root.querySelector('#olmat-date-rows');
+    if(!container) return;
+    container.querySelectorAll('.date-row').forEach(function(row){
+      attachRowListeners(row, root);
+    });
+    // Prefill if hidden has data
+    const hidden = root.querySelector('#olmat_preferred_dates');
+    if(hidden && hidden.value){
+      const parts = hidden.value.split(';').map(function(s){ return s.trim(); }).filter(Boolean);
+      if(parts.length){
+        container.innerHTML = '';
+        parts.forEach(function(p){
+          const seg = p.split('to').map(function(t){ return t.trim(); });
+          const row = document.createElement('div');
+          row.className = 'date-row';
+          row.innerHTML = `
+            <input type="date" class="form-control" data-role="start" value="${seg[0] || ''}">
+            <span class="date-sep">a</span>
+            <input type="date" class="form-control" data-role="end" value="${seg[1] || ''}">
+            <button type="button" class="btn btn-outline-danger btn-sm remove-date" aria-label="Eliminar periodo">&times;</button>
+          `;
+          container.appendChild(row);
+          attachRowListeners(row, root);
+        });
+      }
+    }
+    const addBtn = root.querySelector('#add-olmat-date');
+    if(addBtn){
+      addBtn.addEventListener('click', function(){ addDateRow(root); });
+    }
+    updatePreferredDates(root);
+  }
+
+  function initOtherPrepToggle(root){
+    const other = root.querySelector('#olmat_sample_prep_other');
+    const notes = root.querySelector('#olmat_sample_prep_notes');
+    if(!other || !notes) return;
+    const toggle = function(){
+      notes.style.display = other.checked ? 'block' : 'none';
+      if(!other.checked) notes.value = '';
+    };
+    other.addEventListener('change', toggle);
+    toggle();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const root = document.querySelector('.olmat-form');
+    if(root){
+      initDateRanges(root);
+      initOtherPrepToggle(root);
+    }
+  });
+
+  // Para inicializacion desde clonado
+  if(typeof window.initOlmatPartial === 'undefined'){
+    window.initOlmatPartial = function(root){
+      if(!root) return;
+      initDateRanges(root);
+      initOtherPrepToggle(root);
+    };
+  }
+})();
+</script>

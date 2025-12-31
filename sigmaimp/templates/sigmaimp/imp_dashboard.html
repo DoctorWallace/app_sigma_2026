@@ -1,0 +1,70 @@
+{% extends "base_icts.html" %}
+
+{% block title %}SIGMA IMP{% endblock %}
+{% block page_title %}SIGMA IMP - Solicitudes{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Solicitudes aceptadas sin sesion</h2>
+  {% if accepted_proposals %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Titulo</th>
+          <th>Solicitante</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for proposal in accepted_proposals %}
+          <tr>
+            <td>{{ proposal.access_code|default:proposal.id }}</td>
+            <td>{{ proposal.title }}</td>
+            <td>{{ proposal.applicant }}</td>
+            <td>
+              <a class="btn btn-primary" href="{% url 'sigmaimp:imp_create_session_from_proposal' proposal.id %}">
+                Crear sesion
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay solicitudes pendientes de sesion.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Sesiones en curso</h2>
+  {% if sessions %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Solicitud</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for session in sessions %}
+          <tr>
+            <td>{{ session.session_code }}</td>
+            <td>{{ session.access_proposal.title }}</td>
+            <td>{{ session.get_status_display }}</td>
+            <td>
+              <a class="btn btn-outline-primary" href="{% url 'sigmaimp:imp_session_detail' session.pk %}">
+                Ver sesion
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay sesiones en curso.</p>
+  {% endif %}
+</div>
+{% endblock %}

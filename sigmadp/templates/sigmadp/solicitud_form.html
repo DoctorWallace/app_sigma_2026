@@ -1,0 +1,386 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load role_filters %}
+
+{% block title %}Nueva Solicitud S-DP{% endblock %}
+{% block page_title %}Nueva Solicitud S-DP{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-section h3 {
+    margin: 0 0 1rem 0;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 0.5rem;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .checkbox-group input[type="checkbox"] {
+    transform: scale(1.2);
+  }
+  .conditional-fields {
+    display: none;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  .conditional-fields.show {
+    display: block;
+  }
+  .muestra-names {
+    background: #e3f2fd;
+    border: 1px solid #2196f3;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .muestra-names h4 {
+    margin: 0 0 1rem 0;
+    color: #1976d2;
+  }
+  .muestra-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .muestra-item input {
+    flex: 1;
+  }
+  .btn-add-muestra {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  .btn-add-muestra:hover {
+    background: #45a049;
+  }
+  .btn-remove {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+  .btn-remove:hover {
+    background: #da190b;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para mostrar/ocultar campos condicionales
+    function toggleConditionalFields(checkboxId, fieldsId) {
+        const checkbox = document.getElementById(checkboxId);
+        const fields = document.getElementById(fieldsId);
+        
+        if (checkbox && fields) {
+            function updateVisibility() {
+                if (checkbox.checked) {
+                    fields.classList.add('show');
+                } else {
+                    fields.classList.remove('show');
+                }
+            }
+            
+            checkbox.addEventListener('change', updateVisibility);
+            updateVisibility(); // Estado inicial
+        }
+    }
+    
+    // Activar campos condicionales
+    toggleConditionalFields('id_ensayo_desorcion', 'desorcion-fields');
+    toggleConditionalFields('id_ensayo_permeacion', 'permeacion-fields');
+    toggleConditionalFields('id_ensayo_difusion', 'difusion-fields');
+    toggleConditionalFields('id_ensayo_adsorcion', 'adsorcion-fields');
+    
+    // Gestión de nombres de muestras
+    let muestraCounter = 1;
+    
+    function addMuestraField() {
+        const container = document.getElementById('muestra-names-container');
+        const div = document.createElement('div');
+        div.className = 'muestra-item';
+        div.innerHTML = `
+            <input type="text" name="muestra_nombre_${muestraCounter}" class="form-input" placeholder="Nombre de la muestra ${muestraCounter}">
+            <button type="button" class="btn-remove" onclick="removeMuestraField(this)">✕</button>
+        `;
+        container.appendChild(div);
+        muestraCounter++;
+    }
+    
+    window.addMuestraField = addMuestraField;
+    window.removeMuestraField = function(button) {
+        button.parentElement.remove();
+    };
+    
+    // Añadir campo inicial si no hay ninguno
+    const container = document.getElementById('muestra-names-container');
+    if (container.children.length === 0) {
+        addMuestraField();
+    }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <form method="post" id="dp-solicitud-form">
+    {% csrf_token %}
+    
+    <!-- Datos Generales -->
+    <div class="form-section">
+      <h3>📋 Datos Generales</h3>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Material *</label>
+          {{ form.material|form_input }}
+          {{ form.material.errors }}
+        </div>
+        <div>
+          <label class="form-label">Procedencia *</label>
+          {{ form.procedencia|form_input }}
+          {{ form.procedencia.errors }}
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Número de muestras a ensayar *</label>
+          {{ form.numero_muestras|form_input }}
+          {{ form.numero_muestras.errors }}
+        </div>
+      </div>
+      <div class="form-row full">
+        <div>
+          <label class="form-label">Tratamientos</label>
+          {{ form.tratamientos|form_input }}
+          {{ form.tratamientos.errors }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Denominación de Muestras -->
+    <div class="form-section">
+      <h3>🏷️ Denominación de las Muestras</h3>
+      <div class="muestra-names">
+        <h4>Nombres de las muestras (opcional)</h4>
+        <div id="muestra-names-container">
+          <!-- Los campos se añaden dinámicamente -->
+        </div>
+        <button type="button" class="btn-add-muestra" onclick="addMuestraField()">
+          ➕ Añadir nombre de muestra
+        </button>
+      </div>
+    </div>
+
+    <!-- Ensayos -->
+    <div class="form-section">
+      <h3>🔬 Ensayos a Realizar</h3>
+      
+      <!-- Desorción -->
+      <div class="checkbox-group">
+        {{ form.ensayo_desorcion }}
+        <label for="id_ensayo_desorcion"><strong>Desorción</strong></label>
+      </div>
+      <div id="desorcion-fields" class="conditional-fields">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Temperatura (°C)</label>
+            {{ form.desorcion_temperatura|form_input }}
+            {{ form.desorcion_temperatura.errors }}
+          </div>
+          <div>
+            <label class="form-label">Tiempo (horas)</label>
+            {{ form.desorcion_tiempo|form_input }}
+            {{ form.desorcion_tiempo.errors }}
+          </div>
+          <div>
+            <label class="form-label">Presión (bar)</label>
+            {{ form.desorcion_presion|form_input }}
+            {{ form.desorcion_presion.errors }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Gas utilizado</label>
+            {{ form.desorcion_gas|form_input }}
+            {{ form.desorcion_gas.errors }}
+          </div>
+          <div>
+            <label class="form-label">Volumen de muestra (cm³)</label>
+            {{ form.desorcion_volumen_muestra|form_input }}
+            {{ form.desorcion_volumen_muestra.errors }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Permeación -->
+      <div class="checkbox-group">
+        {{ form.ensayo_permeacion }}
+        <label for="id_ensayo_permeacion"><strong>Permeación</strong></label>
+      </div>
+      <div id="permeacion-fields" class="conditional-fields">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Temperatura (°C)</label>
+            {{ form.permeacion_temperatura|form_input }}
+            {{ form.permeacion_temperatura.errors }}
+          </div>
+          <div>
+            <label class="form-label">Presión lado alto (bar)</label>
+            {{ form.permeacion_presion_alta|form_input }}
+            {{ form.permeacion_presion_alta.errors }}
+          </div>
+          <div>
+            <label class="form-label">Presión lado bajo (bar)</label>
+            {{ form.permeacion_presion_baja|form_input }}
+            {{ form.permeacion_presion_baja.errors }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Gas utilizado</label>
+            {{ form.permeacion_gas|form_input }}
+            {{ form.permeacion_gas.errors }}
+          </div>
+          <div>
+            <label class="form-label">Espesor de membrana (mm)</label>
+            {{ form.permeacion_espesor_membrana|form_input }}
+            {{ form.permeacion_espesor_membrana.errors }}
+          </div>
+          <div>
+            <label class="form-label">Área de membrana (cm²)</label>
+            {{ form.permeacion_area_membrana|form_input }}
+            {{ form.permeacion_area_membrana.errors }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Difusión -->
+      <div class="checkbox-group">
+        {{ form.ensayo_difusion }}
+        <label for="id_ensayo_difusion"><strong>Difusión</strong></label>
+      </div>
+      <div id="difusion-fields" class="conditional-fields">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Temperatura (°C)</label>
+            {{ form.difusion_temperatura|form_input }}
+            {{ form.difusion_temperatura.errors }}
+          </div>
+          <div>
+            <label class="form-label">Tiempo (horas)</label>
+            {{ form.difusion_tiempo|form_input }}
+            {{ form.difusion_tiempo.errors }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Concentración inicial (ppm)</label>
+            {{ form.difusion_concentracion_inicial|form_input }}
+            {{ form.difusion_concentracion_inicial.errors }}
+          </div>
+          <div>
+            <label class="form-label">Concentración final (ppm)</label>
+            {{ form.difusion_concentracion_final|form_input }}
+            {{ form.difusion_concentracion_final.errors }}
+          </div>
+          <div>
+            <label class="form-label">Volumen de solución (ml)</label>
+            {{ form.difusion_volumen_solucion|form_input }}
+            {{ form.difusion_volumen_solucion.errors }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Adsorción -->
+      <div class="checkbox-group">
+        {{ form.ensayo_adsorcion }}
+        <label for="id_ensayo_adsorcion"><strong>Adsorción</strong></label>
+      </div>
+      <div id="adsorcion-fields" class="conditional-fields">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Temperatura (°C)</label>
+            {{ form.adsorcion_temperatura|form_input }}
+            {{ form.adsorcion_temperatura.errors }}
+          </div>
+          <div>
+            <label class="form-label">Presión (bar)</label>
+            {{ form.adsorcion_presion|form_input }}
+            {{ form.adsorcion_presion.errors }}
+          </div>
+          <div>
+            <label class="form-label">Gas utilizado</label>
+            {{ form.adsorcion_gas|form_input }}
+            {{ form.adsorcion_gas.errors }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Masa de muestra (mg)</label>
+            {{ form.adsorcion_masa_muestra|form_input }}
+            {{ form.adsorcion_masa_muestra.errors }}
+          </div>
+          <div>
+            <label class="form-label">Área superficial (m²/g)</label>
+            {{ form.adsorcion_area_superficie|form_input }}
+            {{ form.adsorcion_area_superficie.errors }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="form-section">
+      <h3>📝 Anotaciones</h3>
+      <div class="form-row full">
+        <div>
+          <label class="form-label">Observaciones adicionales</label>
+          {{ form.observaciones|form_input }}
+          {{ form.observaciones.errors }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+      <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+        📤 Enviar Solicitud
+      </button>
+      <a href="{% url 'sigmadp:panel_usuario' %}" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+        ↩️ Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+

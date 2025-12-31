@@ -1,0 +1,391 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Mi Panel DTF - Laboratorios DTF{% endblock %}
+{% block page_title %}Mi Panel DTF{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .lab-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .lab-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .lab-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border);
+  }
+  .lab-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+  }
+  .lab-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .stat-item {
+    text-align: center;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 0.5rem;
+  }
+  .stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .status-pendiente { background: #fff3cd; color: #856404; }
+  .status-aceptada { background: #d1e7dd; color: #0f5132; }
+  .status-rechazada { background: #f8d7da; color: #721c24; }
+  .status-en_curso { background: #cff4fc; color: #055160; }
+  .status-finalizada { background: #d1e7dd; color: #0f5132; }
+  .recent-requests {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .request-item:last-child {
+    border-bottom: none;
+  }
+  .request-info {
+    flex: 1;
+  }
+  .request-id {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .request-date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  .btn-access {
+    background: linear-gradient(135deg, var(--primary), #0b5ed7);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-access:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+    color: white;
+  }
+  .dashboard-header {
+    background: linear-gradient(135deg, var(--primary), #0b5ed7);
+    color: white;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .dashboard-header h1 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .dashboard-header i {
+    font-size: 1.5em;
+  }
+  .dashboard-header p {
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>
+        <i class="bi bi-speedometer2"></i> 
+        DTF Dashboard
+    </h1>
+    <p>Resumen unificado de todos los laboratorios DTF</p>
+</div>
+
+<div class="stats-grid">
+  <!-- S-MEC -->
+  <div class="lab-card">
+    <div class="lab-header">
+      <i class="bi bi-tools lab-icon"></i>
+      <h3 class="lab-title">S-MEC (Mecánica)</h3>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.mec.total }}</span>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.mec.pendientes }}</span>
+        <div class="stat-label">Pendientes</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.mec.en_curso }}</span>
+        <div class="stat-label">En curso</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.mec.aceptadas }}</span>
+        <div class="stat-label">Aceptadas</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.mec.finalizadas }}</span>
+        <div class="stat-label">Finalizadas</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.mec.rechazadas }}</span>
+        <div class="stat-label">Rechazadas</div>
+      </div>
+    </div>
+    
+    {% if mec_solicitudes %}
+    <div class="recent-requests">
+      <h6><i class="bi bi-clock-history"></i> Solicitudes recientes</h6>
+      {% for solicitud in mec_solicitudes %}
+      <div class="request-item">
+        <div class="request-info">
+          <div class="request-id">#{{ solicitud.id }}</div>
+          <div class="request-date">{{ solicitud.creado_en|date:"d/m/Y" }}</div>
+        </div>
+        <span class="status-badge status-{{ solicitud.estado }}">
+          {{ solicitud.get_estado_display }}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 1.5rem; text-align: center;">
+      <a href="{% url 'mec:panel_usuario' %}" class="btn-access">
+        <i class="bi bi-arrow-right"></i> Acceder a S-MEC
+      </a>
+    </div>
+  </div>
+
+  <!-- S-LAB -->
+  <div class="lab-card">
+    <div class="lab-header">
+      <img src="/media/Logos/sigma_lab.png" alt="S-LAB" style="width:32px;height:32px;margin-right:12px;">
+      <h3 class="lab-title">S-LAB (Preparación)</h3>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmalab.total }}</span>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmalab.pendientes }}</span>
+        <div class="stat-label">Pendientes</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmalab.en_curso }}</span>
+        <div class="stat-label">En curso</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmalab.aceptadas }}</span>
+        <div class="stat-label">Aceptadas</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmalab.finalizadas }}</span>
+        <div class="stat-label">Finalizadas</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmalab.rechazadas }}</span>
+        <div class="stat-label">Rechazadas</div>
+      </div>
+    </div>
+    
+    {% if slab_solicitudes %}
+    <div class="recent-requests">
+      <h6><i class="bi bi-clock-history"></i> Solicitudes recientes</h6>
+      {% for solicitud in slab_solicitudes %}
+      <div class="request-item">
+        <div class="request-info">
+          <div class="request-id">#{{ solicitud.id }}</div>
+          <div class="request-date">{{ solicitud.creado_en|date:"d/m/Y" }}</div>
+        </div>
+        <span class="status-badge status-{{ solicitud.estado }}">
+          {{ solicitud.get_estado_display }}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 1.5rem; text-align: center;">
+      <a href="{% url 'sigmalab:panel-usuario' %}" class="btn-access">
+        <i class="bi bi-arrow-right"></i> Acceder a S-LAB
+      </a>
+    </div>
+  </div>
+
+  <!-- S-DP -->
+  <div class="lab-card">
+    <div class="lab-header">
+      <img src="/media/Logos/TDSLAB.png" alt="S-DP" style="width:32px;height:32px;margin-right:12px;">
+      <h3 class="lab-title">S-DP (Análisis Térmico)</h3>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmadp.total }}</span>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmadp.pendientes }}</span>
+        <div class="stat-label">Pendientes</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmadp.en_curso }}</span>
+        <div class="stat-label">En curso</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmadp.aceptadas }}</span>
+        <div class="stat-label">Aceptadas</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmadp.finalizadas }}</span>
+        <div class="stat-label">Finalizadas</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmadp.rechazadas }}</span>
+        <div class="stat-label">Rechazadas</div>
+      </div>
+    </div>
+    
+    {% if sigmadp_solicitudes %}
+    <div class="recent-requests">
+      <h6><i class="bi bi-clock-history"></i> Solicitudes recientes</h6>
+      {% for solicitud in sigmadp_solicitudes %}
+      <div class="request-item">
+        <div class="request-info">
+          <div class="request-id">DP-T#{{ solicitud.id }}</div>
+          <div class="request-date">{{ solicitud.creado_en|date:"d/m/Y" }}</div>
+        </div>
+        <span class="status-badge status-{{ solicitud.estado }}">
+          {{ solicitud.get_estado_display }}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 1.5rem; text-align: center;">
+      <a href="{% url 'sigmadp:panel_usuario' %}" class="btn-access">
+        <i class="bi bi-arrow-right"></i> Acceder a S-DP
+      </a>
+    </div>
+  </div>
+
+  <!-- S-Optics -->
+  <div class="lab-card">
+    <div class="lab-header">
+      <img src="/media/Logos/sigma_optics.png" alt="S-Optics" style="width:32px;height:32px;margin-right:12px;">
+      <h3 class="lab-title">S-Optics (Análisis Óptico)</h3>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmaoptics.total }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmaoptics.pendientes }}</span>
+        <span class="stat-label">Pendientes</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ stats.sigmaoptics.finalizadas }}</span>
+        <span class="stat-label">Finalizadas</span>
+      </div>
+    </div>
+    
+    <div class="recent-requests">
+      <h4 style="margin-bottom: 0.75rem; color: var(--text-primary); font-size: 1rem;">
+        <i class="bi bi-clock-history"></i> Solicitudes Recientes
+      </h4>
+      {% if ultimas_sigmaoptics %}
+        {% for solicitud in ultimas_sigmaoptics %}
+        <div class="request-item">
+          <div class="request-info">
+            <div class="request-id">OPT-{{ solicitud.id }}</div>
+            <div class="request-desc">{{ solicitud.material|truncatechars:30 }}</div>
+            <div class="request-date">{{ solicitud.creado_en|date:"d/m/Y" }}</div>
+          </div>
+          <span class="status-badge status-{{ solicitud.estado }}">
+            {{ solicitud.get_estado_display }}
+          </span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="text-align: center; color: var(--text-secondary); margin: 1rem 0;">
+          No hay solicitudes recientes
+        </p>
+      {% endif %}
+    </div>
+    
+    <div style="margin-top: 1.5rem; text-align: center;">
+      <a href="{% url 'sigmaoptics:solicitud_list' %}" class="btn-access">
+        <i class="bi bi-arrow-right"></i> Acceder a S-Optics
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

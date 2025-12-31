@@ -1,0 +1,183 @@
+﻿{% extends "base_icts.html" %}
+{% load form_extras_icts %}
+
+{% block title %}Solicitud OLMAT - {{ olmat_request.proposal.title }}{% endblock %}
+{% block page_title %}Solicitud OLMAT{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h4><i class="bi bi-gear"></i> Solicitud OLMAT</h4>
+    <p class="mb-0">Propuesta: <strong>{{ olmat_request.proposal.title }}</strong></p>
+    {% if olmat_request.access_code %}
+      <div class="mt-2">
+        <span class="badge bg-dark">Código OLMAT: {{ olmat_request.access_code }}</span>
+      </div>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-8">
+        <h5>Informacion de la solicitud</h5>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <strong>Tipo de servicio:</strong><br>
+            <span class="badge {% if olmat_request.service_type == 'technical' %}bg-info{% else %}bg-warning{% endif %}">
+              {{ olmat_request.get_service_type_display }}
+            </span>
+          </div>
+          <div class="col-md-6">
+            <strong>Estado:</strong><br>
+            <span class="badge {% if olmat_request.status == 'approved' %}bg-success{% elif olmat_request.status == 'rejected' %}bg-danger{% elif olmat_request.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+              {{ olmat_request.get_status_display }}
+            </span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <strong>Datos del proponente:</strong><br>
+          <p class="mb-1 text-muted">
+            {{ olmat_request.proponent_name }}{% if olmat_request.proponent_affiliation %} - {{ olmat_request.proponent_affiliation }}{% endif %}
+          </p>
+          {% if olmat_request.entity_type %}
+            <span class="badge bg-secondary">{{ olmat_request.get_entity_type_display }}</span>
+          {% endif %}
+        </div>
+
+        {% if olmat_request.activity_description %}
+        <div class="mb-3">
+          <strong>Descripcion de la actividad:</strong><br>
+          <p class="text-muted">{{ olmat_request.activity_description }}</p>
+        </div>
+        {% endif %}
+
+        {% if olmat_request.irradiation_requirements %}
+        <div class="mb-3">
+          <strong>Requisitos de irradiacion:</strong><br>
+          <p class="text-muted">{{ olmat_request.irradiation_requirements }}</p>
+        </div>
+        {% endif %}
+
+        {% if olmat_request.diagnostics_needed %}
+        <div class="mb-3">
+          <strong>Diagnosticos necesarios:</strong><br>
+          <ul class="list-unstyled">
+            {% for diagnostic in olmat_request.diagnostics_needed %}
+              <li><i class="bi bi-check-circle text-success"></i> {{ diagnostic|title }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        {% if olmat_request.sample_preparation %}
+        <div class="mb-3">
+          <strong>Preparacion de muestras:</strong><br>
+          <ul class="list-unstyled">
+            {% for prep in olmat_request.sample_preparation %}
+              <li><i class="bi bi-check-circle text-success"></i> {{ prep|title }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        {% if olmat_request.beam_usage %}
+        <div class="mb-3">
+          <strong>Uso de haz:</strong><br>
+          <ul class="list-unstyled">
+            {% for beam in olmat_request.beam_usage %}
+              <li><i class="bi bi-check-circle text-success"></i> {{ beam|title }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        {% if olmat_request.preferred_dates %}
+        <div class="mb-3">
+          <strong>Fechas preferidas:</strong><br>
+          <p class="text-muted">{{ olmat_request.preferred_dates }}</p>
+        </div>
+        {% endif %}
+
+        <div class="mb-3">
+          <strong>Grado de flexibilidad:</strong><br>
+          <span class="badge bg-info">{{ olmat_request.get_flexibility_display }}</span>
+        </div>
+
+        {% if olmat_request.additional_requirements %}
+        <div class="mb-3">
+          <strong>Requisitos adicionales:</strong><br>
+          <p class="text-muted">{{ olmat_request.additional_requirements }}</p>
+        </div>
+        {% endif %}
+
+        {% if olmat_request.evaluation_notes %}
+        <div class="mb-3">
+          <strong>Notas de evaluacion:</strong><br>
+          <div class="alert alert-light">
+            {{ olmat_request.evaluation_notes|linebreaks }}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if olmat_request.estimated_cost %}
+        <div class="mb-3">
+          <strong>Coste estimado:</strong><br>
+          <span class="h5 text-primary">{{ olmat_request.estimated_cost }} </span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h6>Informacion de costes</h6>
+          </div>
+          <div class="card-body">
+            <p><strong>Coste base:</strong> {{ olmat_request.base_cost }} </p>
+            {% if olmat_request.estimated_cost and olmat_request.estimated_cost != olmat_request.base_cost %}
+              <p><strong>Coste estimado:</strong> {{ olmat_request.estimated_cost }} </p>
+            {% endif %}
+            <hr>
+            <p class="text-muted small">
+              <strong>Servicio tecnico:</strong> Solo operacion OLMAT y preparacion de muestras<br>
+              <strong>Servicio de investigacion:</strong> Incluye soporte cientifico y analisis de datos
+            </p>
+          </div>
+        </div>
+
+        <div class="card mt-3">
+          <div class="card-header">
+            <h6>Informacion temporal</h6>
+          </div>
+          <div class="card-body">
+            <p><strong>Creado:</strong> {{ olmat_request.created_at|date:"d/m/Y H:i" }}</p>
+            <p><strong>Actualizado:</strong> {{ olmat_request.updated_at|date:"d/m/Y H:i" }}</p>
+            {% if olmat_request.evaluated_at %}
+              <p><strong>Evaluado:</strong> {{ olmat_request.evaluated_at|date:"d/m/Y H:i" }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{% url 'icts:proposal_detail' olmat_request.proposal.id %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver a la propuesta
+      </a>
+
+      {% if user == olmat_request.proposal.applicant and olmat_request.status == 'pending' %}
+        <a href="{% url 'icts:olmat_request_create' olmat_request.proposal.id %}" class="btn btn-warning">
+          <i class="bi bi-pencil"></i> Editar solicitud
+        </a>
+      {% endif %}
+
+      {% if user|user_in_groups:"olmat_technicians" or user.is_responsable or user.is_manager %}
+        <a href="{% url 'icts:olmat_request_evaluate' olmat_request.id %}" class="btn btn-primary">
+          <i class="bi bi-clipboard-check"></i> Evaluar solicitud
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Nueva habilitación{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Habilitaciones{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_habilitation_list' %}">Habilitaciones</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>Nueva</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Nueva habilitación</h2>
+      <div class="lo3-card-subtitle">Emisión de certificado de uso autónomo.</div>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+      <div>
+        {{ form.investigator_user.label_tag }}
+        {{ form.investigator_user }}
+      </div>
+      <div>
+        {{ form.investigator_full_name.label_tag }}
+        {{ form.investigator_full_name }}
+      </div>
+      <div>
+        {{ form.ciemat_id.label_tag }}
+        {{ form.ciemat_id }}
+      </div>
+      <div>
+        {{ form.department_division.label_tag }}
+        {{ form.department_division }}
+      </div>
+      <div>
+        {{ form.center_university.label_tag }}
+        {{ form.center_university }}
+      </div>
+      <div>
+        {{ form.equipment.label_tag }}
+        {{ form.equipment }}
+      </div>
+      <div>
+        {{ form.issued_at.label_tag }}
+        {{ form.issued_at }}
+      </div>
+      <div>
+        {{ form.valid_until.label_tag }}
+        {{ form.valid_until }}
+      </div>
+      <div>
+        {{ form.linked_technician_account.label_tag }}
+        {{ form.linked_technician_account }}
+      </div>
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button type="submit" class="lo3-btn lo3-btn-primary">
+        <i class="bi bi-check2-circle"></i>
+        Generar certificado
+      </button>
+      <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_habilitation_list' %}">
+        <i class="bi bi-x-circle"></i>
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

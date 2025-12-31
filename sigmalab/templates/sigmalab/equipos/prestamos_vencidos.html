@@ -1,0 +1,180 @@
+{% extends "base_dtf.html" %}
+
+{% block title %}Préstamos Vencidos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Préstamos Vencidos
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    {% if prestamos_vencidos %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Atención:</strong> Los siguientes préstamos están vencidos y requieren seguimiento inmediato.
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Equipo</th>
+                                    <th>Fecha Préstamo</th>
+                                    <th>Fecha Devolución</th>
+                                    <th>Días Vencido</th>
+                                    <th>Contacto</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prestamo in prestamos_vencidos %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ prestamo.usuario.get_full_name }}</strong><br>
+                                        <small class="text-muted">{{ prestamo.usuario.email }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ prestamo.equipo.nombre }}</strong><br>
+                                        <small class="text-muted">{{ prestamo.equipo.codigo }}</small>
+                                    </td>
+                                    <td>{{ prestamo.fecha_prestamo|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ prestamo.fecha_devolucion_estimada|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            {{ prestamo.dias_vencido }} días
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="mailto:{{ prestamo.usuario.email }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-envelope me-1"></i>Email
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalNotificar{{ prestamo.id }}">
+                                                <i class="fas fa-bell me-1"></i>Notificar
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalles{{ prestamo.id }}">
+                                                <i class="fas fa-eye me-1"></i>Ver
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success text-center">
+                        <i class="fas fa-check-circle me-2"></i>
+                        ¡Excelente! No hay préstamos vencidos en este momento.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modales para notificar y ver detalles -->
+{% for prestamo in prestamos_vencidos %}
+<!-- Modal para notificar -->
+<div class="modal fade" id="modalNotificar{{ prestamo.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notificar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Deseas enviar una notificación de recordatorio al usuario <strong>{{ prestamo.usuario.get_full_name }}</strong> sobre el préstamo vencido del equipo <strong>{{ prestamo.equipo.nombre }}</strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    El préstamo lleva {{ prestamo.dias_vencido }} días vencido.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="enviarNotificacion({{ prestamo.id }})">
+                    <i class="fas fa-bell me-1"></i>Enviar Notificación
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver detalles -->
+<div class="modal fade" id="modalDetalles{{ prestamo.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Préstamo Vencido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Información del Usuario</h6>
+                        <p><strong>Nombre:</strong> {{ prestamo.usuario.get_full_name }}</p>
+                        <p><strong>Email:</strong> {{ prestamo.usuario.email }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Información del Equipo</h6>
+                        <p><strong>Equipo:</strong> {{ prestamo.equipo.nombre }}</p>
+                        <p><strong>Código:</strong> {{ prestamo.equipo.codigo }}</p>
+                        <p><strong>Categoría:</strong> {{ prestamo.equipo.get_categoria_display }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Detalles del Préstamo</h6>
+                        <p><strong>Fecha Préstamo:</strong> {{ prestamo.fecha_prestamo|date:"d/m/Y H:i" }}</p>
+                        <p><strong>Días Solicitados:</strong> {{ prestamo.dias_prestamo }}</p>
+                        <p><strong>Fecha Devolución:</strong> {{ prestamo.fecha_devolucion_estimada|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Estado de Vencimiento</h6>
+                        <p class="text-danger">
+                            <strong>Días Vencido:</strong> {{ prestamo.dias_vencido }} días
+                        </p>
+                        <p><strong>Fecha de Vencimiento:</strong> {{ prestamo.fecha_devolucion_estimada|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+                {% if prestamo.proposito_uso %}
+                <hr>
+                <h6>Propósito del Uso</h6>
+                <p>{{ prestamo.proposito_uso }}</p>
+                {% endif %}
+                {% if prestamo.observaciones_prestamo %}
+                <hr>
+                <h6>Observaciones del Préstamo</h6>
+                <p>{{ prestamo.observaciones_prestamo }}</p>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+function enviarNotificacion(prestamoId) {
+    // Aquí se implementaría la lógica para enviar la notificación
+    alert('Notificación enviada al usuario');
+    // Cerrar modal
+    const modal = bootstrap.Modal.getInstance(document.querySelector('#modalNotificar' + prestamoId));
+    modal.hide();
+}
+</script>
+{% endblock %}

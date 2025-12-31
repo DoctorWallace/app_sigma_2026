@@ -1,0 +1,87 @@
+{% extends "base_icts.html" %}
+
+{% block title %}SIGMA IMP{% endblock %}
+{% block page_title %}Sesion {{ session.session_code }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Sesion {{ session.session_code }}</h2>
+  <p><strong>Solicitud:</strong> {{ session.access_proposal.access_code|default:session.access_proposal.id }} - {{ session.access_proposal.title }}</p>
+  <p><strong>Estado:</strong> {{ session.get_status_display }}</p>
+  <p><strong>Muestras:</strong> {{ sample_stats.total }} (declaradas {{ sample_stats.declared }}, extras {{ sample_stats.extra }})</p>
+  <div>
+    <a class="btn btn-outline-secondary" href="{% url back_url %}">Volver</a>
+    {% if not read_only %}
+      <a class="btn btn-primary" href="{% url 'sigmaimp:imp_add_sample' session.pk %}">Anadir muestra</a>
+      {% if session.status != 'completed' %}
+        <form method="post" action="{% url 'sigmaimp:imp_finish_session' session.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button class="btn btn-outline-success" type="submit">Finalizar sesion</button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <h3>Documentos</h3>
+  <div>
+    <a class="btn btn-outline-secondary" href="{% url 'sigmaimp:imp_export_excel' session.pk %}">Descargar Excel</a>
+    {% if session.notice_pdf %}
+      <a class="btn btn-outline-secondary" href="{% url 'sigmaimp:imp_notice_download' session.pk %}">Aviso PDF</a>
+    {% endif %}
+    {% if session.final_report_pdf %}
+      <a class="btn btn-outline-secondary" href="{% url 'sigmaimp:imp_final_report_download' session.pk %}">Informe final</a>
+    {% endif %}
+  </div>
+  {% if not read_only %}
+    <form method="post" action="{% url 'sigmaimp:imp_final_report_upload' session.pk %}" enctype="multipart/form-data" style="margin-top:1rem;">
+      {% csrf_token %}
+      {{ final_report_form.as_p }}
+      <button class="btn btn-primary" type="submit">Subir informe final</button>
+    </form>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Registro de muestras</h3>
+  {% if samples %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Origen</th>
+          <th>Identificacion</th>
+          <th>Nombre</th>
+          <th>Recepcion</th>
+          <th>Implantacion</th>
+          <th>Devolucion</th>
+          <th>Destruida</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sample in samples %}
+          <tr>
+            <td>{{ sample.sequence }}</td>
+            <td>{{ sample.get_source_display }}</td>
+            <td>{{ sample.identification }}</td>
+            <td>{{ sample.name }}</td>
+            <td>{{ sample.received_date|default:"-" }}</td>
+            <td>{{ sample.implant_date|default:"-" }}</td>
+            <td>{{ sample.return_date|default:"-" }}</td>
+            <td>{% if sample.destroyed %}Si{% else %}No{% endif %}</td>
+            <td>
+              {% if not read_only %}
+                <a class="btn btn-outline-primary btn-sm" href="{% url 'sigmaimp:imp_sample_edit' sample.pk %}">Editar</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay muestras registradas.</p>
+  {% endif %}
+</div>
+{% endblock %}

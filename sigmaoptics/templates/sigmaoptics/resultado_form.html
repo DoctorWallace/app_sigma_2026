@@ -1,0 +1,71 @@
+{% extends "sigmaoptics/base_optics.html" %}
+
+{% block optics_page_title %}Subir Resultado - OPT-{{ solicitud.id }}{% endblock %}
+
+{% block optics_content %}
+<div class="container">
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Subir Resultado - OPT-{{ solicitud.id }}</h2>
+      <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--optics-primary);">
+        <p style="margin: 0;"><strong>Material:</strong> {{ solicitud.material }}</p>
+        <p style="margin: 0;"><strong>Código de Análisis:</strong> {{ solicitud.codigo_analisis }}</p>
+        <p style="margin: 0;"><strong>Código del Informe:</strong> PT-DTF-07-F03-{{ solicitud.codigo_analisis }}</p>
+      </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="optics-form-group">
+        <label for="{{ form.archivo_resultado.id_for_label }}" class="optics-form-label">
+          Archivo de Resultado *
+        </label>
+        {{ form.archivo_resultado }}
+        {% if form.archivo_resultado.errors %}
+          <div class="text-danger">{{ form.archivo_resultado.errors.0 }}</div>
+        {% endif %}
+        <small class="text-muted">
+          Formatos aceptados: PDF, DOC, DOCX, XLS, XLSX
+        </small>
+      </div>
+
+      <div class="optics-form-group">
+        <label for="{{ form.observaciones.id_for_label }}" class="optics-form-label">
+          Observaciones del Técnico
+        </label>
+        {{ form.observaciones }}
+        {% if form.observaciones.errors %}
+          <div class="text-danger">{{ form.observaciones.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Información del alcance -->
+      <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 0.5rem; border-left: 4px solid var(--optics-info); margin: 2rem 0;">
+        <h4 style="color: var(--optics-info); margin-bottom: 1rem;">
+          <i class="bi bi-info-circle"></i>
+          Alcance de las Medidas
+        </h4>
+        <ul style="margin: 0; padding-left: 1.5rem;">
+          <li><strong>Transmitancia y Absorbancia:</strong> Rango de medida de 4000-1000 cm⁻¹ de frecuencia</li>
+          <li><strong>Longitud de onda:</strong> Equivalente de 2.5-25 μm</li>
+          <li><strong>Resolución:</strong> &lt; 2 cm⁻¹</li>
+        </ul>
+      </div>
+
+      <!-- Botones -->
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+        <button type="submit" class="optics-btn optics-btn-primary">
+          <i class="bi bi-upload"></i>
+          Subir Resultado
+        </button>
+        <a href="{% url 'sigmaoptics:solicitud_detail' solicitud.pk %}" class="optics-btn optics-btn-secondary">
+          <i class="bi bi-arrow-left"></i>
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

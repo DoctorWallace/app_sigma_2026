@@ -1,0 +1,301 @@
+{% extends "base_icts.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Configurar {{ tech_name }}{% endblock %}
+
+{% block extra_head %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+  .tech-config-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  .tech-header {
+    background: linear-gradient(135deg, var(--primary, #0d6efd), #0b5ed7);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem 1rem 0 0;
+    text-align: center;
+    margin-bottom: 0;
+  }
+  
+  .tech-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .tech-header .tech-icon {
+    font-size: 2.5rem;
+  }
+  
+  .tech-content {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-top: none;
+    border-radius: 0 0 1rem 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .form-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .form-section h3 {
+    color: var(--primary, #0d6efd);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.75rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .form-label i {
+    color: var(--primary, #0d6efd);
+    font-size: 1.1em;
+  }
+  
+  .form-input, .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    width: 100%;
+  }
+  
+  .form-input:focus, .form-control:focus {
+    border-color: var(--primary, #0d6efd);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    outline: none;
+  }
+  
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .form-check:hover {
+    background: #f8f9fa;
+  }
+  
+  .form-check input[type="checkbox"] {
+    transform: scale(1.3);
+    margin: 0;
+  }
+  
+  .form-check label {
+    margin: 0;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .btn-save-tech {
+    background: #28a745;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 1rem 2rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 2rem auto 0;
+  }
+  
+  .btn-save-tech:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+  }
+  
+  .btn-back {
+    background: #6c757d;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    margin-right: 1rem;
+  }
+  
+  .btn-back:hover {
+    background: #5c636a;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #dee2e6;
+  }
+  
+  .alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .alert-info i {
+    font-size: 1.2em;
+  }
+  
+  @media (max-width: 768px) {
+    .tech-config-container {
+      margin: 1rem auto;
+      padding: 0 0.5rem;
+    }
+    
+    .tech-header {
+      padding: 1.5rem;
+    }
+    
+    .tech-header h1 {
+      font-size: 1.5rem;
+    }
+    
+    .tech-content {
+      padding: 1.5rem;
+    }
+    
+    .form-section {
+      padding: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tech-config-container">
+  <div class="tech-header">
+    <h1>
+      <i class="bi bi-gear tech-icon"></i>
+      Configurar {{ tech_name }}
+    </h1>
+  </div>
+  
+  <div class="tech-content">
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle"></i>
+      <div>
+        <strong>Configuración de {{ tech_name }}</strong><br>
+        Completa la información específica para esta técnica. Los datos se guardarán y podrás continuar con el resto del formulario.
+      </div>
+    </div>
+    
+    <form method="post" id="tech-config-form">
+      {% csrf_token %}
+      <input type="hidden" name="tech_slug" value="{{ tech_slug }}">
+      
+      <div class="form-section">
+        <h3><i class="bi bi-gear"></i> Parámetros de {{ tech_name }}</h3>
+        {% include form_template %}
+      </div>
+      
+      <div class="action-buttons">
+        <a href="{% url 'icts:proposal_create' %}" class="btn-back">
+          <i class="bi bi-arrow-left"></i> Volver al Formulario
+        </a>
+        <button type="submit" class="btn-save-tech">
+          <i class="bi bi-check-circle"></i> Guardar Configuración
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('tech-config-form');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Mostrar indicador de carga
+    const submitBtn = form.querySelector('.btn-save-tech');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Guardando...';
+    submitBtn.disabled = true;
+    
+    // Simular guardado (aquí iría la lógica real)
+    setTimeout(() => {
+      // Guardar datos en localStorage o sessionStorage
+      const formData = new FormData(form);
+      const techData = {};
+      
+      for (let [key, value] of formData.entries()) {
+        if (key !== 'csrfmiddlewaretoken' && key !== 'tech_slug') {
+          techData[key] = value;
+        }
+      }
+      
+      // Guardar en sessionStorage
+      const techSlug = formData.get('tech_slug');
+      sessionStorage.setItem(`tech_config_${techSlug}`, JSON.stringify(techData));
+      
+      // Mostrar mensaje de éxito
+      alert('¡Configuración guardada correctamente!');
+      
+      // Volver al formulario principal
+      window.location.href = "{% url 'icts:proposal_create' %}";
+    }, 1000);
+  });
+});
+</script>
+{% endblock %}
+
+

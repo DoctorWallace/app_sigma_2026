@@ -1,0 +1,83 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Bandeja de Mensajes - S-DP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-inbox"></i>
+                        Bandeja de Mensajes
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Formulario para enviar mensaje -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-paper-plane"></i> Enviar Mensaje a Técnicos</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="asunto">Asunto *</label>
+                                    <input type="text" class="form-control" id="asunto" name="asunto" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mensaje">Mensaje *</label>
+                                    <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Enviar Mensaje
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Lista de mensajes -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-list"></i> Mensajes Enviados</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if mensajes %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Asunto</th>
+                                                <th>Autor</th>
+                                                <th>Fecha</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for mensaje in mensajes %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ mensaje.asunto }}</strong>
+                                                </td>
+                                                <td>{{ mensaje.autor.get_full_name|default:mensaje.autor.username }}</td>
+                                                <td>{{ mensaje.creado_en|date:"d/m/Y H:i" }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                    <p>No hay mensajes aún.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

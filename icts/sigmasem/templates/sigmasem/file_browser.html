@@ -1,0 +1,233 @@
+{% extends "sigmasem/base_sigmasem.html" %}
+
+{% block page_title %}Explorador de Archivos{% endblock %}
+{% block sem_page_title %}Explorador de Archivos{% endblock %}
+
+{% block sem_content %}
+<div class="container">
+  <form id="csrf-form" style="display: none;">{% csrf_token %}</form>
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Explorador de Archivos para Informes</h2>
+      <p style="margin: 0; color: #6c757d;">
+        Selecciona una carpeta que contenga archivos de imagen (.jpg, .png, .tiff) para generar informes.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+      <!-- Panel izquierdo: Selección de carpeta -->
+      <div>
+        <div class="sem-form-group">
+          <label for="folder-path" class="sem-form-label">
+            Ruta de la Carpeta
+          </label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="folder-path" class="sem-form-control" 
+                   placeholder="C:\Ruta\A\Tu\Carpeta" style="flex: 1;">
+            <button type="button" id="browse-folder" class="sem-btn sem-btn-primary">
+              <i class="bi bi-folder2-open"></i>
+              Explorar
+            </button>
+          </div>
+        </div>
+
+        <div class="sem-form-group">
+          <button type="button" id="load-files" class="sem-btn sem-btn-success" disabled>
+            <i class="bi bi-search"></i>
+            Cargar Archivos
+          </button>
+        </div>
+
+        <!-- Información de la carpeta -->
+        <div id="folder-info" style="display: none;">
+          <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+            <h4 style="margin: 0 0 0.5rem 0; color: var(--sem-primary);">Información de la Carpeta</h4>
+            <p id="folder-stats" style="margin: 0; color: #6c757d;"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel derecho: Lista de archivos -->
+      <div>
+        <div class="sem-form-group">
+          <label class="sem-form-label">Archivos Encontrados</label>
+          <div id="files-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #e9ecef; border-radius: 0.5rem; padding: 1rem;">
+            <div style="text-align: center; color: #6c757d; padding: 2rem;">
+              Selecciona una carpeta para ver los archivos
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <button type="button" id="select-all" class="sem-btn sem-btn-warning" disabled>
+            <i class="bi bi-check-all"></i>
+            Seleccionar Todos
+          </button>
+          <button type="button" id="deselect-all" class="sem-btn" style="background: #6c757d; color: white;" disabled>
+            <i class="bi bi-x-square"></i>
+            Deseleccionar Todos
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div style="margin-top: 2rem; text-align: center; border-top: 1px solid #e9ecef; padding-top: 1rem;">
+      <button type="button" id="generate-report" class="sem-btn sem-btn-primary" disabled style="padding: 1rem 2rem; font-size: 1.1rem;">
+        <i class="bi bi-file-earmark-text"></i>
+        Generar Informe
+      </button>
+      <a href="{% url 'icts:sigmasem:dashboard' %}" class="sem-btn" style="background: #6c757d; color: white; margin-left: 1rem;">
+        <i class="bi bi-house"></i>
+        Volver al Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const folderPath = document.getElementById('folder-path');
+  const browseFolder = document.getElementById('browse-folder');
+  const loadFiles = document.getElementById('load-files');
+  const folderInfo = document.getElementById('folder-info');
+  const folderStats = document.getElementById('folder-stats');
+  const filesContainer = document.getElementById('files-container');
+  const selectAll = document.getElementById('select-all');
+  const deselectAll = document.getElementById('deselect-all');
+  const generateReport = document.getElementById('generate-report');
+
+  let currentFiles = [];
+
+  // Simular explorador de carpetas (en un entorno real usarías una API)
+  browseFolder.addEventListener('click', function() {
+    // En un entorno real, esto abriría un diálogo de selección de carpeta
+    // Por ahora, permitimos escribir la ruta manualmente
+    const path = prompt('Introduce la ruta de la carpeta:');
+    if (path) {
+      folderPath.value = path;
+      loadFiles.disabled = false;
+    }
+  });
+
+  // Cargar archivos de la carpeta
+  loadFiles.addEventListener('click', function() {
+    const path = folderPath.value.trim();
+    if (!path) {
+      alert('Por favor, introduce una ruta de carpeta válida.');
+      return;
+    }
+
+    // Mostrar loading
+    filesContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6c757d;">Cargando archivos...</div>';
+
+    // Simular carga de archivos (en un entorno real harías una llamada AJAX)
+    fetch('/icts/sigmasem/browse-files/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: JSON.stringify({ folder_path: path })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        filesContainer.innerHTML = `<div style="text-align: center; padding: 2rem; color: #dc3545;">Error: ${data.error}</div>`;
+        folderInfo.style.display = 'none';
+        return;
+      }
+
+      currentFiles = data.files || [];
+      displayFiles(currentFiles);
+      updateFolderStats(currentFiles);
+      folderInfo.style.display = 'block';
+      selectAll.disabled = false;
+      deselectAll.disabled = false;
+      generateReport.disabled = false;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      filesContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #dc3545;">Error al cargar los archivos.</div>';
+      folderInfo.style.display = 'none';
+    });
+  });
+
+  // Mostrar archivos
+  function displayFiles(files) {
+    if (files.length === 0) {
+      filesContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6c757d;">No se encontraron archivos de imagen en esta carpeta.</div>';
+      return;
+    }
+
+    filesContainer.innerHTML = '';
+    files.forEach((file, index) => {
+      const fileDiv = document.createElement('div');
+      fileDiv.className = 'file-item';
+      fileDiv.style.cssText = 'display: flex; align-items: center; padding: 0.75rem; border: 1px solid #e9ecef; border-radius: 0.5rem; margin-bottom: 0.5rem; background: white;';
+      
+      fileDiv.innerHTML = `
+        <input type="checkbox" id="file-${index}" class="file-checkbox" style="margin-right: 0.75rem;">
+        <div style="flex: 1;">
+          <div style="font-weight: 600; color: var(--sem-primary);">${file.name}</div>
+          <div style="font-size: 0.9rem; color: #6c757d;">
+            Tamaño: ${formatFileSize(file.size)} | Modificado: ${file.modified}
+          </div>
+        </div>
+        <div style="color: #28a745; font-size: 1.2rem;">📄</div>
+      `;
+      
+      filesContainer.appendChild(fileDiv);
+    });
+  }
+
+  // Actualizar estadísticas de la carpeta
+  function updateFolderStats(files) {
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    folderStats.textContent = `${files.length} archivos encontrados | Tamaño total: ${formatFileSize(totalSize)}`;
+  }
+
+  // Formatear tamaño de archivo
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // Seleccionar todos los archivos
+  selectAll.addEventListener('click', function() {
+    const checkboxes = filesContainer.querySelectorAll('.file-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = true);
+  });
+
+  // Deseleccionar todos los archivos
+  deselectAll.addEventListener('click', function() {
+    const checkboxes = filesContainer.querySelectorAll('.file-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+  });
+
+  // Generar informe
+  generateReport.addEventListener('click', function() {
+    const selectedFiles = [];
+    const checkboxes = filesContainer.querySelectorAll('.file-checkbox');
+    
+    checkboxes.forEach((checkbox, index) => {
+      if (checkbox.checked) {
+        selectedFiles.push(currentFiles[index]);
+      }
+    });
+
+    if (selectedFiles.length === 0) {
+      alert('Por favor, selecciona al menos un archivo para el informe.');
+      return;
+    }
+
+    // Aquí podrías enviar los archivos seleccionados para generar el informe
+    alert(`Se generará un informe con ${selectedFiles.length} archivos seleccionados.`);
+    console.log('Archivos seleccionados:', selectedFiles);
+  });
+});
+</script>
+{% endblock %}

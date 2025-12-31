@@ -1,0 +1,36 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}{% if editing %}Editar muestra{% else %}Nueva muestra{% endif %}{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Registro de muestras VDG{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_session_detail' session.pk %}">Sesion {{ session.lot_code }}</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>{% if editing %}Editar muestra{% else %}Nueva muestra{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">{% if editing %}Editar muestra{% else %}Nueva muestra{% endif %}</h2>
+      <div class="vdg-card-subtitle">Sesion {{ session.lot_code }}.</div>
+    </div>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="vdg-btn vdg-btn-primary">
+      <i class="bi bi-save"></i>
+      Guardar
+    </button>
+    <a class="vdg-btn vdg-btn-secondary" href="{% url 'sigmavdg:vdg_session_detail' session.pk %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+  </form>
+</div>
+{% endblock %}

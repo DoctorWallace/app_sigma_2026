@@ -1,0 +1,213 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Representación de Resultados - Sigma DP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="bi bi-graph-up"></i>
+                    Representación de Resultados
+                </h1>
+                <p class="page-subtitle">Análisis y visualización de datos térmicos</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones principales -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5 class="card-title">
+                                <i class="bi bi-eye"></i>
+                                Previsualizar Archivo
+                            </h5>
+                            <p class="card-text">Carga un archivo para ver cómo se lee automáticamente.</p>
+                            <a href="{% url 'sigmadp:previsualizar_archivo' %}" class="btn btn-success">
+                                <i class="bi bi-eye"></i>
+                                Previsualizar
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="card-title">
+                                <i class="bi bi-upload"></i>
+                                Nuevo Análisis
+                            </h5>
+                            <p class="card-text">Sube un archivo de datos y genera gráficas automáticamente.</p>
+                            <a href="{% url 'sigmadp:crear_analisis_datos' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i>
+                                Crear Análisis
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="card-title">
+                                <i class="bi bi-list-ul"></i>
+                                Mis Análisis
+                            </h5>
+                            <p class="card-text">Revisa todos tus análisis de datos.</p>
+                            <a href="{% url 'sigmadp:lista_analisis' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-list"></i>
+                                Ver Todos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Análisis recientes -->
+    {% if analisis_recientes %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock-history"></i>
+                        Análisis Recientes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                    <th>Duración</th>
+                                    <th>Muestras</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for analisis in analisis_recientes %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ analisis.nombre }}</strong>
+                                        {% if analisis.descripcion %}
+                                        <br><small class="text-muted">{{ analisis.descripcion|truncatechars:50 }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if analisis.estado == 'completado' %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i>
+                                                Completado
+                                            </span>
+                                        {% elif analisis.estado == 'procesando' %}
+                                            <span class="badge bg-warning">
+                                                <i class="bi bi-hourglass-split"></i>
+                                                Procesando
+                                            </span>
+                                        {% elif analisis.estado == 'error' %}
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-exclamation-triangle"></i>
+                                                Error
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ analisis.creado_en|date:"d/m/Y H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if analisis.duracion_minutos %}
+                                            {{ analisis.duracion_minutos|floatformat:1 }} min
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if analisis.num_muestras %}
+                                            {{ analisis.num_muestras }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'sigmadp:detalle_analisis' analisis.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                            Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-graph-up display-1 text-muted"></i>
+                    <h4 class="mt-3">No hay análisis recientes</h4>
+                    <p class="text-muted">Crea tu primer análisis de datos para comenzar.</p>
+                    <a href="{% url 'sigmadp:crear_analisis_datos' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i>
+                        Crear Primer Análisis
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Información sobre tipos de archivos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        Tipos de Archivos Soportados
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i class="bi bi-file-text display-4 text-primary"></i>
+                                <h6 class="mt-2">Archivos de Texto</h6>
+                                <p class="text-muted small">.txt, .tsv</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i class="bi bi-file-earmark-spreadsheet display-4 text-success"></i>
+                                <h6 class="mt-2">Archivos CSV</h6>
+                                <p class="text-muted small">.csv</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i class="bi bi-file-earmark-binary display-4 text-warning"></i>
+                                <h6 class="mt-2">Archivos de Datos</h6>
+                                <p class="text-muted small">.dat</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i class="bi bi-gear display-4 text-info"></i>
+                                <h6 class="mt-2">Configuración</h6>
+                                <p class="text-muted small">Separador, decimal, codificación</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

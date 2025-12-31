@@ -1,0 +1,113 @@
+{% extends "base_dtf.html" %}
+
+{% block title %}SIGMA DTF · Home {% endblock %}
+{% block page_title %}SIGMA DTF {% endblock %}
+
+{% block extra_css %}
+<style>
+  /* HERO (tu bloque inicial) */
+  .hero { display:grid; gap:1rem; grid-template-columns: 1.2fr .8fr; align-items:center; }
+  .hero .lead { color: var(--text-secondary); }
+  .cta { 
+    display:inline-flex; 
+    align-items:center; 
+    gap:0.5rem; 
+    background:var(--primary); 
+    color:#fff; 
+    text-decoration:none; 
+    padding:.75rem 1.25rem; 
+    border-radius:.75rem; 
+    font-weight:600; 
+    box-shadow:var(--shadow); 
+    transition: all .2s ease; 
+  }
+  .cta:hover { 
+    transform: translateY(-2px); 
+    box-shadow: var(--shadow-lg);
+    color: #fff;
+  }
+  .cta i {
+    font-size: 1.1rem;
+  }
+  @media (max-width:900px){ .hero{ grid-template-columns:1fr; } }
+
+  /* GRID de accesos grandes (centrada) */
+  .quick-wrap{ display:flex; justify-content:center; }
+  .quick-grid{ display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); width:100%; max-width:1100px; }
+  .quick-card{ aspect-ratio: 1 / 1; background: var(--bg-card); border:1px solid var(--border); border-radius: 1.25rem; box-shadow: var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.25rem; text-decoration:none; color: inherit; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+  .quick-card:hover{ transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+  .quick-card img{ max-width: 70%; max-height: 60%; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,.12)); margin-bottom: .75rem; }
+  .quick-card .label{ font-weight: 800; letter-spacing:.2px; text-align:center; }
+</style>
+{% endblock %}
+
+{% block content %}
+  <!-- HERO de bienvenida -->
+  <div class="card">
+    <div class="hero">
+      <div>
+        <h2 style="margin-bottom:.25rem;">¡Bienvenido/a!</h2>
+        <img alt="DTF" src="/media/Logos/logo_sigma_dtf.png" style="width:10%; border-radius:60rem; box-shadow:var(--shadow);">
+        <p class="lead" style="margin-top:.75rem;">
+          Plataforma de gestión para laboratorios y servicios fuera de ICTS: S-LAB, S-MEC, SIMS-Implant, Permeación/Desorción.
+          Utiliza el botón "Entrar" para acceder con tu cuenta DTF.
+        </p>
+        <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <a class="cta" href="{% url 'accounts:login_dtf' %}?next={% url 'dtf:dashboard' %}">
+            <i class="bi bi-box-arrow-in-right"></i>
+            Entrar
+          </a>
+          <a class="cta" style="background:var(--accent);" href="{% url 'accounts:register_dtf' %}">
+            <i class="bi bi-person-plus"></i>
+            Crear Cuenta
+          </a>
+          <a class="cta" style="background:var(--text-secondary);" href="/">
+            <i class="bi bi-house"></i>
+            Salir al Portal
+          </a>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- Accesos grandes centrados -->
+  <div class="card">
+    <h3 style="margin-bottom:.75rem;">Áreas SIGMA DTF</h3>
+    <div class="quick-wrap">
+      <div class="quick-grid">
+
+        <!-- S-MEC (Micromecánica) -->
+        <a class="quick-card" href="{% url 'dtf:lab_info' 'mec' %}">
+          <img src="/media/Logos/logo_sigma_mec.png" alt="S-MEC (Micromecánica)">
+          <div class="label">S-MEC</div>
+        </a>
+
+        <!-- S-LAB -->
+        <a class="quick-card" href="{% url 'dtf:lab_info' 'lab' %}">
+          <img src="/media/Logos/sigma_lab.png" alt="S-LAB">
+          <div class="label">S-LAB</div>
+        </a>
+
+        <!-- S-SIMS·Implant -->
+        <a class="quick-card" href="{% url 'dtf:lab_info' 'sims-implant' %}">
+          <img src="/media/Logos/logo_sigma_imp_sims.png" alt="S-SIMS·Implant">
+          <div class="label">S-SIMS·Implant</div>
+        </a>
+
+        <!-- S-MEC (Mecánica) -->
+        <a class="quick-card" href="{% url 'dtf:lab_info' 'mec' %}">
+          <img src="/media/Logos/sigma_mec.png" alt="S-MEC">
+          <div class="label">S-MEC</div>
+        </a>
+
+        <!-- S-D&P (Desorción & Permeación) -->
+        <a class="quick-card" href="{% url 'dtf:lab_info' 'dp' %}">
+          <img src="/media/Logos/sigma_DP3.png" alt="S-D&P">
+          <div class="label">S-D&amp;P</div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}

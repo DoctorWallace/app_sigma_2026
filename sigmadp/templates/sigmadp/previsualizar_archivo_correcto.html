@@ -1,0 +1,459 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Previsualizar Archivo - Sigma DP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="bi bi-eye"></i>
+                    Previsualizar Archivo de Datos
+                </h1>
+                <p class="page-subtitle">Carga un archivo para ver cmo se lee automticamente</p>
+            </div>
+        </div>
+    </div>
+
+    {% if not datos_tabla %}
+    <!-- Formulario de carga con drag and drop -->
+    <form method="post" enctype="multipart/form-data" id="preview-form">
+        {% csrf_token %}
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-cloud-upload"></i>
+                    Cargar Archivo de Datos
+                </h5>
+                
+                <!-- rea de drag and drop -->
+                <div class="mb-3">
+                    <div id="drop-zone" class="drop-zone" style="border: 2px dashed #007bff; border-radius: 10px; padding: 40px; text-align: center; background-color: #f8f9fa; cursor: pointer; transition: all 0.3s ease;">
+                        <div id="drop-content">
+                            <i class="bi bi-cloud-upload" style="font-size: 3rem; color: #007bff; margin-bottom: 15px;"></i>
+                            <h5>Arrastra y suelta tu archivo aqu</h5>
+                            <p class="text-muted">o haz clic para seleccionar archivo(s)</p>
+                            <small class="text-muted">Formatos soportados: .txt, .csv, .tsv, .dat o sin extensin</small>
+                        </div>
+                        <div id="file-info" style="display: none;">
+                            <i class="bi bi-file-earmark-text" style="font-size: 2rem; color: #28a745; margin-bottom: 10px;"></i>
+                            <h6 id="file-name"></h6>
+                            <small id="file-size" class="text-muted"></small>
+                        </div>
+                    </div>
+                    
+                    <input type="file" name="archivo_datos" id="archivo-datos" class="form-control" style="display: none;" multiple>
+                    <div class="form-text mt-2">
+                        <i class="bi bi-info-circle"></i>
+                        La aplicacin detectar automticamente el separador, decimal y codificacin.
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'sigmadp:representacion_resultados' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="preview-btn" disabled>
+                        <i class="bi bi-eye"></i>
+                        Previsualizar Archivo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    {% else %}
+    <!-- Resultado de la previsualizacin -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">
+                <i class="bi bi-info-circle"></i>
+                Informacion del Archivo
+            </h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Nombre:</strong> {{ info_archivo.nombre }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Tamao:</strong> {{ info_archivo.tamao|filesizeformat }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Filas:</strong> {{ info_archivo.filas_totales }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Columnas:</strong> {{ info_archivo.columnas }}
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-4">
+                    <strong>Separador:</strong> 
+                    {% if info_archivo.separador_detectado == '\t' %}
+                        Tabulador (\t)
+                    {% else %}
+                        {{ info_archivo.separador_detectado }}
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    <strong>Decimal:</strong> {{ info_archivo.decimal_detectado }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Deteccin:</strong> 
+                    {% if info_archivo.auto_detectado %}
+                        <span class="badge bg-success">Automtica</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Manual</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">
+                <i class="bi bi-table"></i>
+                Previsualizacin de Datos (primeras 20 filas)
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            {% for columna in columnas %}
+                            <th>{{ columna }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in datos_tabla %}
+                        <tr>
+                            {% for valor in fila %}
+                            <td>{{ valor|default_if_none:"" }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if info_archivo.filas_totales > 20 %}
+            <div class="mt-2">
+                <small class="text-muted">
+                    Mostrando las primeras 20 filas de {{ info_archivo.filas_totales }} totales.
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Informacion de previsualizacin -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">
+                <i class="bi bi-info-circle"></i>
+                Informacion del Archivo
+            </h5>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Separador detectado:</strong> {{ info_archivo.separador_detectado }}</p>
+                    <p><strong>Decimal detectado:</strong> {{ info_archivo.decimal_detectado }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Total de filas:</strong> {{ info_archivo.filas_totales }}</p>
+                    <p><strong>Total de columnas:</strong> {{ info_archivo.columnas }}</p>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="bi bi-lightbulb"></i>
+                <strong>Nota:</strong> Las grficas se generarn automticamente cuando guardes el analisis.
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario para guardar analisis -->
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">
+                <i class="bi bi-save"></i>
+                Guardar Analisis
+            </h5>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Campos ocultos con la informacin detectada -->
+                <input type="hidden" name="separador_detectado" value="{{ info_archivo.separador_detectado }}">
+                <input type="hidden" name="decimal_detectado" value="{{ info_archivo.decimal_detectado }}">
+                <input type="hidden" name="codificacion_detectada" value="{{ props_detectadas.encoding }}">
+                
+                                {% if not selector_disponible %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    No hay solicitudes trmicas disponibles para asociar resultados. Crea o acepta una solicitud antes de guardar este analisis.
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="preview_solicitante" class="form-label">
+                                <i class="bi bi-person-circle"></i>
+                                Usuario solicitante
+                            </label>
+                            <select name="solicitante" id="preview_solicitante" class="form-select" {% if not selector_disponible %}disabled{% endif %}>
+                                <option value="">Selecciona un usuario</option>
+                                {% for usuario in solicitantes %}
+                                    {% with usuario_id=usuario.id|stringformat:"s" %}
+                                    <option value="{{ usuario.id }}" data-username="{{ usuario.username }}" {% if selected_solicitante == usuario_id %}selected{% endif %}>
+                                        {% if usuario.get_full_name %}
+                                            {{ usuario.get_full_name }} ({{ usuario.username }})
+                                        {% else %}
+                                            {{ usuario.username }}
+                                        {% endif %}
+                                    </option>
+                                    {% endwith %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="preview_solicitud" class="form-label">
+                                <i class="bi bi-ui-checks-grid"></i>
+                                Solicitud asociada
+                            </label>
+                            <select name="solicitud_termica" id="preview_solicitud" class="form-select" {% if not selector_disponible %}disabled{% endif %} required>
+                                <option value="">Selecciona una solicitud</option>
+                                {% for solicitud in solicitudes %}
+                                    {% with solicitud_id=solicitud.id|stringformat:"s" %}
+                                    <option value="{{ solicitud.id }}" data-solicitante="{{ solicitud.solicitante_id }}" data-estado="{{ solicitud.estado }}" {% if selected_solicitud == solicitud_id %}selected{% endif %}>
+                                        DP-T#{{ solicitud.id }} - {{ solicitud.nombre_muestra }} ({{ solicitud.get_estado_display }})  {{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}
+                                    </option>
+                                    {% endwith %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="nombre_analisis" class="form-label">
+                                <i class="bi bi-tag"></i>
+                                Nombre del analisis
+                            </label>
+                            <input type="text" class="form-control" id="nombre_analisis" name="nombre_analisis"
+                                   placeholder="Ej: Ensayo Termico P250401"
+                                   value="{{ request.POST.nombre_analisis|default:nombre_sugerido }}" required>
+                            <div class="form-text">Nombre descriptivo para identificar este analisis</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="descripcion_analisis" class="form-label">
+                                <i class="bi bi-file-text"></i>
+                                Descripcin (opcional)
+                            </label>
+                            <textarea class="form-control" id="descripcion_analisis" name="descripcion_analisis"
+                                      rows="2" placeholder="Descripcin del ensayo o condiciones...">{{ request.POST.descripcion_analisis }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Qu se generar?</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Grafica de temperatura vs tiempo</li>
+                        <li>Grafica de leak rate vs tiempo</li>
+                        <li>Grafica de tensin del calefactor vs tiempo</li>
+                        <li>Panel overview con todas las grficas</li>
+                        <li>Archivo CSV limpio y estandarizado</li>
+                    </ul>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a href="{% url 'sigmadp:previsualizar_archivo' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Probar Otro Archivo
+                        </a>
+                        <a href="{% url 'sigmadp:lista_analisis' %}" class="btn btn-outline-info ms-2">
+                            <i class="bi bi-list-ul"></i>
+                            Ver Mis Analisis
+                        </a>
+                    </div>
+                    <button type="submit" name="guardar_analisis" class="btn btn-success" id="guardar-analisis-btn" {% if not selector_disponible %}disabled{% endif %}>
+                        <i class="bi bi-save"></i>
+                        Guardar y Procesar Analisis
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('archivo-datos');
+    const previewBtn = document.getElementById('preview-btn');
+    const dropContent = document.getElementById('drop-content');
+    const fileInfo = document.getElementById('file-info');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+
+    const previewSolicitante = document.getElementById('preview_solicitante');
+    const previewSolicitud = document.getElementById('preview_solicitud');
+    const nombreAnalisisInput = document.getElementById('nombre_analisis');
+    const guardarBtn = document.getElementById('guardar-analisis-btn');
+    const selectorDisponible = {{ selector_disponible|yesno:'true,false' }};
+    const nombreSugerido = '{{ nombre_sugerido|default_if_none:""|escapejs }}';
+
+    function setSuggestedNameFromContext() {
+        if (!nombreAnalisisInput || !nombreSugerido) {
+            return;
+        }
+        if (!nombreAnalisisInput.value || nombreAnalisisInput.value.trim().length === 0) {
+            nombreAnalisisInput.value = nombreSugerido;
+        }
+    }
+
+    setSuggestedNameFromContext();
+
+    function filterSolicitudes() {
+        if (!previewSolicitud) {
+            return;
+        }
+        const selectedUser = previewSolicitante ? previewSolicitante.value : '';
+        let hasVisibleOption = false;
+        Array.from(previewSolicitud.options).forEach(option => {
+            if (!option.value) {
+                option.hidden = false;
+                option.disabled = false;
+                return;
+            }
+            const matches = !selectedUser || option.dataset.solicitante === selectedUser;
+            option.hidden = !matches;
+            option.disabled = !matches;
+            if (matches) {
+                hasVisibleOption = true;
+            }
+        });
+        if (!hasVisibleOption) {
+            previewSolicitud.value = '';
+        } else if (previewSolicitud.selectedOptions.length && previewSolicitud.selectedOptions[0].hidden) {
+            previewSolicitud.value = '';
+        }
+        updateGuardarState();
+    }
+
+    function updateGuardarState() {
+        if (!guardarBtn) {
+            return;
+        }
+        if (!selectorDisponible) {
+            guardarBtn.disabled = true;
+            return;
+        }
+        const hasSolicitud = previewSolicitud && previewSolicitud.value;
+        const hasNombre = nombreAnalisisInput && nombreAnalisisInput.value.trim().length > 0;
+        guardarBtn.disabled = !(hasSolicitud && hasNombre);
+    }
+
+    if (previewSolicitante) {
+        previewSolicitante.addEventListener('change', filterSolicitudes);
+    }
+    if (previewSolicitud) {
+        previewSolicitud.addEventListener('change', updateGuardarState);
+    }
+    if (nombreAnalisisInput) {
+        nombreAnalisisInput.addEventListener('input', updateGuardarState);
+    }
+
+    filterSolicitudes();
+    updateGuardarState();
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    dropZone.addEventListener('drop', handleDrop, false);
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFiles);
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function highlight() {
+        dropZone.style.borderColor = '#28a745';
+        dropZone.style.backgroundColor = '#e8f5e8';
+    }
+
+    function unhighlight() {
+        dropZone.style.borderColor = '#007bff';
+        dropZone.style.backgroundColor = '#f8f9fa';
+    }
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles({ target: { files: files } });
+    }
+
+    function handleFiles(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            const file = files[0];
+            showFileInfo(file);
+            previewBtn.disabled = false;
+        }
+    }
+
+    function showFileInfo(file) {
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        dropContent.style.display = 'none';
+        fileInfo.style.display = 'block';
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+});</script>
+
+<style>
+.drop-zone:hover {
+    border-color: #28a745 !important;
+    background-color: #e8f5e8 !important;
+}
+
+.drop-zone.dragover {
+    border-color: #28a745 !important;
+    background-color: #e8f5e8 !important;
+    transform: scale(1.02);
+}
+</style>
+{% endblock %}

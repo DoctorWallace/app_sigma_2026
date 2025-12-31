@@ -1,0 +1,93 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Materiales de referencia{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Materiales de referencia{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>Materiales de referencia</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">Materiales de referencia</div>
+    <div class="lo3-page-meta">
+      <span>{{ materials|length }} materiales</span>
+      <span>{{ active_count }} activos</span>
+      <span>{{ expired_count }} en riesgo/caducados</span>
+    </div>
+  </div>
+  <div>
+    <a class="lo3-btn lo3-btn-primary" href="{% url 'sigmaconf:lo3_reference_material_create' %}">
+      <i class="bi bi-plus-circle"></i>
+      Nuevo material
+    </a>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Listado</h2>
+      <div class="lo3-card-subtitle">Materiales de referencia activos y caducados.</div>
+    </div>
+  </div>
+
+  {% if materials %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Responsable</th>
+            <th>Ubicación</th>
+            <th>Caducidad</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for material in materials %}
+            <tr>
+              <td><strong>{{ material.code }}</strong></td>
+              <td>{{ material.description }}</td>
+              <td>{{ material.responsible|default:"-" }}</td>
+              <td>{{ material.location|default:"-" }}</td>
+              <td>{{ material.expiry_date|date:"d/m/Y"|default:"-" }}</td>
+              <td>
+                {% if material.status_style == "expired" %}
+                  <span class="lo3-badge lo3-badge--danger">{{ material.status_label }}</span>
+                {% elif material.status_style == "due_soon" %}
+                  <span class="lo3-badge lo3-badge--warning">{{ material.status_label }}</span>
+                {% elif material.status_style == "retired" %}
+                  <span class="lo3-badge lo3-badge--muted">{{ material.status_label }}</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--success">{{ material.status_label }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_reference_material_detail' material.pk %}">
+                  <i class="bi bi-eye"></i>
+                  Ver ficha
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-box-seam"></i>
+      <div>No hay materiales registrados.</div>
+      <small>Importa el Excel MR L03 o crea el primer material.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

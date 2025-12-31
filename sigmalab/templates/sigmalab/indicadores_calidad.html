@@ -1,0 +1,125 @@
+{% extends "sigmalab/base_sigmalab_unified.html" %}
+
+{% block lab_title %}Indicadores de calidad{% endblock %}
+{% block page_title %}Indicadores de calidad - S-LAB{% endblock %}
+
+{% block extra_css %}
+.metric-value { font-size: 1.6rem; font-weight: 700; }
+.status-ok { color: #1f7a45; font-weight: 700; }
+.status-bad { color: #c53030; font-weight: 700; }
+.status-na { color: var(--muted); font-style: italic; }
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-3">
+  <div class="card">
+    <p class="muted">Promedio I1 (dias)</p>
+    <div class="metric-value">
+      {% if promedio_i1 is not None %}
+        {{ promedio_i1|floatformat:2 }}
+      {% else %}
+        N/A
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <p class="muted">Promedio I2 (dias)</p>
+    <div class="metric-value">
+      {% if promedio_i2 is not None %}
+        {{ promedio_i2|floatformat:2 }}
+      {% else %}
+        N/A
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <p class="muted">Total solicitudes</p>
+    <div class="metric-value">{{ total_solicitudes }}</div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Cumplimiento I1</h3>
+    <p class="muted">Con I1: {{ solicitudes_con_i1 }}</p>
+    <p class="muted">Cumplen: {{ solicitudes_cumplen_i1 }}</p>
+    <p class="muted">Porcentaje: {{ porcentaje_cumplimiento_i1|floatformat:1 }}%</p>
+  </div>
+  <div class="card">
+    <h3>Cumplimiento I2</h3>
+    <p class="muted">Con I2: {{ solicitudes_con_i2 }}</p>
+    <p class="muted">Cumplen: {{ solicitudes_cumplen_i2 }}</p>
+    <p class="muted">Porcentaje: {{ porcentaje_cumplimiento_i2|floatformat:1 }}%</p>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Detalle por solicitud</h3>
+  {% if indicadores_data %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Solicitud</th>
+            <th>Estado</th>
+            <th>Recepcion</th>
+            <th>Fin analisis</th>
+            <th>Entrega informe</th>
+            <th>I1 (dias)</th>
+            <th>I2 (dias)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in indicadores_data %}
+            <tr>
+              <td>{{ data.solicitud.id }}</td>
+              <td>{{ data.solicitud.get_estado_display }}</td>
+              <td>{{ data.indicador.fecha_recepcion|date:"Y-m-d" }}</td>
+              <td>
+                {% if data.indicador.fecha_finalizacion_analisis %}
+                  {{ data.indicador.fecha_finalizacion_analisis|date:"Y-m-d" }}
+                {% else %}
+                  <span class="status-na">N/A</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if data.indicador.fecha_entrega_informe %}
+                  {{ data.indicador.fecha_entrega_informe|date:"Y-m-d" }}
+                {% else %}
+                  <span class="status-na">N/A</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if data.i1_dias is not None %}
+                  {{ data.i1_dias|floatformat:2 }}
+                  {% if data.i1_cumple %}
+                    <span class="status-ok">OK</span>
+                  {% else %}
+                    <span class="status-bad">NO</span>
+                  {% endif %}
+                {% else %}
+                  <span class="status-na">N/A</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if data.i2_dias is not None %}
+                  {{ data.i2_dias|floatformat:2 }}
+                  {% if data.i2_cumple %}
+                    <span class="status-ok">OK</span>
+                  {% else %}
+                    <span class="status-bad">NO</span>
+                  {% endif %}
+                {% else %}
+                  <span class="status-na">N/A</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">No hay indicadores disponibles.</p>
+  {% endif %}
+</div>
+{% endblock %}

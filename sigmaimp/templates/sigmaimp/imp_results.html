@@ -1,0 +1,45 @@
+{% extends "base_icts.html" %}
+
+{% block title %}SIGMA IMP{% endblock %}
+{% block page_title %}SIGMA IMP - Resultados{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Resultados disponibles</h2>
+  {% if sessions %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Codigo sesion</th>
+          <th>Solicitud</th>
+          <th>Solicitante</th>
+          <th>Completada</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for session in sessions %}
+          <tr>
+            <td>{{ session.session_code }}</td>
+            <td>{{ session.access_proposal.access_code|default:session.access_proposal.id }}</td>
+            <td>{{ session.access_proposal.applicant }}</td>
+            <td>{{ session.completed_at|default:"-" }}</td>
+            <td>
+              <a class="btn btn-outline-primary btn-sm" href="{% url 'sigmaimp:imp_session_detail' session.pk %}">Ver sesion</a>
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'sigmaimp:imp_export_excel' session.pk %}">Excel</a>
+              {% if session.notice_pdf %}
+                <a class="btn btn-outline-secondary btn-sm" href="{% url 'sigmaimp:imp_notice_download' session.pk %}">Aviso PDF</a>
+              {% endif %}
+              {% if session.final_report_pdf %}
+                <a class="btn btn-outline-secondary btn-sm" href="{% url 'sigmaimp:imp_final_report_download' session.pk %}">Informe final</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay resultados disponibles.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "lab_base.html" %}
+
+{% block title %}Bandeja Técnico | SIGMA LAB{% endblock %}
+
+{% block content %}
+<div class="card" style="padding:24px; border-radius:16px;">
+    <h1 class="page-title" style="margin-bottom:8px;">Bandeja técnico</h1>
+    <p class="muted" style="margin-bottom:24px;">Gestión de todas las solicitudes de preparación de muestras</p>
+
+    <!-- Filtros -->
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;">
+        <a href="{% url 'dtf:lab_bandeja_tecnico' %}" class="btn {% if not estado_filtro %}active{% endif %}">Todas</a>
+        {% for estado_key, estado_label in estados %}
+            <a href="{% url 'dtf:lab_bandeja_tecnico' %}?estado={{ estado_key }}" 
+               class="btn {% if estado_filtro == estado_key %}active{% endif %}">{{ estado_label }}</a>
+        {% endfor %}
+        <div style="margin-left:auto;">
+            <a href="{% url 'dtf:lab' %}" class="btn" style="background:#f5f5f5;">← Volver al inicio</a>
+        </div>
+    </div>
+
+    {% if solicitudes %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Solicitante</th>
+                    <th>Material</th>
+                    <th>Estado</th>
+                    <th>Fecha solicitud</th>
+                    <th>Tareas</th>
+                    <th style="width:1%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solicitud in solicitudes %}
+                <tr>
+                    <td><strong>#{{ solicitud.id }}</strong></td>
+                    <td>
+                        {% if solicitud.codigo_muestra %}
+                            <strong>{{ solicitud.codigo_muestra }}</strong>
+                        {% else %}
+                            <span class="muted">Sin asignar</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</td>
+                    <td>{{ solicitud.material|default:"—" }}</td>
+                    <td>
+                        {% if solicitud.estado == 'pendiente' %}
+                            <span class="pill" style="background:#fff3cd;border-color:#ffeaa7;color:#856404;">{{ solicitud.get_estado_display }}</span>
+                        {% elif solicitud.estado == 'aceptada' %}
+                            <span class="pill" style="background:#d1ecf1;border-color:#bee5eb;color:#0c5460;">{{ solicitud.get_estado_display }}</span>
+                        {% elif solicitud.estado == 'rechazada' %}
+                            <span class="pill" style="background:#f8d7da;border-color:#f5c6cb;color:#721c24;">{{ solicitud.get_estado_display }}</span>
+                        {% elif solicitud.estado == 'en_curso' %}
+                            <span class="pill" style="background:#cce5ff;border-color:#b3d9ff;color:#004085;">{{ solicitud.get_estado_display }}</span>
+                        {% elif solicitud.estado == 'finalizada' %}
+                            <span class="pill" style="background:#d4edda;border-color:#c3e6cb;color:#155724;">{{ solicitud.get_estado_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ solicitud.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% with tareas=solicitud.get_tareas_seleccionadas %}
+                            {% if tareas %}
+                                <small class="muted">{{ tareas|join:", " }}</small>
+                            {% else %}
+                                <small class="muted">Ninguna</small>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        <a href="{% url 'dtf:lab_detalle_solicitud' solicitud.pk %}" class="btn-small">Gestionar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            {% if estado_filtro %}
+                <h3>No hay solicitudes {{ estado_filtro }}</h3>
+                <p class="muted">No se encontraron solicitudes con el estado "{{ estado_filtro }}".</p>
+                <a href="{% url 'dtf:lab_bandeja_tecnico' %}" class="btn">Ver todas las solicitudes</a>
+            {% else %}
+                <h3>No hay solicitudes</h3>
+                <p class="muted">Aún no se han creado solicitudes de preparación de muestras.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #6c757d;
+}
+
+.empty-state h3 {
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+    text-decoration: none;
+    background: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.btn-small:hover {
+    background: #0056b3;
+    text-decoration: none;
+    color: white;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+}
+</style>
+{% endblock %}

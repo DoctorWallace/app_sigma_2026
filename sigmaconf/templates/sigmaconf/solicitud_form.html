@@ -1,0 +1,247 @@
+{% extends "base_icts.html" %}
+{% load static %}
+
+{% block title %}Nueva Solicitud Confocal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-plus-circle"></i> Nueva Solicitud Confocal
+                </h1>
+                <a href="{% url 'sigmaconf:home' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-file-text"></i> Información de la Solicitud
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.material.id_for_label }}" class="form-label">Material</label>
+                                    {{ form.material }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.numero_muestras.id_for_label }}" class="form-label">Número de Muestras</label>
+                                    {{ form.numero_muestras }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.tipo_microscopia.id_for_label }}" class="form-label">Tipo de Microscopía</label>
+                                    {{ form.tipo_microscopia }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.becario_asociado.id_for_label }}" class="form-label">Becario Asociado (opcional)</label>
+                                    {{ form.becario_asociado }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.longitud_onda_excitacion.id_for_label }}" class="form-label">Longitud de Onda de Excitación</label>
+                                    {{ form.longitud_onda_excitacion }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.longitud_onda_emision.id_for_label }}" class="form-label">Longitud de Onda de Emisión</label>
+                                    {{ form.longitud_onda_emision }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.objetivo_requerido.id_for_label }}" class="form-label">Objetivo Requerido</label>
+                                    {{ form.objetivo_requerido }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.espesor_muestra.id_for_label }}" class="form-label">Espesor de la Muestra</label>
+                                    {{ form.espesor_muestra }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.tincion_utilizada.id_for_label }}" class="form-label">Tinción Utilizada</label>
+                            {{ form.tincion_utilizada }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.preparacion_muestra.id_for_label }}" class="form-label">Preparación de la Muestra</label>
+                            {{ form.preparacion_muestra }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.requisitos_finales.id_for_label }}" class="form-label">Requisitos Finales</label>
+                            {{ form.requisitos_finales }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones.id_for_label }}" class="form-label">Observaciones</label>
+                            {{ form.observaciones }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.imagen_muestra.id_for_label }}" class="form-label">Imagen de la Muestra</label>
+                                    {{ form.imagen_muestra }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.croquis.id_for_label }}" class="form-label">Croquis</label>
+                                    {{ form.croquis }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.tiempo_estimado_numero.id_for_label }}" class="form-label">Tiempo Estimado (número)</label>
+                                    {{ form.tiempo_estimado_numero }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.tiempo_estimado_unidad.id_for_label }}" class="form-label">Unidad</label>
+                                    {{ form.tiempo_estimado_unidad }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <div class="form-check mt-4">
+                                        {{ form.tiempo_estimado_indeterminado }}
+                                        <label for="{{ form.tiempo_estimado_indeterminado.id_for_label }}" class="form-check-label">
+                                            Tiempo indeterminado
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h6>Operaciones de Preparación</h6>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            {{ form.montaje_fluorescente }}
+                                            <label for="{{ form.montaje_fluorescente.id_for_label }}" class="form-check-label">
+                                                Montaje Fluorescente
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            {{ form.fijacion }}
+                                            <label for="{{ form.fijacion.id_for_label }}" class="form-check-label">
+                                                Fijación
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            {{ form.deshidratacion }}
+                                            <label for="{{ form.deshidratacion.id_for_label }}" class="form-check-label">
+                                                Deshidratación
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            {{ form.inclusion }}
+                                            <label for="{{ form.inclusion.id_for_label }}" class="form-check-label">
+                                                Inclusión
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            {{ form.corte_fino }}
+                                            <label for="{{ form.corte_fino.id_for_label }}" class="form-check-label">
+                                                Corte Fino
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            {{ form.tincion_histologica }}
+                                            <label for="{{ form.tincion_histologica.id_for_label }}" class="form-check-label">
+                                                Tinción Histológica
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            {{ form.inmunotincion }}
+                                            <label for="{{ form.inmunotincion.id_for_label }}" class="form-check-label">
+                                                Inmunotinción
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            {{ form.tincion_nuclear }}
+                                            <label for="{{ form.tincion_nuclear.id_for_label }}" class="form-check-label">
+                                                Tinción Nuclear
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'sigmaconf:home' %}" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-circle"></i> Crear Solicitud
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

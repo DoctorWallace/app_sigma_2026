@@ -1,0 +1,317 @@
+On branch feature/portal-sigma
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   automatizacion/__pycache__/settings.cpython-312.pyc
+        modified:   automatizacion/__pycache__/urls.cpython-312.pyc
+        modified:   automatizacion/settings.py
+        modified:   automatizacion/urls.py
+        modified:   icts/urls.py
+        modified:   icts/views.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        automatizacion/__pycache__/middleware.cpython-312.pyc
+        automatizacion/__pycache__/wsgi.cpython-312.pyc
+        dtf/
+        icts/__pycache__/context_processors.cpython-312.pyc
+        icts/__pycache__/forms.cpython-312.pyc
+        icts/__pycache__/urls.cpython-312.pyc
+        icts/__pycache__/utils.cpython-312.pyc
+        icts/__pycache__/views.cpython-312.pyc
+        icts/migrations/__pycache__/
+        icts/templates/icts/icts_home.html
+        icts/templatetags/__pycache__/review_extras.cpython-312.pyc    
+        icts/templatetags/__pycache__/roles.cpython-312.pyc
+        portal/
+        tatus
+
+no changes added to commit (use "git add" and/or "git commit -a")      
+PS C:\NAS_CIEMAT\Programas PYTHON\Cursor\icts> {% extends "base_generic.html" %}
+{% load static %}
+{% load roles %}
+
+{% block title %}ΣSIGMA ICTS - Sistema de Propuestas{% endblock %}
+
+{% block extra_css %}
+<style>
+    .icts-hero {
+        background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+        color: white;
+        border-radius: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .feature-card {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stats-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 1rem;
+        border: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/" class="text-decoration-none">
+                    <i class="bi bi-house-fill me-1"></i>
+                    Σ-SIGMA Portal
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="bi bi-diagram-3 me-1"></i>
+                ICTS
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="icts-hero p-5 mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="bi bi-diagram-3 me-3"></i>
+                    Σ-SIGMA ICTS
+                </h1>
+                <p class="lead mb-4">
+                    Sistema de gestión de propuestas para equipos científicos de la Infraestructura Científica y Tecnológica Singular (ICTS-LNF)
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    {% if user.is_authenticated %}
+                        {% if not user|is_reviewer and not user|is_responsable %}
+                        <a href="{% url 'icts:proposal_create' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Nueva Propuesta
+                        </a>
+                        <a href="{% url 'icts:my_proposals' %}" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-folder me-2"></i>
+                            Mis Propuestas
+                        </a>
+                        {% endif %}
+                        
+                        {% if user|is_reviewer %}
+                        <a href="{% url 'icts:reviewer_dashboard' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-clipboard-check me-2"></i>
+                            Dashboard Revisor
+                        </a>
+                        {% endif %}
+                        
+                        {% if user|is_responsable %}
+                        <a href="{% url 'icts:responsable_dashboard' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            Dashboard Responsable
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Iniciar Sesión
+                        </a>
+                        <a href="{% url 'signup' %}" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Registrarse
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="bi bi-cpu text-white opacity-50" style="font-size: 8rem;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-xl-3">
+            <div class="card feature-card p-4 text-center">
+                <i class="bi bi-microscope text-primary feature-icon"></i>
+                <h5 class="fw-bold">SEM/EDX</h5>
+                <p class="text-muted mb-0">Microscopía electrónica de barrido con análisis elemental</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card feature-card p-4 text-center">
+                <i class="bi bi-lightning text-warning feature-icon"></i>
+                <h5 class="fw-bold">FIB</h5>
+                <p class="text-muted mb-0">Haz de iones focalizados para preparación de muestras de TEM</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card feature-card p-4 text-center">
+                <i class="bi bi-graph-up text-success feature-icon"></i>
+                <h5 class="fw-bold">SIMS</h5>
+                <p class="text-muted mb-0">Espectrometría de masas de iones secundarios</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card feature-card p-4 text-center">
+                <i class="bi bi-eye text-info feature-icon"></i>
+                <h5 class="fw-bold">Confocal</h5>
+                <p class="text-muted mb-0">Microscopía confocal y perfilometría</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    {% if user.is_authenticated %}
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning-fill text-warning me-2"></i>
+                        Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% if not user|is_reviewer and not user|is_responsable %}
+                        <div class="col-md-6">
+                            <a href="{% url 'icts:proposal_create' %}" class="btn btn-outline-primary w-100 p-3">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                <div>
+                                    <div class="fw-bold">Nueva Propuesta</div>
+                                    <small class="text-muted">Crear solicitud de acceso</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'icts:my_proposals' %}" class="btn btn-outline-secondary w-100 p-3">
+                                <i class="bi bi-folder me-2"></i>
+                                <div>
+                                    <div class="fw-bold">Mis Propuestas</div>
+                                    <small class="text-muted">Ver estado y historial</small>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        {% if user|is_reviewer %}
+                        <div class="col-md-6">
+                            <a href="{% url 'icts:reviewer_inbox' %}" class="btn btn-outline-info w-100 p-3">
+                                <i class="bi bi-inbox me-2"></i>
+                                <div>
+                                    <div class="fw-bold">Bandeja de Revisión</div>
+                                    <small class="text-muted">Propuestas pendientes</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'icts:reviewer_dashboard' %}" class="btn btn-outline-success w-100 p-3">
+                                <i class="bi bi-clipboard-check me-2"></i>
+                                <div>
+                                    <div class="fw-bold">Dashboard</div>
+                                    <small class="text-muted">Estadísticas y métricas</small>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        {% if user|is_responsable %}
+                        <div class="col-md-6">
+                            <a href="{% url 'icts:responsable_dashboard' %}" class="btn btn-outline-primary w-100 p-3">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                <div>
+                                    <div class="fw-bold">Dashboard Responsable</div>
+                                    <small class="text-muted">Gestión y decisiones</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'icts:users_admin' %}" class="btn btn-outline-warning w-100 p-3">
+                                <i class="bi bi-people me-2"></i>
+                                <div>
+                                    <div class="fw-bold">Gestión Usuarios</div>
+                                    <small class="text-muted">Validar y administrar</small>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card stats-card">
+                <div class="card-header bg-transparent">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Información del Sistema
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">Usuario actual:</small>
+                        <div class="fw-bold">{{ user.get_full_name|default:user.username }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Rol:</small>
+                        <div class="fw-bold">
+                            {% if user|is_responsable %}
+                                <span class="badge bg-primary">Responsable</span>
+                            {% elif user|is_reviewer %}
+                                <span class="badge bg-success">Revisor</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Investigador</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="d-grid">
+                        <a href="/" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Volver al Portal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Not authenticated section -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <i class="bi bi-shield-lock text-muted" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 mb-3">Acceso Requerido</h4>
+                <p class="text-muted mb-4">
+                    Para acceder al sistema ΣSIGMA ICTS necesitas iniciar sesión o registrarte como nuevo usuario.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="{% url 'login' %}" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Iniciar Sesión
+                    </a>
+                    <a href="{% url 'signup' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Registrarse
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

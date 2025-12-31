@@ -1,0 +1,150 @@
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+<section class="container" style="margin-top:1rem;">
+
+  <ul class="quicklinks quick-grid">
+    <!-- Van der Graaff -->
+    <li>
+      <a class="quicklink" href="{% url 'icts:facility_info' 'van-der-graaff' %}">
+        <img class="facility-logo" src="{{ MEDIA_URL }}facilities/Acelerador.png" alt="Van der Graaff">
+        <span>Van der Graaff</span>
+      </a>
+    </li>
+
+<!-- SEM/EDX (con imagen SEM1.png) -->
+<li>
+  <a class="quicklink" href="{% url 'icts:facility_info' 'sem-edx' %}">
+    <img class="facility-logo" src="{{ MEDIA_URL }}facilities/SEM1.png" alt="SEM/EDX">
+    <span>SEM/EDX</span>
+  </a>
+</li>
+
+<!-- FIB (con imagen FIB.png) -->
+<li>
+  <a class="quicklink" href="{% url 'icts:facility_info' 'fib' %}">
+    <img class="facility-logo" src="{{ MEDIA_URL }}facilities/FIB.png" alt="FIB">
+    <span>FIB</span>
+  </a>
+</li>
+
+<!-- SIMS (con imagen SIMS.png) -->
+<li>
+  <a class="quicklink" href="{% url 'icts:facility_info' 'sims' %}">
+    <img class="facility-logo" src="{{ MEDIA_URL }}facilities/SIMS.png" alt="SIMS">
+    <span>SIMS</span>
+  </a>
+</li>
+
+    <!-- Implantador (con imagen) -->
+    <li>
+      <a class="quicklink" href="{% url 'icts:facility_info' 'implantador' %}">
+        <img class="facility-logo" src="{{ MEDIA_URL }}facilities/Implantador.png" alt="Implantador">
+        <span>Implantador</span>
+      </a>
+    </li>
+
+
+    <!-- Confocal (con imagen) -->
+    <li>
+      <a class="quicklink" href="{% url 'icts:facility_info' 'confocal' %}">
+        <img class="facility-logo" src="{{ MEDIA_URL }}facilities/confocal.png" alt="Confocal">
+        <span>Confocal</span>
+      </a>
+    </li>
+
+    <!-- Dektak (con imagen) -->
+    <li>
+      <a class="quicklink" href="{% url 'icts:facility_info' 'dektak' %}">
+        <img class="facility-logo" src="{{ MEDIA_URL }}facilities/Dektak.jpg" alt="Dektak">
+        <span>Dektak</span>
+      </a>
+    </li>
+
+    <!-- Impedancia (con imagen) -->
+    <li>
+      <a class="quicklink" href="{% url 'icts:facility_info' 'impedancia' %}">
+        <img class="facility-logo" src="{{ MEDIA_URL }}facilities/impedancia.jpg" alt="Impedancia">
+        <span>Impedancia</span>
+      </a>
+    </li>
+
+    <!-- Lithium combustion (con imagen) -->
+    <li>
+      <a class="quicklink" href="{% url 'icts:facility_info' 'lithium-combustion' %}">
+        <img class="facility-logo" src="{{ MEDIA_URL }}facilities/Lithium-combustion.png" alt="Lithium combustion">
+        <span>Lithium combustion</span>
+      </a>
+    </li>
+
+    <!-- PbLi corrosion (con imagen) -->
+    <li>
+      <a class="quicklink" href="{% url 'icts:facility_info' 'pbli-corrosion' %}">
+        <img class="facility-logo" src="{{ MEDIA_URL }}facilities/PbLi-corrosion.jpeg" alt="PbLi corrosion">
+        <span>PbLi corrosion</span>
+      </a>
+    </li>
+  </ul>
+</section>
+
+<style>
+/* Base */
+.quicklinks{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+
+/* Opción A: QUICK GRID (CSS Grid auto-fit) */
+.quick-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap:.75rem;
+}
+
+/* Opción B: QUICK WRAP (Flexbox con wrap) */
+.quick-wrap{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.75rem;
+}
+
+/* Tarjetas-enlace */
+.quicklink{
+  display:block;
+  padding:.85rem 1rem;
+  border:1px solid var(--border, #e5e7eb);
+  border-radius:.6rem;
+  background:var(--bg-card, #fff);
+  color:var(--text, #111827);
+  font-weight:600;
+  text-decoration:none;
+  transition: box-shadow .15s ease, transform .05s ease;
+  white-space:normal; overflow-wrap:anywhere;
+}
+.quicklink:hover,
+.quicklink:focus{
+  box-shadow:0 4px 16px rgba(0,0,0,.06);
+  transform:translateY(-1px);
+  outline: none;
+}
+
+.quicklink{
+  display:flex;
+  flex-direction: column-reverse;  /* ← invierte el orden: primero el texto (span), luego el icono (img) */
+  align-items:center;
+  text-align:center;
+  gap:.35rem;
+  padding:.9rem 1rem;
+}
+.facility-logo{
+  width:150px;   /* ajusta tamaño si quieres */
+  height:150px;
+  object-fit:contain;
+  flex:0 0 auto;
+}
+.quicklink span{
+  line-height:1.2;
+}
+
+</style>

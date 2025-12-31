@@ -1,0 +1,40 @@
+{% extends "base_generic.html" %}
+
+{% block title %}Validar nuevos usuarios{% endblock %}
+{% block page_title %}<h1 class="page-title">Validar nuevos usuarios</h1>{% endblock %}
+
+{% block content %}
+<div class="card">
+  {% if pending %}
+    <table style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr>
+          <th style="text-align:left;padding:8px;border-bottom:1px solid #e5e8ef;">Usuario</th>
+          <th style="text-align:left;padding:8px;border-bottom:1px solid #e5e8ef;">Nombre</th>
+          <th style="text-align:left;padding:8px;border-bottom:1px solid #e5e8ef;">Centro</th>
+          <th style="text-align:left;padding:8px;border-bottom:1px solid #e5e8ef;">Email</th>
+          <th style="text-align:left;padding:8px;border-bottom:1px solid #e5e8ef;">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pending %}
+        <tr>
+          <td style="padding:8px">{{ p.user.username }}</td>
+          <td style="padding:8px">{{ p.full_name }}</td>
+          <td style="padding:8px">{{ p.center }}</td>
+          <td style="padding:8px">{{ p.user.email }}</td>
+          <td style="padding:8px">
+            <form method="post" action="{% url 'icts:validate_user' p.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn">Validar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No hay usuarios pendientes de validación.</p>
+  {% endif %}
+</div>
+{% endblock %}

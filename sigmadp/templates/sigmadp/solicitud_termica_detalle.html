@@ -1,0 +1,238 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+{% load role_filters %}
+
+{% block title %}Detalle Solicitud Termica DP-T#{{ solicitud.pk }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-thermometer-half"></i>
+                        Solicitud Termica DP-T#{{ solicitud.pk }}
+                        <span class="badge badge-{% if solicitud.estado == 'pendiente' %}warning{% elif solicitud.estado == 'aceptada' %}success{% elif solicitud.estado == 'en_curso' %}primary{% elif solicitud.estado == 'finalizada' %}success{% elif solicitud.estado == 'rechazada' %}danger{% endif %} ml-2">
+                            {{ solicitud.get_estado_display }}
+                        </span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Informacion de la solicitud -->
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-info-circle"></i> Informacion de la Solicitud</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <table class="table table-sm">
+                                                <tr>
+                                                    <td><strong>Nombre de la muestra:</strong></td>
+                                                    <td>{{ solicitud.nombre_muestra }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Material:</strong></td>
+                                                    <td>{{ solicitud.material }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Temperatura mxima:</strong></td>
+                                                    <td>{{ solicitud.temperatura_maxima }}C</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Tasa de calentamiento:</strong></td>
+                                                    <td>{{ solicitud.tasa_calentamiento }}C/min</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Tasa de enfriamiento:</strong></td>
+                                                    <td>{{ solicitud.tasa_enfriamiento }}C/min</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <table class="table table-sm">
+                                                <tr>
+                                                    <td><strong>Tiempo de permanencia:</strong></td>
+                                                    <td>{{ solicitud.tiempo_permanencia }} min</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Masa a registrar:</strong></td>
+                                                    <td>{{ solicitud.get_masa_registrar_display }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Espesor de la muestra:</strong></td>
+                                                    <td>{{ solicitud.espesor_muestra }} mm</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Tamao de la muestra:</strong></td>
+                                                    <td>{{ solicitud.tamao_muestra }} cm</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Geometra:</strong></td>
+                                                    <td>{{ solicitud.geometria_muestra }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if solicitud.observaciones %}
+                                    <div class="mt-3">
+                                        <h6><i class="fas fa-sticky-note"></i> Observaciones:</h6>
+                                        <p class="text-muted">{{ solicitud.observaciones }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informacion del solicitante y fechas -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-user"></i> Informacion del Solicitante</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Nombre:</strong> {{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</p>
+                                    <p><strong>Email:</strong> {{ solicitud.solicitante.email }}</p>
+                                    <p><strong>Solicitado:</strong> {{ solicitud.creado_en|date:"d/m/Y H:i" }}</p>
+                                    
+                                    {% if solicitud.tecnico_responsable %}
+                                    <hr>
+                                    <h6><i class="fas fa-user-tie"></i> Tecnico Responsable</h6>
+                                    <p><strong>Nombre:</strong> {{ solicitud.tecnico_responsable.get_full_name|default:solicitud.tecnico_responsable.username }}</p>
+                                    {% endif %}
+                                    
+                                    {% if solicitud.fecha_aceptacion %}
+                                    <p><strong>Aceptado:</strong> {{ solicitud.fecha_aceptacion|date:"d/m/Y H:i" }}</p>
+                                    {% endif %}
+                                    
+                                    {% if solicitud.fecha_finalizacion %}
+                                    <p><strong>Finalizado:</strong> {{ solicitud.fecha_finalizacion|date:"d/m/Y H:i" }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Resultados si estn disponibles -->
+                            {% if solicitud.resultado %}
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-file-alt"></i> Resultados</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Fecha del ensayo:</strong> {{ solicitud.resultado.fecha_ensayo|date:"d/m/Y H:i" }}</p>
+                                    <p><strong>Tecnico:</strong> {{ solicitud.resultado.tecnico.get_full_name|default:solicitud.resultado.tecnico.username }}</p>
+                                    
+                                    <div class="mt-2">
+                                        <a href="{{ solicitud.resultado.archivo_resultado.url }}" 
+                                           class="btn btn-sm btn-primary" target="_blank">
+                                            <i class="fas fa-download"></i> Descargar Resultado 1
+                                        </a>
+                                        {% if solicitud.resultado.archivo_resultado_2 %}
+                                        <a href="{{ solicitud.resultado.archivo_resultado_2.url }}" 
+                                           class="btn btn-sm btn-primary ml-1" target="_blank">
+                                            <i class="fas fa-download"></i> Descargar Resultado 2
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if solicitud.resultado.observaciones_tecnico %}
+                                    <div class="mt-3">
+                                        <h6>Observaciones del tcnico:</h6>
+                                        <p class="text-muted">{{ solicitud.resultado.observaciones_tecnico }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if analisis_datos %}
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> Analisis de datos asociados</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for analisis in analisis_datos %}
+                                <div class="list-group-item">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+                                        <div>
+                                            <strong>{{ analisis.nombre }}</strong>
+                                            <div class="text-muted small">Procesado: {{ analisis.procesado_en|date:"d/m/Y H:i" }}</div>
+                                            <div class="text-muted small">Estado: {{ analisis.get_estado_display }}</div>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            {% if analisis.archivo_overview %}
+                                            <a href="{{ analisis.archivo_overview.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                <i class="fas fa-image"></i> Overview
+                                            </a>
+                                            {% endif %}
+                                            {% if analisis.archivo_csv_limpio %}
+                                            <a href="{{ analisis.archivo_csv_limpio.url }}" class="btn btn-sm btn-outline-success" target="_blank">
+                                                <i class="fas fa-file-csv"></i> CSV
+                                            </a>
+                                            {% endif %}
+                                            <a href="{% url 'sigmadp:detalle_analisis' analisis.pk %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle"></i> Todava no hay analisis de datos asociados a esta solicitud.
+                    </div>
+                    {% endif %}
+
+                    <!-- Acciones disponibles -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-cogs"></i> Acciones Disponibles</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="btn-group" role="group">
+                                        {% if solicitud.estado == 'pendiente' and user.is_authenticated and user|has_group:'tecnico_responsable_s_dp' %}
+                                            <a href="{% url 'sigmadp:aceptar_solicitud_termica' solicitud.pk %}" 
+                                               class="btn btn-success">
+                                                <i class="fas fa-check"></i> Aceptar Solicitud
+                                            </a>
+                                            <a href="{% url 'sigmadp:rechazar_solicitud_termica' solicitud.pk %}" 
+                                               class="btn btn-danger">
+                                                <i class="fas fa-times"></i> Rechazar Solicitud
+                                            </a>
+                                        {% elif solicitud.estado == 'aceptada' and user.is_authenticated and user|has_group:'tecnico_responsable_s_dp' %}
+                                            <a href="{% url 'sigmadp:iniciar_ensayo_termico' solicitud.pk %}" 
+                                               class="btn btn-primary">
+                                                <i class="fas fa-play"></i> Iniciar Ensayo
+                                            </a>
+                                        {% elif solicitud.estado == 'en_curso' and user.is_authenticated and user|has_group:'tecnico_responsable_s_dp' %}
+                                            <a href="{% url 'sigmadp:finalizar_ensayo_termico' solicitud.pk %}" 
+                                               class="btn btn-warning">
+                                                <i class="fas fa-flag-checkered"></i> Finalizar Ensayo
+                                            </a>
+                                        {% endif %}
+                                        
+                                        <a href="{% url 'sigmadp:panel_usuario' %}" class="btn btn-secondary">
+                                            <i class="fas fa-arrow-left"></i> Volver al Panel
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

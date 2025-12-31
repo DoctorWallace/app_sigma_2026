@@ -1,0 +1,369 @@
+{% extends "base_icts.html" %}
+{% block title %}Usuarios Pendientes{% endblock %}
+
+{% block content %}
+<div class="users-admin">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title"><i class="bi bi-people"></i> Usuarios pendientes de validacion</h2>
+      <p class="page-subtitle">Estos usuarios han solicitado acceso a ICTS y esperan aprobacion.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'icts:users_admin' %}">
+      <i class="bi bi-person-gear"></i> Administracion completa
+    </a>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-tile">
+      <div class="stat-label">Pendientes</div>
+      <div class="stat-value">{{ pending_count }}</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-label">Validados hoy</div>
+      <div class="stat-value">{{ validated_today }}</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-label">Total usuarios</div>
+      <div class="stat-value">{{ total_users }}</div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-field">
+      <label for="pendingSearch">Buscar</label>
+      <input id="pendingSearch" type="search" placeholder="Buscar usuario, email o centro" />
+    </div>
+    <div class="filter-field">
+      <label for="pendingGroupFilter">Grupo</label>
+      <select id="pendingGroupFilter">
+        <option value="all">Todos</option>
+      </select>
+    </div>
+  </div>
+
+  {% if pending_users %}
+    <div class="table-scroll">
+      <table class="data-table" id="pendingUsersTable">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Centro</th>
+            <th>Email</th>
+            <th>Registro</th>
+            <th>Estado</th>
+            <th>Grupos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in pending_users %}
+          <tr data-groups="{% for group in user.groups.all %}{{ group.name }}{% if not forloop.last %}|{% endif %}{% endfor %}" data-search="{{ user.username }} {{ user.get_full_name }} {{ user.email }} {{ user.icts_profile.center }}">
+            <td>
+              <div class="user-cell">
+                <div class="user-main">{{ user.username }}</div>
+                <div class="user-sub">{{ user.get_full_name|default:"Sin nombre completo" }}</div>
+              </div>
+            </td>
+            <td>{{ user.icts_profile.center|default:"No especificado" }}</td>
+            <td>{{ user.email|default:"-" }}</td>
+            <td>{{ user.date_joined|date:"d/m/Y H:i" }}</td>
+            <td><span class="badge badge--pending">Pendiente</span></td>
+            <td>
+              {% for group in user.groups.all %}
+                <span class="badge badge--group">{{ group.name }}</span>
+              {% empty %}
+                <span class="muted">Sin grupos</span>
+              {% endfor %}
+            </td>
+            <td>
+              <div class="action-stack">
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ user.id }}">
+                  <button type="submit" name="action" value="approve" class="btn-action btn-approve">
+                    <i class="bi bi-check-circle"></i> Aprobar
+                  </button>
+                </form>
+                <form method="post" onsubmit="return confirm('¿Estas seguro de que quieres rechazar a este usuario?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ user.id }}">
+                  <button type="submit" name="action" value="reject" class="btn-action btn-reject">
+                    <i class="bi bi-x-circle"></i> Rechazar
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="empty-state" id="pendingEmpty" hidden>No hay resultados con estos filtros.</div>
+  {% else %}
+    <div class="empty-state">
+      <i class="bi bi-emoji-smile"></i> No hay usuarios pendientes de validacion en este momento.
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.users-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.page-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.stat-tile {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 200px;
+}
+
+.filter-field label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.filter-field input,
+.filter-field select {
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 0.95rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.6rem;
+  text-decoration: none;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.data-table th {
+  background: var(--bg-main);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.data-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.user-cell .user-main {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.user-cell .user-sub {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge--pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge--group {
+  background: #e9ecef;
+  color: #495057;
+  margin: 0 0.15rem 0.25rem 0;
+}
+
+.action-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-approve {
+  background: #28a745;
+  color: #fff;
+}
+
+.btn-reject {
+  background: #dc3545;
+  color: #fff;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  border-radius: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.muted {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
+
+<script>
+(function() {
+  const table = document.getElementById('pendingUsersTable');
+  const searchInput = document.getElementById('pendingSearch');
+  const groupSelect = document.getElementById('pendingGroupFilter');
+  const emptyState = document.getElementById('pendingEmpty');
+
+  if (!table || !searchInput || !groupSelect) {
+    return;
+  }
+
+  const rows = Array.from(table.querySelectorAll('tbody tr'));
+  const groupSet = new Set();
+  rows.forEach(row => {
+    const groups = (row.dataset.groups || '').split('|').map(item => item.trim()).filter(Boolean);
+    groups.forEach(group => groupSet.add(group));
+  });
+
+  Array.from(groupSet).sort().forEach(group => {
+    const option = document.createElement('option');
+    option.value = group;
+    option.textContent = group;
+    groupSelect.appendChild(option);
+  });
+
+  function applyFilters() {
+    const query = (searchInput.value || '').toLowerCase().trim();
+    const group = groupSelect.value;
+    let visible = 0;
+
+    rows.forEach(row => {
+      const groups = (row.dataset.groups || '').split('|').map(item => item.trim());
+      const haystack = (row.dataset.search || row.textContent || '').toLowerCase();
+      const matchesGroup = group === 'all' || groups.includes(group);
+      const matchesSearch = !query || haystack.includes(query);
+      const show = matchesGroup && matchesSearch;
+      row.style.display = show ? '' : 'none';
+      if (show) {
+        visible += 1;
+      }
+    });
+
+    if (emptyState) {
+      emptyState.hidden = visible !== 0;
+    }
+  }
+
+  searchInput.addEventListener('input', applyFilters);
+  groupSelect.addEventListener('change', applyFilters);
+})();
+</script>
+{% endblock %}

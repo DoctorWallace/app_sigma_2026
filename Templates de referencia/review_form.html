@@ -1,0 +1,52 @@
+{% extends "base_generic.html" %}
+{% block title %}Evaluar: {{ proposal.title }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Evaluación de la propuesta</h1>
+
+<div class="card">
+  <p><strong>Título:</strong> {{ proposal.title }}</p>
+  <p><strong>Solicitante:</strong> {{ proposal.contact_person }} — {{ proposal.email }}</p>
+  <p><strong>Creada:</strong> {{ proposal.created_at|date:"Y-m-d H:i" }}</p>
+</div>
+
+<form method="post" class="card">
+  {% csrf_token %}
+  <fieldset>
+    <legend>Factibilidad técnica</legend>
+    <label>¿Viable?</label>
+    {{ form.feasibility_ok }}
+    {% if form.feasibility_ok.errors %}<div class="alert error">{{ form.feasibility_ok.errors }}</div>{% endif %}
+  </fieldset>
+
+  <fieldset>
+    <legend>Métricas (0–5)</legend>
+
+    <label for="{{ form.score_scientific_quality.id_for_label }}">Calidad científica</label>
+    {{ form.score_scientific_quality }}
+    {% if form.score_scientific_quality.errors %}<div class="alert error">{{ form.score_scientific_quality.errors }}</div>{% endif %}
+
+    <label for="{{ form.score_need_infrastructure.id_for_label }}">Necesidad de infraestructura avanzada</label>
+    {{ form.score_need_infrastructure }}
+    {% if form.score_need_infrastructure.errors %}<div class="alert error">{{ form.score_need_infrastructure.errors }}</div>{% endif %}
+
+    <label for="{{ form.score_industrial_potential.id_for_label }}">Potencial interés industrial</label>
+    {{ form.score_industrial_potential }}
+    {% if form.score_industrial_potential.errors %}<div class="alert error">{{ form.score_industrial_potential.errors }}</div>{% endif %}
+  </fieldset>
+
+  <fieldset>
+    <legend>Comentarios y decisión</legend>
+    <label for="{{ form.comments.id_for_label }}">Comentarios al responsable</label>
+    {{ form.comments }}
+
+    <label for="{{ form.decision.id_for_label }}">Decisión</label>
+    {{ form.decision }}
+  </fieldset>
+
+  <div class="actions">
+    <button type="submit" class="btn">Guardar evaluación</button>
+    <a class="btn secondary" href="{% url 'icts:review_inbox' %}">Volver</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "mec/base_mec_unified.html" %}
+
+{% block mec_title %}Mi Panel{% endblock %}
+{% block page_title %}Mi Panel - S-MEC{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="grid grid-2">
+    <a class="btn btn-ghost" href="{% url 'dtf:dashboard' %}">
+      <i class="bi bi-house"></i> Dashboard DTF
+    </a>
+    <a class="btn" href="{% url 'mec:solicitud_create' %}">
+      <i class="bi bi-plus-circle"></i> Nueva solicitud
+    </a>
+    <a class="btn btn-secondary" href="{% url 'mec:panel_usuario' %}">
+      <i class="bi bi-list-ul"></i> Mis solicitudes
+    </a>
+    <a class="btn btn-ghost" href="{% url 'mec:info_importante' %}">
+      <i class="bi bi-info-circle"></i> Informacion importante
+    </a>
+  </div>
+</div>
+
+<div class="grid grid-3">
+  <div class="card">
+    <h3>{{ stats.mec.total }}</h3>
+    <p class="muted">Total solicitudes</p>
+  </div>
+  <div class="card">
+    <h3>{{ stats.mec.pendientes }}</h3>
+    <p class="muted">Pendientes</p>
+  </div>
+  <div class="card">
+    <h3>{{ stats.mec.en_curso }}</h3>
+    <p class="muted">En curso</p>
+  </div>
+  <div class="card">
+    <h3>{{ stats.mec.aceptadas }}</h3>
+    <p class="muted">Aceptadas</p>
+  </div>
+  <div class="card">
+    <h3>{{ stats.mec.finalizadas }}</h3>
+    <p class="muted">Finalizadas</p>
+  </div>
+  <div class="card">
+    <h3>{{ stats.mec.rechazadas }}</h3>
+    <p class="muted">Rechazadas</p>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Mis ultimas solicitudes</h3>
+  {% if mec_solicitudes %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in mec_solicitudes %}
+            <tr>
+              <td>MEC-{{ solicitud.id }}</td>
+              <td>{{ solicitud.get_estado_display }}</td>
+              <td>{{ solicitud.creado_en|date:"Y-m-d" }}</td>
+              <td>
+                <a class="btn btn-small btn-ghost" href="{% url 'mec:solicitud_detalle' solicitud.id %}">
+                  <i class="bi bi-eye"></i> Ver
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">No tienes solicitudes aun.</p>
+  {% endif %}
+</div>
+{% endblock %}

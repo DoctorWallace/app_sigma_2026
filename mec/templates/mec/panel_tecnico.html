@@ -1,0 +1,90 @@
+{% extends "base_dtf.html" %}
+{% block title %}S-MEC · Panel técnico responsable{% endblock %}
+{% block page_title %}S-MEC · Panel técnico responsable{% endblock %}
+{% block content %}
+<style>
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1rem}
+  .kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:.75rem;padding:1rem;text-align:center}
+  .kpi .num{font-size:1.6rem;font-weight:800;color:var(--primary)}
+  .kpi .lbl{color:var(--text-secondary)}
+  .by-tech{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+  .card-list ul{list-style:none;padding:0;margin:0}
+  .card-list li{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)}
+  .tag{display:inline-block;padding:.1rem .5rem;border-radius:.5rem;border:1px solid var(--border);font-size:.8rem}
+  .btn{display:inline-flex;gap:.35rem;align-items:center;padding:.35rem .6rem;border:1px solid var(--border);border-radius:.5rem;text-decoration:none}
+</style>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
+    <h3 style="margin:0">Resumen</h3>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <a class="btn" href="{% url 'mec:ficha_equipo' %}"><i class="bi bi-info-circle"></i> Ficha de equipo</a>
+      <a class="btn" href="{% url 'mec:necesidades' %}"><i class="bi bi-journal-check"></i> Registro de necesidades</a>
+      <a class="btn" href="{% url 'mec:inbox' %}"><i class="bi bi-inbox"></i> Bandeja de entrada</a>
+      <a class="btn btn-success" href="{% url 'mec:indicadores_calidad' %}"><i class="bi bi-graph-up-arrow"></i> Indicadores</a>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="num">{{ stats.total }}</div><div class="lbl">Total</div></div>
+    <div class="kpi"><div class="num">{{ stats.pendientes }}</div><div class="lbl">Pendientes</div></div>
+    <div class="kpi"><div class="num">{{ stats.aceptadas }}</div><div class="lbl">Aceptadas</div></div>
+    <div class="kpi"><div class="num">{{ stats.rechazadas }}</div><div class="lbl">Rechazadas</div></div>
+    <div class="kpi"><div class="num">{{ stats.finalizadas }}</div><div class="lbl">Finalizadas</div></div>
+  </div>
+  <div class="by-tech">
+    <div class="kpi"><div class="lbl">Dureza</div><div class="num">{{ by_tech.dureza.total }}</div><div class="lbl">(P: {{ by_tech.dureza.pendientes }}, A: {{ by_tech.dureza.aceptadas }}, R: {{ by_tech.dureza.rechazadas }}, F: {{ by_tech.dureza.finalizadas }})</div></div>
+    <div class="kpi"><div class="lbl">Tracción</div><div class="num">{{ by_tech.traccion.total }}</div><div class="lbl">(P: {{ by_tech.traccion.pendientes }}, A: {{ by_tech.traccion.aceptadas }}, R: {{ by_tech.traccion.rechazadas }}, F: {{ by_tech.traccion.finalizadas }})</div></div>
+    <div class="kpi"><div class="lbl">Fatiga</div><div class="num">{{ by_tech.fatiga.total }}</div><div class="lbl">(P: {{ by_tech.fatiga.pendientes }}, A: {{ by_tech.fatiga.aceptadas }}, R: {{ by_tech.fatiga.rechazadas }}, F: {{ by_tech.fatiga.finalizadas }})</div></div>
+    <div class="kpi"><div class="lbl">Creep-Fatiga</div><div class="num">{{ by_tech.creep_fatiga.total }}</div><div class="lbl">(P: {{ by_tech.creep_fatiga.pendientes }}, A: {{ by_tech.creep_fatiga.aceptadas }}, R: {{ by_tech.creep_fatiga.rechazadas }}, F: {{ by_tech.creep_fatiga.finalizadas }})</div></div>
+  </div>
+</div>
+
+<div class="card card-list">
+  <h3 style="margin-top:0">Pendientes de revisión</h3>
+  <ul>
+    {% for s in pendientes %}
+      <li>
+        <span><a href="{% url 'mec:solicitud_detalle' s.id %}"><strong>MEC#{{ s.id }}</strong></a> · {{ s.material|default:"(sin material)" }}
+          {% if s.ensayo_dureza %}<span class="tag">Dureza</span>{% endif %}
+          {% if s.ensayo_traccion %}<span class="tag">Tracción</span>{% endif %}
+          {% if s.ensayo_fatiga %}<span class="tag">Fatiga</span>{% endif %}
+          {% if s.ensayo_creep_fatiga %}<span class="tag">Creep-Fatiga</span>{% endif %}
+        </span>
+        <span>
+          <a class="btn" href="#" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</a>
+        </span>
+      </li>
+    {% empty %}
+      <li>No hay pendientes.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card card-list">
+  <h3 style="margin-top:0">Aceptadas</h3>
+  <ul>
+    {% for s in aceptadas %}
+      <li><a href="{% url 'mec:solicitud_detalle' s.id %}"><strong>MEC#{{ s.id }}</strong></a> · {{ s.material|default:"(sin material)" }}</li>
+    {% empty %}<li>-</li>{% endfor %}
+  </ul>
+</div>
+
+<div class="card card-list">
+  <h3 style="margin-top:0">Rechazadas</h3>
+  <ul>
+    {% for s in rechazadas %}
+      <li><a href="{% url 'mec:solicitud_detalle' s.id %}"><strong>MEC#{{ s.id }}</strong></a> · {{ s.material|default:"(sin material)" }}</li>
+    {% empty %}<li>-</li>{% endfor %}
+  </ul>
+</div>
+
+<div class="card card-list">
+  <h3 style="margin-top:0">Finalizadas</h3>
+  <ul>
+    {% for s in finalizadas %}
+      <li><a href="{% url 'mec:solicitud_detalle' s.id %}"><strong>MEC#{{ s.id }}</strong></a> · {{ s.material|default:"(sin material)" }}</li>
+    {% empty %}<li>-</li>{% endfor %}
+  </ul>
+</div>
+{% endblock %}
+

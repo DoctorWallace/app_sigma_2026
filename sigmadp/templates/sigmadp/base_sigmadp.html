@@ -1,0 +1,195 @@
+{% load role_filters %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}S-DP{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+      :root{
+        --primary: #b6f7f7; --primary-dark:#155d27; --primary-light:#40c057;
+        --accent:#17a2b8; --accent-light:#20c997;
+        --bg-main: rgba(247, 250, 252, 0.04); --bg-card:#ffffff; --bg-sidebar:#2d3748;
+        --text-primary:#2d3748; --text-secondary:#4a5568; --text-light:#718096; --text-white:#ffffff;
+        --border:#e2e8f0;
+        --shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+        --shadow-lg:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);
+        --gradient-primary:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      }
+      *{box-sizing:border-box;margin:0;padding:0}
+      html,body{height:100%;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-main);color:var(--text-primary);line-height:1.6}
+      .app{display:flex;min-height:100vh}
+      .sidebar{width:320px;background:var(--bg-sidebar);position:fixed;height:100vh;overflow:hidden;z-index:1000;box-shadow:var(--shadow-lg)}
+      .sidebar-header{background:var(--gradient-primary);padding:2rem 1.5rem 1.5rem;text-align:center;border-radius:0 0 1rem 1rem}
+      .logo{width:80px;height:80px;border-radius:16px;border:3px solid rgba(255,255,255,.2);object-fit:cover;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+      .brand-title{color:#fff;font-size:1.5rem;font-weight:700;margin:.75rem 0 .25rem}
+      .brand-sub{color:rgba(255,255,255,.85);font-size:.9rem;font-weight:500}
+      .banner{height:220px;position:relative;overflow:hidden;background:var(--gradient-primary);border-radius:0 0 1rem 1rem;margin:1rem 0}
+      .slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease-in-out;background-size:cover;background-position:center}
+      .slide.active{opacity:1}
+      .overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(21,93,39,.6),rgba(17,73,31,.75));display:flex;align-items:center;justify-content:center;color:#fff;padding:1rem;text-align:center}
+      .banner-text{font-size:1.05rem;font-weight:700}
+      .nav{padding:.5rem 0;overflow-y:auto;height:calc(100vh - 220px - 160px)}
+      .nav-title{color:rgba(255,255,255,.6);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:0 1.5rem;margin:.75rem 0 .25rem}
+      .nav-item{display:block;padding:.75rem 1.5rem;color:rgba(255,255,255,.9);text-decoration:none;font-weight:700;border-left:3px solid transparent;transition:.2s}
+      .nav-item:hover{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--accent);transform:translateX(4px)}
+      .main{flex:1;margin-left:320px;display:flex;flex-direction:column;min-height:100vh}
+      .header{background:var(--bg-card);border-bottom:1px solid var(--border);padding:1rem 2rem;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}
+      .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+      .title{font-size:1.75rem;font-weight:700;margin:0}
+      .logos{display:flex;align-items:center;gap:.75rem}
+      .logos img{height:40px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08))}
+      .content{flex:1;max-width:1200px;margin:0 auto;width:100%;padding:2rem}
+      .card{background:var(--bg-card);border:1px solid var(--border);border-radius:1rem;padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+      .footer{background:var(--bg-sidebar);color:rgba(255,255,255,.8);text-align:center;padding:1.25rem;margin-top:auto}
+      .toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:1100;background:var(--primary);color:#fff;border:none;border-radius:.5rem;padding:.6rem .8rem}
+      .overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}
+
+      @media (max-width:1024px){
+        .sidebar{transform:translateX(-100%);transition:transform .3s}
+        .sidebar.open{transform:translateX(0)}
+        .overlay-bg.open{display:block}
+        .main{margin-left:0}
+        .toggle{display:block}
+      }
+      .role-badge{ display:inline-block; padding:.25rem .6rem; border-radius:999px; font-weight:700; font-size:.8rem; letter-spacing:.02em; box-shadow:var(--shadow); margin-right:.5rem; color:#fff; }
+      .role-badge.tech{ background: #810dfd; }
+      .role-badge.user{ background: #27a131; }
+
+      .form-input, textarea.form-input, select.form-input{ width:100%; padding:.9rem 1rem; border:2px solid var(--border); border-radius:.75rem; background:var(--bg-card); box-shadow:var(--shadow-sm, 0 1px 2px rgba(0,0,0,.06)); transition: all .2s ease; }
+      .form-input:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(30,126,52,.15) }
+      .form-label{ display:block; margin-bottom:.5rem; font-weight:700; color:var(--text-primary) }
+      .form-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem }
+
+      /* Buttons & chips */
+      .btn, .cta{ display:inline-flex; align-items:center; gap:.5rem; background:var(--primary); color:#c75b5b; text-decoration:none; padding:.6rem 1rem; border-radius:.6rem; border:1px solid var(--primary); font-weight:700; box-shadow:var(--shadow); transition:transform .05s ease, background .2s ease }
+      .btn:hover{ background:var(--primary-dark); color:#f5eded }
+      .btn:active{ transform:translateY(1px) }
+      .btn-secondary{ background:var(--accent); border-color:var(--accent) }
+      .btn-secondary:hover{ background:var(--accent-light) }
+      .btn-ghost{ background:var(--bg-card); color:var(--text-primary); border:1px solid var(--border) }
+      .btn-ghost:hover{ background:#396086 }
+      .btn-small{ padding:.35rem .6rem; font-size:.85rem; font-weight:700; border-radius:.45rem }
+      .chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text-primary); background:var(--bg-card) }
+      .badge, .pill{ display:inline-block; padding:.25rem .5rem; border-radius:999px; font-size:.75rem; font-weight:700; border:1px solid var(--border); background:#eef2ff; color:#1f2937 }
+      .muted{ color:var(--text-light) }
+
+      /* Simple grids */
+      .grid{ display:grid; gap:1rem }
+      .grid-2{ grid-template-columns:repeat(2,minmax(0,1fr)) }
+      .grid-3{ grid-template-columns:repeat(3,minmax(0,1fr)) }
+      @media (max-width:720px){ .grid-2,.grid-3{ grid-template-columns:1fr } }
+
+      .btn-outline-secondary{ background:var(--bg-card); color:var(--text-primary); border:1px solid var(--border) }
+      .btn-outline-secondary:hover{ background:#f1f5f9 }
+      .btn-outline-info{ background:var(--bg-card); color:var(--accent); border:1px solid var(--accent) }
+      .btn-outline-info:hover{ background:rgba(23,162,184,.1) }
+    </style>
+  </head>
+  <body>
+    <button class="toggle" onclick="toggleSidebar()">☰</button>
+    <div class="overlay-bg" onclick="closeSidebar()"></div>
+
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img class="logo" src="/media/Logos/logo_sigma_dtf.png" alt="SIGMA DTF">
+          <div class="brand-title">SIGMA DTF</div>
+          <div class="brand-sub">Laboratorios y Servicios Externos</div>
+        </div>
+
+        <div class="banner" id="sigmadpBanner">
+          <div class="slide active" style="background-image:url('/media/Permeacion_desorcion/Permeation-tests.png')"><div class="overlay"><div class="banner-text">Análisis Térmico</div></div></div>
+          <div class="slide" style="background-image:url('/media/mec/Mechanical-properties.jpg')"><div class="overlay"><div class="banner-text">Desorción y Permeación</div></div></div>
+          <div class="slide" style="background-image:url('/media/mec/Micromechanical-properties.png')"><div class="overlay"><div class="banner-text">Propiedades Térmicas</div></div></div>
+        </div>
+
+        <nav class="nav">
+          {% if request.user.is_authenticated %}
+            <a class="nav-item" href="{% url 'portal:home' %}"><i class="bi bi-house"></i> Portal SIGMA</a>
+            {% if request.user|is_dp_technician %}
+              <div class="nav-title">S-DP</div>
+              <a class="nav-item" href="{% url 'sigmadp:panel_tecnico' %}"><i class="bi bi-speedometer2"></i> Panel técnico</a>
+              <a class="nav-item" href="{% url 'sigmadp:bandeja_entrada_termica' %}"><i class="bi bi-inbox"></i> Bandeja térmica</a>
+              <a class="nav-item" href="{% url 'sigmadp:representacion_resultados' %}"><i class="bi bi-graph-up"></i> Representación de resultados</a>
+              <a class="nav-item" href="{% url 'sigmadp:inbox' %}"><i class="bi bi-envelope"></i> Mensajes S-DP</a>
+              <a class="nav-item" href="{% url 'sigmadp:ficha_equipo' %}"><i class="bi bi-gear"></i> Ficha de equipo</a>
+              <a class="nav-item" href="{% url 'sigmadp:necesidades' %}"><i class="bi bi-clipboard-check"></i> Necesidades</a>
+            {% else %}
+              <div class="nav-title">Navegación</div>
+              <a class="nav-item" href="{% url 'sigmadp:panel_usuario' %}"><i class="bi bi-speedometer2"></i> Panel S-DP</a>
+              <a class="nav-item" href="/dtf/"><i class="bi bi-columns-gap"></i> Mi Panel DTF</a>
+              <a class="nav-item" href="/dtf/lab/"><i class="bi bi-flask"></i> S-LAB</a>
+              <a class="nav-item" href="/dtf/mec/"><i class="bi bi-gear"></i> S-MEC</a>
+              <a class="nav-item" href="/dtf/dp/"><i class="bi bi-thermometer-half"></i> S-DP</a>
+            {% endif %}
+            <!-- Enlaces comunes -->
+            <a class="nav-item" href="{% url 'sigmalab:reportar-incidencia' %}"><i class="bi bi-exclamation-triangle"></i> Reportar incidencia</a>
+            <a class="nav-item" href="{% url 'portal:faq' %}"><i class="bi bi-question-circle"></i> FAQ DTF</a>
+            
+            <!-- Cerrar sesión -->
+            <div class="nav-title">Sesión</div>
+            <a class="nav-item" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+          {% else %}
+            <a class="nav-item" href="{% url 'portal:home' %}"><i class="bi bi-house"></i> Portal SIGMA</a>
+            <a class="nav-item" href="{% url 'accounts:login_dtf' %}"><i class="bi bi-box-arrow-in-right"></i> Entrar</a>
+            <a class="nav-item" href="{% url 'accounts:register_dtf' %}"><i class="bi bi-person-plus"></i> Registrarse</a>
+            <a class="nav-item" href="{% url 'portal:faq' %}"><i class="bi bi-question-circle"></i> FAQ DTF</a>
+          {% endif %}
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="header">
+          <div class="header-inner">
+            <h1 class="title">{% block page_title %}Mi Panel{% endblock %}</h1>
+            <div class="logos">
+              <img src="/media/Logos/TDSLAB.png" alt="S-DP" style="height:70px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));margin-left:1rem;">
+              {% if DP_ROLE == 'TECNICO' %}
+                <span class="role-badge tech">TÉCNICO</span>
+              {% elif DP_ROLE == 'USUARIO' %}
+                <span class="role-badge user">USUARIO</span>
+              {% endif %}
+              <style>
+                .top-actions{display:inline-flex;gap:.5rem;align-items:center;margin-left:.5rem}
+                .chip{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .65rem;border:1px solid var(--border);border-radius:999px;text-decoration:none;color:var(--text);background:var(--bg-card)}
+                .chip:hover{background:var(--bg-main)}
+              </style>
+              <nav class="top-actions">
+                {% if request.user|is_dp_technician %}
+                  <a href="{% url 'sigmadp:panel_tecnico' %}" class="chip"><i class="bi bi-speedometer2"></i> Panel técnico</a>
+                {% else %}
+                  <a href="{% url 'sigmadp:panel_usuario' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+                {% endif %}
+                <a href="javascript:history.back()" class="chip"><i class="bi bi-arrow-left"></i> Atrás</a>
+                <a href="{% url 'accounts:logout' %}" class="chip"><i class="bi bi-box-arrow-right"></i> Salir</a>
+              </nav>
+              <img src="/media/Logos/logo_sol.png" alt="LNF" style="height:40px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));">
+              <img src="/media/Logos/sol_icts.png.jpg" alt="ICTS" style="height:40px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));">
+            </div>
+          </div>
+        </header>
+
+        <section class="content">
+          {% block content %}{% endblock %}
+        </section>
+
+        <footer class="footer">
+          CIEMAT – División de Tecnologías para la Fusión - DTF
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function(){
+        const slides = document.querySelectorAll('#sigmadpBanner .slide');
+        if(!slides.length) return;
+        let i=0; setInterval(()=>{ slides[i].classList.remove('active'); i=(i+1)%slides.length; slides[i].classList.add('active'); }, 4000);
+      })();
+      function toggleSidebar(){ document.querySelector('.sidebar').classList.toggle('open'); document.querySelector('.overlay-bg').classList.toggle('open'); }
+      function closeSidebar(){ document.querySelector('.sidebar').classList.remove('open'); document.querySelector('.overlay-bg').classList.remove('open'); }
+    </script>
+  </body>
+</html>
+

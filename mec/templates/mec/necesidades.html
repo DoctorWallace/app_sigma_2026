@@ -1,0 +1,46 @@
+{% extends "base_dtf.html" %}
+{% block title %}S-MEC · Registro de necesidades{% endblock %}
+{% block page_title %}S-MEC · Registro de necesidades{% endblock %}
+{% block content %}
+<div class="card">
+  <h3>Registrar nueva necesidad</h3>
+  <form method="post" class="form-row">
+    {% csrf_token %}
+    <div>
+      <label class="form-label">Título</label>
+      <input type="text" name="titulo" class="form-input" required>
+    </div>
+    <div>
+      <label class="form-label">Fecha (aaaa-mm-dd)</label>
+      <input type="date" name="fecha" class="form-input" required>
+    </div>
+    <div class="form-row full">
+      <label class="form-label">Descripción</label>
+      <textarea name="descripcion" rows="3" class="form-input"></textarea>
+    </div>
+    <div><button class="btn" type="submit">Añadir</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Necesidades registradas</h3>
+  {% if items %}
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr><th>Fecha</th><th>Título</th><th>Descripción</th><th>Autor</th></tr></thead>
+      <tbody>
+      {% for n in items %}
+        <tr>
+          <td>{{ n.fecha|date:"d/m/Y" }}</td>
+          <td>{{ n.titulo }}</td>
+          <td>{{ n.descripcion|default:"-" }}</td>
+          <td>{{ n.creado_por }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="muted">Aún no hay registros.</div>
+  {% endif %}
+</div>
+{% endblock %}
+

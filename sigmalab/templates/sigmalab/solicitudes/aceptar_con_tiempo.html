@@ -1,0 +1,262 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Aceptar solicitud con tiempo estimado{% endblock %}
+{% block page_title %}Aceptar solicitud con tiempo estimado{% endblock %}
+
+{% block extra_css %}
+<style>
+  .estimation-section {
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .estimation-section h3 {
+    color: #0056b3;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+  }
+  .info-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .info-section h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .time-inputs {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+  }
+  .time-inputs .form-group {
+    flex: 1;
+  }
+  .indeterminate-section {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  .warning-box {
+    background: #f8d7da;
+    border: 1px solid #f5c2c7;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    display: none;
+  }
+  .warning-box.show {
+    display: block;
+  }
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .form-check-input {
+    margin: 0;
+  }
+  .form-check-label {
+    margin: 0;
+    font-weight: 500;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+  <h2 style="margin:0 0 1rem; color: #007bff;">
+    <i class="bi bi-clock"></i> Aceptar solicitud con tiempo estimado
+  </h2>
+  
+  <!-- Información de la solicitud -->
+  <div class="info-section">
+    <h3><i class="bi bi-info-circle"></i> Información de la solicitud</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <p><strong>Código:</strong> SOL#{{ solicitud.pk }}</p>
+        <p><strong>Solicitante:</strong> {{ solicitud.solicitante.first_name }} {{ solicitud.solicitante.last_name }}</p>
+        <p><strong>Material:</strong> {{ solicitud.material }}</p>
+      </div>
+      <div>
+        <p><strong>Fecha de solicitud:</strong> {{ solicitud.creado_en|date:"d/m/Y H:i" }}</p>
+        <p><strong>Número de muestras:</strong> {{ solicitud.numero_muestras|default:"1" }}</p>
+        <p><strong>Estado actual:</strong> 
+          <span class="badge" style="background: #ffc107; color: #000;">{{ solicitud.get_estado_display }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de estimación de tiempo -->
+  <div class="estimation-section">
+    <h3><i class="bi bi-clock"></i> Estimación de tiempo de finalización</h3>
+    <p class="text-muted">La fecha aproximada de finalización es:</p>
+    
+    <form method="post" id="tiempo-form">
+      {% csrf_token %}
+      
+      <!-- Debug: Mostrar errores del formulario -->
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+      
+      <!-- Campos de tiempo -->
+      <div class="time-inputs">
+        <div class="form-group">
+          <label for="{{ form.tiempo_estimado_numero.id_for_label }}" class="form-label">
+            <i class="bi bi-123"></i> Número
+          </label>
+          {{ form.tiempo_estimado_numero|add_class:"form-control" }}
+          {% if form.tiempo_estimado_numero.errors %}
+            <div class="text-danger">
+              {% for error in form.tiempo_estimado_numero.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div class="form-group">
+          <label for="{{ form.tiempo_estimado_unidad.id_for_label }}" class="form-label">
+            <i class="bi bi-calendar"></i> Unidad
+          </label>
+          {{ form.tiempo_estimado_unidad|add_class:"form-control" }}
+          {% if form.tiempo_estimado_unidad.errors %}
+            <div class="text-danger">
+              {% for error in form.tiempo_estimado_unidad.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Opción indeterminado -->
+      <div class="indeterminate-section">
+        <div class="form-check">
+          {{ form.tiempo_estimado_indeterminado }}
+          <label for="{{ form.tiempo_estimado_indeterminado.id_for_label }}" class="form-check-label">
+            <i class="bi bi-question-circle"></i> Indeterminado
+          </label>
+        </div>
+        <p class="text-muted small mt-2">
+          Marca esta opción si no puedes determinar un tiempo específico de finalización.
+        </p>
+        {% if form.tiempo_estimado_indeterminado.errors %}
+          <div class="text-danger">
+            {% for error in form.tiempo_estimado_indeterminado.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Warning box que se muestra dinámicamente -->
+      <div class="warning-box" id="warning-box">
+        <h4 style="color: #721c24; margin-bottom: 0.5rem;">
+          <i class="bi bi-exclamation-triangle"></i> Confirmación
+        </h4>
+        <p style="margin: 0; color: #721c24;">
+          ¿Quieres aceptar la muestra indicando que el tiempo estimado de finalización será de 
+          <strong id="tiempo-display"></strong> desde que entra al laboratorio?
+        </p>
+      </div>
+
+      <!-- Botones -->
+      <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+        <button type="submit" class="cta" style="background: #28a745; color: white;" onclick="return confirmAceptacion()">
+          <i class="bi bi-check-circle"></i> Aceptar solicitud
+        </button>
+        <a href="{% url 'sigmalab:detalle-solicitud' solicitud.pk %}" class="cta" style="background: var(--accent);">
+          <i class="bi bi-arrow-left"></i> Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function updateWarning() {
+    const indeterminado = document.getElementById('id_tiempo_estimado_indeterminado').checked;
+    const numero = document.getElementById('id_tiempo_estimado_numero').value;
+    const unidad = document.getElementById('id_tiempo_estimado_unidad').value;
+    const warningBox = document.getElementById('warning-box');
+    const tiempoDisplay = document.getElementById('tiempo-display');
+    
+    if (indeterminado) {
+        tiempoDisplay.textContent = 'tiempo indeterminado';
+        warningBox.classList.add('show');
+    } else if (numero && unidad) {
+        const unidadText = {
+            'dias': 'días',
+            'semanas': 'semanas',
+            'meses': 'meses'
+        }[unidad] || unidad;
+        tiempoDisplay.textContent = `${numero} ${unidadText}`;
+        warningBox.classList.add('show');
+    } else {
+        warningBox.classList.remove('show');
+    }
+}
+
+function confirmAceptacion() {
+    const indeterminado = document.getElementById('id_tiempo_estimado_indeterminado').checked;
+    const numero = document.getElementById('id_tiempo_estimado_numero').value;
+    const unidad = document.getElementById('id_tiempo_estimado_unidad').value;
+    
+    if (!indeterminado && (!numero || !unidad)) {
+        alert('Debes especificar un número y una unidad de tiempo, o marcar "Indeterminado".');
+        return false;
+    }
+    
+    const tiempoText = indeterminado ? 'tiempo indeterminado' : `${numero} ${unidad}`;
+    return confirm(`¿Estás seguro de que quieres aceptar esta solicitud con un tiempo estimado de ${tiempoText}?`);
+}
+
+// Event listeners
+document.getElementById('id_tiempo_estimado_indeterminado').addEventListener('change', function() {
+    const numero = document.getElementById('id_tiempo_estimado_numero');
+    const unidad = document.getElementById('id_tiempo_estimado_unidad');
+    
+    if (this.checked) {
+        numero.disabled = true;
+        unidad.disabled = true;
+        numero.value = '';
+        unidad.value = '';
+    } else {
+        numero.disabled = false;
+        unidad.disabled = false;
+    }
+    updateWarning();
+});
+
+document.getElementById('id_tiempo_estimado_numero').addEventListener('input', updateWarning);
+document.getElementById('id_tiempo_estimado_unidad').addEventListener('change', updateWarning);
+
+// Inicializar estado
+updateWarning();
+</script>
+{% endblock %}

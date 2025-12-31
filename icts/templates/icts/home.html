@@ -1,0 +1,322 @@
+{% extends "base_icts.html" %}
+
+{% block title %}SIGMA ICTS · Home{% endblock %}
+{% block page_title %}<span id="ictsClock" class="clock"></span>{% endblock %}
+
+
+{% block extra_css %}
+<style>
+  /* Layout sin sidebar */
+  body.no-sidebar .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  body.no-sidebar .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* HERO section mejorado */
+  .hero { 
+    display: grid; 
+    gap: 3rem; 
+    grid-template-columns: 1fr 1fr; 
+    align-items: center; 
+    padding: 2rem 0;
+  }
+  .hero .lead { 
+    color: var(--text-secondary); 
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  .cta { 
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--primary); 
+    color: #fff; 
+    text-decoration: none; 
+    padding: 1rem 1.5rem; 
+    border-radius: 0.75rem; 
+    font-weight: 600; 
+    box-shadow: var(--shadow); 
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    margin-right: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .cta:hover { 
+    transform: translateY(-2px); 
+    box-shadow: var(--shadow-lg);
+    color: #fff;
+  }
+  .cta i {
+    font-size: 1.1rem;
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px) { 
+    .hero { 
+      grid-template-columns: 1fr; 
+      gap: 2rem;
+    } 
+  }
+
+  /* Wrap de equipos - 3 columnas flexibles */
+  .equipment-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    justify-content: center;
+  }
+
+  .equipment-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    width: calc(33.333% - 1rem);
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .equipment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+  }
+
+  .equipment-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .equipment-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .equipment-desc {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    flex-grow: 1;
+  }
+
+  /* Responsive para equipos */
+  @media (max-width: 1200px) {
+    .equipment-card {
+      width: calc(50% - 0.75rem);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .equipment-card {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+
+  /* Sección de bienvenida mejorada */
+  .welcome-section {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .welcome-section h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    color: white;
+  }
+  
+  .welcome-section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Sección de bienvenida -->
+<div class="welcome-section">
+  <h2>¡Bienvenido/a a SIGMA ICTS!</h2>
+  <p>Sistema de Gestión de Accesos y Muestras a la ICTS del Laboratorio Nacional de Fusión (CIEMAT)</p>
+  <div>
+    <a class="cta" href="{% url 'accounts:login_icts' %}?next={% url 'icts:dashboard' %}">
+      <i class="bi bi-box-arrow-in-right"></i>
+      Entrar
+    </a>
+    <a class="cta" style="background: var(--accent);" href="{% url 'icts:register' %}">
+      <i class="bi bi-person-plus"></i>
+      Crear Cuenta
+    </a>
+    <a class="cta" style="background: var(--text-secondary);" href="/">
+      <i class="bi bi-house"></i>
+      Salir al Portal
+    </a>
+  </div>
+</div>
+
+<!-- Equipos ICTS - PERFECTAMENTE ALINEADOS -->
+<div class="card">
+  <h3 style="margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem; color: var(--text-primary);">
+    <i class="bi bi-gear" style="margin-right: 0.5rem;"></i>
+    Equipos ICTS Disponibles
+  </h3>
+  <div class="equipment-wrap">
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'van-der-graaff' %}">
+      <img src="/media/facilities/Acelerador.png" alt="Van der Graaff" class="equipment-image">
+      <div class="equipment-title">Acelerador Van de Graaff</div>
+      <div class="equipment-desc">
+        Acelerador de electrones para irradiación y ensayos con haces controlados hasta 2 MeV. 
+      </div>
+          </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'sem-edx' %}">
+      <img src="/media/facilities/SEM1.png" alt="SEM/EDX" class="equipment-image">
+      <div class="equipment-title">FEG-SEM EDX/EBSD</div>
+      <div class="equipment-desc">
+        Microscopía electrónica de barrido con análisis elemental por espectroscopía de rayos X dispersiva.
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'fib' %}">
+      <img src="/media/facilities/FIB.png" alt="FIB" class="equipment-image">
+      <div class="equipment-title">FIB</div>
+      <div class="equipment-desc">
+        Haz de iones focalizado para micromecanizado de precisión y cortes de muestra localizados.
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'sims' %}">
+      <img src="/media/facilities/SIMS.png" alt="SIMS" class="equipment-image">
+      <div class="equipment-title">SIMS</div>
+      <div class="equipment-desc">
+        Espectrometría de masas de iones secundarios para perfiles de composición en profundidad.
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'implantador' %}">
+      <img src="/media/facilities/Implantador.png" alt="Implantador" class="equipment-image">
+      <div class="equipment-title">Implantador de iones </div>
+      <div class="equipment-desc">
+        Sistema de implantación iónica para modificación superficial de materiales.
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'confocal' %}">
+      <img src="/media/facilities/confocal.png" alt="Confocal" class="equipment-image">
+      <div class="equipment-title">Microscopio Confocal/Interferométrico</div>
+      <div class="equipment-desc">
+        Microscopía confocal láser para caracterización óptica confocal e interferometría.
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'profilometer' %}">
+      <img src="/media/facilities/Dektak.jpg" alt="Perfilómetro" class="equipment-image">
+      <div class="equipment-title">Perfilómetro</div>
+      <div class="equipment-desc">
+        Medición de rugosidad y espesores con resolución nanométrica mediante perfilometría de contacto.
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'impedancia' %}">
+      <img src="/media/facilities/impedancia.jpg" alt="Impedancia" class="equipment-image">
+      <div class="equipment-title">Impedancia eléctrica a alta temperatura</div>
+      <div class="equipment-desc">
+        Plataforma para caracterización eléctrica e impedanciometría de materiales y componentes.
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'lithium-combustion' %}">
+      <img src="/media/facilities/Lithium-combustion.png" alt="Lithium combustion" class="equipment-image">
+      <div class="equipment-title">Lithium combustion</div>
+      <div class="equipment-desc">
+        Laboratorio especializado en el estudio de litio
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'pbli-corrosion' %}">
+      <img src="/media/facilities/PbLi-corrosion.jpeg" alt="PbLi corrosion" class="equipment-image">
+      <div class="equipment-title">PbLi corrosion</div>
+      <div class="equipment-desc">
+        Canal de corrosión PbLi para evaluación de materiales en condiciones de metal líquido.
+      </div>
+    </a>
+
+    <a class="equipment-card" href="{% url 'icts:facility_info' 'olmat' %}">
+      <img src="/media/facilities/OLMAT.png" alt="OLMAT" class="equipment-image">
+      <div class="equipment-title">OLMAT</div>
+      <div class="equipment-desc">
+        Optimización de blancos avanzados de metal líquido para ensayos HHF con haz NBI y láser.
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- Información adicional -->
+<div class="card">
+  <div style="text-align: center; padding: 2rem;">
+    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">
+      <i class="bi bi-question-circle" style="margin-right: 0.5rem;"></i>
+      ¿Necesitas ayuda?
+    </h3>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.1rem;">
+      Consulta nuestra documentación o contacta con el equipo técnico para resolver tus dudas.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'icts:proposal_evaluation' %}" class="cta" style="background: var(--accent);">
+        <i class="bi bi-file-text"></i>
+        Procedimiento de Evaluación
+      </a>
+      <a href="{% url 'icts:reviewer_faq' %}" class="cta" style="background: var(--text-secondary);">
+        <i class="bi bi-question-circle"></i>
+        FAQ
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Función para actualizar el reloj
+  function updateIctsClock() {
+    const clockElement = document.getElementById('ictsClock');
+    if (!clockElement) return;
+    
+    const now = new Date();
+    const timeString = now.toLocaleString('es-ES', { 
+      dateStyle: 'full', 
+      timeStyle: 'medium' 
+    });
+    
+    clockElement.textContent = timeString;
+  }
+  
+  // Actualizar inmediatamente y luego cada segundo
+  updateIctsClock();
+  setInterval(updateIctsClock, 1000);
+</script>
+{% endblock %}

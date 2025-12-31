@@ -1,0 +1,291 @@
+{% extends "lab_base.html" %}
+
+{% block title %}Solicitud #{{ solicitud.id }} | SIGMA LAB{% endblock %}
+
+{% block content %}
+<div class="card" style="padding:24px; border-radius:16px;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+        <h1 class="page-title" style="margin:0;">
+            Solicitud #{{ solicitud.id }}
+            {% if solicitud.codigo_muestra %}
+                · {{ solicitud.codigo_muestra }}
+            {% endif %}
+        </h1>
+        <div style="margin-left:auto;">
+            {% if solicitud.estado == 'pendiente' %}
+                <span class="pill" style="background:#fff3cd;border-color:#ffeaa7;color:#856404;">{{ solicitud.get_estado_display }}</span>
+            {% elif solicitud.estado == 'aceptada' %}
+                <span class="pill" style="background:#d1ecf1;border-color:#bee5eb;color:#0c5460;">{{ solicitud.get_estado_display }}</span>
+            {% elif solicitud.estado == 'rechazada' %}
+                <span class="pill" style="background:#f8d7da;border-color:#f5c6cb;color:#721c24;">{{ solicitud.get_estado_display }}</span>
+            {% elif solicitud.estado == 'en_curso' %}
+                <span class="pill" style="background:#cce5ff;border-color:#b3d9ff;color:#004085;">{{ solicitud.get_estado_display }}</span>
+            {% elif solicitud.estado == 'finalizada' %}
+                <span class="pill" style="background:#d4edda;border-color:#c3e6cb;color:#155724;">{{ solicitud.get_estado_display }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Información básica -->
+    <div class="grid grid-2" style="margin-bottom:32px;">
+        <div>
+            <h3>Información de la muestra</h3>
+            <table style="width:100%;">
+                <tr>
+                    <td><strong>Solicitante:</strong></td>
+                    <td>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Material:</strong></td>
+                    <td>{{ solicitud.material|default:"—" }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Procedencia:</strong></td>
+                    <td>{{ solicitud.procedencia|default:"—" }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Tratamiento previo:</strong></td>
+                    <td>{{ solicitud.tratamiento_previo|default:"—" }}</td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <h3>Fechas</h3>
+            <table style="width:100%;">
+                <tr>
+                    <td><strong>Solicitud:</strong></td>
+                    <td>{{ solicitud.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% if solicitud.fecha_aceptacion %}
+                <tr>
+                    <td><strong>Aceptación:</strong></td>
+                    <td>{{ solicitud.fecha_aceptacion|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endif %}
+                {% if solicitud.fecha_rechazo %}
+                <tr>
+                    <td><strong>Rechazo:</strong></td>
+                    <td>{{ solicitud.fecha_rechazo|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endif %}
+                {% if solicitud.fecha_finalizacion %}
+                <tr>
+                    <td><strong>Finalización:</strong></td>
+                    <td>{{ solicitud.fecha_finalizacion|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+    <!-- Tareas solicitadas -->
+    <div style="margin-bottom:32px;">
+        <h3>Tareas solicitadas</h3>
+        {% with tareas=solicitud.get_tareas_seleccionadas %}
+            {% if tareas %}
+                <div class="grid grid-3" style="gap:8px;">
+                    {% for tarea in tareas %}
+                        <div class="pill" style="background:#e7f3ff;border-color:#b8daff;color:#004085;text-align:center;">
+                            {{ tarea }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="muted">No se han especificado tareas.</p>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Requisitos y observaciones -->
+    {% if solicitud.requisitos_finales or solicitud.observaciones %}
+    <div class="grid grid-2" style="margin-bottom:32px;">
+        {% if solicitud.requisitos_finales %}
+        <div>
+            <h3>Requisitos finales</h3>
+            <p>{{ solicitud.requisitos_finales }}</p>
+        </div>
+        {% endif %}
+        {% if solicitud.observaciones %}
+        <div>
+            <h3>Observaciones (Preparación autónoma)</h3>
+            <p>{{ solicitud.observaciones }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Motivo de rechazo (si aplica) -->
+    {% if solicitud.estado == 'rechazada' and solicitud.motivo_rechazo %}
+    <div style="background:#f8d7da;border:1px solid #f5c6cb;border-radius:8px;padding:16px;margin-bottom:32px;">
+        <h3 style="color:#721c24;margin-top:0;">Motivo de rechazo</h3>
+        <p style="color:#721c24;margin-bottom:0;">{{ solicitud.motivo_rechazo }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Panel técnico -->
+    {% if es_tecnico %}
+    <div style="border-top:2px solid #dee2e6;padding-top:32px;margin-bottom:32px;">
+        <h3>Panel técnico</h3>
+        
+        <!-- Cambiar estado -->
+        <form method="post" style="margin-bottom:24px;">
+            {% csrf_token %}
+            <div class="grid grid-2" style="align-items:end;">
+                <div>
+                    <label for="{{ form_estado.estado.id_for_label }}"><strong>Estado:</strong></label><br>
+                    {{ form_estado.estado }}
+                </div>
+                <div>
+                    <button type="submit" name="cambiar_estado" class="btn">Actualizar estado</button>
+                </div>
+            </div>
+            {% if form_estado.estado.value == 'rechazada' or solicitud.estado == 'rechazada' %}
+            <div style="margin-top:16px;">
+                <label for="{{ form_estado.motivo_rechazo.id_for_label }}"><strong>Motivo de rechazo:</strong></label><br>
+                {{ form_estado.motivo_rechazo }}
+            </div>
+            {% endif %}
+        </form>
+
+        <!-- Nuevo avance -->
+        <h4>Añadir avance</h4>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="grid grid-2">
+                <div>
+                    <label for="{{ form_avance.tipo.id_for_label }}"><strong>Tipo:</strong></label><br>
+                    {{ form_avance.tipo }}
+                </div>
+                <div>
+                    <label for="{{ form_avance.adjunto.id_for_label }}"><strong>Archivo:</strong></label><br>
+                    {{ form_avance.adjunto }}
+                </div>
+            </div>
+            <div style="margin:16px 0;">
+                <label for="{{ form_avance.contenido.id_for_label }}"><strong>Contenido:</strong></label><br>
+                {{ form_avance.contenido }}
+            </div>
+            <div style="margin:16px 0;">
+                <label class="checkbox-label">
+                    {{ form_avance.visible_para_usuario }} {{ form_avance.visible_para_usuario.label }}
+                </label>
+            </div>
+            <button type="submit" name="nuevo_avance" class="btn">Añadir avance</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Avances -->
+    {% if avances %}
+    <div style="border-top:2px solid #dee2e6;padding-top:32px;">
+        <h3>Avances y comentarios</h3>
+        {% for avance in avances %}
+        <div class="avance-item" style="background:#f8f9fa;border-radius:8px;padding:16px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                <strong>{{ avance.tecnico.get_full_name|default:avance.tecnico.username }}</strong>
+                <span class="pill" style="background:#e7f3ff;border-color:#b8daff;color:#004085;">
+                    {{ avance.get_tipo_display }}
+                </span>
+                <small class="muted">{{ avance.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                {% if not avance.visible_para_usuario and es_tecnico %}
+                    <span class="pill" style="background:#fff3cd;border-color:#ffeaa7;color:#856404;">Privado</span>
+                {% endif %}
+            </div>
+            <p style="margin:0;">{{ avance.contenido }}</p>
+            {% if avance.adjunto %}
+            <div style="margin-top:8px;">
+                <a href="{{ avance.adjunto.url }}" target="_blank" class="btn-small">
+                    📎 Ver archivo adjunto
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Navegación -->
+    <div style="margin-top:32px;padding-top:16px;border-top:1px solid #e5e5e5;">
+        {% if es_tecnico %}
+            <a href="{% url 'dtf:lab_bandeja_tecnico' %}" class="btn" style="background:#f5f5f5;">← Volver a bandeja</a>
+        {% else %}
+            <a href="{% url 'dtf:lab_mis_solicitudes' %}" class="btn" style="background:#f5f5f5;">← Mis solicitudes</a>
+        {% endif %}
+        <a href="{% url 'dtf:lab' %}" class="btn" style="background:#f5f5f5;margin-left:12px;">← Inicio LAB</a>
+    </div>
+</div>
+
+<style>
+.pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+}
+
+.avance-item {
+    transition: all 0.2s ease;
+}
+
+.avance-item:hover {
+    background: #e9ecef !important;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.checkbox-label:hover {
+    background-color: #f8f9fa;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+    text-decoration: none;
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.btn-small:hover {
+    background: #e9ecef;
+    text-decoration: none;
+}
+
+table td {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+table td:first-child {
+    width: 30%;
+    color: #6c757d;
+}
+
+.form-control, select, textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-control:focus, select:focus, textarea:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+</style>
+{% endblock %}
+
+

@@ -1,0 +1,260 @@
+{% extends 'icts/base_generic.html' %}
+
+{% block title %}Evaluar: {{ proposal.title }}{% endblock %}
+{% block page_title %}📝 Evaluación de Propuesta{% endblock %}
+
+{% block page_content %}
+<!-- Información de la propuesta -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">📋 Información de la Propuesta</h2>
+  </div>
+  
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+    <div>
+      <strong>Título:</strong><br>
+      <span style="font-size: 1.1rem;">{{ proposal.title }}</span>
+    </div>
+    <div>
+      <strong>Solicitante:</strong><br>
+      {{ proposal.applicant.get_full_name|default:proposal.applicant.username }}
+    </div>
+    <div>
+      <strong>Email:</strong><br>
+      <a href="mailto:{{ proposal.applicant.email }}">{{ proposal.applicant.email }}</a>
+    </div>
+    <div>
+      <strong>Centro/Institución:</strong><br>
+      {% if proposal.applicant.icts_profile %}
+        {{ proposal.applicant.icts_profile.center|default:"No especificado" }}
+      {% else %}
+        No especificado
+      {% endif %}
+    </div>
+    <div>
+      <strong>Fecha de creación:</strong><br>
+      {{ proposal.created_at|date:"Y-m-d H:i" }}
+    </div>
+    <div>
+      <strong>Estado actual:</strong><br>
+      <span class="badge {% if proposal.status == 'submitted' %}yellow{% elif proposal.status == 'accepted' %}green{% elif proposal.status == 'rejected' %}red{% else %}blue{% endif %}">
+        {{ proposal.get_status_display }}
+      </span>
+    </div>
+  </div>
+  
+  {% if proposal.scope %}
+    <div class="mt-4">
+      <strong>Descripción del proyecto:</strong><br>
+      <div style="background: var(--bg-main); padding: 1rem; border-radius: 0.5rem; margin-top: 0.5rem;">
+        {{ proposal.scope|linebreaks }}
+      </div>
+    </div>
+  {% endif %}
+  
+  {% if proposal.facilities.exists %}
+    <div class="mt-4">
+      <strong>Facilidades solicitadas:</strong><br>
+      <div class="d-flex gap-2" style="flex-wrap: wrap; margin-top: 0.5rem;">
+        {% for facility in proposal.facilities.all %}
+          <span class="badge blue">{{ facility.name }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  
+  {% if proposal.participants.exists %}
+    <div class="mt-4">
+      <strong>Participantes:</strong><br>
+      <div style="margin-top: 0.5rem;">
+        {% for participant in proposal.participants.all %}
+          <div style="background: var(--bg-main); padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.5rem;">
+            <strong>{{ participant.full_name }}</strong>
+            {% if participant.email %}
+              <br><small class="muted">{{ participant.email }}</small>
+            {% endif %}
+            {% if participant.affiliation %}
+              <br><small class="muted">{{ participant.affiliation }}</small>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Formulario de evaluación -->
+<form method="post" class="card">
+  {% csrf_token %}
+  
+  {% if form.errors %}
+    <div class="alert error">
+      <strong>Por favor, corrige los siguientes errores:</strong>
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+  
+  <div class="card-header">
+    <h2 class="card-title">📊 Evaluación Técnica</h2>
+  </div>
+  
+  <!-- Factibilidad técnica -->
+  <fieldset style="border: 2px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 2rem;">
+    <legend style="font-weight: 600; color: var(--text-primary); padding: 0 1rem;">🔬 Factibilidad Técnica</legend>
+    
+    <div class="form-group">
+      <label class="form-label">¿Es técnicamente viable esta propuesta?</label>
+      <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+          <input type="radio" name="feasibility_ok" value="true" 
+                 {% if form.feasibility_ok.value == True %}checked{% endif %}>
+          ✅ Sí, es viable
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+          <input type="radio" name="feasibility_ok" value="false" 
+                 {% if form.feasibility_ok.value == False %}checked{% endif %}>
+          ❌ No es viable
+        </label>
+      </div>
+      {% if form.feasibility_ok.errors %}
+        <div class="alert error">{{ form.feasibility_ok.errors }}</div>
+      {% endif %}
+    </div>
+  </fieldset>
+
+  <!-- Métricas de evaluación -->
+  <fieldset style="border: 2px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 2rem;">
+    <legend style="font-weight: 600; color: var(--text-primary); padding: 0 1rem;">📈 Métricas de Evaluación (0-5)</legend>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.score_scientific_quality.id_for_label }}">
+          🧪 Calidad Científica
+        </label>
+        <select name="score_scientific_quality" id="{{ form.score_scientific_quality.id_for_label }}" class="form-input">
+          <option value="">Selecciona una puntuación</option>
+          <option value="1" {% if form.score_scientific_quality.value == 1 %}selected{% endif %}>1 - Muy baja</option>
+          <option value="2" {% if form.score_scientific_quality.value == 2 %}selected{% endif %}>2 - Baja</option>
+          <option value="3" {% if form.score_scientific_quality.value == 3 %}selected{% endif %}>3 - Media</option>
+          <option value="4" {% if form.score_scientific_quality.value == 4 %}selected{% endif %}>4 - Alta</option>
+          <option value="5" {% if form.score_scientific_quality.value == 5 %}selected{% endif %}>5 - Excelente</option>
+        </select>
+        {% if form.score_scientific_quality.errors %}
+          <div class="alert error">{{ form.score_scientific_quality.errors }}</div>
+        {% endif %}
+        <small class="muted">Evalúa la calidad científica del proyecto y su contribución al conocimiento.</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.score_need_infrastructure.id_for_label }}">
+          🏗️ Necesidad de Infraestructura Avanzada
+        </label>
+        <select name="score_need_infrastructure" id="{{ form.score_need_infrastructure.id_for_label }}" class="form-input">
+          <option value="">Selecciona una puntuación</option>
+          <option value="1" {% if form.score_need_infrastructure.value == 1 %}selected{% endif %}>1 - No necesita</option>
+          <option value="2" {% if form.score_need_infrastructure.value == 2 %}selected{% endif %}>2 - Necesidad baja</option>
+          <option value="3" {% if form.score_need_infrastructure.value == 3 %}selected{% endif %}>3 - Necesidad media</option>
+          <option value="4" {% if form.score_need_infrastructure.value == 4 %}selected{% endif %}>4 - Necesidad alta</option>
+          <option value="5" {% if form.score_need_infrastructure.value == 5 %}selected{% endif %}>5 - Crítica</option>
+        </select>
+        {% if form.score_need_infrastructure.errors %}
+          <div class="alert error">{{ form.score_need_infrastructure.errors }}</div>
+        {% endif %}
+        <small class="muted">¿Qué tan esencial es el uso de nuestras instalaciones para este proyecto?</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.score_industrial_potential.id_for_label }}">
+          🏭 Potencial Interés Industrial
+        </label>
+        <select name="score_industrial_potential" id="{{ form.score_industrial_potential.id_for_label }}" class="form-input">
+          <option value="">Selecciona una puntuación</option>
+          <option value="1" {% if form.score_industrial_potential.value == 1 %}selected{% endif %}>1 - Sin interés</option>
+          <option value="2" {% if form.score_industrial_potential.value == 2 %}selected{% endif %}>2 - Bajo interés</option>
+          <option value="3" {% if form.score_industrial_potential.value == 3 %}selected{% endif %}>3 - Interés medio</option>
+          <option value="4" {% if form.score_industrial_potential.value == 4 %}selected{% endif %}>4 - Alto interés</option>
+          <option value="5" {% if form.score_industrial_potential.value == 5 %}selected{% endif %}>5 - Muy alto interés</option>
+        </select>
+        {% if form.score_industrial_potential.errors %}
+          <div class="alert error">{{ form.score_industrial_potential.errors }}</div>
+        {% endif %}
+        <small class="muted">¿Qué potencial tiene este proyecto para aplicaciones industriales?</small>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Comentarios y decisión -->
+  <fieldset style="border: 2px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 2rem;">
+    <legend style="font-weight: 600; color: var(--text-primary); padding: 0 1rem;">💬 Comentarios y Decisión</legend>
+    
+    <div class="form-group">
+      <label class="form-label" for="{{ form.comments.id_for_label }}">
+        📝 Comentarios para el responsable
+      </label>
+      <textarea name="comments" id="{{ form.comments.id_for_label }}" 
+                class="form-input" rows="6" 
+                placeholder="Proporciona comentarios detallados sobre tu evaluación...">{{ form.comments.value|default:"" }}</textarea>
+      {% if form.comments.errors %}
+        <div class="alert error">{{ form.comments.errors }}</div>
+      {% endif %}
+      <small class="muted">Estos comentarios serán visibles para el responsable y ayudarán en la decisión final.</small>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.decision.id_for_label }}">
+        ⚖️ Recomendación
+      </label>
+      <select name="decision" id="{{ form.decision.id_for_label }}" class="form-input">
+        <option value="">Selecciona tu recomendación</option>
+        <option value="approve" {% if form.decision.value == 'approve' %}selected{% endif %}>
+          ✅ Aprobar - La propuesta cumple con los criterios
+        </option>
+        <option value="request_changes" {% if form.decision.value == 'request_changes' %}selected{% endif %}>
+          🔄 Solicitar cambios - Necesita modificaciones menores
+        </option>
+        <option value="reject" {% if form.decision.value == 'reject' %}selected{% endif %}>
+          ❌ Rechazar - No cumple con los criterios
+        </option>
+      </select>
+      {% if form.decision.errors %}
+        <div class="alert error">{{ form.decision.errors }}</div>
+      {% endif %}
+      <small class="muted">Esta es tu recomendación. La decisión final la tomará el responsable.</small>
+    </div>
+  </fieldset>
+
+  <!-- Acciones -->
+  <div class="actions">
+    <button type="submit" class="btn btn-primary">
+      💾 Guardar Evaluación
+    </button>
+    <a href="{% url 'icts:reviewer_inbox' %}" class="btn btn-secondary">
+      ⬅️ Volver a la Bandeja
+    </a>
+    <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn btn-info" target="_blank">
+      👁️ Ver Propuesta Completa
+    </a>
+  </div>
+</form>
+
+<!-- Información adicional -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">ℹ️ Información Adicional</h2>
+  </div>
+  
+  <div class="alert info">
+    <strong>📋 Criterios de Evaluación:</strong><br>
+    • <strong>Calidad Científica:</strong> Originalidad, rigor metodológico y contribución al conocimiento<br>
+    • <strong>Necesidad de Infraestructura:</strong> Justificación del uso de equipos especializados<br>
+    • <strong>Potencial Industrial:</strong> Aplicabilidad y transferencia tecnológica<br>
+    • <strong>Factibilidad:</strong> Viabilidad técnica y disponibilidad de recursos
+  </div>
+  
+  <div class="alert warning">
+    <strong>⚠️ Importante:</strong><br>
+    Tu evaluación es confidencial y será considerada por el responsable para la decisión final. 
+    Proporciona comentarios constructivos y objetivos.
+  </div>
+</div>
+{% endblock %}

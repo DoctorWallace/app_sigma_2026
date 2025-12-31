@@ -1,0 +1,210 @@
+{% extends "base_dtf.html" %}
+{% block title %}Uso de Equipos - Información Importante{% endblock %}
+{% block page_title %}Uso de Equipos{% endblock %}
+
+{% block extra_css %}
+<style>
+  .section-header {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    color: white;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2rem;
+  }
+  .section-header h3 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-header i {
+    font-size: 1.5em;
+  }
+  .section-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .section-body {
+    padding: 2rem;
+  }
+  .section-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1.5rem 2rem;
+  }
+  .alert {
+    border-radius: 0.75rem;
+    border: none;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .alert-primary {
+    background: linear-gradient(135deg, #cce7ff, #b3d9ff);
+    color: #004085;
+    border-left: 4px solid #0d6efd;
+  }
+  .alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border-left: 4px solid #ffc107;
+  }
+  .alert-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+  }
+  .btn {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+  }
+  .btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #5c636a);
+    border: none;
+  }
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="section-card">
+    <div class="section-header">
+        <h3><i class="bi bi-tools"></i> Uso de Equipos</h3>
+        <div class="alert alert-success" style="background: rgba(40, 167, 69, 0.2); border: 1px solid rgba(40, 167, 69, 0.3); color: #155724; margin-top: 1rem;">
+            <i class="bi bi-check-circle"></i> Esta sección ha sido marcada como revisada
+        </div>
+    </div>
+    <div class="section-body">
+        <h4>Instrucciones para el Uso Correcto de Equipos</h4>
+        
+        <div class="alert alert-primary">
+            <h5><i class="bi bi-info-circle-fill"></i> Normas Generales</h5>
+            <ul>
+                <li><strong>Reserva previa:</strong> Todos los equipos deben reservarse con antelación</li>
+                <li><strong>Formación obligatoria:</strong> Solo usuarios formados pueden usar los equipos</li>
+                <li><strong>Registro de uso:</strong> Anotar el uso en el libro de registro correspondiente</li>
+                <li><strong>Limpieza:</strong> Dejar el equipo limpio y en perfecto estado</li>
+            </ul>
+        </div>
+
+        <h5>Equipos de Preparación de Muestras</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Corte y Seccionado</h6>
+                <ul>
+                    <li>Cortadora de precisión</li>
+                    <li>Sierra de corte en frío</li>
+                    <li>Disco de diamante</li>
+                </ul>
+                <p><strong>Precauciones:</strong> Usar siempre protección ocular y guantes de seguridad</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Pulido y Acabado</h6>
+                <ul>
+                    <li>Pulidora automática</li>
+                    <li>Lijas de diferentes granos</li>
+                    <li>Pasta de diamante</li>
+                </ul>
+                <p><strong>Precauciones:</strong> Mantener las manos alejadas de las partes móviles</p>
+            </div>
+        </div>
+
+        <h5>Equipos de Caracterización</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Microscopía</h6>
+                <ul>
+                    <li>Microscopio óptico</li>
+                    <li>Microscopio electrónico de barrido (SEM)</li>
+                    <li>Microscopio confocal</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>Análisis de Superficie</h6>
+                <ul>
+                    <li>Perfilómetro</li>
+                    <li>Espectrómetro de masas (SIMS)</li>
+                    <li>Implantador iónico</li>
+                </ul>
+            </div>
+        </div>
+
+        <h5>Procedimientos de Uso</h5>
+        <div class="alert alert-warning">
+            <h6>Antes de usar cualquier equipo:</h6>
+            <ol>
+                <li>Verificar que el equipo esté en buen estado</li>
+                <li>Revisar las instrucciones de uso específicas</li>
+                <li>Comprobar que tienes la formación necesaria</li>
+                <li>Anotar en el registro de uso</li>
+                <li>Usar los EPI correspondientes</li>
+            </ol>
+        </div>
+
+        <h5>Mantenimiento y Limpieza</h5>
+        <ul>
+            <li><strong>Después de cada uso:</strong> Limpiar el equipo según las instrucciones</li>
+            <li><strong>Reportar averías:</strong> Comunicar cualquier problema al técnico responsable</li>
+            <li><strong>Consumibles:</strong> Reponer consumibles si es necesario</li>
+            <li><strong>Calibración:</strong> No manipular calibraciones sin autorización</li>
+        </ul>
+
+        <h5>Reservas y Horarios</h5>
+        <div class="alert alert-info">
+            <h6><i class="bi bi-calendar-check"></i> Sistema de Reservas</h6>
+            <p>Las reservas se realizan a través del sistema web. Los horarios disponibles son:</p>
+            <ul>
+                <li><strong>Lunes a Viernes:</strong> 8:00 - 18:00</li>
+                <li><strong>Fin de semana:</strong> Solo con autorización especial</li>
+                <li><strong>Duración máxima:</strong> 4 horas por sesión</li>
+            </ul>
+        </div>
+
+        <div class="alert alert-danger">
+            <h6><i class="bi bi-exclamation-triangle-fill"></i> Prohibiciones</h6>
+            <ul>
+                <li>No usar equipos sin formación previa</li>
+                <li>No modificar configuraciones sin autorización</li>
+                <li>No comer ni beber cerca de los equipos</li>
+                <li>No usar equipos defectuosos</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <small class="text-muted">
+                    <i class="bi bi-info-circle"></i> Progreso: {{ secciones_completadas }}/{{ total_secciones }} secciones
+                </small>
+            </div>
+            <div>
+                <a href="{% url 'dtf:info-importante' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+                {% if not completado %}
+                <a href="{% url 'dtf:info-importante-seccion' 'normas_obligatorias' %}" class="btn btn-primary">
+                    Siguiente: Normas Obligatorias <i class="bi bi-arrow-right"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'sigmalab:panel-usuario' %}" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Completar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

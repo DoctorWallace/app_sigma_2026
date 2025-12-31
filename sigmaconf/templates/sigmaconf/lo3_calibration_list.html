@@ -1,0 +1,115 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}{{ title }}{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Calibraciones{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>Calibraciones</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">{{ title }}</div>
+    <div class="lo3-page-meta">
+      <span>{{ calibrations|length }} registros</span>
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_calibration_list' 'interna' %}">
+      Interna
+    </a>
+    <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_calibration_list' 'externa' %}">
+      Externa
+    </a>
+    <a class="lo3-btn lo3-btn-primary" href="{% url 'sigmaconf:lo3_calibration_create' calibration_type %}">
+      <i class="bi bi-plus-circle"></i>
+      Nueva calibración
+    </a>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Registro</h2>
+      <div class="lo3-card-subtitle">Control de vencimientos y certificados.</div>
+    </div>
+  </div>
+
+  {% if calibrations %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Equipo</th>
+            <th>Realizada</th>
+            <th>Vencimiento</th>
+            <th>Estado</th>
+            <th>Realizado por</th>
+            <th>Proveedor</th>
+            <th>Certificado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for calibration in calibrations %}
+            <tr>
+              <td><strong>{{ calibration.equipment.name }}</strong></td>
+              <td>{{ calibration.performed_at|date:"d/m/Y" }}</td>
+              <td>{{ calibration.due_at|date:"d/m/Y"|default:"-" }}</td>
+              <td>
+                {% if calibration.due_status == "overdue" %}
+                  <span class="lo3-badge lo3-badge--danger">{{ calibration.due_label }}</span>
+                {% elif calibration.due_status == "due_soon" %}
+                  <span class="lo3-badge lo3-badge--warning">{{ calibration.due_label }}</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--muted">{{ calibration.due_label }}</span>
+                {% endif %}
+              </td>
+              <td>{{ calibration.performed_by|default:"-" }}</td>
+              <td>{{ calibration.provider|default:"-" }}</td>
+              <td>
+                {% if calibration.certificate_file %}
+                  <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_calibration_certificate_download' calibration.pk %}">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                    Descargar
+                  </a>
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+              <td>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                  <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_calibration_edit' calibration.pk %}">
+                    <i class="bi bi-pencil-square"></i>
+                    Editar
+                  </a>
+                  <form method="post" action="{% url 'sigmaconf:lo3_calibration_delete' calibration.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="lo3-btn lo3-btn-ghost">
+                      <i class="bi bi-trash"></i>
+                      Eliminar
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-clipboard-x"></i>
+      <div>No hay calibraciones registradas.</div>
+      <small>Registra una calibración para iniciar el seguimiento.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

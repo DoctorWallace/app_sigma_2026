@@ -1,0 +1,246 @@
+{% extends "sigmaoptics/base_optics.html" %}
+
+{% block optics_page_title %}Solicitud OPT-{{ solicitud.id }} - Sigma Optics{% endblock %}
+
+{% block optics_content %}
+<div class="container">
+  <!-- Información general -->
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Solicitud OPT-{{ solicitud.id }}</h2>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <span class="optics-badge optics-badge-{{ solicitud.estado }}">
+          {{ solicitud.get_estado_display }}
+        </span>
+        {% if solicitud.codigo_analisis %}
+          <span class="optics-badge optics-badge-success">
+            Código: {{ solicitud.codigo_analisis }}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <h4 style="color: var(--optics-primary); margin-bottom: 1rem;">
+          <i class="bi bi-info-circle"></i>
+          Información General
+        </h4>
+        <table class="table table-borderless">
+          <tr>
+            <td><strong>Material:</strong></td>
+            <td>{{ solicitud.material }}</td>
+          </tr>
+          <tr>
+            <td><strong>Nº Muestras:</strong></td>
+            <td>{{ solicitud.numero_muestras }}</td>
+          </tr>
+          <tr>
+            <td><strong>Ref. Muestras:</strong></td>
+            <td>{{ solicitud.referencia_muestras|default:"-" }}</td>
+          </tr>
+          <tr>
+            <td><strong>Tamaño:</strong></td>
+            <td>{{ solicitud.tamano|default:"-" }}</td>
+          </tr>
+          <tr>
+            <td><strong>Solicitante:</strong></td>
+            <td>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</td>
+          </tr>
+          <tr>
+            <td><strong>Fecha:</strong></td>
+            <td>{{ solicitud.creado_en|date:"d/m/Y H:i" }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <h4 style="color: var(--optics-primary); margin-bottom: 1rem;">
+          <i class="bi bi-gear"></i>
+          Medidas a Realizar
+        </h4>
+        <table class="table table-borderless">
+          <tr>
+            <td><strong>Tipo de Medida:</strong></td>
+            <td>
+              <span class="optics-badge {% if solicitud.medidas_realizar == 'uv_vis' %}optics-badge-primary{% else %}optics-badge-info{% endif %}">
+                {{ solicitud.get_medidas_realizar_display }}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Elemento:</strong></td>
+            <td>
+              {% if solicitud.elemento %}
+                <span class="optics-badge optics-badge-secondary">{{ solicitud.get_elemento_display }}</span>
+              {% else %}
+                <span class="text-muted">No especificado</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% if solicitud.tecnico_responsable %}
+          <tr>
+            <td><strong>Técnico:</strong></td>
+            <td>{{ solicitud.tecnico_responsable.get_full_name|default:solicitud.tecnico_responsable.username }}</td>
+          </tr>
+          {% endif %}
+          {% if solicitud.aceptado_en %}
+          <tr>
+            <td><strong>Aceptado:</strong></td>
+            <td>{{ solicitud.aceptado_en|date:"d/m/Y H:i" }}</td>
+          </tr>
+          {% endif %}
+          {% if solicitud.finalizado_en %}
+          <tr>
+            <td><strong>Finalizado:</strong></td>
+            <td>{{ solicitud.finalizado_en|date:"d/m/Y H:i" }}</td>
+          </tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+
+    {% if solicitud.otros_datos %}
+    <div style="margin-top: 2rem;">
+      <h4 style="color: var(--optics-primary); margin-bottom: 1rem;">
+        <i class="bi bi-chat-text"></i>
+        Otros Datos de Interés
+      </h4>
+      <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; border-left: 4px solid var(--optics-primary);">
+        {{ solicitud.otros_datos|linebreaks }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Muestras -->
+  {% if muestras %}
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Muestras</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="optics-table">
+        <thead>
+          <tr>
+            <th>Nº</th>
+            <th>Identificación</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for muestra in muestras %}
+          <tr>
+            <td><strong>{{ muestra.numero_secuencia }}</strong></td>
+            <td>{{ muestra.identificacion }}</td>
+            <td>{{ muestra.descripcion|default:"-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Resultados -->
+  {% if resultados %}
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Resultados</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="optics-table">
+        <thead>
+          <tr>
+            <th>Código Informe</th>
+            <th>Archivo</th>
+            <th>Observaciones</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for resultado in resultados %}
+          <tr>
+            <td><strong>{{ resultado.codigo_informe }}</strong></td>
+            <td>{{ resultado.archivo_resultado.name|slice:"-50:" }}</td>
+            <td>{{ resultado.observaciones|truncatechars:50|default:"-" }}</td>
+            <td>{{ resultado.creado_en|date:"d/m/Y H:i" }}</td>
+            <td>
+              <a href="{{ resultado.archivo_resultado.url }}" 
+                 class="optics-btn optics-btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" 
+                 target="_blank">
+                <i class="bi bi-download"></i>
+                Descargar
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Acciones del técnico -->
+  {% if is_technician %}
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Acciones del Técnico</h2>
+    </div>
+    
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      {% if solicitud.estado == 'pendiente' %}
+        <form method="post" action="{% url 'sigmaoptics:solicitud_accept' solicitud.pk %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="optics-btn optics-btn-success">
+            <i class="bi bi-check-circle"></i>
+            Aceptar
+          </button>
+        </form>
+        <form method="post" action="{% url 'sigmaoptics:solicitud_reject' solicitud.pk %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="optics-btn optics-btn-danger">
+            <i class="bi bi-x-circle"></i>
+            Rechazar
+          </button>
+        </form>
+      {% elif solicitud.estado == 'aceptada' %}
+        <form method="post" action="{% url 'sigmaoptics:solicitud_start' solicitud.pk %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="optics-btn optics-btn-primary">
+            <i class="bi bi-play-circle"></i>
+            Iniciar Trabajo
+          </button>
+        </form>
+      {% elif solicitud.estado == 'en_curso' %}
+        <form method="post" action="{% url 'sigmaoptics:solicitud_finish' solicitud.pk %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="optics-btn optics-btn-success">
+            <i class="bi bi-check-circle"></i>
+            Finalizar
+          </button>
+        </form>
+        <a href="{% url 'sigmaoptics:resultado_upload' solicitud.pk %}" class="optics-btn optics-btn-info">
+          <i class="bi bi-upload"></i>
+          Subir Resultado
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Botones de navegación -->
+  <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+    <a href="{% url 'sigmaoptics:solicitud_list' %}" class="optics-btn optics-btn-secondary">
+      <i class="bi bi-arrow-left"></i>
+      Volver a la Lista
+    </a>
+    {% if can_edit %}
+    <a href="#" class="optics-btn optics-btn-warning">
+      <i class="bi bi-pencil"></i>
+      Editar
+    </a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base_dtf.html" %}
+{% block title %}Mis Becarios - S-LAB{% endblock %}
+{% block page_title %}Mis Becarios{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap;">
+    <h3 style="margin:0;">Gestión de Becarios</h3>
+    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+      <a class="btn" href="{% url 'sigmalab:crear-becario' %}">
+        <i class="bi bi-person-plus"></i> Nuevo becario
+      </a>
+      <a class="btn btn-outline-secondary" href="{% url 'sigmalab:panel-usuario' %}">
+        <i class="bi bi-arrow-left"></i> Volver al panel
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="card" style="margin-bottom:1rem;">
+  <h4>Estadísticas</h4>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1rem;">
+    <div style="text-align:center; padding:.5rem; background:#f8f9fa; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#007bff;">{{ stats.total }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Total</div>
+    </div>
+    <div style="text-align:center; padding:.5rem; background:#d4edda; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#28a745;">{{ stats.activos }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Activos</div>
+    </div>
+    <div style="text-align:center; padding:.5rem; background:#f8d7da; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#dc3545;">{{ stats.suspendidos }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Suspendidos</div>
+    </div>
+    <div style="text-align:center; padding:.5rem; background:#e2e3e5; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#6c757d;">{{ stats.inactivos }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Inactivos</div>
+    </div>
+  </div>
+</div>
+
+<!-- Lista de becarios -->
+<div class="card">
+  <h4>Lista de Becarios</h4>
+  
+  {% if becarios %}
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:#f8f9fa; border-bottom:2px solid #dee2e6;">
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Nombre</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Email</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Tipo</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Estado</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Fecha inicio</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for becario in becarios %}
+            <tr style="border-bottom:1px solid #dee2e6;">
+              <td style="padding:.75rem;">
+                <strong>{{ becario.nombre_completo }}</strong>
+                {% if becario.institucion_origen %}
+                  <br><small style="color:#6c757d;">{{ becario.institucion_origen }}</small>
+                {% endif %}
+              </td>
+              <td style="padding:.75rem;">{{ becario.email }}</td>
+              <td style="padding:.75rem;">{{ becario.get_tipo_becario_display }}</td>
+              <td style="padding:.75rem;">
+                <span style="display:inline-block; padding:.25rem .5rem; border-radius:.25rem; font-size:.8rem; font-weight:600; color:white; background-color:{{ becario.get_estado_display_color }};">
+                  {{ becario.get_estado_display }}
+                </span>
+              </td>
+              <td style="padding:.75rem;">{{ becario.fecha_inicio|date:"d/m/Y" }}</td>
+              <td style="padding:.75rem;">
+                <div style="display:flex; gap:.25rem; flex-wrap:wrap;">
+                  <a class="btn-small" href="{% url 'sigmalab:detalle-becario' becario.id %}" style="background:#17a2b8; color:white; text-decoration:none; padding:.25rem .5rem; border-radius:.25rem; font-size:.8rem;">
+                    <i class="bi bi-eye"></i> Ver
+                  </a>
+                  <a class="btn-small" href="{% url 'sigmalab:editar-becario' becario.id %}" style="background:#ffc107; color:black; text-decoration:none; padding:.25rem .5rem; border-radius:.25rem; font-size:.8rem;">
+                    <i class="bi bi-pencil"></i> Editar
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align:center; padding:2rem; color:#6c757d;">
+      <i class="bi bi-people" style="font-size:3rem; margin-bottom:1rem; display:block;"></i>
+      <h4>No tienes becarios asociados</h4>
+      <p>Puedes asociar becarios a tu cuenta para que puedan realizar solicitudes bajo tu responsabilidad.</p>
+      <a class="btn" href="{% url 'sigmalab:crear-becario' %}" style="margin-top:1rem;">
+        <i class="bi bi-person-plus"></i> Crear primer becario
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.btn-small {
+  display:inline-flex;
+  align-items:center;
+  gap:.25rem;
+  text-decoration:none;
+  font-size:.8rem;
+  font-weight:600;
+  border-radius:.25rem;
+  transition:all .2s ease;
+}
+
+.btn-small:hover {
+  transform:translateY(-1px);
+  box-shadow:0 2px 4px rgba(0,0,0,.1);
+}
+
+@media (max-width:768px) {
+  .card {
+    margin:0 -.5rem 1rem;
+    border-radius:0;
+  }
+  
+  table {
+    font-size:.9rem;
+  }
+  
+  th, td {
+    padding:.5rem !important;
+  }
+}
+</style>
+{% endblock %}

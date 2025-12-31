@@ -1,0 +1,347 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Revisar modificación{% endblock %}
+{% block page_title %}Revisar modificación{% endblock %}
+
+{% block extra_css %}
+<style>
+  .modification-detail {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .modification-detail h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+  }
+  .comparison-section {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+  }
+  .current-value {
+    background: #e9ecef;
+    padding: 0.75rem;
+    border-radius: 4px;
+  }
+  .new-value {
+    background: #d1e7dd;
+    padding: 0.75rem;
+    border-radius: 4px;
+  }
+  .value-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .preparation-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .step-comparison {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+  }
+  .step-comparison.current {
+    background: #e9ecef;
+  }
+  .step-comparison.new {
+    background: #d1e7dd;
+  }
+  .step-comparison.changed {
+    background: #fff3cd;
+    border-color: #ffc107;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .status-pendiente { background: #fff3cd; color: #856404; }
+  .status-aprobada { background: #d1e7dd; color: #0f5132; }
+  .status-rechazada { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 1000px;">
+  <h2 style="margin:0 0 1rem">
+    <i class="bi bi-eye"></i> Revisar modificación
+  </h2>
+  
+  <!-- Información de la modificación -->
+  <div class="modification-detail">
+    <h3><i class="bi bi-info-circle"></i> Información de la modificación</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <p><strong>Código de modificación:</strong> #{{ modificacion.pk }}</p>
+        <p><strong>Solicitud original:</strong> SOL#{{ modificacion.solicitud_original.pk }}</p>
+        <p><strong>Tipo de modificación:</strong> {{ modificacion.get_tipo_modificacion_display }}</p>
+        <p><strong>Estado:</strong> 
+          <span class="status-badge status-{{ modificacion.estado }}">
+            {{ modificacion.get_estado_display }}
+          </span>
+        </p>
+      </div>
+      <div>
+        <p><strong>Solicitante:</strong> {{ modificacion.solicitante.first_name }} {{ modificacion.solicitante.last_name }}</p>
+        <p><strong>Email:</strong> {{ modificacion.solicitante.email }}</p>
+        <p><strong>Fecha de solicitud:</strong> {{ modificacion.fecha_solicitud|date:"d/m/Y H:i" }}</p>
+        {% if modificacion.fecha_resolucion %}
+        <p><strong>Fecha de resolución:</strong> {{ modificacion.fecha_resolucion|date:"d/m/Y H:i" }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Descripción y justificación -->
+  <div class="modification-detail">
+    <h3><i class="bi bi-chat-text"></i> Descripción y justificación</h3>
+    <div class="comparison-section">
+      <div class="value-label">Descripción del cambio:</div>
+      <p>{{ modificacion.descripcion_cambio|linebreaksbr }}</p>
+    </div>
+    <div class="comparison-section">
+      <div class="value-label">Justificación:</div>
+      <p>{{ modificacion.justificacion|linebreaksbr }}</p>
+    </div>
+  </div>
+
+  <!-- Comparación de cambios -->
+  <div class="modification-detail">
+    <h3><i class="bi bi-arrow-left-right"></i> Comparación de cambios</h3>
+    
+    {% if modificacion.tipo_modificacion == 'numero_muestras' %}
+    <div class="comparison-row">
+      <div class="current-value">
+        <div class="value-label">Valor actual:</div>
+        {{ modificacion.solicitud_original.numero_muestras|default:"1" }} muestras
+      </div>
+      <div class="new-value">
+        <div class="value-label">Nuevo valor:</div>
+        {{ modificacion.cambios_solicitados.numero_muestras }} muestras
+      </div>
+    </div>
+    {% endif %}
+
+    {% if modificacion.tipo_modificacion == 'requisitos_finales' %}
+    <div class="comparison-row">
+      <div class="current-value">
+        <div class="value-label">Valor actual:</div>
+        {{ modificacion.solicitud_original.requisitos_finales|default:"Sin requisitos especificados"|linebreaksbr }}
+      </div>
+      <div class="new-value">
+        <div class="value-label">Nuevo valor:</div>
+        {{ modificacion.cambios_solicitados.requisitos_finales|linebreaksbr }}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if modificacion.tipo_modificacion == 'etapas_preparacion' %}
+    <div class="comparison-section">
+      <div class="value-label">Etapas de preparación:</div>
+      <div class="preparation-comparison">
+        <div class="step-comparison {% if modificacion.cambios_solicitados.corte != modificacion.solicitud_original.corte %}changed{% endif %}">
+          <i class="bi bi-{% if modificacion.cambios_solicitados.corte %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Corte</span>
+          {% if modificacion.cambios_solicitados.corte != modificacion.solicitud_original.corte %}
+            <i class="bi bi-arrow-right text-warning"></i>
+          {% endif %}
+        </div>
+        <div class="step-comparison {% if modificacion.cambios_solicitados.empastillado != modificacion.solicitud_original.empastillado %}changed{% endif %}">
+          <i class="bi bi-{% if modificacion.cambios_solicitados.empastillado %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Empastillado</span>
+          {% if modificacion.cambios_solicitados.empastillado != modificacion.solicitud_original.empastillado %}
+            <i class="bi bi-arrow-right text-warning"></i>
+          {% endif %}
+        </div>
+        <div class="step-comparison {% if modificacion.cambios_solicitados.lijado != modificacion.solicitud_original.lijado %}changed{% endif %}">
+          <i class="bi bi-{% if modificacion.cambios_solicitados.lijado %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Lijado</span>
+          {% if modificacion.cambios_solicitados.lijado != modificacion.solicitud_original.lijado %}
+            <i class="bi bi-arrow-right text-warning"></i>
+          {% endif %}
+        </div>
+        <div class="step-comparison {% if modificacion.cambios_solicitados.pulido != modificacion.solicitud_original.pulido %}changed{% endif %}">
+          <i class="bi bi-{% if modificacion.cambios_solicitados.pulido %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Pulido</span>
+          {% if modificacion.cambios_solicitados.pulido != modificacion.solicitud_original.pulido %}
+            <i class="bi bi-arrow-right text-warning"></i>
+          {% endif %}
+        </div>
+        <div class="step-comparison {% if modificacion.cambios_solicitados.electropulido != modificacion.solicitud_original.electropulido %}changed{% endif %}">
+          <i class="bi bi-{% if modificacion.cambios_solicitados.electropulido %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Electropulido</span>
+          {% if modificacion.cambios_solicitados.electropulido != modificacion.solicitud_original.electropulido %}
+            <i class="bi bi-arrow-right text-warning"></i>
+          {% endif %}
+        </div>
+        <div class="step-comparison {% if modificacion.cambios_solicitados.trat_quimico != modificacion.solicitud_original.trat_quimico %}changed{% endif %}">
+          <i class="bi bi-{% if modificacion.cambios_solicitados.trat_quimico %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Tratamiento químico</span>
+          {% if modificacion.cambios_solicitados.trat_quimico != modificacion.solicitud_original.trat_quimico %}
+            <i class="bi bi-arrow-right text-warning"></i>
+          {% endif %}
+        </div>
+        <div class="step-comparison {% if modificacion.cambios_solicitados.trat_termico != modificacion.solicitud_original.trat_termico %}changed{% endif %}">
+          <i class="bi bi-{% if modificacion.cambios_solicitados.trat_termico %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Tratamiento térmico</span>
+          {% if modificacion.cambios_solicitados.trat_termico != modificacion.solicitud_original.trat_termico %}
+            <i class="bi bi-arrow-right text-warning"></i>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if modificacion.tipo_modificacion == 'observaciones' %}
+    <div class="comparison-row">
+      <div class="current-value">
+        <div class="value-label">Valor actual:</div>
+        {{ modificacion.solicitud_original.observaciones|default:"Sin observaciones"|linebreaksbr }}
+      </div>
+      <div class="new-value">
+        <div class="value-label">Nuevo valor:</div>
+        {{ modificacion.cambios_solicitados.observaciones|linebreaksbr }}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if modificacion.tipo_modificacion == 'otro_dato_importante' %}
+    <div class="comparison-row">
+      <div class="current-value">
+        <div class="value-label">Valor actual:</div>
+        {{ modificacion.solicitud_original.otro_dato_importante|default:"Sin datos adicionales"|linebreaksbr }}
+      </div>
+      <div class="new-value">
+        <div class="value-label">Nuevo valor:</div>
+        {{ modificacion.cambios_solicitados.otro_dato_importante|linebreaksbr }}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if modificacion.tipo_modificacion == 'manejo_especial' %}
+    <div class="comparison-row">
+      <div class="current-value">
+        <div class="value-label">Valor actual:</div>
+        {{ modificacion.solicitud_original.manejo_especial|default:"Sin manejo especial especificado"|linebreaksbr }}
+      </div>
+      <div class="new-value">
+        <div class="value-label">Nuevo valor:</div>
+        {{ modificacion.cambios_solicitados.manejo_especial|linebreaksbr }}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if modificacion.tipo_modificacion == 'tratamiento_previo' %}
+    <div class="comparison-row">
+      <div class="current-value">
+        <div class="value-label">Valor actual:</div>
+        {{ modificacion.solicitud_original.tratamiento_previo|default:"Sin tratamiento previo especificado"|linebreaksbr }}
+      </div>
+      <div class="new-value">
+        <div class="value-label">Nuevo valor:</div>
+        {{ modificacion.cambios_solicitados.tratamiento_previo|linebreaksbr }}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if modificacion.tipo_modificacion == 'procedencia' %}
+    <div class="comparison-row">
+      <div class="current-value">
+        <div class="value-label">Valor actual:</div>
+        {{ modificacion.solicitud_original.procedencia|default:"Sin procedencia especificada" }}
+      </div>
+      <div class="new-value">
+        <div class="value-label">Nuevo valor:</div>
+        {{ modificacion.cambios_solicitados.procedencia }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Formulario de decisión (solo si está pendiente) -->
+  {% if modificacion.estado == 'pendiente' %}
+  <div class="modification-detail">
+    <h3><i class="bi bi-clipboard-check"></i> Decisión del técnico</h3>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="{{ form.estado.id_for_label }}" class="form-label">
+          Decisión
+        </label>
+        {{ form.estado|add_class:"form-control" }}
+        {{ form.estado.errors }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.comentarios_tecnico.id_for_label }}" class="form-label">
+          Comentarios del técnico
+        </label>
+        {{ form.comentarios_tecnico|add_class:"form-control" }}
+        {{ form.comentarios_tecnico.errors }}
+        <small class="form-text text-muted">
+          Explica tu decisión y cualquier consideración importante.
+        </small>
+      </div>
+      <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+        <button type="submit" class="cta" style="background: #28a745; color: white;">
+          <i class="bi bi-check-circle"></i> Procesar decisión
+        </button>
+        <a href="{% url 'sigmalab:detalle-solicitud' modificacion.solicitud_original.pk %}" class="cta" style="background: var(--accent);">
+          <i class="bi bi-arrow-left"></i> Volver a la solicitud
+        </a>
+      </div>
+    </form>
+  </div>
+  {% else %}
+  <!-- Mostrar decisión ya tomada -->
+  <div class="modification-detail">
+    <h3><i class="bi bi-clipboard-check"></i> Decisión del técnico</h3>
+    <div class="comparison-section">
+      <p><strong>Estado:</strong> 
+        <span class="status-badge status-{{ modificacion.estado }}">
+          {{ modificacion.get_estado_display }}
+        </span>
+      </p>
+      {% if modificacion.comentarios_tecnico %}
+      <p><strong>Comentarios:</strong></p>
+      <p>{{ modificacion.comentarios_tecnico|linebreaksbr }}</p>
+      {% endif %}
+      <p><strong>Revisado por:</strong> {{ modificacion.tecnico_responsable.first_name }} {{ modificacion.tecnico_responsable.last_name }}</p>
+      <p><strong>Fecha de resolución:</strong> {{ modificacion.fecha_resolucion|date:"d/m/Y H:i" }}</p>
+    </div>
+    <div style="margin-top: 1rem;">
+      <a href="{% url 'sigmalab:detalle-solicitud' modificacion.solicitud_original.pk %}" class="cta" style="background: var(--accent);">
+        <i class="bi bi-arrow-left"></i> Volver a la solicitud
+      </a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,419 @@
+{% extends "base_icts.html" %}
+{% load form_extras %}
+{% block title %}Registro | ΣSIGMA ICTS{% endblock %}
+
+{% block extra_head %}
+<style>
+  .register-container {
+    background: var(--bg-main);
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
+  .register-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .register-header {
+    background: var(--primary);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    border-bottom: 3px solid var(--primary-dark);
+  }
+  .register-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    border: 2px solid rgba(255,255,255,0.25);
+  }
+  .register-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: white;
+  }
+  .register-subtitle {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 400;
+  }
+  .register-body {
+    padding: 2.5rem;
+  }
+  .form-section {
+    margin-bottom: 2rem;
+  }
+  .form-section-title {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+  }
+  .form-section-title i {
+    font-size: 1.1em;
+  }
+  .form-label {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    display: block;
+    font-size: 0.9rem;
+  }
+  .form-control {
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    background: var(--bg-card);
+    width: 100%;
+  }
+  .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26,54,93,.1);
+    outline: none;
+  }
+  .form-control:hover {
+    border-color: var(--primary-light);
+  }
+  .siglas-preview {
+    background: var(--bg-main);
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+  .form-check {
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+  }
+  .form-check-input {
+    transform: scale(1.2);
+    margin-right: 0.75rem;
+  }
+  .form-check-label {
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--primary);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    color: white;
+  }
+  .btn-outline-secondary {
+    border: 2px solid var(--border);
+    background: transparent;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .btn-outline-secondary:hover {
+    background: var(--bg-main);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .alert {
+    border: 1px solid;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1.5rem 0 0;
+  }
+  .alert-info {
+    background: #e7f3ff;
+    color: #084298;
+    border-color: #b6d4fe;
+  }
+  .alert-danger {
+    background: #f8d7da;
+    color: #842029;
+    border-color: #f5c2c7;
+  }
+  .text-danger {
+    color: #dc3545 !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+  .text-muted {
+    color: var(--muted) !important;
+    font-size: 0.875rem;
+  }
+  .back-link {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .back-link:hover {
+    color: var(--primary);
+  }
+  .row.g-3 > * {
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 768px) {
+    .register-container {
+      padding: 1rem 0;
+    }
+    .register-body {
+      padding: 1.5rem;
+    }
+    .register-header {
+      padding: 1.5rem;
+    }
+    .register-title {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="register-card">
+          <div class="register-header">
+            <div class="register-icon">
+              <i class="bi bi-person-plus"></i>
+            </div>
+            <h1 class="register-title">Crear cuenta SIGMA ICTS</h1>
+            <p class="register-subtitle">Completa el formulario para solicitar acceso. Tu cuenta será revisada por un responsable en un plazo máximo de 48 horas.</p>
+          </div>
+          <div class="register-body">
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="form-section">
+              <h5 class="form-section-title">
+                <i class="bi bi-shield-lock"></i> Datos de acceso
+              </h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.username.id_for_label }}">
+                    {{ form.username.label }}
+                  </label>
+                  {{ form.username|add_class:"form-control" }}
+                  {% for e in form.username.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.email.id_for_label }}">
+                    {{ form.email.label }}
+                  </label>
+                  {{ form.email|add_class:"form-control" }}
+                  {% for e in form.email.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.password1.id_for_label }}">
+                    {{ form.password1.label }}
+                  </label>
+                  {{ form.password1|add_class:"form-control" }}
+                  {% for e in form.password1.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.password2.id_for_label }}">
+                    {{ form.password2.label }}
+                  </label>
+                  {{ form.password2|add_class:"form-control" }}
+                  {% for e in form.password2.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h5 class="form-section-title">
+                <i class="bi bi-person-lines-fill"></i> Información personal
+              </h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.first_name.id_for_label }}">
+                    {{ form.first_name.label }}
+                  </label>
+                  {{ form.first_name|add_class:"form-control" }}
+                  {% for e in form.first_name.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.last_name.id_for_label }}">
+                    {{ form.last_name.label }}
+                  </label>
+                  {{ form.last_name|add_class:"form-control" }}
+                  {% for e in form.last_name.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">
+                    Siglas sugeridas
+                  </label>
+                  <div id="siglas-preview" class="siglas-preview">
+                    —
+                  </div>
+                  <small class="text-muted">Vista previa no editable; se asignan automáticamente.</small>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.institution.id_for_label }}">
+                    Center
+                  </label>
+                  {{ form.institution|add_class:"form-control" }}
+                  {% for e in form.institution.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.phone.id_for_label }}">
+                    {{ form.phone.label }}
+                  </label>
+                  {{ form.phone|add_class:"form-control" }}
+                  {% for e in form.phone.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="{{ form.address.id_for_label }}">
+                    {{ form.address.label }}
+                  </label>
+                  {{ form.address|add_class:"form-control" }}
+                  {% for e in form.address.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Datos CIEMAT (solo si email @ciemat.es) -->
+            <div id="ciemat-extra" class="form-section" style="display:none; background:#f0f9f4; border:2px solid #a7d9c2;">
+              <h5 class="form-section-title" style="color:#155724; border-color:#a7d9c2;">
+                <i class="bi bi-building"></i> Datos CIEMAT
+              </h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.matricula.id_for_label }}">
+                    {{ form.matricula.label }}
+                  </label>
+                  {{ form.matricula|add_class:"form-control" }}
+                  {% for e in form.matricula.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+                </div>
+              </div>
+              <p class="text-muted mt-2">
+                <i class="bi bi-info-circle"></i> Si tu correo es @ciemat.es este campo es obligatorio.
+              </p>
+            </div>
+
+            <div class="form-check">
+              {{ form.accept_terms|add_class:"form-check-input" }}
+              <label class="form-check-label" for="{{ form.accept_terms.id_for_label }}">
+                {{ form.accept_terms.label }}
+              </label>
+              {% for e in form.accept_terms.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+            </div>
+
+            <div class="d-flex gap-3 mt-4 flex-wrap">
+              <button class="btn btn-primary" type="submit">
+                <i class="bi bi-person-plus"></i> Crear cuenta
+              </button>
+              <a class="btn btn-outline-secondary" href="{% url 'accounts:login_icts' %}">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+              </a>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle"></i> <strong>Importante:</strong> Tu cuenta será revisada por un responsable en un plazo máximo de 48 horas. Recibirás un correo cuando sea activada.
+            </div>
+          </form>
+          </div>
+        </div>
+        <p class="text-center mt-4">
+          <a href="{% url 'portal:home' %}" class="back-link">
+            <i class="bi bi-arrow-left"></i> Volver al Portal
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    function stripAccents(s){
+      try { return s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch(e){ return s; }
+    }
+    function cleanAlpha(s){ return stripAccents((s||'').toUpperCase()).replace(/[^A-Z]/g,''); }
+    function computeSiglas(fn, ln){
+      fn = cleanAlpha(fn); ln = (ln||'').trim();
+      var initial = fn ? fn.charAt(0) : 'X';
+      var parts = stripAccents(ln).trim().split(/\s+/).filter(Boolean);
+      var s1 = cleanAlpha(parts[0] || 'X');
+      if (!s1) s1 = 'X';
+      var first = s1.charAt(0) || 'X';
+      var last = s1.charAt(s1.length-1) || 'X';
+      return (initial + first + last).toUpperCase();
+    }
+    var fn = document.getElementById('id_first_name');
+    var ln = document.getElementById('id_last_name');
+    var out = document.getElementById('siglas-preview');
+    function update(){ out.textContent = computeSiglas(fn && fn.value, ln && ln.value); }
+    if (fn) fn.addEventListener('input', update);
+    if (ln) ln.addEventListener('input', update);
+    update();
+  })();
+
+  // Toggle CIEMAT section based on email domain
+  (function(){
+    const email = document.getElementById('id_email');
+    const box = document.getElementById('ciemat-extra');
+    if(!email || !box) return;
+    function toggle(){
+      const v = (email.value||'').toLowerCase();
+      box.style.display = v.endsWith('@ciemat.es') ? 'block' : 'none';
+    }
+    email.addEventListener('input', toggle);
+    toggle();
+  })();
+</script>
+{% endblock %}

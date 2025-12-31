@@ -1,0 +1,431 @@
+{% load static %}
+{% load role_filters %}
+{% get_media_prefix as MEDIA_URL %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Sigma Optics - SIGMA DTF{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'sigmaoptics/css/optics_forms.css' %}">
+<style>
+  /* Estilos base DTF */
+  :root{
+    --primary: #304a4a; --primary-dark:#0f4c1f; --primary-light:#1e7e34;
+    --accent:#20c997; --accent-light:#17a2b8;
+    --bg-main: #ffffff; --bg-card: #f0f9f0; --bg-secondary: #08ed85; --bg-sidebar:#155d27;
+    --text-primary:#212529; --text-secondary:#6c757d; --text-light:#adb5bd; --text-white:#ffffff;
+    --border: #d3c7cd; --border-light:#e9ecef;
+    --shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+    --shadow-lg:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);
+    --gradient-primary:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-main);color:var(--text-primary);line-height:1.6}
+  .app{display:flex;min-height:100vh}
+  .sidebar{width:320px;background:var(--bg-sidebar);position:fixed;height:100vh;overflow:hidden;z-index:1000;box-shadow:var(--shadow-lg)}
+  .sidebar-header{background:var(--gradient-primary);padding:2rem 1.5rem 1.5rem;text-align:center;border-radius:0 0 1rem 1rem}
+  .logo{width:80px;height:80px;border-radius:16px;border:3px solid rgba(255,255,255,.2);object-fit:cover;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+  .brand-title{color:#fff;font-size:1.5rem;font-weight:700;margin:.75rem 0 .25rem}
+  .brand-sub{color:rgba(255,255,255,.85);font-size:.9rem;font-weight:500}
+  .nav{padding:.5rem 0;overflow-y:auto;height:calc(100vh - 160px)}
+  .nav-title{color:rgba(255,255,255,.6);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:0 1.5rem;margin:.75rem 0 .25rem}
+  .nav-item{display:block;padding:.75rem 1.5rem;color:rgba(255,255,255,.9);text-decoration:none;font-weight:700;border-left:3px solid transparent;transition:.2s}
+  .nav-item:hover{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--accent);transform:translateX(4px);text-decoration:none}
+  .main{flex:1;margin-left:320px;display:flex;flex-direction:column;min-height:100vh}
+  .header{background:var(--bg-card);border-bottom:1px solid var(--border);padding:1rem 2rem;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}
+  .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .title{font-size:1.75rem;font-weight:700;margin:0}
+  .logos{display:flex;align-items:center;gap:.75rem}
+  .logos img{height:60px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));margin-right:1rem}
+  .content{flex:1;max-width:1200px;margin:0 auto;width:100%;padding:2rem}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:1rem;padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+  .footer{background:var(--bg-sidebar);color:rgba(255,255,255,.8);text-align:center;padding:1.25rem;margin-top:auto}
+  .role-badge{ display:inline-block; padding:.25rem .6rem; border-radius:999px; font-weight:700; font-size:.8rem; letter-spacing:.02em; box-shadow:var(--shadow); margin-right:.5rem; color:#fff; }
+  .role-badge.tech{ background: var(--accent); }
+  .role-badge.user{ background: var(--primary-dark); }
+
+  /* Esquema de colores para Sigma Optics */
+  :root {
+    --optics-primary: #1e40af;
+    --optics-primary-dark: #1e3a8a;
+    --optics-primary-light: #3b82f6;
+    --optics-accent: #06b6d4;
+    --optics-accent-light: #67e8f9;
+    --optics-success: #10b981;
+    --optics-warning: #f59e0b;
+    --optics-danger: #ef4444;
+    --optics-info: #06b6d4;
+    --optics-dark: #1f2937;
+    --optics-light: #f8fafc;
+    --optics-secondary: #6b7280;
+  }
+
+  /* Header principal */
+  .optics-header {
+    background: linear-gradient(135deg, var(--optics-primary) 30%, var(--optics-primary-dark) 70%);
+    color: white;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 0 0 1rem 1rem;
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+  }
+
+  .optics-header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .optics-header .subtitle {
+    margin: 0.5rem 0 0 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .optics-logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    object-fit: cover;
+    margin-right: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Navegación */
+  .optics-nav {
+    background: white;
+    padding: 0;
+    margin-bottom: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+  }
+
+  .optics-nav .nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .optics-nav .nav-item {
+    color: var(--optics-primary);
+    text-decoration: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 2px solid var(--optics-primary);
+    min-width: 140px;
+    justify-content: center;
+  }
+
+  .optics-nav .nav-item:hover {
+    background: var(--optics-primary);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 64, 175, 0.3);
+  }
+
+  .optics-nav .nav-item.active {
+    background: #dbeafe;
+    color: var(--optics-primary);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+  }
+
+  /* Cards */
+  .optics-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
+    margin-bottom: 2rem;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .optics-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,.1);
+  }
+
+  .optics-card-header {
+    border-bottom: 2px solid var(--optics-primary);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .optics-card-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--optics-primary);
+    margin: 0;
+  }
+
+  /* Botones */
+  .optics-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .optics-btn-primary {
+    background: #dbeafe;
+    color: var(--optics-primary);
+    border: 2px solid var(--optics-primary);
+  }
+
+  .optics-btn-primary:hover {
+    background: var(--optics-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+  }
+
+  .optics-btn-success {
+    background: #dcfce7;
+    color: #166534;
+    border: 2px solid var(--optics-success);
+  }
+
+  .optics-btn-success:hover {
+    background: var(--optics-success);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .optics-btn-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border: 2px solid var(--optics-warning);
+  }
+
+  .optics-btn-warning:hover {
+    background: var(--optics-warning);
+    color: #212529;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+
+  .optics-btn-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 2px solid var(--optics-danger);
+  }
+
+  .optics-btn-danger:hover {
+    background: var(--optics-danger);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  /* Badges */
+  .optics-badge {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+  }
+
+  .optics-badge-pendiente {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: var(--optics-warning);
+  }
+
+  .optics-badge-aceptada {
+    background: #dcfce7;
+    color: #166534;
+    border-color: var(--optics-success);
+  }
+
+  .optics-badge-rechazada {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: var(--optics-danger);
+  }
+
+  .optics-badge-en-curso {
+    background: #dbeafe;
+    color: #1e40af;
+    border-color: var(--optics-primary);
+  }
+
+  .optics-badge-finalizada {
+    background: #e5e7eb;
+    color: #374151;
+    border-color: #6b7280;
+  }
+
+  /* Formularios */
+  .optics-form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .optics-form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--optics-primary);
+    font-size: 0.95rem;
+  }
+
+  .optics-form-control {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+  }
+
+  .optics-form-control:focus {
+    outline: none;
+    border-color: var(--optics-primary);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  }
+
+  /* Tablas */
+  .optics-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .optics-table th,
+  .optics-table td {
+    padding: 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .optics-table th {
+    background: var(--optics-light);
+    font-weight: 800;
+    color: var(--optics-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+  }
+
+  .optics-table tbody tr:hover {
+    background: #f7fafc;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .optics-nav .nav-container {
+      flex-direction: column;
+    }
+    
+    .optics-nav .nav-item {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+</style>
+{% endblock %}
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img class="logo" src="{{ MEDIA_URL }}Logos/sigma_optics.png" alt="S-OPTICS" style="width:50px;height:50px;">
+          <div class="brand-title">S-OPTICS</div>
+          <div class="brand-sub">Análisis Ópticos</div>
+        </div>
+
+        <nav class="nav">
+          {% if request.user.is_authenticated %}
+            {% if request.user|has_group:'tecnico_responsable_s_optics' or request.user.is_superuser %}
+              <div class="nav-title">Panel Técnico S-OPTICS</div>
+            <a class="nav-item" href="{% url 'sigmaoptics:panel_tecnico' %}"><i class="bi bi-speedometer2"></i> Mi Panel Técnico</a>
+            <a class="nav-item" href="{% url 'sigmaoptics:solicitud_list' %}"><i class="bi bi-list-ul"></i> Gestionar Solicitudes</a>
+            <a class="nav-item" href="{% url 'sigmaoptics:analisis_list' %}"><i class="bi bi-graph-up"></i> Análisis de Datos</a>
+            {% else %}
+              <div class="nav-title">Panel Usuario S-OPTICS</div>
+              <a class="nav-item" href="{% url 'sigmaoptics:solicitud_list' %}"><i class="bi bi-list-ul"></i> Mis Solicitudes</a>
+              <a class="nav-item" href="{% url 'sigmaoptics:solicitud_create' %}"><i class="bi bi-plus-circle"></i> Nueva Solicitud</a>
+            {% endif %}
+            
+            <!-- Enlaces comunes -->
+            <a class="nav-item" href="{% url 'portal:home' %}"><i class="bi bi-house"></i> Portal SIGMA</a>
+            <a class="nav-item" href="{% url 'portal:faq' %}"><i class="bi bi-question-circle"></i> FAQ DTF</a>
+            
+            <!-- Cerrar sesión -->
+            <div class="nav-title">Sesión</div>
+            <a class="nav-item" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+          {% endif %}
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="header">
+          <div class="header-inner">
+            <h1 class="title">{% block page_title %}Sigma Optics{% endblock %}</h1>
+            <div class="logos">
+              <img src="{{ MEDIA_URL }}Logos/sigma_optics.png" alt="S-OPTICS" style="height:60px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));margin-right:1rem;">
+              {% if request.user|has_group:'tecnico_responsable_s_optics' or request.user.is_superuser %}
+                <span class="role-badge tech">TÉCNICO</span>
+              {% else %}
+                <span class="role-badge user">USUARIO</span>
+              {% endif %}
+              <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF" style="height:40px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));">
+              <img src="{{ MEDIA_URL }}Logos/sol_icts.png.jpg" alt="ICTS" style="height:40px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));">
+            </div>
+          </div>
+        </header>
+
+        <section class="content">
+          {% block optics_content %}{% endblock %}
+        </section>
+
+        <footer class="footer">
+          CIEMAT – División de Tecnologías para la Fusión - DTF
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      function toggleSidebar(){ document.querySelector('.sidebar').classList.toggle('open'); document.querySelector('.overlay-bg').classList.toggle('open'); }
+      function closeSidebar(){ document.querySelector('.sidebar').classList.remove('open'); document.querySelector('.overlay-bg').classList.remove('open'); }
+      {% block extra_js %}{% endblock %}
+    </script>
+  </body>
+</html>

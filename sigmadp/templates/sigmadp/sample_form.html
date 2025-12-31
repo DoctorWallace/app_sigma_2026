@@ -1,0 +1,41 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load role_filters %}
+
+{% block title %}Nueva Muestra S-DP{% endblock %}
+{% block page_title %}Nueva Muestra S-DP{% endblock %}
+
+{% block content %}
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div>
+        <label class="form-label">Nombre de la muestra *</label>
+        {{ form.nombre|form_input }}
+        {{ form.nombre.errors }}
+      </div>
+      <div>
+        <label class="form-label">Tipo</label>
+        {{ form.tipo|form_input }}
+        {{ form.tipo.errors }}
+      </div>
+    </div>
+    <div class="form-row full">
+      <div>
+        <label class="form-label">Tratamientos previos</label>
+        {{ form.tratamientos|form_input }}
+        {{ form.tratamientos.errors }}
+      </div>
+    </div>
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+      <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+        💾 Guardar Muestra
+      </button>
+      <a href="{% url 'sigmadp:panel_usuario' %}" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+        ↩️ Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+

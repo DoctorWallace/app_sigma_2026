@@ -1,0 +1,84 @@
+{% extends "sigmasem/base_sigmasem.html" %}
+
+{% block page_title %}Finalizar Sesión - {{ analysis.registration_number }}{% endblock %}
+{% block sem_page_title %}Finalizar Sesión{% endblock %}
+
+{% block sem_content %}
+<div class="container">
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">
+        Finalizar Sesión - {{ analysis.registration_number }}
+        <span class="sem-badge {% if analysis.analysis_type == 'sem' %}sem-badge-sem{% else %}sem-badge-fib{% endif %}">
+          {{ analysis.get_analysis_type_display }}
+        </span>
+      </h2>
+    </div>
+
+    <div style="background: #fff3cd; padding: 1.5rem; border-radius: 0.5rem; border-left: 4px solid #ffc107; margin-bottom: 2rem;">
+      <h4 style="color: #856404; margin: 0 0 1rem 0;">
+        <i class="bi bi-exclamation-triangle"></i>
+        Confirmar Finalización de Sesión
+      </h4>
+      <p style="margin: 0; color: #856404;">
+        ¿Estás seguro de que quieres finalizar esta sesión? Una vez finalizada, no podrás añadir más muestras ni modificar los comentarios de la sesión.
+      </p>
+    </div>
+
+    <!-- Resumen del análisis -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+      <div>
+        <h4 style="color: var(--sem-primary); margin-bottom: 1rem;">Información del Análisis</h4>
+        <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+          <p><strong>Cliente:</strong> {{ analysis.client }}</p>
+          <p><strong>Técnico:</strong> {{ analysis.technician.get_full_name|default:analysis.technician.username }}</p>
+          <p><strong>Fecha de Análisis:</strong> {{ analysis.analysis_date|date:"d/m/Y" }}</p>
+          <p><strong>Código de Informe:</strong> {{ analysis.report_code }}</p>
+        </div>
+      </div>
+      
+      <div>
+        <h4 style="color: var(--sem-primary); margin-bottom: 1rem;">Muestras Procesadas</h4>
+        <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+          {% if analysis.samples_data %}
+            <p><strong>Total de muestras:</strong> {{ analysis.samples_data|length }}</p>
+            {% for sample in analysis.samples_data %}
+              <div style="margin-bottom: 0.25rem; font-size: 0.9rem;">
+                • {{ sample.identification }} - {{ sample.name }}
+              </div>
+            {% endfor %}
+          {% else %}
+            <p style="color: #6c757d; font-style: italic;">No hay muestras asociadas</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Comentarios de la sesión -->
+    {% if analysis.session_comments %}
+    <div style="margin-bottom: 2rem;">
+      <h4 style="color: var(--sem-primary); margin-bottom: 1rem;">Comentarios de la Sesión</h4>
+      <div style="background: #e3f2fd; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #2196f3;">
+        {{ analysis.session_comments }}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Formulario de confirmación -->
+    <form method="post">
+      {% csrf_token %}
+      <div style="text-align: center;">
+        <button type="submit" class="sem-btn sem-btn-success" style="padding: 1rem 2rem; font-size: 1.1rem;">
+          <i class="bi bi-check-circle"></i>
+          Finalizar Sesión
+        </button>
+        <a href="{% url 'icts:sigmasem:analysis_detail' analysis.pk %}" class="sem-btn" style="background: #6c757d; color: white; margin-left: 1rem;">
+          <i class="bi bi-x-circle"></i>
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

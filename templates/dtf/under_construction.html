@@ -1,0 +1,37 @@
+{% extends "base_dtf.html" %}
+{% block title %}En Construcción - {{ slug|title }}{% endblock %}
+{% block page_title %}Laboratorio en Construcción{% endblock %}
+{% block content %}
+<div class="card" style="max-width:800px; margin:auto; text-align:center;">
+  <div style="font-size:4rem; margin:2rem 0;">🚧</div>
+  
+  <h2>Laboratorio {{ slug|title }} - En Construcción</h2>
+  
+  <p class="lead">
+    Este laboratorio está actualmente en desarrollo y no está disponible aún.
+  </p>
+  
+  <div style="background:#f8f9fa; padding:1.5rem; border-radius:1rem; margin:2rem 0;">
+    <h3>Laboratorios Disponibles</h3>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:1rem;">
+      <a href="{% url 'dtf:lab_info' 'lab' %}" class="btn">
+        🧪 S-LAB
+      </a>
+      <a href="{% url 'dtf:lab_info' 'mec' %}" class="btn">
+        🛠️ S-MEC
+      </a>
+    </div>
+  </div>
+  
+  <div style="margin:2rem 0;">
+    <p>Si necesitas acceso a este laboratorio, contacta con:</p>
+    <p><strong>sigma@ciemat.es</strong></p>
+  </div>
+  
+  <div style="margin-top:2rem;">
+    <a href="{% url 'dtf:dashboard' %}" class="btn btn-secondary">
+      ← Volver al Portal DTF
+    </a>
+  </div>
+</div>
+{% endblock %}

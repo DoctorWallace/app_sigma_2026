@@ -1,0 +1,207 @@
+<div class="tech-card">
+  <h4 class="tech-title"><i class="bi bi-lightning"></i> Ion Implanter - Datos de implantacion</h4>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Numero de muestras</label>
+      <input type="number" name="imp_num_samples" min="0" class="form-input" placeholder="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Camara</label>
+      <select name="imp_chamber" class="form-input">
+        <option value="">Selecciona</option>
+        <option value="small_area">Small area (<= 10 mm)</option>
+        <option value="large_area">Large area (<= 20 mm, RT)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Energia (keV)</label>
+      <input type="number" step="any" name="imp_energy_keV" min="2" max="60" class="form-input" placeholder="2-60">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Fluencia (ion/cm2)</label>
+      <input type="number" step="any" name="imp_fluence_ion_cm2" min="0" class="form-input" placeholder="1e15">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Temperatura (C)</label>
+      <input type="number" step="any" name="imp_temperature_C" min="15" max="600" class="form-input" placeholder="15-600">
+      <div class="muted">Large area: solo temperatura ambiente (<= 30 C).</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Diametro muestra (mm)</label>
+      <input type="number" step="any" name="imp_sample_diameter_mm" min="0" class="form-input" placeholder="10 / 20">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Espesor muestra (mm)</label>
+      <input type="number" step="any" name="imp_sample_thickness_mm" min="0" class="form-input" placeholder="1">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Otras especies / comentarios</label>
+      <input type="text" name="imp_other_species" class="form-input" placeholder="Otros gases o comentarios">
+      <div class="muted">Requiere consulta previa.</div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ion species</label>
+    <div class="form-row">
+      <label class="form-check">
+        <input type="checkbox" name="imp_species" value="he" class="form-check-input">
+        <span>He</span>
+      </label>
+      <label class="form-check">
+        <input type="checkbox" name="imp_species" value="ne" class="form-check-input">
+        <span>Ne</span>
+      </label>
+      <label class="form-check">
+        <input type="checkbox" name="imp_species" value="ar" class="form-check-input">
+        <span>Ar</span>
+      </label>
+      <label class="form-check">
+        <input type="checkbox" name="imp_species" value="xe" class="form-check-input">
+        <span>Xe</span>
+      </label>
+      <label class="form-check">
+        <input type="checkbox" name="imp_species" value="h" class="form-check-input">
+        <span>H (Hidrogeno)</span>
+      </label>
+      <label class="form-check">
+        <input type="checkbox" name="imp_species" value="d" class="form-check-input">
+        <span>D (Deuterio)</span>
+      </label>
+    </div>
+    <div class="muted">Solo iones de fuentes gaseosas. Otras especies requieren consulta previa.</div>
+  </div>
+  <div class="sample-description-section">
+    <h5 class="section-title"><i class="bi bi-card-list"></i> Muestras declaradas</h5>
+    <div class="samples-container" id="imp-samples-container">
+      <div class="sample-card" data-sample-index="0">
+        <div class="sample-header">
+          <h6 class="sample-title">Sample 1</h6>
+          <button type="button" class="btn-remove-sample" onclick="removeImpSample(this)" style="display: none;">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Identification</label>
+            <input type="text" name="imp_sample_0_identification" class="form-input" placeholder="Sample ID">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" name="imp_sample_0_name" class="form-input" placeholder="Sample name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Details (State of the surface, nature, approximate composition, ...)</label>
+          <textarea name="imp_sample_0_details" rows="3" class="form-input" placeholder="Sample details"></textarea>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-add-sample" onclick="addImpSample(this)">
+      <i class="bi bi-plus-circle"></i> Add Sample
+    </button>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Condiciones y observaciones</label>
+    <textarea name="imp_notes" rows="4" class="form-input" placeholder="Condiciones adicionales, observaciones, etc."></textarea>
+  </div>
+</div>
+
+<script>
+  function resolveImpSamplesContainer(containerElOrTrigger) {
+    const target = containerElOrTrigger || (typeof event !== 'undefined' ? event.target : null);
+    if (target instanceof HTMLElement) {
+      if (target.id === 'imp-samples-container') {
+        return target;
+      }
+      const formCard = target.closest('.technique-form-card')
+        || target.closest('.tech-card')
+        || target.closest('.sample-description-section');
+      if (formCard) {
+        const container = formCard.querySelector('#imp-samples-container');
+        if (container) {
+          return container;
+        }
+      }
+    }
+    return null;
+  }
+
+  function addImpSample(containerElOrTrigger) {
+    const container = resolveImpSamplesContainer(containerElOrTrigger);
+    if (!container) return;
+    const index = container.querySelectorAll('.sample-card').length;
+    const newSampleCard = document.createElement('div');
+    newSampleCard.className = 'sample-card';
+    newSampleCard.setAttribute('data-sample-index', index);
+
+    newSampleCard.innerHTML = `
+      <div class="sample-header">
+        <h6 class="sample-title">Sample ${index + 1}</h6>
+        <button type="button" class="btn-remove-sample" onclick="removeImpSample(this)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Identification</label>
+          <input type="text" name="imp_sample_${index}_identification" class="form-input" placeholder="Sample ID">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input type="text" name="imp_sample_${index}_name" class="form-input" placeholder="Sample name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Details (State of the surface, nature, approximate composition, ...)</label>
+        <textarea name="imp_sample_${index}_details" rows="3" class="form-input" placeholder="Sample details"></textarea>
+      </div>
+    `;
+
+    container.appendChild(newSampleCard);
+    updateImpRemoveButtons(container);
+  }
+
+  function removeImpSample(button) {
+    const sampleCard = button.closest('.sample-card');
+    if (!sampleCard) return;
+    const container = sampleCard.closest('.samples-container');
+    sampleCard.remove();
+    updateImpSampleNumbers(container);
+    updateImpRemoveButtons(container);
+  }
+
+  function updateImpSampleNumbers(containerElOrTrigger) {
+    const container = resolveImpSamplesContainer(containerElOrTrigger);
+    if (!container) return;
+    const sampleCards = container.querySelectorAll('.sample-card');
+    sampleCards.forEach((card, index) => {
+      const title = card.querySelector('.sample-title');
+      title.textContent = `Sample ${index + 1}`;
+
+      const inputs = card.querySelectorAll('input, textarea');
+      inputs.forEach(input => {
+        const name = input.getAttribute('name');
+        if (name) {
+          const newName = name.replace(/imp_sample_\d+_/, `imp_sample_${index}_`);
+          input.setAttribute('name', newName);
+        }
+      });
+
+      card.setAttribute('data-sample-index', index);
+    });
+  }
+
+  function updateImpRemoveButtons(containerElOrTrigger) {
+    const container = resolveImpSamplesContainer(containerElOrTrigger);
+    if (!container) return;
+    const sampleCards = container.querySelectorAll('.sample-card');
+    const removeButtons = container.querySelectorAll('.btn-remove-sample');
+    removeButtons.forEach(button => {
+      button.style.display = sampleCards.length > 1 ? 'flex' : 'none';
+    });
+  }
+</script>

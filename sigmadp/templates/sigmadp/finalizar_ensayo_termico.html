@@ -1,0 +1,126 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Finalizar Ensayo Térmico DP-T#{{ solicitud.pk }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-flag-checkered"></i>
+                        Finalizar Ensayo Térmico DP-T#{{ solicitud.pk }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Resumen de la solicitud -->
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> Información del Ensayo</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Muestra:</strong> {{ solicitud.nombre_muestra }}</p>
+                                <p><strong>Material:</strong> {{ solicitud.material }}</p>
+                                <p><strong>Temperatura máxima:</strong> {{ solicitud.temperatura_maxima }}ºC</p>
+                                <p><strong>Masa registrada:</strong> {{ solicitud.get_masa_registrar_display }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Solicitante:</strong> {{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</p>
+                                <p><strong>Email:</strong> {{ solicitud.solicitante.email }}</p>
+                                <p><strong>Fecha de inicio:</strong> {{ solicitud.fecha_aceptacion|date:"d/m/Y H:i" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.archivo_resultado.id_for_label }}">Archivo de resultados *</label>
+                                    {{ form.archivo_resultado }}
+                                    <small class="form-text text-muted">Archivo principal de resultados (txt o csv)</small>
+                                    {% if form.archivo_resultado.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.archivo_resultado.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.archivo_resultado_2.id_for_label }}">Archivo de resultados adicional (opcional)</label>
+                                    {{ form.archivo_resultado_2 }}
+                                    <small class="form-text text-muted">Archivo adicional de resultados (txt o csv)</small>
+                                    {% if form.archivo_resultado_2.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.archivo_resultado_2.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.fecha_ensayo.id_for_label }}">Fecha y hora del ensayo *</label>
+                                    {{ form.fecha_ensayo }}
+                                    {% if form.fecha_ensayo.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.fecha_ensayo.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.observaciones_tecnico.id_for_label }}">Observaciones del técnico</label>
+                            {{ form.observaciones_tecnico }}
+                            <small class="form-text text-muted">Observaciones adicionales sobre el ensayo</small>
+                            {% if form.observaciones_tecnico.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.observaciones_tecnico.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-envelope"></i> Notificación</h5>
+                            <p>Al finalizar el ensayo:</p>
+                            <ul>
+                                <li>Los archivos de resultados se enviarán por email al solicitante</li>
+                                <li>El estado cambiará a "Finalizada"</li>
+                                <li>El solicitante podrá descargar los resultados</li>
+                                <li>Se registrará la fecha de finalización</li>
+                            </ul>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-flag-checkered"></i>
+                                Finalizar Ensayo y Enviar Resultados
+                            </button>
+                            <a href="{% url 'sigmadp:bandeja_entrada_termica' %}" class="btn btn-secondary btn-lg ml-2">
+                                <i class="fas fa-arrow-left"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

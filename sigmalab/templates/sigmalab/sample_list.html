@@ -1,0 +1,40 @@
+{% extends "base_dtf.html" %}
+{% block title %}Σ-LAB · Muestras{% endblock %}
+{% block page_title %}Σ-LAB · Muestras{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+      <h2 style="margin:0">Listado</h2>
+      <div>
+        <a class="cta" href="{% url 'sigmalab:sample-create' %}" style="background:var(--accent)">Nueva muestra</a>
+        <a class="cta" href="{% url 'sigmalab:dashboard' %}">Resumen</a>
+      </div>
+    </div>
+
+    <div style="overflow:auto; margin-top:1rem;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="text-align:left; border-bottom:1px solid var(--border);">
+            <th style="padding:.5rem">Código</th>
+            <th style="padding:.5rem">Título</th>
+            <th style="padding:.5rem">Propietario</th>
+            <th style="padding:.5rem">Creado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in samples %}
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:.5rem">{{ s.code }}</td>
+              <td style="padding:.5rem">{{ s.title }}</td>
+              <td style="padding:.5rem">{{ s.owner.username }}</td>
+              <td style="padding:.5rem">{{ s.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" style="padding:.75rem; color:var(--text-light)">No hay muestras aún.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

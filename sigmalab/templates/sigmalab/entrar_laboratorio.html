@@ -1,0 +1,97 @@
+{% extends "base_dtf.html" %}
+{% block title %}Entrar al Laboratorio - S-LAB{% endblock %}
+{% block page_title %}Entrar al Laboratorio{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:800px; margin:0 auto;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <h3 style="margin:0;">Marcar Entrada al Laboratorio</h3>
+    <a class="btn btn-outline-secondary" href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
+
+  <!-- Información de la solicitud -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <h4><i class="bi bi-info-circle"></i> Información de la Solicitud</h4>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+      <div class="info-item">
+        <div class="info-label">ID Solicitud</div>
+        <div class="info-value">#{{ solicitud.id }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Solicitante</div>
+        <div class="info-value">{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Material</div>
+        <div class="info-value">{{ solicitud.material|default:"Sin especificar" }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Número de muestras</div>
+        <div class="info-value">{{ solicitud.numero_muestras }}</div>
+      </div>
+      {% if solicitud.becario_asociado %}
+      <div class="info-item">
+        <div class="info-label">Becario asociado</div>
+        <div class="info-value">{{ solicitud.becario_asociado.nombre_completo }}</div>
+      </div>
+      {% endif %}
+      <div class="info-item">
+        <div class="info-label">Fecha de aceptación</div>
+        <div class="info-value">{{ solicitud.actualizado_en|date:"d/m/Y H:i" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmación -->
+  <div class="card" style="background:#e3f2fd; border:1px solid #2196f3;">
+    <h4 style="color:#1976d2;"><i class="bi bi-door-open"></i> Confirmar Entrada al Laboratorio</h4>
+    <p style="color:#1976d2; margin-bottom:1rem;">
+      Al confirmar, la solicitud cambiará de estado de "Aceptada" a "En curso" y se registrará 
+      la fecha y hora de inicio del trabajo en el laboratorio.
+    </p>
+    
+    <form method="post">
+      {% csrf_token %}
+      <div style="display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap;">
+        <a class="btn btn-outline-secondary" href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}">
+          <i class="bi bi-x-circle"></i> Cancelar
+        </a>
+        <button type="submit" class="btn" style="background:#28a745; border-color:#28a745;">
+          <i class="bi bi-door-open"></i> Confirmar Entrada al Laboratorio
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+.info-item {
+  background:#f8f9fa;
+  border:1px solid #dee2e6;
+  border-radius:.5rem;
+  padding:1rem;
+  text-align:center;
+}
+
+.info-label {
+  font-size:.875rem;
+  color:#6c757d;
+  font-weight:600;
+  margin-bottom:.25rem;
+}
+
+.info-value {
+  font-weight:700;
+  color:#495057;
+}
+
+@media (max-width:768px) {
+  .card {
+    margin:0 -.5rem 1rem;
+    border-radius:0;
+  }
+}
+</style>
+{% endblock %}

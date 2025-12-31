@@ -1,0 +1,51 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Nuevo item{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Control de items{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_item_list' %}">Items</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>Nuevo item</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Registrar item</h2>
+      <div class="vdg-card-subtitle">Completa la ficha basica del item.</div>
+    </div>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+      <div>
+        {{ form.code.label_tag }}
+        {{ form.code }}
+      </div>
+      <div style="grid-column: 1 / -1;">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        {{ form.active }}
+        {{ form.active.label_tag }}
+      </div>
+    </div>
+    <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+      <button type="submit" class="vdg-btn vdg-btn-primary">
+        <i class="bi bi-save"></i>
+        Guardar
+      </button>
+      <a class="vdg-btn vdg-btn-secondary" href="{% url 'sigmavdg:vdg_item_list' %}">
+        <i class="bi bi-arrow-left"></i>
+        Volver
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "sigmadp/base_sigmadp_unified.html" %}
+
+{% block dp_title %}Mi Panel{% endblock %}
+{% block page_title %}Mi Panel - S-DP{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="grid grid-2">
+    <a class="btn btn-ghost" href="{% url 'dtf:dashboard' %}">
+      <i class="bi bi-house"></i> Mi panel DTF
+    </a>
+    <a class="btn" href="{% url 'sigmadp:solicitud_unificada_create' %}">
+      <i class="bi bi-plus-circle"></i> Nueva solicitud
+    </a>
+    <a class="btn btn-secondary" href="{% url 'sigmadp:panel_usuario' %}">
+      <i class="bi bi-list-ul"></i> Mis solicitudes
+    </a>
+    <a class="btn btn-ghost" href="{% url 'sigmadp:info_importante' %}">
+      <i class="bi bi-info-circle"></i> Informacion importante
+    </a>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Resumen solicitudes DP</h3>
+    <p class="muted">Pendientes: <strong>{{ stats.dp.pendientes }}</strong></p>
+    <p class="muted">En curso: <strong>{{ stats.dp.en_curso }}</strong></p>
+    <p class="muted">Aceptadas: <strong>{{ stats.dp.aceptadas }}</strong></p>
+    <p class="muted">Rechazadas: <strong>{{ stats.dp.rechazadas }}</strong></p>
+    <p class="muted">Finalizadas: <strong>{{ stats.dp.finalizadas }}</strong></p>
+  </div>
+  <div class="card">
+    <h3>Resumen solicitudes termicas</h3>
+    <p class="muted">Pendientes: <strong>{{ stats.dp_termicas.pendientes }}</strong></p>
+    <p class="muted">En curso: <strong>{{ stats.dp_termicas.en_curso }}</strong></p>
+    <p class="muted">Aceptadas: <strong>{{ stats.dp_termicas.aceptadas }}</strong></p>
+    <p class="muted">Rechazadas: <strong>{{ stats.dp_termicas.rechazadas }}</strong></p>
+    <p class="muted">Finalizadas: <strong>{{ stats.dp_termicas.finalizadas }}</strong></p>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Ultimas solicitudes DP</h3>
+  {% if dp_solicitudes %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in dp_solicitudes %}
+            <tr>
+              <td>DP-{{ solicitud.id }}</td>
+              <td>{{ solicitud.get_estado_display }}</td>
+              <td>{{ solicitud.creado_en|date:"Y-m-d" }}</td>
+              <td>
+                <a class="btn btn-small btn-ghost" href="{% url 'sigmadp:solicitud_detalle' solicitud.id %}">
+                  <i class="bi bi-eye"></i> Ver
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">No hay solicitudes DP.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Ultimas solicitudes termicas</h3>
+  {% if dp_solicitudes_termicas %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in dp_solicitudes_termicas %}
+            <tr>
+              <td>DP-T-{{ solicitud.id }}</td>
+              <td>{{ solicitud.get_estado_display }}</td>
+              <td>{{ solicitud.creado_en|date:"Y-m-d" }}</td>
+              <td>
+                <a class="btn btn-small btn-ghost" href="{% url 'sigmadp:solicitud_termica_detalle' solicitud.id %}">
+                  <i class="bi bi-eye"></i> Ver
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">No hay solicitudes termicas.</p>
+  {% endif %}
+</div>
+{% endblock %}

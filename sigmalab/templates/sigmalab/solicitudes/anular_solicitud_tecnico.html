@@ -1,0 +1,167 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Anular solicitud (Técnico){% endblock %}
+{% block page_title %}Anular solicitud (Técnico){% endblock %}
+
+{% block extra_css %}
+<style>
+  .warning-section {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .warning-section h3 {
+    color: #856404;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #ffc107;
+    padding-bottom: 0.5rem;
+  }
+  .info-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .info-section h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+  }
+  .consequence-box {
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .consequence-box h4 {
+    color: #0056b3;
+    margin-bottom: 0.5rem;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .text-danger {
+    color: #dc3545;
+  }
+  .text-warning {
+    color: #856404;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+  <h2 style="margin:0 0 1rem; color: #dc3545;">
+    <i class="bi bi-exclamation-triangle"></i> Anular solicitud (Técnico)
+  </h2>
+  
+  <!-- Advertencia importante -->
+  <div class="warning-section">
+    <h3><i class="bi bi-exclamation-triangle"></i> Advertencia importante</h3>
+    <p><strong>Esta acción no se puede deshacer.</strong> Una vez anulada la solicitud, no podrás volver a activarla.</p>
+    
+    <div class="consequence-box">
+      <h4><i class="bi bi-info-circle"></i> Consecuencias de anular una solicitud como técnico:</h4>
+      <ul>
+        <li>La solicitud se marcará como <strong>anulada por técnico</strong></li>
+        <li><strong>El código de muestra se mantiene</strong> en el sistema de calidad</li>
+        <li>Aparecerá como anulada en todos los reportes</li>
+        <li>Se mantendrá la trazabilidad completa</li>
+        <li>El usuario será notificado de la anulación</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Información de la solicitud -->
+  <div class="info-section">
+    <h3><i class="bi bi-info-circle"></i> Información de la solicitud</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <p><strong>Código:</strong> SOL#{{ solicitud.pk }}</p>
+        <p><strong>Solicitante:</strong> {{ solicitud.solicitante.first_name }} {{ solicitud.solicitante.last_name }}</p>
+        <p><strong>Material:</strong> {{ solicitud.material }}</p>
+        <p><strong>Estado actual:</strong> 
+          <span class="badge" style="background: #ffc107; color: #000;">{{ solicitud.get_estado_display }}</span>
+        </p>
+      </div>
+      <div>
+        <p><strong>Fecha de solicitud:</strong> {{ solicitud.creado_en|date:"d/m/Y H:i" }}</p>
+        <p><strong>Número de muestras:</strong> {{ solicitud.numero_muestras|default:"1" }}</p>
+        {% if solicitud.codigo_muestra %}
+        <p><strong>Código de muestra:</strong> 
+          <span class="badge" style="background: #d1e7dd; color: #0f5132;">{{ solicitud.codigo_muestra }}</span>
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <form method="post" id="anulacion-form">
+    {% csrf_token %}
+    
+    <!-- Debug: Mostrar errores del formulario -->
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    <!-- Campo de justificación -->
+    <div class="form-group">
+      <label for="{{ form.justificacion.id_for_label }}" class="form-label">
+        <i class="bi bi-chat-text"></i> Justificación de la anulación
+      </label>
+      <p class="text-muted small">Explica detalladamente por qué anulas esta solicitud. Esta información será registrada para auditoría y se notificará al usuario.</p>
+      {{ form.justificacion|add_class:"form-control" }}
+      {% if form.justificacion.errors %}
+        <div class="text-danger">
+          {% for error in form.justificacion.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Botones -->
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+      <button type="submit" class="cta" style="background: #dc3545; color: white;" onclick="return confirmAnulacion()">
+        <i class="bi bi-x-circle"></i> Confirmar anulación
+      </button>
+      <a href="{% url 'sigmalab:detalle-solicitud' solicitud.pk %}" class="cta" style="background: var(--accent);">
+        <i class="bi bi-arrow-left"></i> Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+function confirmAnulacion() {
+    const justificacion = document.getElementById('id_justificacion').value.trim();
+    
+    if (!justificacion) {
+        alert('Debes proporcionar una justificación para anular la solicitud.');
+        return false;
+    }
+    
+    if (justificacion.length < 10) {
+        alert('La justificación debe tener al menos 10 caracteres.');
+        return false;
+    }
+    
+    return confirm('¿Estás seguro de que quieres anular esta solicitud como técnico?\\n\\nLa solicitud se marcará como anulada y el usuario será notificado.');
+}
+</script>
+{% endblock %}

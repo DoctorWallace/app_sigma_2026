@@ -1,0 +1,70 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}{% if is_editing %}Editar calibración{% else %}Nueva calibración{% endif %}{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Calibraciones{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_calibration_list' calibration_type %}">Calibraciones</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{% if is_editing %}Editar{% else %}Nueva{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">{% if is_editing %}Editar calibración{% else %}Nueva calibración{% endif %}</h2>
+      <div class="lo3-card-subtitle">{{ title }}</div>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+      <div>
+        {{ form.equipment.label_tag }}
+        {{ form.equipment }}
+      </div>
+      <div>
+        {{ form.performed_at.label_tag }}
+        {{ form.performed_at }}
+      </div>
+      <div>
+        {{ form.due_at.label_tag }}
+        {{ form.due_at }}
+      </div>
+      <div>
+        {{ form.performed_by.label_tag }}
+        {{ form.performed_by }}
+      </div>
+      <div>
+        {{ form.provider.label_tag }}
+        {{ form.provider }}
+      </div>
+      <div>
+        {{ form.certificate_file.label_tag }}
+        {{ form.certificate_file }}
+      </div>
+    </div>
+    <div style="margin-top: 1rem;">
+      {{ form.notes.label_tag }}
+      {{ form.notes }}
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button type="submit" class="lo3-btn lo3-btn-primary">
+        <i class="bi bi-check2-circle"></i>
+        Guardar
+      </button>
+      <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_calibration_list' calibration_type %}">
+        <i class="bi bi-x-circle"></i>
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base_dtf.html" %}
+{% block title %}Cambiar estado{% endblock %}
+{% block page_title %}Cambiar estado{% endblock %}
+{% block content %}
+<div class="card" style="max-width:600px;">
+  <h3 style="margin-top:0">SOL#{{ solicitud.pk }} — Estado actual: {{ solicitud.get_estado_display }}</h3>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="margin-top:1rem;">
+      <button class="cta" type="submit">Aplicar</button>
+      <a class="cta" style="background:var(--accent)" href="{% url 'sigmalab:detalle-solicitud' solicitud.pk %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

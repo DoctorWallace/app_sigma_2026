@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Enviada</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #1a365d; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }
+        .btn { display: inline-block; padding: 10px 20px; background: #1a365d; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SIGMA ICTS</h1>
+            <p>Propuesta Enviada</p>
+        </div>
+        
+        <div class="content">
+            <h2>Hola {{ proposal.applicant.first_name }},</h2>
+            
+            <p>Tu propuesta <strong>"{{ proposal.title }}"</strong> ha sido enviada exitosamente para revisión.</p>
+            
+            <p><strong>Detalles de la propuesta:</strong></p>
+            <ul>
+                <li><strong>Título:</strong> {{ proposal.title }}</li>
+                <li><strong>Fecha de envío:</strong> {{ proposal.created_at|date:"d/m/Y H:i" }}</li>
+                <li><strong>Estado:</strong> En revisión</li>
+            </ul>
+            
+            <p>Tu propuesta será revisada por nuestro panel de expertos. Te notificaremos cuando tengamos una decisión.</p>
+            
+            <p style="text-align: center; margin: 30px 0;">
+                <a href="{{ site_url }}/icts/proposal/{{ proposal.pk }}/" class="btn">Ver Propuesta</a>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>Este es un mensaje automático del sistema SIGMA ICTS.</p>
+            <p>Si tienes alguna pregunta, contacta con nosotros en sigma@ciemat.es</p>
+        </div>
+    </div>
+</body>
+</html>

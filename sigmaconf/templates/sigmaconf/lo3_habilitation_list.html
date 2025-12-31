@@ -1,0 +1,95 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Habilitaciones LO3{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Habilitaciones{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>Habilitaciones</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">Habilitaciones</div>
+    <div class="lo3-page-meta">
+      <span>{{ habilitations|length }} certificados</span>
+    </div>
+  </div>
+  <div>
+    {% if is_principal %}
+      <a class="lo3-btn lo3-btn-primary" href="{% url 'sigmaconf:lo3_habilitation_create' %}">
+        <i class="bi bi-plus-circle"></i>
+        Nueva habilitación
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Listado</h2>
+      <div class="lo3-card-subtitle">Certificados de uso autónomo LO3.</div>
+    </div>
+  </div>
+
+  {% if habilitations %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Investigador</th>
+            <th>Equipo</th>
+            <th>Emisión</th>
+            <th>Validez</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for habilitation in habilitations %}
+            <tr>
+              <td>
+                {% if habilitation.investigator_full_name %}
+                  {{ habilitation.investigator_full_name }}
+                {% elif habilitation.investigator_user %}
+                  {{ habilitation.investigator_user.get_full_name|default:habilitation.investigator_user.username }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td>{{ habilitation.equipment.name }}</td>
+              <td>{{ habilitation.issued_at|date:"d/m/Y" }}</td>
+              <td>{{ habilitation.valid_until|date:"d/m/Y"|default:"-" }}</td>
+              <td>
+                {% if habilitation.status == "revoked" %}
+                  <span class="lo3-badge lo3-badge--danger">Revocada</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--success">Activa</span>
+                {% endif %}
+              </td>
+              <td>
+                <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_habilitation_detail' habilitation.pk %}">
+                  <i class="bi bi-eye"></i>
+                  Ver
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-patch-check"></i>
+      <div>No hay habilitaciones registradas.</div>
+      <small>Crea un certificado para habilitar el uso autónomo.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

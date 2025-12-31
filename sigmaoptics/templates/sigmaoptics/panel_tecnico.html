@@ -1,0 +1,151 @@
+{% extends "sigmaoptics/base_optics.html" %}
+
+{% block optics_page_title %}Panel Técnico - Sigma Optics{% endblock %}
+
+{% block optics_content %}
+<div class="container">
+  <!-- Estadísticas -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="optics-card text-center">
+        <div class="optics-stat-number" style="font-size: 3rem; font-weight: 900; color: var(--optics-primary);">
+          {{ total_solicitudes }}
+        </div>
+        <div class="optics-stat-label" style="color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.9rem;">
+          Total Solicitudes
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="optics-card text-center">
+        <div class="optics-stat-number" style="font-size: 3rem; font-weight: 900; color: var(--optics-warning);">
+          {{ solicitudes_pendientes }}
+        </div>
+        <div class="optics-stat-label" style="color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.9rem;">
+          Pendientes
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="optics-card text-center">
+        <div class="optics-stat-number" style="font-size: 3rem; font-weight: 900; color: var(--optics-primary);">
+          {{ solicitudes_en_curso }}
+        </div>
+        <div class="optics-stat-label" style="color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.9rem;">
+          En Curso
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="optics-card text-center">
+        <div class="optics-stat-number" style="font-size: 3rem; font-weight: 900; color: var(--optics-success);">
+          {{ solicitudes_finalizadas }}
+        </div>
+        <div class="optics-stat-label" style="color: #4b5563; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.9rem;">
+          Finalizadas
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Acciones Rápidas</h2>
+    </div>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="{% url 'sigmaoptics:solicitud_list' %}?estado=pendiente" class="optics-btn optics-btn-warning">
+        <i class="bi bi-clock"></i>
+        Ver Pendientes
+      </a>
+      <a href="{% url 'sigmaoptics:solicitud_list' %}?estado=en_curso" class="optics-btn optics-btn-primary">
+        <i class="bi bi-play-circle"></i>
+        Ver En Curso
+      </a>
+      <a href="{% url 'sigmaoptics:solicitud_list' %}?estado=finalizada" class="optics-btn optics-btn-success">
+        <i class="bi bi-check-circle"></i>
+        Ver Finalizadas
+      </a>
+    </div>
+  </div>
+
+  <!-- Solicitudes recientes -->
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Solicitudes Recientes</h2>
+    </div>
+    
+    {% if solicitudes_recientes %}
+    <div class="table-responsive">
+      <table class="optics-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Material</th>
+            <th>Solicitante</th>
+            <th>Medidas</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in solicitudes_recientes %}
+          <tr>
+            <td><strong>OPT-{{ solicitud.id }}</strong></td>
+            <td>{{ solicitud.material|truncatechars:30 }}</td>
+            <td>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</td>
+            <td>
+              <span class="optics-badge {% if solicitud.medidas_realizar == 'uv_vis' %}optics-badge-primary{% else %}optics-badge-info{% endif %}">
+                {{ solicitud.get_medidas_realizar_display }}
+              </span>
+            </td>
+            <td>
+              <span class="optics-badge optics-badge-{{ solicitud.estado }}">
+                {{ solicitud.get_estado_display }}
+              </span>
+            </td>
+            <td>{{ solicitud.creado_en|date:"d/m/Y" }}</td>
+            <td>
+              <a href="{% url 'sigmaoptics:solicitud_detail' solicitud.pk %}" 
+                 class="optics-btn optics-btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                <i class="bi bi-eye"></i>
+                Ver
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 2rem; color: #6c757d;">
+      <p>No hay solicitudes registradas aún.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Información del sistema -->
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Información del Sistema</h2>
+    </div>
+    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; border-left: 4px solid var(--optics-primary);">
+      <h4 style="color: var(--optics-primary); margin-bottom: 1rem;">
+        <i class="bi bi-info-circle"></i>
+        Alcance de las Medidas
+      </h4>
+      <p style="margin-bottom: 0.5rem;">
+        <strong>Transmitancia y Absorbancia:</strong> Rango de medida de 4000-1000 cm⁻¹ de frecuencia
+      </p>
+      <p style="margin-bottom: 0.5rem;">
+        <strong>Longitud de onda:</strong> Equivalente de 2.5-25 μm
+      </p>
+      <p style="margin-bottom: 0;">
+        <strong>Resolución:</strong> &lt; 2 cm⁻¹
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

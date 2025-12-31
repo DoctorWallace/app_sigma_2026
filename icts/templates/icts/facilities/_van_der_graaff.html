@@ -1,0 +1,162 @@
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+<section class="container" style="margin-top:1rem;">
+  <header class="vdg-hero">
+    <img src="{{ MEDIA_URL }}facilities/Acelerador.png" alt="Van de Graaff" class="vdg-logo">
+    <div>
+      <h1 class="h4" style="margin:0;">Acelerador Van de Graaff</h1>
+      <p class="vdg-sub">Irradiación con electrones de hasta 2&nbsp;MeV y radiación Bremsstrahlung</p>
+    </div>
+  </header>
+
+  <!-- Imagen principal del equipo -->
+  <div class="equipment-image-container">
+    <img src="{{ MEDIA_URL }}facilities/Acelerador.png" alt="Acelerador Van de Graaff" class="equipment-main-image">
+  </div>
+
+  <div class="vdg-grid">
+    <article class="card card-horizontal">
+      <h2>Descripción del Equipo</h2>
+      <p>
+        El acelerador de electrones, tipo <em>Van de Graaff</em>, permite la irradiación de materiales
+        con electrones de hasta <strong>2&nbsp;MeV</strong> de energía, así como con la radiación Bremsstrahlung
+        producida por el frenado del haz, con corrientes de hasta <strong>150&nbsp;&micro;A</strong>.
+      </p>
+      <p>
+        De esta manera se simula la radiación de fuentes de Co-60, con la ventaja de posibilitar
+        irradiaciones rápidas (tasas de dosis más altas y mejor controladas) y realizar
+        medidas durante irradiación <em>in-situ</em>.
+      </p>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Parámetros Controlados y Flexibilidad</h2>
+      <p>
+        Temperatura, vacío, gas de trabajo, tasa de dosis y energía del haz están estrictamente controlados.
+        Es posible irradiar componentes relativamente grandes. El personal responsable puede diseñar y desarrollar 
+        cámaras experimentales adaptadas a cada ensayo.
+      </p>
+      <p>
+        Instalación altamente flexible con sistemas <em>in-beam</em> únicos para medir conductividad eléctrica,
+        pérdidas dieléctricas, permitividad (Hz→GHz) y propiedades ópticas durante la irradiación.
+        Las irradiaciones pueden realizarse en alto vacío, aire o atmósfera controlada (N<sub>2</sub>, He).
+      </p>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Características del Haz</h2>
+      <ul class="kv">
+        <li><span>Energía</span><strong>0.25 – 2.0&nbsp;MeV</strong></li>
+        <li><span>Corriente</span><strong>10&nbsp;pA – 150&nbsp;&micro;A</strong></li>
+        <li><span>Tamaño de muestra</span><strong>3&nbsp;mm&sup2; hasta 20&times;20&nbsp;cm&sup2;</strong></li>
+        <li><span>Área haz desfocalizado</span><strong>1&nbsp;cm</strong></li>
+        <li><span>Focalización</span><strong>hasta 1&nbsp;mm de diámetro</strong></li>
+        <li><span>Desfocalización</span><strong>hasta 3&nbsp;cm de diámetro</strong></li>
+        <li><span>Barrido</span><strong>hasta 20&times;20&nbsp;cm&sup2;</strong></li>
+        <li><span>Tasa de dosis máxima</span><strong>10<sup>5</sup>&nbsp;Gy/s</strong></li>
+      </ul>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Capacidad de Medidas In-Situ</h2>
+      <p>
+        Se han realizado numerosos estudios en aislantes candidatos para fusión, donde se requieren pocos dpa
+        (típicamente entre 10<sup>-12</sup> y 10<sup>-8</sup>&nbsp;dpa/s) y tasas de radiación (Bremsstrahlung o directa)
+        de hasta 10<sup>4</sup>&nbsp;Gy/s. Durante la irradiación se han medido propiedades ópticas y eléctricas,
+        además de difusión de He y H.
+      </p>
+      <p>
+        Estos sistemas permiten medidas simultáneas de propiedades ópticas, eléctricas y dieléctricas desde Hz hasta GHz.
+        También hay sistemas en línea para medir absorción óptica y radioluminiscencia durante la irradiación.
+        Para estos estudios se diseñan y fabrican cámaras y portamuestras a medida en los talleros del CIEMAT.
+        
+      </p>
+      <a href="https://www.ciemat.es/areas-cientifico-tecnicas/-/actividades/servicio/636?_es_ciemat_publicaciones_web_ActividadesPortlet_service=636&_es_ciemat_publicaciones_web_ActividadesPortlet_filterService=68" target="_blank" rel="noopener">Coste uso</a>
+    </article>
+  </div>
+</section>
+
+<style>
+.vdg-hero{
+  display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;
+  padding:1.5rem; border:1px solid var(--border,#e5e7eb); border-radius:.75rem; background:var(--bg-card,#fff);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
+}
+.vdg-logo{ width:64px; height:64px; object-fit:contain; flex:0 0 auto; }
+.vdg-sub{ margin:.25rem 0 0 0; color:var(--muted,#4b5563); font-size:1.1rem; }
+
+.equipment-image-container{
+  margin-bottom:2rem; text-align:center;
+  border-radius:1rem; overflow:hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,.1);
+}
+.equipment-main-image{
+  width:100%; max-width:800px; height:auto; display:block; margin:0 auto;
+  border-radius:1rem;
+}
+
+.vdg-grid{
+  display:grid; gap:1.5rem;
+  grid-template-columns: 1fr;
+}
+.card{
+  border:1px solid var(--border,#e5e7eb);
+  border-radius:1rem; background:var(--bg-card,#fff);
+  padding:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,.15);
+}
+.card h2{ 
+  font-size:1.25rem; margin:0 0 1rem 0; 
+  color: var(--primary, #1e7e34);
+  border-bottom: 2px solid var(--primary, #1e7e34);
+  padding-bottom: 0.5rem;
+}
+.card p{
+  line-height: 1.7; margin-bottom: 1rem; color: #374151;
+}
+.card p:last-child{
+  margin-bottom: 0;
+}
+
+.kv{ 
+  list-style:none; padding:0; margin:0; display:grid; gap:.75rem; 
+}
+.kv li{ 
+  display:flex; justify-content:space-between; gap:1rem; 
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.kv li:last-child{
+  border-bottom: none;
+}
+.kv span{ 
+  color:var(--muted,#6b7280); font-weight: 500;
+}
+.kv strong{ 
+  font-weight:700; color: #111827;
+}
+
+.card-horizontal{
+  grid-column: 1 / -1;
+}
+
+@media (max-width:768px){
+  .vdg-hero{
+    flex-direction: column; text-align: center; gap: 1rem;
+  }
+  .vdg-logo{ width:80px; height:80px; }
+  .equipment-main-image{
+    border-radius: 0.5rem;
+  }
+  .kv li{ 
+    flex-direction:column; align-items:flex-start; gap: 0.25rem;
+  }
+  .card{
+    padding: 1rem;
+  }
+}
+</style>

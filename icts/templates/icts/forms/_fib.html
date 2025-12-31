@@ -1,0 +1,514 @@
+<div class="tech-card">
+  <h4 class="tech-title"><i class="bi bi-bezier"></i> FIB - Requirements for Sample Acceptance</h4>
+  
+  <!-- Requirements for Sample Acceptance -->
+  <div class="requirements-section">
+    <h5 class="section-title"><i class="bi bi-list-check"></i> Requirements for Sample Acceptance</h5>
+    <div class="requirements-list">
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span>Mirror polished or at least with 2500 grit SiC sandpaper.</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-rulers"></i></span>
+        <span>Do not exceed a maximum height of 2 cm, a width of 4 cm and, a length of 4 cm.</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-shield-check"></i></span>
+        <span>It is required to provide a clean sample, wrapped in foil or cloth (avoid plastic) and legible identification.</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-lightning"></i></span>
+        <span>Conductive sample.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample Description -->
+  <div class="sample-description-section">
+    <h5 class="section-title"><i class="bi bi-file-text"></i> Sample Description</h5>
+    <div class="samples-container" id="fib-samples-container">
+      <div class="samples-header">
+        <button type="button" id="add-fib-sample" class="btn btn-sm btn-outline-primary" onclick="addFibSample(this)"><i class="bi bi-plus-circle"></i> Añadir Muestra</button>
+      </div>
+      <div id="fib-samples-forms">
+        <!-- Las muestras se añadirán dinámicamente aquí -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample Safe Handling -->
+  <div class="safe-handling-section">
+    <h5 class="section-title"><i class="bi bi-exclamation-triangle"></i> Sample Safe Handling</h5>
+    <div class="safety-questions">
+      <div class="safety-row">
+        <label class="safety-question">¿Toxic?</label>
+        <input type="checkbox" name="fib_toxic" class="safety-checkbox">
+        <span class="safety-label">NO</span>
+      </div>
+      <div class="safety-row">
+        <label class="safety-question">¿Corrosive?</label>
+        <input type="checkbox" name="fib_corrosive" class="safety-checkbox">
+        <span class="safety-label">NO</span>
+      </div>
+      <div class="safety-row">
+        <label class="safety-question">¿Irritating?</label>
+        <input type="checkbox" name="fib_irritating" class="safety-checkbox">
+        <span class="safety-label">NO</span>
+      </div>
+      <div class="safety-row">
+        <label class="safety-question">¿Radioactive?</label>
+        <input type="checkbox" name="fib_radioactive" class="safety-checkbox">
+        <span class="safety-label">NO</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Further comments about safety</label>
+      <textarea name="fib_safety_comments" rows="3" class="form-input" placeholder="Additional safety comments"></textarea>
+    </div>
+  </div>
+
+  <!-- Important Information -->
+  <div class="important-info-section">
+    <h5 class="section-title"><i class="bi bi-info-circle"></i> Important Information</h5>
+    
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">Do you specify a particular area of the sample?</label>
+        <input type="checkbox" name="fib_specific_area" class="info-checkbox">
+        <span class="info-label">NO</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Describe where:</label>
+        <input type="text" name="fib_area_description" class="form-input" placeholder="Describe el área específica">
+      </div>
+    </div>
+
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">Are specific dimensions required?</label>
+        <input type="checkbox" name="fib_specific_dimensions" class="info-checkbox">
+        <span class="info-label">NO</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Depth (µm)?</label>
+          <input type="number" name="fib_depth_um" class="form-input" placeholder="0" step="0.1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Length (μm)</label>
+          <input type="number" name="fib_length_um" class="form-input" placeholder="0" step="0.1">
+        </div>
+      </div>
+    </div>
+
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">Is the sample conductive?</label>
+        <input type="checkbox" name="fib_sample_conductive" class="info-checkbox">
+        <span class="info-label">NO</span>
+      </div>
+    </div>
+
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">Is a final polishing with low voltage necessary?</label>
+        <input type="checkbox" name="fib_final_polishing" class="info-checkbox">
+        <span class="info-label">NO</span>
+      </div>
+    </div>
+
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">Is the sample sensitive to the Ga beam?</label>
+        <input type="checkbox" name="fib_ga_sensitive" class="info-checkbox">
+        <span class="info-label">NO</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Further comments about FIB analysis</label>
+      <textarea name="fib_further_comments" rows="4" class="form-input" placeholder="Additional comments about FIB analysis"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- Template para añadir muestras FIB -->
+<template id="empty-fib-sample-form">
+  <div class="sample-card">
+    <div class="sample-header">
+      <h6 class="sample-title">Muestra <span class="sample-number">1</span></h6>
+      <button type="button" class="btn btn-sm btn-outline-danger remove-sample"><i class="bi bi-trash"></i> Eliminar</button>
+    </div>
+    <div class="sample-form-grid">
+      <div class="form-group">
+        <label class="form-label">Identification</label>
+        <input type="text" name="fib_sample_0_identification" class="form-input" placeholder="ID de la muestra">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" name="fib_sample_0_name" class="form-input" placeholder="Nombre de la muestra">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Details (Surface condition, nature, chemical composition, ...)</label>
+        <div class="details-container">
+          <div class="warning-indicator">
+            <span class="warning-text">Warning!</span>
+          </div>
+          <textarea name="fib_sample_0_details" rows="3" class="form-input" placeholder="Detalles de la muestra"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+/* Estilos específicos para el formulario FIB */
+.requirements-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary);
+}
+
+.requirements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.requirement-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sample-description-section,
+.safe-handling-section,
+.important-info-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-card);
+}
+
+.samples-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.sample-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sample-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sample-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sample-number {
+  color: var(--primary);
+}
+
+.sample-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 1rem;
+}
+
+.details-container {
+  position: relative;
+}
+
+.warning-indicator {
+  position: absolute;
+  top: -0.5rem;
+  right: 0.5rem;
+  background: #ffc107;
+  color: #000;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.warning-text {
+  font-size: 0.7rem;
+}
+
+.safety-questions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.safety-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+}
+
+.safety-question {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.safety-checkbox {
+  transform: scale(1.2);
+}
+
+.safety-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.info-question {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.question-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-question-text {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.info-checkbox {
+  transform: scale(1.2);
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.remove-sample {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .sample-form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .safety-questions {
+    grid-template-columns: 1fr;
+  }
+  
+  .question-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+</style>
+
+<script>
+function resolveFibSamplesContainer(containerElOrTrigger) {
+  const target = containerElOrTrigger || (typeof event !== 'undefined' ? event.target : null);
+  if (target instanceof HTMLElement) {
+    if (target.id === 'fib-samples-container') {
+      return target;
+    }
+    if (target.id === 'fib-samples-forms') {
+      const parentContainer = target.closest('.samples-container');
+      if (parentContainer) {
+        return parentContainer;
+      }
+    }
+    const formCard = target.closest('.technique-form-card')
+      || target.closest('.tech-card')
+      || target.closest('.sample-description-section');
+    if (formCard) {
+      const container = formCard.querySelector('#fib-samples-container');
+      if (container) {
+        return container;
+      }
+    }
+  }
+  return null;
+}
+
+function resolveFibSamplesForms(containerElOrTrigger) {
+  if (containerElOrTrigger instanceof HTMLElement && containerElOrTrigger.id === 'fib-samples-forms') {
+    return containerElOrTrigger;
+  }
+  const container = resolveFibSamplesContainer(containerElOrTrigger);
+  if (container) {
+    const formsContainer = container.querySelector('#fib-samples-forms');
+    if (formsContainer) {
+      return formsContainer;
+    }
+  }
+  return null;
+}
+
+function resolveFibSampleTemplate(containerElOrTrigger) {
+  const target = containerElOrTrigger || (typeof event !== 'undefined' ? event.target : null);
+  if (target instanceof HTMLElement) {
+    const formCard = target.closest('.technique-form-card')
+      || target.closest('.tech-card')
+      || target.closest('.sample-description-section');
+    if (formCard) {
+      const tmpl = formCard.querySelector('#empty-fib-sample-form');
+      if (tmpl) {
+        return tmpl;
+      }
+    }
+  }
+  return null;
+}
+
+function addFibSample(containerElOrTrigger) {
+  const container = resolveFibSamplesContainer(containerElOrTrigger);
+  const formsContainer = resolveFibSamplesForms(containerElOrTrigger);
+  const tmpl = resolveFibSampleTemplate(containerElOrTrigger);
+
+  if (!formsContainer || !tmpl) return;
+
+  const index = formsContainer.querySelectorAll('.sample-card').length;
+  const node = document.createElement('div');
+  node.innerHTML = tmpl.innerHTML.trim();
+  const sampleCard = node.firstElementChild;
+
+  if (!sampleCard) return;
+
+  sampleCard.setAttribute('data-sample-index', index);
+  const number = sampleCard.querySelector('.sample-number');
+  if (number) {
+    number.textContent = index + 1;
+  }
+
+  const inputs = sampleCard.querySelectorAll('input, textarea');
+  inputs.forEach(input => {
+    const name = input.getAttribute('name');
+    if (name) {
+      const newName = name.replace(/fib_sample_0_/, `fib_sample_${index}_`);
+      input.setAttribute('name', newName);
+    }
+  });
+
+  const removeBtn = sampleCard.querySelector('.remove-sample');
+  if (removeBtn) {
+    removeBtn.addEventListener('click', () => {
+      sampleCard.remove();
+      updateFibSampleNumbers(container || formsContainer);
+      updateFibRemoveButtons(container || formsContainer);
+    });
+  }
+
+  formsContainer.appendChild(sampleCard);
+  updateFibRemoveButtons(container || formsContainer);
+}
+
+function updateFibSampleNumbers(containerElOrTrigger) {
+  const formsContainer = resolveFibSamplesForms(containerElOrTrigger);
+  if (!formsContainer) return;
+  const sampleCards = formsContainer.querySelectorAll('.sample-card');
+  sampleCards.forEach((card, index) => {
+    const title = card.querySelector('.sample-number');
+    if (title) {
+      title.textContent = index + 1;
+    }
+    const inputs = card.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+      const name = input.getAttribute('name');
+      if (name) {
+        const newName = name.replace(/fib_sample_\d+_/, `fib_sample_${index}_`);
+        input.setAttribute('name', newName);
+      }
+    });
+    card.setAttribute('data-sample-index', index);
+  });
+
+}
+
+function updateFibRemoveButtons(containerElOrTrigger) {
+  const formsContainer = resolveFibSamplesForms(containerElOrTrigger);
+  if (!formsContainer) return;
+  const sampleCards = formsContainer.querySelectorAll('.sample-card');
+  const removeButtons = formsContainer.querySelectorAll('.remove-sample');
+
+  removeButtons.forEach(button => {
+    button.style.display = sampleCards.length > 1 ? 'inline-flex' : 'none';
+  });
+}
+
+// Add/remove FIB samples
+(function() {
+  const addButtons = document.querySelectorAll('#add-fib-sample');
+
+  addButtons.forEach(button => {
+    const container = resolveFibSamplesContainer(button);
+    updateFibSampleNumbers(container);
+    updateFibRemoveButtons(container);
+  });
+
+  // Funcionalidad para los checkboxes de seguridad
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.matches('.safety-checkbox, .info-checkbox')) {
+      const label = e.target.nextElementSibling;
+      if (label && (label.classList.contains('safety-label') || label.classList.contains('info-label'))) {
+        label.textContent = e.target.checked ? 'YES' : 'NO';
+      }
+    }
+  });
+})();
+</script>

@@ -1,0 +1,175 @@
+{% extends "base_dtf.html" %}
+{% block title %}Seguridad - Información Importante{% endblock %}
+{% block page_title %}Seguridad{% endblock %}
+
+{% block extra_css %}
+<style>
+  .section-header {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2rem;
+  }
+  .section-header h3 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-header i {
+    font-size: 1.5em;
+  }
+  .section-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .section-body {
+    padding: 2rem;
+  }
+  .section-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1.5rem 2rem;
+  }
+  .alert {
+    border-radius: 0.75rem;
+    border: none;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+  }
+  .alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border-left: 4px solid #ffc107;
+  }
+  .alert-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+  }
+  .btn {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+  }
+  .btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #5c636a);
+    border: none;
+  }
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="section-card">
+    <div class="section-header">
+        <h3><i class="bi bi-shield-exclamation"></i> Normas de Seguridad</h3>
+        <div class="alert alert-success" style="background: rgba(40, 167, 69, 0.2); border: 1px solid rgba(40, 167, 69, 0.3); color: #155724; margin-top: 1rem;">
+            <i class="bi bi-check-circle"></i> Esta sección ha sido marcada como revisada
+        </div>
+    </div>
+    <div class="section-body">
+    <div class="card-body">
+        <h4>Protocolos de Seguridad en el Laboratorio</h4>
+        
+        <div class="alert alert-danger">
+            <h5><i class="bi bi-exclamation-triangle-fill"></i> Normas Generales de Seguridad</h5>
+            <ul>
+                <li><strong>Uso obligatorio de EPI:</strong> Siempre usar gafas de seguridad, guantes y bata de laboratorio</li>
+                <li><strong>No comer ni beber:</strong> Está prohibido comer, beber o fumar en el laboratorio</li>
+                <li><strong>Conocimiento de salidas de emergencia:</strong> Identificar las salidas de emergencia y extintores</li>
+                <li><strong>Reportar incidentes:</strong> Cualquier incidente debe ser reportado inmediatamente al técnico responsable</li>
+            </ul>
+        </div>
+
+        <h5>Equipos de Protección Individual (EPI)</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <ul>
+                    <li>Gafas de seguridad certificadas</li>
+                    <li>Guantes de nitrilo o látex</li>
+                    <li>Bata de laboratorio de algodón</li>
+                    <li>Calzado cerrado y antideslizante</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul>
+                    <li>Mascarilla FFP2 para polvos</li>
+                    <li>Protectores auditivos si es necesario</li>
+                    <li>Delantal de PVC para productos químicos</li>
+                    <li>Guantes de seguridad para corte</li>
+                </ul>
+            </div>
+        </div>
+
+        <h5>Procedimientos de Emergencia</h5>
+        <div class="alert alert-warning">
+            <h6>En caso de emergencia:</h6>
+            <ol>
+                <li>Mantener la calma</li>
+                <li>Alertar al personal del laboratorio</li>
+                <li>Seguir las instrucciones del técnico responsable</li>
+                <li>Evacuar si es necesario por las salidas de emergencia</li>
+                <li>Llamar al 112 si es una emergencia grave</li>
+            </ol>
+        </div>
+
+        <h5>Productos Químicos</h5>
+        <ul>
+            <li>Leer siempre las fichas de seguridad (FDS) antes de usar cualquier producto químico</li>
+            <li>No mezclar productos químicos sin autorización</li>
+            <li>Almacenar correctamente según las indicaciones</li>
+            <li>Disponer de residuos según la normativa</li>
+        </ul>
+
+        <div class="alert alert-info">
+            <h6><i class="bi bi-info-circle-fill"></i> Información de Contacto</h6>
+            <p><strong>Técnico Responsable:</strong> [Nombre del técnico]<br>
+            <strong>Teléfono:</strong> [Número de teléfono]<br>
+            <strong>Email:</strong> [Email de contacto]</p>
+        </div>
+    </div>
+    <div class="section-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <small class="text-muted">
+                    <i class="bi bi-info-circle"></i> Progreso: {{ secciones_completadas }}/{{ total_secciones }} secciones
+                </small>
+            </div>
+            <div>
+                <a href="{% url 'dtf:info-importante' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+                {% if not completado %}
+                <a href="{% url 'dtf:info-importante-seccion' 'uso_equipos' %}" class="btn btn-primary">
+                    Siguiente: Uso de Equipos <i class="bi bi-arrow-right"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'sigmalab:panel-usuario' %}" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Completar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

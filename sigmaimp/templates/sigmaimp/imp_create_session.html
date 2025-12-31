@@ -1,0 +1,16 @@
+{% extends "base_icts.html" %}
+
+{% block title %}SIGMA IMP{% endblock %}
+{% block page_title %}Crear sesion implantador{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Crear sesion</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">Crear</button>
+    <a class="btn btn-outline-secondary" href="{% url 'sigmaimp:imp_dashboard' %}">Volver</a>
+  </form>
+</div>
+{% endblock %}

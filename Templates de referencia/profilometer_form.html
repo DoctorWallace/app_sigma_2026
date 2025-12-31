@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profilometer — Configure{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:1100px">
+  <h1 class="mb-1">DektakXT Stylus Surface Profilometer</h1>
+  <p class="text-muted mb-3">Proposal: <strong>#{{ proposal.id }}</strong> — {{ proposal.title|default:"Untitled" }}</p>
+
+  <!-- I. Equipment description -->
+  <div class="card mb-4">
+    <div class="card-header"><strong>I. Equipment description</strong></div>
+    <div class="card-body">
+      <div class="row g-3 align-items-start">
+        <div class="col-md-6">
+          <ul class="mb-3">
+            {% for it in equipment_points %}
+              <li>{{ it }}</li>
+            {% endfor %}
+          </ul>
+          <a class="btn btn-outline-primary btn-sm" href="{{ MEDIA_URL }}{{ equip_manual_pdf }}" target="_blank" rel="noopener">
+            Download User Manual (PDF)
+          </a>
+        </div>
+        <div class="col-md-6 text-center">
+          <img src="{{ MEDIA_URL }}{{ equip_image }}" alt="DektakXT" style="max-width:100%; height:auto; border-radius:12px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <!-- Requirements for acceptance -->
+    <div class="card mb-4">
+      <div class="card-header"><strong>REQUIREMENTS FOR ACCEPTANCE</strong></div>
+      <div class="card-body">
+        <pre style="white-space:pre-wrap; font-family:inherit; margin-bottom:0">{{ acceptance_text }}</pre>
+      </div>
+    </div>
+
+    <!-- SAMPLE DESCRIPTION + SAFE HANDLING -->
+    <div class="card mb-4">
+      <div class="card-header"><strong>SAMPLE DESCRIPTION</strong></div>
+      <div class="card-body">
+        {{ fset.management_form }}
+        {% for fs in fset.forms %}
+          <div class="border rounded p-3 mb-3">
+            <h6 class="mb-2">Sample {{ forloop.counter }}</h6>
+            {{ fs|crispy }}
+          </div>
+        {% empty %}
+          <p class="text-muted">No samples yet. Add at least one.</p>
+        {% endfor %}
+
+        <button type="button" class="btn btn-outline-secondary" onclick="addForm(event)">+ Add another sample</button>
+      </div>
+    </div>
+
+    <!-- IMPORTANT INFORMATION -->
+
+    <div class="d-flex gap-2">
+      <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn btn-light">Back</a>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+</div>
+
+<script>
+function addForm(e){
+  e.preventDefault();
+  const total = document.getElementById('id_ps-TOTAL_FORMS');
+  const formCount = parseInt(total.value, 10);
+  const container = document.querySelector('.card-body'); // el primero dentro de SAMPLE DESCRIPTION
+  const blocks = document.querySelectorAll('.card-body .border.rounded.p-3.mb-3');
+  const block = blocks[blocks.length - 1] || blocks[0];
+  if(!block) return;
+  const clone = block.cloneNode(true);
+  clone.querySelectorAll('input, textarea, select').forEach(inp=>{
+    const re = new RegExp(`-\\d+-`);
+    inp.name = inp.name.replace(re, `-${formCount}-`);
+    inp.id   = inp.id.replace(re, `-${formCount}-`);
+    if (inp.type === 'checkbox') { inp.checked = false; } else { inp.value = ''; }
+  });
+  container.insertBefore(clone, container.querySelector('button[onclick^="addForm"]'));
+  total.value = formCount + 1;
+}
+</script>
+{% endblock %}

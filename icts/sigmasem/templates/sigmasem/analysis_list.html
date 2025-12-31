@@ -1,0 +1,168 @@
+{% extends "sigmasem/base_sigmasem.html" %}
+
+{% block page_title %}Lista de Análisis{% endblock %}
+{% block sem_page_title %}Lista de Análisis{% endblock %}
+
+{% block sem_content %}
+<div class="container">
+  <!-- Filtros -->
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Filtros de Búsqueda</h2>
+    </div>
+    
+    <form method="get" style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+      <div class="sem-form-group" style="flex: 1; min-width: 200px;">
+        <label for="type" class="sem-form-label">Tipo de Análisis</label>
+        <select name="type" id="type" class="sem-form-control">
+          <option value="">Todos los tipos</option>
+          <option value="sem" {% if current_type == 'sem' %}selected{% endif %}>SEM</option>
+          <option value="fib" {% if current_type == 'fib' %}selected{% endif %}>FIB</option>
+        </select>
+      </div>
+      
+      <div class="sem-form-group" style="flex: 2; min-width: 300px;">
+        <label for="search" class="sem-form-label">Buscar</label>
+        <input type="text" name="search" id="search" class="sem-form-control" 
+               placeholder="Buscar por muestra, cliente, número de registro..." 
+               value="{{ current_search }}">
+      </div>
+      
+      <div class="sem-form-group">
+        <button type="submit" class="sem-btn sem-btn-primary">
+          <i class="bi bi-search"></i>
+          Buscar
+        </button>
+        <a href="{% url 'icts:sigmasem:analysis_list' %}" class="sem-btn sem-btn-secondary" style="margin-left: 0.5rem;">
+          <i class="bi bi-arrow-clockwise"></i>
+          Limpiar
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de análisis -->
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">
+        Lista de Análisis
+        {% if current_type or current_search %}
+          <span style="font-size: 0.8rem; color: #6c757d; font-weight: normal;">
+            ({{ analyses.count }} resultado{{ analyses.count|pluralize }})
+          </span>
+        {% endif %}
+      </h2>
+    </div>
+    
+    {% if analyses %}
+    <div class="table-responsive">
+      <table class="sem-table">
+        <thead>
+          <tr>
+            <th>Nº Registro</th>
+            <th>Tipo</th>
+            <th>Muestra</th>
+            <th>Cliente</th>
+            <th>Técnico</th>
+            <th>Fecha Análisis</th>
+            <th>Estado</th>
+            <th>Informe</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for analysis in analyses %}
+          <tr>
+            <td>
+              <code style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                {{ analysis.registration_number }}
+              </code>
+            </td>
+            <td>
+              <span class="sem-badge {% if analysis.analysis_type == 'sem' %}sem-badge-sem{% else %}sem-badge-fib{% endif %}">
+                {{ analysis.get_analysis_type_display }}
+              </span>
+            </td>
+            <td>
+              <strong>{{ analysis.sample_names }}</strong><br>
+              <small style="color: #6c757d;">{{ analysis.samples_data|length }} muestra(s)</small>
+            </td>
+            <td>{{ analysis.client }}</td>
+            <td>{{ analysis.technician.get_full_name|default:analysis.technician.username }}</td>
+            <td>{{ analysis.analysis_date|date:"d/m/Y" }}</td>
+            <td>
+              {% if analysis.session_status == 'completed' %}
+                <span class="sem-badge sem-badge-success">Sesión Completada</span>
+              {% else %}
+                <span class="sem-badge sem-badge-warning">Sesión en Progreso</span>
+              {% endif %}
+            </td>
+            <td>
+              <code style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem;">
+                {{ analysis.report_code }}
+              </code>
+            </td>
+            <td>
+              <a href="{% url 'icts:sigmasem:analysis_detail' analysis.pk %}" 
+                 class="sem-btn sem-btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                <i class="bi bi-eye"></i>
+                Ver
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; color: #495057;">
+      <div style="font-size: 4rem; color: var(--sem-primary); margin-bottom: 1rem; opacity: 0.6;">
+        <i class="bi bi-search"></i>
+      </div>
+      <h3 style="color: #2c3e50; margin-bottom: 1rem;">No se encontraron análisis</h3>
+      <p style="color: #6c757d; font-size: 1.1rem; margin-bottom: 2rem;">
+        {% if current_type or current_search %}
+          No hay análisis que coincidan con los filtros aplicados.
+        {% else %}
+          No hay análisis registrados aún.
+        {% endif %}
+      </p>
+      <a href="{% url 'icts:sigmasem:create_analysis' %}" class="sem-btn sem-btn-primary" style="margin-top: 1rem;">
+        <i class="bi bi-plus-circle"></i>
+        Crear Primer Análisis
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  {% if analyses %}
+  <div class="sem-stats">
+    <div class="sem-stat-card">
+      <div class="sem-stat-number">{{ analyses.count }}</div>
+      <div class="sem-stat-label">Total Análisis</div>
+    </div>
+    <div class="sem-stat-card">
+      <div class="sem-stat-number">{{ analyses|length|add:"-1"|add:"1" }}</div>
+      <div class="sem-stat-label">Mostrados</div>
+    </div>
+    <div class="sem-stat-card">
+      <div class="sem-stat-number">
+        {% for analysis in analyses %}
+          {% if analysis.completion_date %}{{ forloop.counter0|add:1 }}{% endif %}
+        {% endfor %}
+      </div>
+      <div class="sem-stat-label">Completados</div>
+    </div>
+    <div class="sem-stat-card">
+      <div class="sem-stat-number">
+        {% for analysis in analyses %}
+          {% if not analysis.completion_date %}{{ forloop.counter0|add:1 }}{% endif %}
+        {% endfor %}
+      </div>
+      <div class="sem-stat-label">En Proceso</div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

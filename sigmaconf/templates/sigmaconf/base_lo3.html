@@ -1,0 +1,349 @@
+{% extends "base_icts.html" %}
+{% load static %}
+
+{% block title %}{% block lo3_page_title %}Metrología de superficies ópticas 3D (LO3){% endblock %} - SIGMA ICTS{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --lo3-primary: #7a1d3a;
+    --lo3-primary-dark: #1f2937;
+    --lo3-primary-soft: #fdf2f7;
+    --lo3-accent: #b1556f;
+    --lo3-success: #1f7a4d;
+    --lo3-warning: #b45309;
+    --lo3-danger: #b91c1c;
+    --lo3-muted: #64748b;
+    --lo3-border: #e2e8f0;
+    --lo3-surface: #ffffff;
+    --lo3-bg: #f8fafc;
+  }
+
+  .lo3-hero {
+    background: linear-gradient(135deg, var(--lo3-primary) 20%, var(--lo3-primary-dark) 90%);
+    color: #ffffff;
+    padding: 2rem 0;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+  }
+
+  .lo3-hero-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .lo3-hero-title {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .lo3-hero-subtitle {
+    margin-top: 0.25rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .lo3-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .lo3-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--lo3-muted);
+  }
+
+  .lo3-breadcrumbs a {
+    color: var(--lo3-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .lo3-breadcrumbs-sep {
+    color: #cbd5f5;
+  }
+
+  .lo3-card {
+    background: var(--lo3-surface);
+    border: 1px solid var(--lo3-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+  }
+
+  .lo3-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--lo3-border);
+    margin-bottom: 1.5rem;
+  }
+
+  .lo3-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--lo3-primary);
+    margin: 0;
+  }
+
+  .lo3-card-subtitle {
+    color: var(--lo3-muted);
+    font-size: 0.95rem;
+    margin-top: 0.25rem;
+  }
+
+  .lo3-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .lo3-stat-card {
+    background: var(--lo3-surface);
+    border: 1px solid var(--lo3-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.05);
+  }
+
+  .lo3-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--lo3-primary), var(--lo3-accent));
+  }
+
+  .lo3-stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--lo3-primary);
+    margin-bottom: 0.35rem;
+  }
+
+  .lo3-stat-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--lo3-muted);
+  }
+
+  .lo3-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: 0.65rem;
+    border: 1px solid transparent;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+
+  .lo3-btn-primary {
+    background: var(--lo3-primary);
+    color: #ffffff;
+    border-color: var(--lo3-primary);
+  }
+
+  .lo3-btn-primary:hover {
+    background: #62162f;
+    color: #ffffff;
+  }
+
+  .lo3-btn-secondary {
+    background: #f1f5f9;
+    color: #1f2937;
+    border-color: var(--lo3-border);
+  }
+
+  .lo3-btn-secondary:hover {
+    background: #e2e8f0;
+    color: #111827;
+  }
+
+  .lo3-btn-ghost {
+    background: transparent;
+    color: var(--lo3-primary);
+    border-color: rgba(122, 29, 58, 0.3);
+  }
+
+  .lo3-btn-ghost:hover {
+    background: var(--lo3-primary-soft);
+  }
+
+  .lo3-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .lo3-table th,
+  .lo3-table td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid var(--lo3-border);
+    vertical-align: middle;
+  }
+
+  .lo3-table th {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.75rem;
+    color: var(--lo3-muted);
+    font-weight: 700;
+    background: #f4f6f9;
+  }
+
+  .lo3-table tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .lo3-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .lo3-badge--success {
+    background: rgba(31, 122, 77, 0.15);
+    color: var(--lo3-success);
+  }
+
+  .lo3-badge--warning {
+    background: rgba(180, 83, 9, 0.15);
+    color: var(--lo3-warning);
+  }
+
+  .lo3-badge--danger {
+    background: rgba(185, 28, 28, 0.15);
+    color: var(--lo3-danger);
+  }
+
+  .lo3-badge--muted {
+    background: #f1f5f9;
+    color: var(--lo3-muted);
+  }
+
+  .lo3-badge--info {
+    background: rgba(122, 29, 58, 0.12);
+    color: var(--lo3-primary);
+  }
+
+  .lo3-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.65rem;
+    border-radius: 0.6rem;
+    background: #f1f5f9;
+    color: #1f2937;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .lo3-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--lo3-muted);
+  }
+
+  .lo3-empty i {
+    font-size: 2rem;
+    color: var(--lo3-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .lo3-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .lo3-page-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
+  }
+
+  .lo3-page-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    color: var(--lo3-muted);
+    font-size: 0.95rem;
+  }
+
+  .lo3-action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .lo3-action-card {
+    border: 1px solid var(--lo3-border);
+    border-radius: 0.85rem;
+    padding: 1.2rem;
+    background: #ffffff;
+    text-decoration: none;
+    color: #1f2937;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .lo3-action-card:hover {
+    border-color: var(--lo3-primary);
+    box-shadow: 0 12px 20px rgba(15, 23, 42, 0.08);
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lo3-hero">
+  <div class="container-fluid">
+    <div class="lo3-hero-inner">
+      <div>
+        <div class="lo3-hero-title">{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}</div>
+        <div class="lo3-hero-subtitle">{% block lo3_subtitle %}Portal técnico LO3{% endblock %}</div>
+      </div>
+      {% block lo3_hero_actions %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <main class="lo3-main">
+    {% block lo3_breadcrumbs %}{% endblock %}
+    {% block lo3_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

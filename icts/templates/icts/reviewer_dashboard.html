@@ -1,0 +1,153 @@
+{% extends "base_icts.html" %}
+{% block title %}Dashboard del Revisor{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">📊 Dashboard del Revisor</h2>
+  </div>
+  
+  <div class="card-body">
+    <!-- KPIs del revisor -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card bg-warning text-white">
+          <div class="card-body">
+            <h5>Pendientes</h5>
+            <h3>{{ pending_reviews }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <h5>Completadas</h5>
+            <h3>{{ completed_reviews }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <h5>Aprobadas</h5>
+            <h3>{{ approved_reviews }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-danger text-white">
+          <div class="card-body">
+            <h5>Rechazadas</h5>
+            <h3>{{ rejected_reviews }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Evaluaciones pendientes -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="card-title"><i class="bi bi-clock"></i> Evaluaciones Pendientes</h3>
+      </div>
+      <div class="card-body">
+        {% if pending_evaluations %}
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Propuesta</th>
+                  <th>Solicitante</th>
+                  <th>Fecha</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for proposal in pending_evaluations %}
+                <tr>
+                  <td>
+                    <strong>{{ proposal.title }}</strong><br>
+                    <small class="text-muted">{{ proposal.scope|truncatechars:100 }}</small>
+                  </td>
+                  <td>{{ proposal.contact_person|default:proposal.applicant.username }}</td>
+                  <td>{{ proposal.created_at|date:"d/m/Y" }}</td>
+                  <td>
+                    <a href="{% url 'icts:review_start' proposal.pk %}" class="btn btn-primary btn-sm">
+                      📝 Evaluar
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info">
+            <h4><i class="bi bi-emoji-smile"></i> ¡Excelente!</h4>
+            <p>No tienes evaluaciones pendientes en este momento.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Evaluaciones completadas -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title"><i class="bi bi-check-circle"></i> Evaluaciones Completadas</h3>
+      </div>
+      <div class="card-body">
+        {% if completed_evaluations %}
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Propuesta</th>
+                  <th>Decisión</th>
+                  <th>Fecha</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for review in completed_evaluations %}
+                <tr>
+                  <td>
+                    <strong>{{ review.proposal.title }}</strong><br>
+                    <small class="text-muted">{{ review.proposal.contact_person|default:review.proposal.applicant.username }}</small>
+                  </td>
+                  <td>
+                    {% if review.decision == 'approve' %}
+                      <span class="badge bg-success"><i class="bi bi-check-circle"></i> Aprobada</span>
+                    {% elif review.decision == 'reject' %}
+                      <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Rechazada</span>
+                    {% elif review.decision == 'request_changes' %}
+                      <span class="badge bg-warning"><i class="bi bi-arrow-clockwise"></i> Cambios Solicitados</span>
+                    {% else %}
+                      <span class="badge bg-secondary">{{ review.get_decision_display }}</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ review.updated_at|date:"d/m/Y H:i" }}</td>
+                  <td>
+                    <a href="{% url 'icts:review_start' review.proposal.pk %}" class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-eye"></i> Ver
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info">
+            <p>No has completado ninguna evaluación aún.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <a href="{% url 'icts:reviewer_inbox' %}" class="btn btn-primary">
+        📥 Ver Bandeja de Entrada
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

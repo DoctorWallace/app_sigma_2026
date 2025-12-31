@@ -1,0 +1,1074 @@
+{% extends "base_icts.html" %}
+{% load form_extras i18n %}
+{% block title %}{% trans "Mi Panel" %} - SIGMA ICTS{% endblock %}
+{% block page_title %}{% trans "Mi Panel de Usuario" %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  
+  <!-- Estadísticas rápidas -->
+  <div class="stats-grid">
+    <a href="#drafts-section" class="stat-card draft clickable">
+      <div class="stat-icon"><i class="bi bi-file-earmark-text"></i></div>
+      <div class="stat-content">
+        <div class="stat-number">{{ drafts.count }}</div>
+        <div class="stat-label">{% trans "Borradores" %}</div>
+      </div>
+    </a>
+    
+    <a href="#changes-section" class="stat-card changes_requested clickable">
+      <div class="stat-icon"><i class="bi bi-arrow-clockwise"></i></div>
+      <div class="stat-content">
+        <div class="stat-number">{{ changes_requested.count }}</div>
+        <div class="stat-label">Cambios solicitados</div>
+      </div>
+    </a>
+    
+    <a href="#submitted-section" class="stat-card submitted clickable">
+      <div class="stat-icon"><i class="bi bi-send"></i></div>
+      <div class="stat-content">
+        <div class="stat-number">{{ submitted.count }}</div>
+        <div class="stat-label">{% trans "Enviadas" %}</div>
+      </div>
+    </a>
+    
+    <a href="#evaluated-section" class="stat-card evaluated clickable">
+      <div class="stat-icon"><i class="bi bi-search"></i></div>
+      <div class="stat-content">
+        <div class="stat-number">{{ evaluated.count }}</div>
+        <div class="stat-label">{% trans "Evaluadas" %}</div>
+      </div>
+    </a>
+    
+    <a href="#analyses-section" class="stat-card analyses clickable">
+      <div class="stat-icon"><i class="bi bi-microscope"></i></div>
+      <div class="stat-content">
+        <div class="stat-number">{{ user_analyses.count }}</div>
+        <div class="stat-label">{% trans "Análisis" %}</div>
+      </div>
+    </a>
+    
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="bi bi-graph-up"></i></div>
+      <div class="stat-content">
+        <div class="stat-number">{{ drafts.count|add:changes_requested.count|add:submitted.count|add:evaluated.count }}</div>
+        <div class="stat-label">{% trans "Total" %}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="quick-actions">
+    <a href="{% url 'icts:proposal_create' %}" class="action-btn primary">
+      <span class="action-icon"><i class="bi bi-plus-circle"></i></span>
+      <span class="action-text">{% trans "Nueva Propuesta" %}</span>
+    </a>
+    <a href="{% url 'icts:my_proposals' %}" class="action-btn secondary">
+      <span class="action-icon"><i class="bi bi-file-text"></i></span>
+      <span class="action-text">{% trans "Ver Todas" %}</span>
+    </a>
+  </div>
+
+  <!-- Gráfico de solicitudes por mes -->
+  {% if submitted_by_month or accepted_by_month %}
+  <div class="section" id="chart-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-bar-chart"></i> {% trans "Actividad por Mes" %}</h3>
+      <span class="section-badge">Últimos 12 meses</span>
+    </div>
+    <div class="chart-container">
+      <canvas id="proposalsChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sección Metrología de superficies ópticas 3D -->
+  {% if user_mcf_sessions %}
+  <div class="section" id="mcf-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-rulers"></i> Metrología de superficies ópticas 3D</h3>
+      <span class="section-badge">{{ user_mcf_sessions.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for session in user_mcf_sessions %}
+      <div class="proposal-card analysis">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ session.lot_code }}</h4>
+          <span class="proposal-status {{ session.status }}">
+            {% if session.status == 'completed' %}<i class="bi bi-check-circle"></i> Completado
+            {% else %}<i class="bi bi-clock"></i> En Progreso{% endif %}
+          </span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">Propuesta:</span>
+            <span class="meta-value">#{{ session.access_proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Técnico:</span>
+            <span class="meta-value">{{ session.technician.get_full_name|default:session.technician.username }}</span>
+          </div>
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'sigmaconf:mcf_session_detail' session.pk %}" class="btn-small view"><i class="bi bi-eye"></i> Ver sesión</a>
+          {% if session.status == 'completed' and session.notice_pdf %}
+          <a href="{% url 'sigmaconf:mcf_notice_download' session.pk %}" class="btn-small" style="background: #dc3545; color: white;"><i class="bi bi-file-text"></i> PDF</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  
+
+  <!-- Seccion Van de Graaff (L07) -->
+  {% if user_vdg_sessions %}
+  <div class="section" id="vdg-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-lightning-charge"></i> Van de Graaff (L07)</h3>
+      <span class="section-badge">{{ user_vdg_sessions.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for session in user_vdg_sessions %}
+      <div class="proposal-card analysis">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ session.lot_code }}</h4>
+          <span class="proposal-status {{ session.status }}">
+            {% if session.status == 'completed' %}<i class="bi bi-check-circle"></i> Completado
+            {% else %}<i class="bi bi-clock"></i> En Progreso{% endif %}
+          </span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">Propuesta:</span>
+            <span class="meta-value">#{{ session.access_proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Tecnico:</span>
+            <span class="meta-value">{{ session.technician.get_full_name|default:session.technician.username }}</span>
+          </div>
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'sigmavdg:vdg_session_detail' session.pk %}" class="btn-small view"><i class="bi bi-eye"></i> Ver sesion</a>
+          {% if session.status == 'completed' and session.notice_pdf %}
+          <a href="{% url 'sigmavdg:vdg_notice_download' session.pk %}" class="btn-small" style="background: #dc3545; color: white;"><i class="bi bi-file-text"></i> Aviso PDF</a>
+          {% endif %}
+          {% if session.status == 'completed' and session.report_pdf %}
+          <a href="{% url 'sigmavdg:vdg_report_download' session.pk %}" class="btn-small" style="background: #6c757d; color: white;"><i class="bi bi-file-earmark-pdf"></i> Informe PDF</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sección Implantación iónica -->
+  {% if user_imp_sessions %}
+  <div class="section" id="imp-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-radioactive"></i> Implantación iónica</h3>
+      <span class="section-badge">{{ user_imp_sessions.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for session in user_imp_sessions %}
+      <div class="proposal-card analysis">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ session.session_code }}</h4>
+          <span class="proposal-status {{ session.status }}">
+            {% if session.status == 'completed' %}<i class="bi bi-check-circle"></i> Completado
+            {% else %}<i class="bi bi-clock"></i> En Progreso{% endif %}
+          </span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">Propuesta:</span>
+            <span class="meta-value">#{{ session.access_proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Técnico:</span>
+            <span class="meta-value">{{ session.technician.get_full_name|default:session.technician.username }}</span>
+          </div>
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'sigmaimp:imp_session_detail' session.pk %}" class="btn-small view"><i class="bi bi-eye"></i> Ver sesión</a>
+          {% if session.status == 'completed' and session.notice_pdf %}
+          <a href="{% url 'sigmaimp:imp_notice_download' session.pk %}" class="btn-small" style="background: #dc3545; color: white;"><i class="bi bi-file-text"></i> Aviso PDF</a>
+          {% endif %}
+          {% if session.status == 'completed' and session.final_report_pdf %}
+          <a href="{% url 'sigmaimp:imp_final_report_download' session.pk %}" class="btn-small" style="background: #6c757d; color: white;"><i class="bi bi-file-earmark-pdf"></i> Informe final</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sección de Borradores -->
+  {% if drafts %}
+  <div class="section" id="drafts-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-file-earmark-text"></i> Borradores</h3>
+      <span class="section-badge">{{ drafts.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for proposal in drafts %}
+      <div class="proposal-card draft">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ proposal.title|default:"(Sin título)" }}</h4>
+          <span class="proposal-status draft">Borrador</span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">ID:</span>
+            <span class="meta-value">#{{ proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Creada:</span>
+            <span class="meta-value">{{ proposal.created_at|date:"d/m/Y" }}</span>
+          </div>
+          {% if proposal.access_code %}
+          <div class="meta-item access-code-meta {% if proposal.status == 'submitted' %}access-code-temporary{% elif proposal.status == 'accepted' %}access-code-approved{% endif %}">
+            <span class="meta-label">Código:</span>
+            <span class="meta-value access-code-small">{{ proposal.access_code }}</span>
+            {% if proposal.status == 'submitted' %}
+            <span class="access-code-status-small">(Temporal)</span>
+            {% elif proposal.status == 'accepted' %}
+            <span class="access-code-status-small">(Aprobado)</span>
+            {% endif %}
+          </div>
+          {% endif %}
+          <div class="meta-item">
+            <span class="meta-label">Técnicas:</span>
+            <span class="meta-value">
+              {% if proposal.facility_sem %}<span class="technique-tag">SEM</span>{% endif %}
+              {% if proposal.facility_sem_fib %}<span class="technique-tag">FIB</span>{% endif %}
+              {% if proposal.facility_imp %}<span class="technique-tag">IMP</span>{% endif %}
+              {% if proposal.facility_sims %}<span class="technique-tag">SIMS</span>{% endif %}
+              {% if proposal.facility_confocal %}<span class="technique-tag">CONF</span>{% endif %}
+              {% if proposal.facility_vdg %}<span class="technique-tag">VDG</span>{% endif %}
+              {% if proposal.facility_profilometer %}<span class="technique-tag">PERF</span>{% endif %}
+              {% if proposal.facility_olmat %}<span class="technique-tag">OLMAT</span>{% endif %}
+            </span>
+          </div>
+          {% if proposal.facility_olmat and proposal.olmat_request_id %}
+          <div class="meta-item">
+            <span class="meta-label">OLMAT:</span>
+            <span class="meta-value">
+              <span class="badge {% if proposal.olmat_request.status == 'approved' %}bg-success{% elif proposal.olmat_request.status == 'rejected' %}bg-danger{% elif proposal.olmat_request.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+                {{ proposal.olmat_request.get_status_display }}
+              </span>
+              {% if proposal.olmat_request.access_code %}
+                <span class="access-code-small ms-1">{{ proposal.olmat_request.access_code }}</span>
+              {% endif %}
+            </span>
+          </div>
+          {% endif %}
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn-small view"><i class="bi bi-eye"></i> Ver</a>
+          <a href="{% url 'icts:proposal_edit' proposal.id %}" class="btn-small edit"><i class="bi bi-pencil"></i> Editar</a>
+          <a href="{% url 'icts:proposal_delete' proposal.id %}" class="btn-small delete"><i class="bi bi-trash"></i> Eliminar</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+    <!-- Seccion de Cambios solicitados -->
+  {% if changes_requested %}
+  <div class="section" id="changes-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-arrow-clockwise"></i> Cambios solicitados</h3>
+      <span class="section-badge">{{ changes_requested.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for proposal in changes_requested %}
+      <div class="proposal-card changes_requested">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ proposal.title|default:"(Sin t¡tulo)" }}</h4>
+          <span class="proposal-status changes_requested">Cambios solicitados</span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">ID:</span>
+            <span class="meta-value">#{{ proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Creada:</span>
+            <span class="meta-value">{{ proposal.created_at|date:"d/m/Y" }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Tecnicas:</span>
+            <span class="meta-value">
+              {% if proposal.facility_sem %}<span class="technique-tag">SEM</span>{% endif %}
+              {% if proposal.facility_sem_fib %}<span class="technique-tag">FIB</span>{% endif %}
+              {% if proposal.facility_imp %}<span class="technique-tag">IMP</span>{% endif %}
+              {% if proposal.facility_sims %}<span class="technique-tag">SIMS</span>{% endif %}
+              {% if proposal.facility_confocal %}<span class="technique-tag">CONF</span>{% endif %}
+              {% if proposal.facility_vdg %}<span class="technique-tag">VDG</span>{% endif %}
+              {% if proposal.facility_profilometer %}<span class="technique-tag">PERF</span>{% endif %}
+              {% if proposal.facility_olmat %}<span class="technique-tag">OLMAT</span>{% endif %}
+            </span>
+          </div>
+          {% if proposal.facility_olmat and proposal.olmat_request_id %}
+          <div class="meta-item">
+            <span class="meta-label">OLMAT:</span>
+            <span class="meta-value">
+              <span class="badge {% if proposal.olmat_request.status == 'approved' %}bg-success{% elif proposal.olmat_request.status == 'rejected' %}bg-danger{% elif proposal.olmat_request.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+                {{ proposal.olmat_request.get_status_display }}
+              </span>
+              {% if proposal.olmat_request.access_code %}
+                <span class="access-code-small ms-1">{{ proposal.olmat_request.access_code }}</span>
+              {% endif %}
+            </span>
+          </div>
+          {% endif %}
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn-small view"><i class="bi bi-eye"></i> Ver</a>
+          <a href="{% url 'icts:proposal_edit' proposal.id %}" class="btn-small edit"><i class="bi bi-pencil"></i> Editar</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+<!-- Sección de Propuestas Enviadas -->
+  {% if submitted %}
+  <div class="section" id="submitted-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-send"></i> Enviadas a Revisión</h3>
+      <span class="section-badge">{{ submitted.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for proposal in submitted %}
+      <div class="proposal-card submitted">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ proposal.title|default:"(Sin título)" }}</h4>
+          <span class="proposal-status submitted">En Revisión</span>
+        </div>
+          <div class="proposal-meta">
+            <div class="meta-item">
+              <span class="meta-label">ID:</span>
+              <span class="meta-value">#{{ proposal.id }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Enviada:</span>
+              <span class="meta-value">{{ proposal.created_at|date:"d/m/Y" }}</span>
+            </div>
+            {% if proposal.facility_olmat and proposal.olmat_request_id %}
+            <div class="meta-item">
+              <span class="meta-label">OLMAT:</span>
+              <span class="meta-value">
+                <span class="badge {% if proposal.olmat_request.status == 'approved' %}bg-success{% elif proposal.olmat_request.status == 'rejected' %}bg-danger{% elif proposal.olmat_request.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+                  {{ proposal.olmat_request.get_status_display }}
+                </span>
+                {% if proposal.olmat_request.access_code %}
+                  <span class="access-code-small ms-1">{{ proposal.olmat_request.access_code }}</span>
+                {% endif %}
+              </span>
+            </div>
+            {% endif %}
+          </div>
+        <div class="proposal-actions">
+          <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn-small view"><i class="bi bi-eye"></i> Ver Estado</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sección de Propuestas Evaluadas -->
+  {% if evaluated %}
+  <div class="section" id="evaluated-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-search"></i> Evaluadas</h3>
+      <span class="section-badge">{{ evaluated.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for proposal in evaluated %}
+      <div class="proposal-card evaluated">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ proposal.title|default:"(Sin título)" }}</h4>
+          <span class="proposal-status {{ proposal.status }}">
+            {% if proposal.status == 'accepted' %}<i class="bi bi-check-circle"></i> Aprobada
+            {% elif proposal.status == 'rejected' %}<i class="bi bi-x-circle"></i> Rechazada
+            {% else %}{{ proposal.get_status_display }}{% endif %}
+          </span>
+        </div>
+          <div class="proposal-meta">
+            <div class="meta-item">
+              <span class="meta-label">ID:</span>
+              <span class="meta-value">#{{ proposal.id }}</span>
+            </div>
+            {% if proposal.access_code %}
+          <div class="meta-item access-code-meta {% if proposal.status == 'submitted' %}access-code-temporary{% elif proposal.status == 'accepted' %}access-code-approved{% endif %}">
+            <span class="meta-label">Código:</span>
+            <span class="meta-value access-code-small">{{ proposal.access_code }}</span>
+            {% if proposal.status == 'submitted' %}
+            <span class="access-code-status-small">(Temporal)</span>
+            {% elif proposal.status == 'accepted' %}
+            <span class="access-code-status-small">(Aprobado)</span>
+            {% endif %}
+          </div>
+            {% endif %}
+            <div class="meta-item">
+              <span class="meta-label">Estado:</span>
+              <span class="meta-value">{{ proposal.get_status_display }}</span>
+            </div>
+            {% if proposal.facility_olmat and proposal.olmat_request_id %}
+            <div class="meta-item">
+              <span class="meta-label">OLMAT:</span>
+              <span class="meta-value">
+                <span class="badge {% if proposal.olmat_request.status == 'approved' %}bg-success{% elif proposal.olmat_request.status == 'rejected' %}bg-danger{% elif proposal.olmat_request.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+                  {{ proposal.olmat_request.get_status_display }}
+                </span>
+                {% if proposal.olmat_request.access_code %}
+                  <span class="access-code-small ms-1">{{ proposal.olmat_request.access_code }}</span>
+                {% endif %}
+              </span>
+            </div>
+            {% endif %}
+          </div>
+        <div class="proposal-actions">
+          <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn-small view"><i class="bi bi-eye"></i> Ver Resultado</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sección de Análisis SEM/FIB -->
+  {% if user_analyses %}
+  <div class="section" id="analyses-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-microscope"></i> Análisis SEM/FIB</h3>
+      <span class="section-badge">{{ user_analyses.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for analysis in user_analyses %}
+      <div class="proposal-card analysis">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ analysis.registration_number }}</h4>
+          <span class="proposal-status {{ analysis.session_status }}">
+            {% if analysis.session_status == 'completed' %}<i class="bi bi-check-circle"></i> Completado
+            {% else %}<i class="bi bi-clock"></i> En Progreso{% endif %}
+          </span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">Propuesta:</span>
+            <span class="meta-value">#{{ analysis.access_proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Tipo:</span>
+            <span class="meta-value">{{ analysis.get_analysis_type_display }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Muestras:</span>
+            <span class="meta-value">{{ analysis.samples_data|length }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Técnico:</span>
+            <span class="meta-value">{{ analysis.technician.get_full_name|default:analysis.technician.username }}</span>
+          </div>
+          {% if analysis.report_code %}
+          <div class="meta-item access-code-meta">
+            <span class="meta-label">Informe:</span>
+            <span class="meta-value access-code-small">{{ analysis.report_code }}</span>
+          </div>
+          {% endif %}
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'icts:sigmasem:analysis_detail' analysis.pk %}" class="btn-small view"><i class="bi bi-eye"></i> Ver Detalle</a>
+          {% if analysis.session_status == 'completed' %}
+          <a href="{% url 'icts:sigmasem:generate_report_pdf' analysis.pk %}" class="btn-small" style="background: #dc3545; color: white;"><i class="bi bi-file-text"></i> PDF</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Mensaje si no hay propuestas -->
+  {% if not drafts and not changes_requested and not submitted and not evaluated and not user_analyses and not user_mcf_sessions and not user_imp_sessions and not user_vdg_sessions %}
+  <div class="empty-state">
+    <div class="empty-icon"><i class="bi bi-file-earmark-plus"></i></div>
+    <h3 class="empty-title">No tienes propuestas aún</h3>
+    <p class="empty-description">Crea tu primera propuesta para solicitar acceso a las instalaciones ICTS.</p>
+    <a href="{% url 'icts:proposal_create' %}" class="btn-primary"><i class="bi bi-plus-circle"></i> Crear Primera Propuesta</a>
+  </div>
+  {% endif %}
+
+</div>
+
+<style>
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Estadísticas */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 1400px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card.clickable {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.stat-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card.draft { border-left: 4px solid #6c757d; }
+.stat-card.submitted { border-left: 4px solid #17a2b8; }
+.stat-card.changes_requested { border-left: 4px solid #ffc107; }
+.stat-card.evaluated { border-left: 4px solid #28a745; }
+.stat-card.analyses { border-left: 4px solid #fd7e14; }
+.stat-card.total { border-left: 4px solid var(--primary); }
+
+.stat-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Acciones rápidas */
+.quick-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.action-btn.primary {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  color: white;
+}
+
+.action-btn.secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.action-btn.secondary:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.action-icon {
+  font-size: 1.2rem;
+}
+
+/* Secciones */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-badge {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Grid de propuestas */
+.proposals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 1200px) {
+  .proposals-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+.proposal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.proposal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.proposal-card.draft { border-left: 4px solid #6c757d; }
+.proposal-card.submitted { border-left: 4px solid #17a2b8; }
+.proposal-card.changes_requested { border-left: 4px solid #ffc107; }
+.proposal-card.evaluated { border-left: 4px solid #28a745; }
+.proposal-card.analysis { border-left: 4px solid #fd7e14; }
+
+.proposal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.proposal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  margin-right: 0.75rem;
+}
+
+.proposal-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.proposal-status.draft {
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.proposal-status.submitted {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.proposal-status.changes_requested {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.proposal-status.evaluated {
+  background: #d4edda;
+  color: #155724;
+}
+
+.proposal-status.accepted {
+  background: #d4edda;
+  color: #155724;
+}
+
+.proposal-status.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.proposal-status.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.proposal-status.in_progress {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.proposal-meta {
+  margin-bottom: 0.75rem;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.meta-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.meta-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.access-code-meta {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.access-code-meta {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.access-code-temporary {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%) !important;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3) !important;
+}
+
+.access-code-approved {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+}
+
+.access-code-meta .meta-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.access-code-small {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.access-code-status-small {
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-left: 0.25rem;
+}
+
+.proposal-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.4rem;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn-small.view {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-small.view:hover {
+  background: var(--primary-dark);
+  color: white;
+}
+
+.btn-small.edit {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.btn-small.edit:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: var(--gradient-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  color: white;
+}
+
+/* Botón de eliminar */
+.btn-small.delete {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.btn-small.delete:hover {
+  background: #c82333;
+  border-color: #bd2130;
+  color: white;
+}
+
+/* Etiquetas de técnicas */
+.technique-tag {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Contenedor del gráfico */
+.chart-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  margin-top: 1rem;
+  position: relative;
+  height: 300px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .proposals-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    justify-content: center;
+  }
+}
+</style>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Datos para el gráfico
+const submittedData = {{ submitted_data_json|safe }};
+const acceptedData = {{ accepted_data_json|safe }};
+
+// Crear el gráfico si hay datos
+if (submittedData.length > 0 || acceptedData.length > 0) {
+  const ctx = document.getElementById('proposalsChart').getContext('2d');
+  
+  // Preparar datos para Chart.js
+  const months = [];
+  const submittedCounts = [];
+  const acceptedCounts = [];
+  
+  // Crear un mapa de datos por mes
+  const submittedMap = {};
+  const acceptedMap = {};
+  
+  submittedData.forEach(item => {
+    submittedMap[item.month] = item.count;
+  });
+  
+  acceptedData.forEach(item => {
+    acceptedMap[item.month] = item.count;
+  });
+  
+  // Obtener todos los meses únicos
+  const allMonths = new Set([...Object.keys(submittedMap), ...Object.keys(acceptedMap)]);
+  const sortedMonths = Array.from(allMonths).sort();
+  
+  // Llenar arrays con datos
+  sortedMonths.forEach(month => {
+    months.push(month);
+    submittedCounts.push(submittedMap[month] || 0);
+    acceptedCounts.push(acceptedMap[month] || 0);
+  });
+  
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Enviadas',
+        data: submittedCounts,
+        backgroundColor: 'rgba(23, 162, 184, 0.8)',
+        borderColor: 'rgba(23, 162, 184, 1)',
+        borderWidth: 1
+      }, {
+        label: 'Aceptadas',
+        data: acceptedCounts,
+        backgroundColor: 'rgba(40, 167, 69, 0.8)',
+        borderColor: 'rgba(40, 167, 69, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Solicitudes por Mes'
+        }
+      }
+    }
+  });
+}
+</script>
+{% endblock %}

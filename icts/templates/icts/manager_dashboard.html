@@ -1,0 +1,917 @@
+{% extends "base_icts.html" %}
+{% load static %}
+
+{% block title %}Dashboard Analytics - Manager ICTS{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
+<style>
+  .stat-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-left: 4px solid;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+  .stat-card.draft { border-left-color: #6c757d; }
+  .stat-card.submitted { border-left-color: #0d6efd; }
+  .stat-card.accepted { border-left-color: #198754; }
+  .stat-card.rejected { border-left-color: #dc3545; }
+  .stat-card.reviews { border-left-color: #fd7e14; }
+  .stat-card.users { border-left-color: #6f42c1; }
+  .stat-card.efficiency { border-left-color: #20c997; }
+  .stat-card.growth { border-left-color: #e83e8c; }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin: 20px 0;
+  }
+  
+  .chart-container.large {
+    height: 400px;
+  }
+  
+  .kpi-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+  }
+  
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .trend-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+  }
+  
+  .trend-up { color: #198754; }
+  .trend-down { color: #dc3545; }
+  .trend-neutral { color: #6c757d; }
+  
+  .data-table {
+    font-size: 0.9rem;
+  }
+  
+  .progress-ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .progress-ring svg {
+    transform: rotate(-90deg);
+  }
+  
+  .progress-ring circle {
+    fill: transparent;
+    stroke-width: 8;
+    stroke-linecap: round;
+  }
+  
+  .progress-ring .progress-bar {
+    stroke: #198754;
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset 0.5s ease;
+  }
+  
+  .progress-ring .progress-bg {
+    stroke: #e9ecef;
+  }
+  
+  .analytics-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+  }
+  
+  .section-title {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h3 mb-1">
+            <i class="bi bi-graph-up-arrow text-primary"></i>
+            Dashboard de Gestión ICTS
+          </h1>
+          <p class="text-muted mb-0">Análisis del funcionamiento y estadísticas de la infraestructura</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary" onclick="refreshDashboard()">
+            <i class="bi bi-arrow-clockwise"></i> Actualizar
+          </button>
+          <a href="{% url 'icts:manager_export_page' %}" class="btn btn-success">
+            <i class="bi bi-file-earmark-excel"></i> Exportar Datos
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs Principales -->
+  <div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card kpi-card">
+        <div class="card-body text-center">
+          <h3 class="mb-1">{{ total_proposals }}</h3>
+          <p class="mb-0">Total Propuestas</p>
+          <small class="opacity-75">Sistema completo</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card kpi-card">
+        <div class="card-body text-center">
+          <h3 class="mb-1">{{ approval_rate }}%</h3>
+          <p class="mb-0">Tasa de Aprobación</p>
+          <small class="opacity-75">Eficiencia del sistema</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card kpi-card">
+        <div class="card-body text-center">
+          <h3 class="mb-1">{{ system_efficiency }}%</h3>
+          <p class="mb-0">Eficiencia Sistema</p>
+          <small class="opacity-75">Revisiones completadas</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card kpi-card">
+        <div class="card-body text-center">
+          <h3 class="mb-1">{{ growth_rate }}%</h3>
+          <p class="mb-0">Crecimiento Mensual</p>
+          <small class="opacity-75">Tendencia de actividad</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Métricas Detalladas -->
+  <div class="metric-grid">
+    <div class="card stat-card draft">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title text-muted mb-1">Borradores</h6>
+            <h3 class="mb-0">{{ draft_proposals }}</h3>
+            <small class="text-muted">{{ conversion_rate }}% conversión</small>
+          </div>
+          <div class="text-muted">
+            <i class="bi bi-file-earmark-text fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stat-card submitted">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title text-muted mb-1">Enviadas</h6>
+            <h3 class="mb-0">{{ submitted_proposals }}</h3>
+            <small class="text-info">{{ pending_reviews }} pendientes</small>
+          </div>
+          <div class="text-muted">
+            <i class="bi bi-send fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stat-card accepted">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title text-muted mb-1">Aprobadas</h6>
+            <h3 class="mb-0">{{ approved_proposals }}</h3>
+            <small class="text-success">{{ approval_rate }}% tasa</small>
+          </div>
+          <div class="text-muted">
+            <i class="bi bi-check-circle fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stat-card rejected">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title text-muted mb-1">Rechazadas</h6>
+            <h3 class="mb-0">{{ rejected_proposals }}</h3>
+            <small class="text-danger">{{ rejection_rate }}% tasa</small>
+          </div>
+          <div class="text-muted">
+            <i class="bi bi-x-circle fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stat-card reviews">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title text-muted mb-1">Revisiones</h6>
+            <h3 class="mb-0">{{ total_reviews }}</h3>
+            <small class="text-warning">{{ avg_reviews_per_proposal }} promedio</small>
+          </div>
+          <div class="text-muted">
+            <i class="bi bi-clipboard-check fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stat-card users">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title text-muted mb-1">Usuarios Activos</h6>
+            <h3 class="mb-0">{{ active_researchers }}</h3>
+            <small class="text-primary">{{ reviewers_count }} revisores</small>
+          </div>
+          <div class="text-muted">
+            <i class="bi bi-people fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stat-card efficiency">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title text-muted mb-1">Tiempo Promedio</h6>
+            <h3 class="mb-0">{{ avg_review_time_days }}d</h3>
+            <small class="text-info">Revisión promedio</small>
+          </div>
+          <div class="text-muted">
+            <i class="bi bi-clock fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stat-card growth">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title text-muted mb-1">Actividad Reciente</h6>
+            <h3 class="mb-0">{{ daily_proposals }}</h3>
+            <small class="text-success">Últimas 24h</small>
+          </div>
+          <div class="text-muted">
+            <i class="bi bi-graph-up fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficas Principales -->
+  <div class="row">
+    <!-- Distribución de Propuestas -->
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-pie-chart text-primary"></i>
+            Distribución de Estados
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <div id="proposalsChartLoading" class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              <p class="mt-2">Cargando gráfica...</p>
+            </div>
+            <canvas id="proposalsChart" style="display: none;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Técnicas Más Utilizadas -->
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-bar-chart text-success"></i>
+            Técnicas Más Utilizadas
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <div id="techniquesChartLoading" class="text-center">
+              <div class="spinner-border text-success" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              <p class="mt-2">Cargando gráfica...</p>
+            </div>
+            <canvas id="techniquesChart" style="display: none;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tasa de Aprobación por Técnica -->
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-graph-up text-warning"></i>
+            Aprobación por Técnica
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <div id="approvalChartLoading" class="text-center">
+              <div class="spinner-border text-warning" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              <p class="mt-2">Cargando gráfica...</p>
+            </div>
+            <canvas id="approvalChart" style="display: none;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Análisis Temporal -->
+  <div class="row">
+    <div class="col-lg-8 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-graph-up text-info"></i>
+            Evolución Temporal de Propuestas
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container large">
+            <div id="timelineChartLoading" class="text-center">
+              <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              <p class="mt-2">Cargando gráfica...</p>
+            </div>
+            <canvas id="timelineChart" style="display: none;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-people text-purple"></i>
+            Distribución de Usuarios
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <div id="usersChartLoading" class="text-center">
+              <div class="spinner-border text-purple" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              <p class="mt-2">Cargando gráfica...</p>
+            </div>
+            <canvas id="usersChart" style="display: none;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Análisis de Calidad -->
+  <div class="analytics-section">
+    <h4 class="section-title">
+      <i class="bi bi-award text-warning"></i>
+      Análisis de Calidad y Rendimiento
+    </h4>
+    
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <div class="card border-success">
+          <div class="card-body text-center">
+            <h4 class="text-success">{{ high_quality_proposals }}</h4>
+            <p class="mb-0">Propuestas de Alta Calidad</p>
+            <small class="text-muted">Puntuación ≥ 4</small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <div class="card border-warning">
+          <div class="card-body text-center">
+            <h4 class="text-warning">{{ avg_scores.avg_scientific|floatformat:1|default:"N/A" }}</h4>
+            <p class="mb-0">Calidad Científica Promedio</p>
+            <small class="text-muted">Escala 1-5</small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4 mb-3">
+        <div class="card border-info">
+          <div class="card-body text-center">
+            <h4 class="text-info">{{ avg_scores.avg_industrial|floatformat:1|default:"N/A" }}</h4>
+            <p class="mb-0">Potencial Industrial Promedio</p>
+            <small class="text-muted">Escala 1-5</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Análisis de Centros -->
+  {% if center_stats %}
+  <div class="analytics-section">
+    <h4 class="section-title">
+      <i class="bi bi-building text-primary"></i>
+      Análisis por Centros/Instituciones
+    </h4>
+    
+    <div class="row">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table table-striped data-table">
+            <thead>
+              <tr>
+                <th>Centro</th>
+                <th>Usuarios</th>
+                <th>Propuestas</th>
+                <th>Promedio por Usuario</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for center in center_stats %}
+              <tr>
+                <td>{{ center.name }}</td>
+                <td>{{ center.users }}</td>
+                <td>{{ center.proposals }}</td>
+                <td>{{ center.avg_per_user|floatformat:1 }}</td>
+              </tr>
+    {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Usuarios Más Activos -->
+  <div class="analytics-section">
+    <h4 class="section-title">
+      <i class="bi bi-trophy text-warning"></i>
+      Usuarios Más Activos
+    </h4>
+    
+    <div class="row">
+      <div class="col-12">
+    <div class="table-responsive">
+          <table class="table table-striped data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Propuestas</th>
+                <th>Centro</th>
+              </tr>
+            </thead>
+        <tbody>
+              {% for user in most_active_users %}
+              <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.get_full_name|default:"-" }}</td>
+                <td>{{ user.proposal_count }}</td>
+                <td>{{ user.icts_profile.center|default:"-" }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tendencias Mensuales -->
+  <div class="analytics-section">
+    <h4 class="section-title">
+      <i class="bi bi-calendar-month text-info"></i>
+      Tendencias Mensuales (Últimos 12 Meses)
+    </h4>
+    
+    <div class="row">
+      <div class="col-12">
+        <div class="chart-container large">
+          <div id="monthlyTrendsChartLoading" class="text-center">
+            <div class="spinner-border text-info" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando gráfica...</p>
+          </div>
+          <canvas id="monthlyTrendsChart" style="display: none;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script>
+  // Verificar carga de Chart.js
+  console.log('Script cargado, verificando Chart.js...');
+  console.log('Chart disponible:', typeof Chart !== 'undefined');
+  // Datos para las gráficas
+  const proposalsData = {
+    labels: ['Borradores', 'Enviadas', 'Aprobadas', 'Rechazadas'],
+    datasets: [{
+      data: [{{ draft_proposals }}, {{ submitted_proposals }}, {{ approved_proposals }}, {{ rejected_proposals }}],
+      backgroundColor: ['#6c757d', '#0d6efd', '#198754', '#dc3545'],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }]
+  };
+
+  const techniquesData = {
+    labels: [
+      {% for tech in technique_stats %}
+        '{{ tech.name }}'{% if not forloop.last %},{% endif %}
+      {% empty %}
+        'Sin datos'
+      {% endfor %}
+    ],
+    datasets: [{
+      label: 'Número de solicitudes',
+      data: [
+        {% for tech in technique_stats %}
+          {{ tech.count }}{% if not forloop.last %},{% endif %}
+        {% empty %}
+          0
+        {% endfor %}
+      ],
+      backgroundColor: [
+        '#0d6efd', '#198754', '#fd7e14', '#6f42c1', '#dc3545', '#20c997', '#e83e8c'
+      ],
+      borderWidth: 1,
+      borderColor: '#fff'
+    }]
+  };
+
+  const approvalData = {
+    labels: [
+      {% for tech in technique_approval_rates %}
+        '{{ tech.name }}'{% if not forloop.last %},{% endif %}
+      {% empty %}
+        'Sin datos'
+      {% endfor %}
+    ],
+    datasets: [{
+      label: 'Tasa de Aprobación (%)',
+      data: [
+        {% for tech in technique_approval_rates %}
+          {{ tech.approval_rate }}{% if not forloop.last %},{% endif %}
+        {% empty %}
+          0
+        {% endfor %}
+      ],
+      backgroundColor: 'rgba(255, 193, 7, 0.8)',
+      borderColor: '#ffc107',
+      borderWidth: 2
+    }]
+  };
+
+  const timelineData = {
+    labels: [
+      {% for year in yearly_stats %}
+        '{{ year.year }}'{% if not forloop.last %},{% endif %}
+      {% empty %}
+        'Sin datos'
+      {% endfor %}
+    ],
+    datasets: [{
+      label: 'Total Propuestas',
+      data: [
+        {% for year in yearly_stats %}
+          {{ year.count }}{% if not forloop.last %},{% endif %}
+        {% empty %}
+          0
+        {% endfor %}
+      ],
+      borderColor: '#0d6efd',
+      backgroundColor: 'rgba(13, 110, 253, 0.1)',
+      borderWidth: 3,
+      fill: true,
+      tension: 0.4
+    }, {
+      label: 'Aprobadas',
+      data: [
+        {% for year in yearly_stats %}
+          {{ year.approved }}{% if not forloop.last %},{% endif %}
+        {% empty %}
+          0
+        {% endfor %}
+      ],
+      borderColor: '#198754',
+      backgroundColor: 'rgba(25, 135, 84, 0.1)',
+      borderWidth: 3,
+      fill: false,
+      tension: 0.4
+    }]
+  };
+
+  const usersData = {
+    labels: ['Investigadores', 'Revisores', 'Responsables', 'Managers'],
+    datasets: [{
+      data: [{{ active_researchers }}, {{ reviewers_count }}, {{ responsables_count }}, {{ managers_count }}],
+      backgroundColor: ['#0d6efd', '#198754', '#fd7e14', '#6f42c1'],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }]
+  };
+
+  const monthlyTrendsData = {
+    labels: [
+      {% for month in monthly_trends %}
+        '{{ month.month }}'{% if not forloop.last %},{% endif %}
+      {% empty %}
+        'Sin datos'
+      {% endfor %}
+    ],
+    datasets: [{
+      label: 'Propuestas por Mes',
+      data: [
+        {% for month in monthly_trends %}
+          {{ month.count }}{% if not forloop.last %},{% endif %}
+        {% empty %}
+          0
+        {% endfor %}
+      ],
+      borderColor: '#0d6efd',
+      backgroundColor: 'rgba(13, 110, 253, 0.1)',
+      borderWidth: 3,
+      fill: true,
+      tension: 0.4
+    }]
+  };
+
+  // Función para inicializar gráficas
+  function initializeCharts() {
+    console.log('Iniciando dashboard...');
+    console.log('Datos de propuestas:', proposalsData);
+    console.log('Datos de técnicas:', techniquesData);
+    console.log('Datos de aprobación:', approvalData);
+    console.log('Datos temporales:', timelineData);
+    
+    // Verificar que Chart.js esté disponible
+    if (typeof Chart === 'undefined') {
+      console.error('Chart.js no está cargado');
+      return;
+    }
+    
+    console.log('Chart.js cargado correctamente');
+
+    // Gráfica de propuestas (doughnut chart)
+    const proposalsChartEl = document.getElementById('proposalsChart');
+    const proposalsLoadingEl = document.getElementById('proposalsChartLoading');
+    if (proposalsChartEl) {
+      console.log('Creando gráfica de propuestas...');
+      new Chart(proposalsChartEl, {
+        type: 'doughnut',
+        data: proposalsData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+      // Ocultar loading y mostrar gráfica
+      if (proposalsLoadingEl) proposalsLoadingEl.style.display = 'none';
+      proposalsChartEl.style.display = 'block';
+      console.log('Gráfica de propuestas creada');
+    } else {
+      console.error('No se encontró el elemento proposalsChart');
+    }
+
+    // Gráfica de técnicas (bar chart)
+    const techniquesChartEl = document.getElementById('techniquesChart');
+    const techniquesLoadingEl = document.getElementById('techniquesChartLoading');
+    if (techniquesChartEl) {
+      console.log('Creando gráfica de técnicas...');
+      new Chart(techniquesChartEl, {
+        type: 'bar',
+        data: techniquesData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+      // Ocultar loading y mostrar gráfica
+      if (techniquesLoadingEl) techniquesLoadingEl.style.display = 'none';
+      techniquesChartEl.style.display = 'block';
+      console.log('Gráfica de técnicas creada');
+    } else {
+      console.error('No se encontró el elemento techniquesChart');
+    }
+
+    // Gráfica de aprobación por técnica
+    const approvalChartEl = document.getElementById('approvalChart');
+    const approvalLoadingEl = document.getElementById('approvalChartLoading');
+    if (approvalChartEl) {
+      console.log('Creando gráfica de aprobación...');
+      new Chart(approvalChartEl, {
+        type: 'bar',
+        data: approvalData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+      // Ocultar loading y mostrar gráfica
+      if (approvalLoadingEl) approvalLoadingEl.style.display = 'none';
+      approvalChartEl.style.display = 'block';
+      console.log('Gráfica de aprobación creada');
+    } else {
+      console.error('No se encontró el elemento approvalChart');
+    }
+
+    // Gráfica temporal (line chart)
+    const timelineChartEl = document.getElementById('timelineChart');
+    const timelineLoadingEl = document.getElementById('timelineChartLoading');
+    if (timelineChartEl) {
+      console.log('Creando gráfica temporal...');
+      new Chart(timelineChartEl, {
+        type: 'line',
+        data: timelineData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+      // Ocultar loading y mostrar gráfica
+      if (timelineLoadingEl) timelineLoadingEl.style.display = 'none';
+      timelineChartEl.style.display = 'block';
+      console.log('Gráfica temporal creada');
+    } else {
+      console.error('No se encontró el elemento timelineChart');
+    }
+
+    // Gráfica de usuarios (doughnut chart)
+    const usersChartEl = document.getElementById('usersChart');
+    const usersLoadingEl = document.getElementById('usersChartLoading');
+    if (usersChartEl) {
+      console.log('Creando gráfica de usuarios...');
+      new Chart(usersChartEl, {
+        type: 'doughnut',
+        data: usersData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+      // Ocultar loading y mostrar gráfica
+      if (usersLoadingEl) usersLoadingEl.style.display = 'none';
+      usersChartEl.style.display = 'block';
+      console.log('Gráfica de usuarios creada');
+    } else {
+      console.error('No se encontró el elemento usersChart');
+    }
+
+    // Gráfica de tendencias mensuales
+    const monthlyTrendsChartEl = document.getElementById('monthlyTrendsChart');
+    const monthlyTrendsLoadingEl = document.getElementById('monthlyTrendsChartLoading');
+    if (monthlyTrendsChartEl) {
+      console.log('Creando gráfica de tendencias mensuales...');
+      new Chart(monthlyTrendsChartEl, {
+        type: 'line',
+        data: monthlyTrendsData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+      // Ocultar loading y mostrar gráfica
+      if (monthlyTrendsLoadingEl) monthlyTrendsLoadingEl.style.display = 'none';
+      monthlyTrendsChartEl.style.display = 'block';
+      console.log('Gráfica de tendencias mensuales creada');
+    } else {
+      console.error('No se encontró el elemento monthlyTrendsChart');
+    }
+  }
+
+  // Inicializar gráficas cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', function() {
+    // Esperar un poco para asegurar que Chart.js se cargue
+    setTimeout(function() {
+      if (typeof Chart !== 'undefined') {
+        initializeCharts();
+      } else {
+        console.error('Chart.js no se pudo cargar, intentando fallback...');
+        // Fallback: cargar desde CDN
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
+        script.onload = function() {
+          console.log('Chart.js cargado desde CDN fallback');
+          initializeCharts();
+        };
+        script.onerror = function() {
+          console.error('No se pudo cargar Chart.js desde ningún origen');
+          // Mostrar mensaje de error en las gráficas
+          document.querySelectorAll('.chart-container').forEach(function(container) {
+            container.innerHTML = '<div class="alert alert-warning">Error al cargar las gráficas. Por favor, recarga la página.</div>';
+          });
+        };
+        document.head.appendChild(script);
+      }
+    }, 500);
+  });
+
+  function refreshDashboard() {
+    location.reload();
+  }
+</script>
+{% endblock %}

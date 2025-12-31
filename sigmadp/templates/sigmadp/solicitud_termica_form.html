@@ -1,0 +1,207 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Nueva Solicitud Térmica DP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-thermometer-half"></i>
+                        Nueva Solicitud de Análisis Térmico DP
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.nombre_muestra.id_for_label }}">Nombre de la muestra *</label>
+                                    {{ form.nombre_muestra }}
+                                    {% if form.nombre_muestra.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.nombre_muestra.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.material.id_for_label }}">Material *</label>
+                                    {{ form.material }}
+                                    {% if form.material.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.material.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.temperatura_maxima.id_for_label }}">Temperatura máxima [ºC] *</label>
+                                    {{ form.temperatura_maxima }}
+                                    <small class="form-text text-muted">Máximo: 900ºC</small>
+                                    {% if form.temperatura_maxima.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.temperatura_maxima.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.tasa_calentamiento.id_for_label }}">Tasa de calentamiento [ºC/min] *</label>
+                                    {{ form.tasa_calentamiento }}
+                                    <small class="form-text text-muted">Máximo: 15ºC/min</small>
+                                    {% if form.tasa_calentamiento.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.tasa_calentamiento.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.tasa_enfriamiento.id_for_label }}">Tasa de enfriamiento [ºC/min] *</label>
+                                    {{ form.tasa_enfriamiento }}
+                                    <small class="form-text text-muted">Máximo: 15ºC/min</small>
+                                    {% if form.tasa_enfriamiento.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.tasa_enfriamiento.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.tiempo_permanencia.id_for_label }}">Tiempo de permanencia [min] *</label>
+                                    {{ form.tiempo_permanencia }}
+                                    {% if form.tiempo_permanencia.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.tiempo_permanencia.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.masa_registrar.id_for_label }}">Masa a registrar [uma] *</label>
+                                    {{ form.masa_registrar }}
+                                    {% if form.masa_registrar.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.masa_registrar.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.espesor_muestra.id_for_label }}">Espesor de la muestra [mm] *</label>
+                                    {{ form.espesor_muestra }}
+                                    <small class="form-text text-muted">Rango: 0.1 - 10 mm</small>
+                                    {% if form.espesor_muestra.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.espesor_muestra.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.tamaño_muestra.id_for_label }}">Tamaño de la muestra [cm²] *</label>
+                                    {{ form.tamaño_muestra }}
+                                    <small class="form-text text-muted">Mínimo: 0.5 cm²</small>
+                                    {% if form.tamaño_muestra.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.tamaño_muestra.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.geometria_muestra.id_for_label }}">Geometría de la muestra *</label>
+                                    {{ form.geometria_muestra }}
+                                    {% if form.geometria_muestra.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.geometria_muestra.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.observaciones.id_for_label }}">Observaciones adicionales</label>
+                            {{ form.observaciones }}
+                            {% if form.observaciones.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.observaciones.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle"></i> Información importante</h5>
+                            <ul class="mb-0">
+                                <li>No es posible registrar más de una masa de forma simultánea</li>
+                                <li>Cada medida se realiza para una única masa seleccionada</li>
+                                <li>Las muestras pueden tener cualquier geometría</li>
+                                <li>El espesor debe estar comprendido entre 0.1 y 10 mm</li>
+                                <li>El tamaño debe ser aproximadamente 1 cm²</li>
+                            </ul>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane"></i>
+                                Enviar Solicitud
+                            </button>
+                            <a href="{% url 'sigmadp:panel_usuario' %}" class="btn btn-secondary btn-lg ml-2">
+                                <i class="fas fa-arrow-left"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

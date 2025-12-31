@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Solicitud Térmica Rechazada</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #dc3545;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        .info-box {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>❌ Solicitud Térmica Rechazada</h1>
+        <p>DP-T#{{ solicitud.pk }} - {{ solicitud.nombre_muestra }}</p>
+    </div>
+    
+    <div class="content">
+        <p>Estimado/a {{ solicitante.get_full_name|default:solicitante.username }},</p>
+        
+        <p>Lamentamos informarle que su solicitud de análisis térmico ha sido <strong>rechazada</strong>.</p>
+        
+        <div class="warning">
+            <h3>⚠️ Solicitud Rechazada</h3>
+            <p>Después de revisar su solicitud, nuestro equipo técnico ha determinado que no puede ser procesada en este momento.</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>📋 Detalles de la Solicitud</h3>
+            <ul>
+                <li><strong>Muestra:</strong> {{ solicitud.nombre_muestra }}</li>
+                <li><strong>Material:</strong> {{ solicitud.material }}</li>
+                <li><strong>Temperatura máxima:</strong> {{ solicitud.temperatura_maxima }}ºC</li>
+                <li><strong>Masa a registrar:</strong> {{ solicitud.get_masa_registrar_display }}</li>
+                <li><strong>Fecha de rechazo:</strong> {{ solicitud.actualizado_en|date:"d/m/Y H:i" }}</li>
+            </ul>
+        </div>
+        
+        {% if solicitud.observaciones %}
+        <div class="info-box">
+            <h3>📝 Motivo del Rechazo</h3>
+            <p>{{ solicitud.observaciones }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="info-box">
+            <h3>🔄 Opciones Disponibles</h3>
+            <ul>
+                <li>Puede crear una nueva solicitud con parámetros diferentes</li>
+                <li>Si necesita aclaraciones, puede contactar con nuestro equipo técnico</li>
+                <li>Consulte nuestras especificaciones técnicas para futuras solicitudes</li>
+            </ul>
+        </div>
+        
+        <p>Si tiene alguna pregunta sobre este rechazo o necesita asistencia para crear una nueva solicitud, no dude en contactarnos.</p>
+        
+        <p>Saludos cordiales,<br>
+        <strong>Equipo de Laboratorio DP</strong><br>
+        CIEMAT</p>
+    </div>
+    
+    <div class="footer">
+        <p>Este es un mensaje automático del sistema SIGMA DP. Por favor, no responda a este email.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,358 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}{{ analisis.nombre }} - Sigma DP{% endblock %}
+
+{% block extra_css %}
+<style>
+    .analysis-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .status-badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+    
+    .graph-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .graph-title {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .graph-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stats-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .stats-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .download-btn {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .download-btn:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header del analisis -->
+    <div class="analysis-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="bi bi-graph-up"></i>
+                    {{ analisis.nombre }}
+                </h1>
+                {% if analisis.descripcion %}
+                <p class="mb-0 opacity-75">{{ analisis.descripcion }}</p>
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-md-end">
+                {% if analisis.estado == 'completado' %}
+                    <span class="status-badge bg-success">
+                        <i class="bi bi-check-circle"></i>
+                        Completado
+                    </span>
+                {% elif analisis.estado == 'procesando' %}
+                    <span class="status-badge bg-warning">
+                        <i class="bi bi-hourglass-split"></i>
+                        Procesando
+                    </span>
+                {% elif analisis.estado == 'error' %}
+                    <span class="status-badge bg-danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Error
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Informacion del analisis -->
+    {% if analisis.solicitud_termica %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                    <div>
+                        <div class="text-muted text-uppercase small fw-semibold">Solicitud asociada</div>
+                        <div class="fw-bold">DP-T#{{ analisis.solicitud_termica_id }}  {{ analisis.solicitud_termica.nombre_muestra }}</div>
+                        <div class="text-muted small">Solicitante: {{ analisis.solicitud_termica.solicitante.get_full_name|default:analisis.solicitud_termica.solicitante.username }}</div>
+                    </div>
+                    <a href="{% url 'sigmadp:solicitud_termica_detalle' analisis.solicitud_termica_id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-box-arrow-up-right"></i> Ver solicitud
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <i class="bi bi-calendar-event stats-icon text-primary"></i>
+                <div class="stats-value">{{ analisis.creado_en|date:"d/m/Y" }}</div>
+                <div class="stats-label">Fecha de Creacion</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <i class="bi bi-clock stats-icon text-info"></i>
+                <div class="stats-value">
+                    {% if analisis.duracion_minutos %}
+                        {{ analisis.duracion_minutos|floatformat:1 }} min
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+                <div class="stats-label">Duracion del Ensayo</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <i class="bi bi-bar-chart stats-icon text-success"></i>
+                <div class="stats-value">
+                    {% if analisis.num_muestras %}
+                        {{ analisis.num_muestras }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+                <div class="stats-label">Numero de Muestras</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <i class="bi bi-file-earmark-text stats-icon text-warning"></i>
+                <div class="stats-value">{{ analisis.tipo_archivo|upper }}</div>
+                <div class="stats-label">Tipo de Archivo</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje de error si existe -->
+    {% if analisis.estado == 'error' and analisis.mensaje_error %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="error-message">
+                <h6><i class="bi bi-exclamation-triangle"></i> Error en el Procesamiento</h6>
+                <p class="mb-0">{{ analisis.mensaje_error }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Indicador de procesamiento -->
+    {% if analisis.estado == 'procesando' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <div class="loading-spinner me-2"></div>
+                <strong>Procesando archivo...</strong> Esto puede tomar unos minutos.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Graficas generadas -->
+    {% if analisis.estado == 'completado' and graficas_disponibles %}
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-3">
+                <i class="bi bi-graph-up"></i>
+                Graficas Generadas
+            </h4>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for tipo, nombre, url in graficas_disponibles %}
+        <div class="col-lg-6 mb-4">
+            <div class="graph-container">
+                <h5 class="graph-title">
+                    {% if tipo == 'temperatura' %}
+                        <i class="bi bi-thermometer-half text-danger"></i>
+                    {% elif tipo == 'leak' %}
+                        <i class="bi bi-droplet text-info"></i>
+                    {% elif tipo == 'heater' %}
+                        <i class="bi bi-lightning text-warning"></i>
+                    {% elif tipo == 'overview' %}
+                        <i class="bi bi-grid-3x3-gap text-primary"></i>
+                    {% endif %}
+                    {{ nombre }}
+                </h5>
+                <img src="{{ url }}" alt="{{ nombre }}" class="graph-image">
+                <div class="mt-3 text-center">
+                    <a href="{{ url }}" download class="download-btn">
+                        <i class="bi bi-download"></i>
+                        Descargar
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- CSV limpio -->
+    {% if analisis.estado == 'completado' and analisis.archivo_csv_limpio %}
+    <div class="row">
+        <div class="col-12">
+            <div class="graph-container">
+                <h5 class="graph-title">
+                    <i class="bi bi-file-earmark-spreadsheet text-success"></i>
+                    Datos Procesados (CSV)
+                </h5>
+                <p class="text-muted mb-3">
+                    Archivo CSV con datos estandarizados y limpios, listo para analisis adicional.
+                </p>
+                <a href="{{ analisis.archivo_csv_limpio.url }}" download class="download-btn">
+                    <i class="bi bi-download"></i>
+                    Descargar CSV
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Informacion tecnica -->
+    {% if analisis.columnas_detectadas %}
+    <div class="row">
+        <div class="col-12">
+            <div class="graph-container">
+                <h5 class="graph-title">
+                    <i class="bi bi-info-circle"></i>
+                    Informacion Tecnica
+                </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Configuracion del Archivo</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Separador:</strong> {{ analisis.separador }}</li>
+                            <li><strong>Decimal:</strong> {{ analisis.decimal }}</li>
+                            <li><strong>Codificacion:</strong> {{ analisis.codificacion }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Columnas Detectadas</h6>
+                        <p class="text-muted">{{ analisis.columnas_detectadas }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Botones de accion -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'sigmadp:representacion_resultados' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+                <div>
+                    <a href="{% url 'sigmadp:crear_analisis_datos' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i>
+                        Nuevo Analisis
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-refresh si esta procesando -->
+{% if analisis.estado == 'procesando' %}
+<script>
+setTimeout(function() {
+    location.reload();
+}, 5000); // Recargar cada 5 segundos
+</script>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,65 @@
+{% extends "sigmalab/base_sigmalab.html" %}
+{% block title %}Mi Panel{% endblock %}
+{% block page_title %}Mi Panel{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <a class="btn btn-outline-secondary" href="{% url 'dtf:dashboard' %}"><i class="bi bi-house"></i> Dashboard DTF</a>
+    <a class="btn" href="{% url 'sigmalab:nueva-solicitud' %}"><i class="bi bi-plus-circle"></i> Nueva solicitud</a>
+    <a class="btn btn-secondary" href="{% url 'sigmalab:mis-solicitudes' %}"><i class="bi bi-person-lines-fill"></i> Mis solicitudes</a>
+    <a class="btn btn-outline-primary" href="{% url 'sigmalab:mis-becarios' %}"><i class="bi bi-people"></i> Mis becarios</a>
+    <a class="btn btn-outline-info" href="{% url 'dtf:info-importante' %}"><i class="bi bi-info-circle"></i> Información Importante</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem;">
+  <h3>Resumen</h3>
+  <p style="margin:.25rem 0;">Pendientes: <strong>{{ recuento.pendiente }}</strong></p>
+  <p style="margin:.25rem 0;">En curso: <strong>{{ recuento.en_curso }}</strong></p>
+  <p style="margin:.25rem 0;">Aceptadas: <strong>{{ recuento.aceptada }}</strong></p>
+  <p style="margin:.25rem 0;">Rechazadas: <strong>{{ recuento.rechazada }}</strong></p>
+  <p style="margin:.25rem 0;">Finalizadas: <strong>{{ recuento.finalizada }}</strong></p>
+</div>
+
+<div class="card">
+  <h3>Mis últimas solicitudes</h3>
+  <ul style="margin-top:.5rem;">
+    {% for s in mias %}
+      <li style="display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid #eee;">
+        <div>
+          #{{ s.id }} · {{ s.get_estado_display }} · {{ s.creado_en|date:"Y-m-d H:i" }}
+          {% if s.becario_asociado %}
+            <br><small style="color:#1976d2;">Becario: {{ s.becario_asociado.nombre_completo }}</small>
+          {% endif %}
+        </div>
+        <div style="display:flex; gap:.25rem;">
+          <a class="btn-small" href="{% url 'sigmalab:detalle-solicitud' s.id %}"><i class="bi bi-eye"></i> Ver</a>
+          {% if s.estado == 'aceptada' and s.es_autonomo %}
+            <a class="btn-small" href="{% url 'sigmalab:entrar-laboratorio-solicitud' s.id %}" style="background:#28a745; color:white;">
+              <i class="bi bi-door-open"></i> Entrar al Lab
+            </a>
+          {% endif %}
+        </div>
+      </li>
+    {% empty %}
+      <li>No tienes solicitudes.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Acceso directo para solicitudes autónomas -->
+{% if solicitudes_autonomas_aceptadas %}
+<div class="card" style="background:#e3f2fd; border:1px solid #2196f3;">
+  <h3 style="color:#1976d2;"><i class="bi bi-door-open"></i> Solicitudes Autónomas Listas</h3>
+  <p style="color:#1976d2; margin-bottom:1rem;">
+    Tienes {{ solicitudes_autonomas_aceptadas|length }} solicitud(es) autónoma(s) aceptada(s) lista(s) para iniciar trabajo.
+  </p>
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <a class="btn" href="{% url 'sigmalab:entrar-laboratorio' %}" style="background:#28a745; border-color:#28a745;">
+      <i class="bi bi-door-open"></i> Ver Solicitudes Autónomas
+    </a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

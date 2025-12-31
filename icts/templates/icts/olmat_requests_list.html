@@ -1,0 +1,107 @@
+{% extends "base_icts.html" %}
+
+{% block title %}Solicitudes OLMAT{% endblock %}
+{% block page_title %}Solicitudes OLMAT{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h4><i class="bi bi-list-ul"></i> Solicitudes OLMAT</h4>
+  </div>
+  <div class="card-body">
+    <!-- Filtros -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <form method="get" class="d-flex">
+          <select name="status" class="form-select me-2">
+            <option value="">Todos los estados</option>
+            {% for value, label in status_choices %}
+              <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-outline-primary">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Lista de solicitudes -->
+    {% if olmat_requests %}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Propuesta</th>
+              <th>Solicitante</th>
+              <th>Tipo de servicio</th>
+              <th>Estado</th>
+              <th>Código</th>
+              <th>Coste base</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for request in olmat_requests %}
+              <tr>
+                <td>
+                  <strong>{{ request.proposal.title|truncatechars:50 }}</strong><br>
+                  <small class="text-muted">ID: {{ request.proposal.id }}</small>
+                </td>
+                <td>
+                  {{ request.proposal.applicant.get_full_name|default:request.proposal.applicant.username }}<br>
+                  <small class="text-muted">{{ request.proposal.applicant.email }}</small>
+                </td>
+                <td>
+                  <span class="badge {% if request.service_type == 'technical' %}bg-info{% else %}bg-warning{% endif %}">
+                    {{ request.get_service_type_display }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge {% if request.status == 'approved' %}bg-success{% elif request.status == 'rejected' %}bg-danger{% elif request.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+                    {{ request.get_status_display }}
+                  </span>
+                </td>
+                <td>
+                  {% if request.access_code %}
+                    <span class="badge bg-dark">{{ request.access_code }}</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <strong>{{ request.base_cost }} €</strong>
+                  {% if request.estimated_cost and request.estimated_cost != request.base_cost %}
+                    <br><small class="text-muted">Est: {{ request.estimated_cost }} €</small>
+                  {% endif %}
+                </td>
+                <td>
+                  {{ request.created_at|date:"d/m/Y" }}<br>
+                  <small class="text-muted">{{ request.created_at|time:"H:i" }}</small>
+                </td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <a href="{% url 'icts:olmat_request_detail' request.id %}" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-eye"></i> Ver
+                    </a>
+                    <a href="{% url 'icts:olmat_request_evaluate' request.id %}" class="btn btn-sm btn-outline-success">
+                      <i class="bi bi-clipboard-check"></i> Evaluar
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-4">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h5 class="text-muted mt-3">No hay solicitudes OLMAT</h5>
+        <p class="text-muted">No se encontraron solicitudes con los filtros aplicados.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,195 @@
+<div class="tech-card">
+  <h4 class="tech-title"><i class="bi bi-lightning-charge"></i> Van de Graaff (L07) - Sample data</h4>
+
+  <div class="requirements-section">
+    <h5 class="section-title"><i class="bi bi-list-check"></i> Acceptance of the sample</h5>
+    <div class="requirements-list">
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">The material or device must be in a solid state.</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">Be less than 3 mm thick.</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">Less than 15 cm x 15 cm.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-description-section">
+    <h5 class="section-title"><i class="bi bi-card-list"></i> Sample data</h5>
+    <div class="samples-container" id="vdg-samples-container">
+      <div class="sample-card" data-sample-index="0">
+        <div class="sample-header">
+          <h6 class="sample-title">Sample 1</h6>
+          <button type="button" class="btn-remove-sample" onclick="removeVdgSample(this)" style="display: none;">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Code</label>
+            <input type="text" name="vdg_sample_0_code" class="form-input" placeholder="Sample code">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Material</label>
+            <input type="text" name="vdg_sample_0_material" class="form-input" placeholder="Material type">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Electron fluence (e-)</label>
+            <input type="number" name="vdg_sample_0_electron_fluence" class="form-input" placeholder="0" step="0.1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Temperature (C)</label>
+            <input type="number" name="vdg_sample_0_temperature" class="form-input" placeholder="0" step="0.1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Atmosphere (gas)</label>
+            <input type="text" name="vdg_sample_0_atmosphere" class="form-input" placeholder="Gas atmosphere">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sample size</label>
+            <input type="text" name="vdg_sample_0_sample_size" class="form-input" placeholder="Sample dimensions">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sample geometry</label>
+          <input type="text" name="vdg_sample_0_sample_geometry" class="form-input" placeholder="Geometry description">
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-add-sample" onclick="addVdgSample(this)">
+      <i class="bi bi-plus-circle"></i> Add Sample
+    </button>
+  </div>
+
+  <div class="experiment-description-section">
+    <h5 class="section-title"><i class="bi bi-clipboard-data"></i> Description of the Experiment to be Carried Out</h5>
+    <div class="form-group">
+      <textarea name="vdg_experiment_description" rows="6" class="form-input" placeholder="Detailed description of the experiment to be carried out"></textarea>
+    </div>
+  </div>
+</div>
+
+<script>
+function resolveVdgSamplesContainer(containerElOrTrigger) {
+  const target = containerElOrTrigger || (typeof event !== 'undefined' ? event.target : null);
+  if (target instanceof HTMLElement) {
+    if (target.id === 'vdg-samples-container') {
+      return target;
+    }
+    const formCard = target.closest('.technique-form-card')
+      || target.closest('.tech-card')
+      || target.closest('.sample-description-section');
+    if (formCard) {
+      const container = formCard.querySelector('#vdg-samples-container');
+      if (container) {
+        return container;
+      }
+    }
+  }
+  return null;
+}
+
+function addVdgSample(containerElOrTrigger) {
+  const container = resolveVdgSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const index = container.querySelectorAll('.sample-card').length;
+  const newSampleCard = document.createElement('div');
+  newSampleCard.className = 'sample-card';
+  newSampleCard.setAttribute('data-sample-index', index);
+
+  newSampleCard.innerHTML = `
+    <div class="sample-header">
+      <h6 class="sample-title">Sample ${index + 1}</h6>
+      <button type="button" class="btn-remove-sample" onclick="removeVdgSample(this)">
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Code</label>
+        <input type="text" name="vdg_sample_${index}_code" class="form-input" placeholder="Sample code">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Material</label>
+        <input type="text" name="vdg_sample_${index}_material" class="form-input" placeholder="Material type">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Electron fluence (e-)</label>
+        <input type="number" name="vdg_sample_${index}_electron_fluence" class="form-input" placeholder="0" step="0.1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Temperature (C)</label>
+        <input type="number" name="vdg_sample_${index}_temperature" class="form-input" placeholder="0" step="0.1">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Atmosphere (gas)</label>
+        <input type="text" name="vdg_sample_${index}_atmosphere" class="form-input" placeholder="Gas atmosphere">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sample size</label>
+        <input type="text" name="vdg_sample_${index}_sample_size" class="form-input" placeholder="Sample dimensions">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Sample geometry</label>
+      <input type="text" name="vdg_sample_${index}_sample_geometry" class="form-input" placeholder="Geometry description">
+    </div>
+  `;
+
+  container.appendChild(newSampleCard);
+  updateVdgRemoveButtons(container);
+}
+
+function removeVdgSample(button) {
+  const sampleCard = button.closest('.sample-card');
+  if (!sampleCard) return;
+  const container = sampleCard.closest('.samples-container');
+  sampleCard.remove();
+  updateVdgSampleNumbers(container);
+  updateVdgRemoveButtons(container);
+}
+
+function updateVdgSampleNumbers(containerElOrTrigger) {
+  const container = resolveVdgSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const sampleCards = container.querySelectorAll('.sample-card');
+  sampleCards.forEach((card, index) => {
+    const title = card.querySelector('.sample-title');
+    title.textContent = `Sample ${index + 1}`;
+
+    const inputs = card.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+      const name = input.getAttribute('name');
+      if (name) {
+        const newName = name.replace(/vdg_sample_\d+_/, `vdg_sample_${index}_`);
+        input.setAttribute('name', newName);
+      }
+    });
+
+    card.setAttribute('data-sample-index', index);
+  });
+}
+
+function updateVdgRemoveButtons(containerElOrTrigger) {
+  const container = resolveVdgSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const sampleCards = container.querySelectorAll('.sample-card');
+  const removeButtons = container.querySelectorAll('.btn-remove-sample');
+  removeButtons.forEach(button => {
+    button.style.display = sampleCards.length > 1 ? 'flex' : 'none';
+  });
+}
+</script>

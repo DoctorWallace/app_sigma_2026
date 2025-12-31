@@ -1,0 +1,215 @@
+{% extends "base_icts.html" %}
+{% load static %}
+
+{% block title %}Estadísticas - SIGMACONF{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-graph-up"></i> Estadísticas - SIGMACONF
+                </h1>
+                <a href="{% url 'sigmaconf:home' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas generales -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-bar-chart"></i> Estadísticas Generales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-primary">{{ total_solicitudes }}</h3>
+                                <p class="text-muted">Total de Solicitudes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-warning">{{ solicitudes_por_estado.pendiente }}</h3>
+                                <p class="text-muted">Pendientes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-info">{{ solicitudes_por_estado.aceptada }}</h3>
+                                <p class="text-muted">Aceptadas</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-success">{{ solicitudes_por_estado.finalizada }}</h3>
+                                <p class="text-muted">Finalizadas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Solicitudes por estado -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-pie-chart"></i> Solicitudes por Estado
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Estado</th>
+                                    <th>Cantidad</th>
+                                    <th>Porcentaje</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for estado, cantidad in solicitudes_por_estado.items %}
+                                <tr>
+                                    <td>
+                                        <span class="badge 
+                                            {% if estado == 'pendiente' %}bg-warning
+                                            {% elif estado == 'aceptada' %}bg-info
+                                            {% elif estado == 'en_curso' %}bg-primary
+                                            {% elif estado == 'finalizada' %}bg-success
+                                            {% elif estado == 'rechazada' %}bg-danger
+                                            {% endif %}">
+                                            {% if estado == 'pendiente' %}Pendiente
+                                            {% elif estado == 'aceptada' %}Aceptada
+                                            {% elif estado == 'en_curso' %}En Curso
+                                            {% elif estado == 'finalizada' %}Finalizada
+                                            {% elif estado == 'rechazada' %}Rechazada
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ cantidad }}</td>
+                                    <td>
+                                        {% if total_solicitudes > 0 %}
+                                            {{ cantidad|floatformat:0|add:0|mul:100|div:total_solicitudes|floatformat:1 }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solicitudes por tipo de microscopía -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-microscope"></i> Solicitudes por Tipo de Microscopía
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Porcentaje</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tipo, cantidad in solicitudes_por_tipo.items %}
+                                <tr>
+                                    <td>
+                                        {% if tipo == 'confocal_laser' %}Confocal Láser
+                                        {% elif tipo == 'confocal_spinning' %}Confocal Spinning Disk
+                                        {% elif tipo == 'super_resolucion' %}Super Resolución
+                                        {% elif tipo == 'multifoton' %}Multifotón
+                                        {% elif tipo == 'otra' %}Otra
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ cantidad }}</td>
+                                    <td>
+                                        {% if total_solicitudes > 0 %}
+                                            {{ cantidad|floatformat:0|add:0|mul:100|div:total_solicitudes|floatformat:1 }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solicitudes por mes -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-calendar"></i> Solicitudes por Mes (Últimos 12 meses)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if solicitudes_por_mes %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>Cantidad</th>
+                                        <th>Barra</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in solicitudes_por_mes %}
+                                    <tr>
+                                        <td>{{ item.mes|date:"F Y" }}</td>
+                                        <td>{{ item.total }}</td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: {% if total_solicitudes > 0 %}{{ item.total|floatformat:0|add:0|mul:100|div:total_solicitudes }}{% else %}0{% endif %}%">
+                                                    {{ item.total }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-inbox fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">No hay datos de solicitudes por mes</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,240 @@
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+<section class="container" style="margin-top:1rem;">
+  <header class="olmat-hero">
+    <img src="{{ MEDIA_URL }}facilities/OLMAT.png" alt="OLMAT" class="olmat-logo">
+    <div>
+      <h1 class="h4" style="margin:0;">Dispositivo HHF OLMAT</h1>
+      <p class="olmat-sub">Optimización de blancos avanzados de metal líquido para ensayos de alta carga térmica</p>
+    </div>
+  </header>
+
+  <div class="equipment-image-container">
+    <img src="{{ MEDIA_URL }}facilities/OLMAT.png" alt="Dispositivo HHF OLMAT" class="equipment-main-image">
+  </div>
+
+  <div class="olmat-grid">
+    <article class="card card-horizontal">
+      <h2>Visión general</h2>
+      <p>
+        OLMAT es el banco de ensayos de referencia del CIEMAT para la calificación de materiales sometidos a
+        flujos térmicos extremos mediante haces NBI y láser. La instalación está abierta a colaboraciones de
+        centros públicos y privados en ámbitos de física, ingeniería mecánica y ciencia de materiales.
+      </p>
+      <p>
+        El banco permite combinar calentamiento convectivo con cargas radiativas controladas, registrar los
+        fenómenos transitorios con instrumentación de alta velocidad y realizar ajustes personalizados en la
+        preparación de muestras para cada campaña experimental.
+      </p>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Capacidades principales</h2>
+      <ul class="kv">
+        <li><span>Modos de haz</span><strong>NBI, láser o disparos combinados</strong></li>
+        <li><span>Escala temporal</span><strong>Resolución de 1&nbsp;ms en termografía y pirometría</strong></li>
+        <li><span>Supervisión</span><strong>Cámara rápida y espectroscopía óptica sincronizada</strong></li>
+        <li><span>Entorno de ensayo</span><strong>Preparación y acondicionamiento en laboratorio dedicado</strong></li>
+        <li><span>Muestreo</span><strong>Diseño a medida de portamuestras y mojado de metal líquido</strong></li>
+      </ul>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Diagnósticos disponibles</h2>
+      <div class="card-columns">
+        <ul>
+          <li>Termopares embebidos</li>
+          <li>Pirometría infrarroja</li>
+          <li>Termografía IR (1&nbsp;ms)</li>
+        </ul>
+        <ul>
+          <li>Cámara rápida de alta velocidad</li>
+          <li>Espectroscopia óptica</li>
+          <li>Sondas Langmuir</li>
+        </ul>
+      </div>
+      <p>
+        El laboratorio OLMAT ofrece soporte para recubrimientos de metales líquidos, diseño de portamuestras y
+        servicios de preparación previos a la campaña experimental.
+      </p>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Servicios y tarifas (2024)</h2>
+      <div class="pricing">
+        <div class="pricing-item">
+          <h3>Servicio técnico</h3>
+          <p>Operación del dispositivo y preparación de muestras.</p>
+          <strong>5.000&nbsp;&euro;</strong>
+        </div>
+        <div class="pricing-item">
+          <h3>Servicio de investigación</h3>
+          <p>Incluye soporte científico, análisis e interpretación de datos.</p>
+          <strong>10.305&nbsp;&euro;</strong>
+        </div>
+      </div>
+      <p class="muted">Una descripción detallada de las tarifas está disponible bajo demanda.</p>
+    </article>
+
+    <article class="card card-horizontal" id="olmat-application">
+      <h2>Cómo preparar tu propuesta</h2>
+      <p>
+        Las propuestas pueden remitirse en formato libre siguiendo estas pautas. Ten en cuenta que el equipo
+        técnico puede solicitar información adicional durante la evaluación.
+      </p>
+      <p class="muted">
+        Para contexto adicional consulta la <a href="https://www.fusion.ciemat.es/inicio/acceso-instalaciones-competitivas/olmat/" target="_blank" rel="noopener">página oficial de OLMAT</a> del CIEMAT.
+      </p>
+      <ul class="checklist">
+        <li><span>Título del proyecto.</span></li>
+        <li><span>Nombre, afiliación y naturaleza (pública/privada) del solicitante.</span></li>
+        <li><span>Descripción (1-2 páginas) con motivación, objetivos y requisitos de carga térmica conocidos.</span></li>
+        <li><span>Recursos requeridos:</span>
+          <ul>
+            <li>Diagnósticos necesarios (termopares, pirometría, termografía, cámara rápida, espectroscopia, sondas Langmuir).</li>
+            <li>Servicios de laboratorio (mojado de metal líquido, diseño de portamuestras, etc.).</li>
+            <li>Uso previsto de haz NBI, láser o ambos.</li>
+          </ul>
+        </li>
+        <li><span>Fechas preferidas y grado de flexibilidad.</span></li>
+      </ul>
+      <p class="muted">
+        Tras la evaluación se comunicará la admisión o rechazo de la solicitud y el tipo de servicio asignado.
+      </p>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Contacto y recursos</h2>
+      <div class="contact-card">
+        <div>
+          <strong>Responsable técnico:</strong>
+          <p>Técnico OLMAT</p>
+        </div>
+        <div>
+          <strong>Email:</strong>
+          <p><a href="mailto:olmat@ciemat.es">olmat@ciemat.es</a></p>
+        </div>
+        <div>
+          <strong>Teléfono:</strong>
+          <p>+34&nbsp;91&nbsp;346&nbsp;6000</p>
+        </div>
+      </div>
+      <p class="muted">Solicita la ficha técnica detallada para obtener limitaciones de muestra y diagramas de montaje.</p>
+    </article>
+  </div>
+</section>
+
+<style>
+.olmat-hero{
+  display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;
+  padding:1.5rem; border:1px solid var(--border,#e5e7eb); border-radius:.75rem; background:var(--bg-card,#fff);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
+}
+.olmat-logo{ width:64px; height:64px; object-fit:contain; flex:0 0 auto; }
+.olmat-sub{ margin:.25rem 0 0 0; color:var(--muted,#4b5563); font-size:1.1rem; }
+
+.equipment-image-container{
+  margin-bottom:2rem; text-align:center;
+  border-radius:1rem; overflow:hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,.1);
+}
+.equipment-main-image{
+  width:100%; max-width:800px; height:auto; display:block; margin:0 auto;
+  border-radius:1rem;
+}
+
+.olmat-grid{
+  display:grid; gap:1.5rem;
+  grid-template-columns: 1fr;
+}
+.card{
+  border:1px solid var(--border,#e5e7eb);
+  border-radius:1rem; background:var(--bg-card,#fff);
+  padding:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,.15);
+}
+.card h2{
+  font-size:1.25rem; margin:0 0 1rem 0;
+  color:#0d6efd;
+  border-bottom: 2px solid #0d6efd;
+  padding-bottom: 0.5rem;
+}
+.card p{
+  line-height: 1.7; margin-bottom: 1rem; color: #374151;
+}
+.card p:last-child{
+  margin-bottom: 0;
+}
+
+.kv{
+  list-style:none; padding:0; margin:0; display:grid; gap:.75rem;
+}
+.kv li{
+  display:flex; justify-content:space-between; gap:1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.kv li:last-child{
+  border-bottom: none;
+}
+.kv span{
+  color:var(--muted,#6b7280); font-weight: 500;
+}
+.kv strong{
+  font-weight:700; color: #111827;
+}
+
+.card-columns{
+  display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:1rem;
+}
+.card-columns ul{
+  margin:0; padding-left:1.2rem; color:#374151;
+}
+
+.pricing{
+  display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:1rem; margin-bottom:1rem;
+}
+.pricing-item{
+  border:1px solid #e5e7eb; border-radius:0.75rem; padding:1rem; background:#f8fafc;
+  text-align:center;
+}
+.pricing-item h3{ margin:0 0 .75rem 0; color:#0d6efd; font-size:1.1rem; }
+.pricing-item strong{ display:block; margin-top:.75rem; font-size:1.4rem; color:#0b5ed7; }
+
+.checklist{
+  list-style:none; padding:0; margin:0; display:grid; gap:.75rem;
+}
+.checklist > li{
+  position:relative; padding-left:1.5rem; color:#1f2937;
+}
+.checklist > li::before{
+  content:"\2713"; position:absolute; left:0; top:0; color:#198754; font-weight:bold;
+}
+.checklist ul{
+  margin:.5rem 0 0 0; padding-left:1.5rem; list-style:disc; color:#374151;
+}
+
+.contact-card{
+  display:grid; gap:.75rem; grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+}
+.contact-card p{ margin:.25rem 0 0 0; }
+.contact-card a{ color:#0d6efd; text-decoration:none; }
+.contact-card a:hover{ text-decoration:underline; }
+
+.muted{ color:#6b7280; font-size:.95rem; }
+.card-horizontal{ grid-column: 1 / -1; }
+
+@media (max-width:768px){
+  .olmat-hero{
+    flex-direction: column; text-align: center; gap: 1rem;
+  }
+  .olmat-logo{ width:80px; height:80px; }
+  .equipment-main-image{ border-radius: 0.5rem; }
+  .kv li{ flex-direction:column; align-items:flex-start; gap: 0.25rem; }
+  .card{ padding: 1.25rem; }
+}
+</style>

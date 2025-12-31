@@ -1,0 +1,294 @@
+{% extends "base_dtf.html" %}
+{% block title %}Nueva solicitud de muestras{% endblock %}
+{% block page_title %}Nueva solicitud de muestras{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-section h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #495057;
+  }
+  .form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  .form-input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .sample-row {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .sample-header {
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 0.5rem;
+  }
+  .file-upload {
+    border: 2px dashed #dee2e6;
+    border-radius: 6px;
+    padding: 1rem;
+    text-align: center;
+    background: #f8f9fa;
+  }
+  .file-upload:hover {
+    border-color: #007bff;
+    background: #e3f2fd;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1000px; margin: 0 auto;">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    
+    <!-- Información básica -->
+    <div class="form-section">
+      <h3><i class="bi bi-info-circle"></i> Información básica</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.material.id_for_label }}">Material *</label>
+          {{ form.material }}
+          {{ form.material.errors }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.numero_muestras.id_for_label }}">Número de muestras *</label>
+          {{ form.numero_muestras }}
+          {{ form.numero_muestras.errors }}
+        </div>
+      </div>
+      
+      <!-- Campo de becario -->
+      <div class="form-group">
+        <label for="{{ form.becario_asociado.id_for_label }}">{{ form.becario_asociado.label }}</label>
+        {{ form.becario_asociado }}
+        {% if form.becario_asociado.help_text %}
+          <small style="color:#6c757d; font-size:.8rem; display:block; margin-top:.25rem;">
+            {{ form.becario_asociado.help_text }}
+          </small>
+        {% endif %}
+        {{ form.becario_asociado.errors }}
+      </div>
+    </div>
+
+    <!-- Muestras individuales (se generan dinámicamente) -->
+    <div class="form-section" id="muestras-section" style="display: none;">
+      <h3><i class="bi bi-collection"></i> Identificación de muestras</h3>
+      <div id="muestras-container">
+        <!-- Se llenará dinámicamente con JavaScript -->
+      </div>
+    </div>
+
+    <!-- Información de seguridad -->
+    <div class="form-section">
+      <h3><i class="bi bi-shield-exclamation"></i> Información de seguridad</h3>
+      <div class="form-group">
+        <div class="checkbox-item">
+          {{ form.material_radioactivo }}
+          <label for="{{ form.material_radioactivo.id_for_label }}">¿Es material radiactivo o contaminado?</label>
+        </div>
+        {{ form.material_radioactivo.errors }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.manejo_especial.id_for_label }}">¿Requiere algún tipo de manejo o protección especial?</label>
+        {{ form.manejo_especial }}
+        {{ form.manejo_especial.errors }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.tratamiento_previo.id_for_label }}">¿Se ha realizado algún tratamiento previo?</label>
+        {{ form.tratamiento_previo }}
+        {{ form.tratamiento_previo.errors }}
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="form-section">
+      <h3><i class="bi bi-file-text"></i> Información adicional</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.procedencia.id_for_label }}">Procedencia</label>
+          {{ form.procedencia }}
+          {{ form.procedencia.errors }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="{{ form.otro_dato_importante.id_for_label }}">Otro dato importante de la muestra</label>
+        {{ form.otro_dato_importante }}
+        {{ form.otro_dato_importante.errors }}
+      </div>
+    </div>
+
+    <!-- Operaciones de preparación -->
+    <div class="form-section">
+      <h3><i class="bi bi-gear"></i> Operaciones de preparación</h3>
+      <div class="checkbox-group">
+        <div class="checkbox-item">
+          {{ form.corte }}
+          <label for="{{ form.corte.id_for_label }}">Corte</label>
+        </div>
+        <div class="checkbox-item">
+          {{ form.empastillado }}
+          <label for="{{ form.empastillado.id_for_label }}">Empastillado</label>
+        </div>
+        <div class="checkbox-item">
+          {{ form.lijado }}
+          <label for="{{ form.lijado.id_for_label }}">Lijado</label>
+        </div>
+        <div class="checkbox-item">
+          {{ form.pulido }}
+          <label for="{{ form.pulido.id_for_label }}">Pulido</label>
+        </div>
+        <div class="checkbox-item">
+          {{ form.electropulido }}
+          <label for="{{ form.electropulido.id_for_label }}">Electropulido</label>
+        </div>
+        <div class="checkbox-item">
+          {{ form.trat_quimico }}
+          <label for="{{ form.trat_quimico.id_for_label }}">Tratamiento químico</label>
+        </div>
+        <div class="checkbox-item">
+          {{ form.trat_termico }}
+          <label for="{{ form.trat_termico.id_for_label }}">Tratamiento térmico</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requisitos y observaciones -->
+    <div class="form-section">
+      <h3><i class="bi bi-clipboard-check"></i> Requisitos y observaciones</h3>
+      <div class="form-group">
+        <label for="{{ form.requisitos_finales.id_for_label }}">Requisitos finales</label>
+        {{ form.requisitos_finales }}
+        {{ form.requisitos_finales.errors }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.observaciones.id_for_label }}">Observaciones (Trabajo autónomo)</label>
+        {{ form.observaciones }}
+        {{ form.observaciones.errors }}
+      </div>
+    </div>
+
+    <!-- Archivos adjuntos -->
+    <div class="form-section">
+      <h3><i class="bi bi-paperclip"></i> Archivos adjuntos</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.imagen_muestra.id_for_label }}">Imagen de la muestra</label>
+          <div class="file-upload">
+            {{ form.imagen_muestra }}
+            <p><i class="bi bi-image"></i> Adjuntar imagen de la muestra</p>
+          </div>
+          {{ form.imagen_muestra.errors }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.croquis.id_for_label }}">Croquis</label>
+          <div class="file-upload">
+            {{ form.croquis }}
+            <p><i class="bi bi-diagram-3"></i> Adjuntar croquis</p>
+          </div>
+          {{ form.croquis.errors }}
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem; text-align: center;">
+      <button class="cta" type="submit">
+        <i class="bi bi-send"></i> Enviar solicitud
+      </button>
+      <a class="cta" style="background:var(--accent)" href="{% url 'sigmalab:mis-solicitudes' %}">
+        <i class="bi bi-x-circle"></i> Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const numeroMuestrasInput = document.getElementById('{{ form.numero_muestras.id_for_label }}');
+    const muestrasSection = document.getElementById('muestras-section');
+    const muestrasContainer = document.getElementById('muestras-container');
+    
+    function updateMuestras() {
+        const numero = parseInt(numeroMuestrasInput.value) || 0;
+        
+        if (numero > 0) {
+            muestrasSection.style.display = 'block';
+            muestrasContainer.innerHTML = '';
+            
+            for (let i = 1; i <= numero; i++) {
+                const sampleRow = document.createElement('div');
+                sampleRow.className = 'sample-row';
+                sampleRow.innerHTML = `
+                    <div class="sample-header">Muestra ${i} (Código: 25_XXX_${i})</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="muestra_${i}_identificacion">Identificación *</label>
+                            <input type="text" name="muestra_${i}_identificacion" id="muestra_${i}_identificacion" 
+                                   class="form-input" placeholder="Identificación de la muestra" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="muestra_${i}_descripcion">Descripción adicional</label>
+                            <textarea name="muestra_${i}_descripcion" id="muestra_${i}_descripcion" 
+                                      class="form-input" rows="2" placeholder="Descripción adicional"></textarea>
+                        </div>
+                    </div>
+                `;
+                muestrasContainer.appendChild(sampleRow);
+            }
+        } else {
+            muestrasSection.style.display = 'none';
+        }
+    }
+    
+    numeroMuestrasInput.addEventListener('input', updateMuestras);
+    updateMuestras(); // Ejecutar al cargar la página
+});
+</script>
+{% endblock %}

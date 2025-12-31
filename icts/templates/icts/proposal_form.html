@@ -1,0 +1,3937 @@
+{% extends "base_icts.html" %}
+{% load widget_tweaks form_extras_icts i18n %}
+{% block title %}{% if editing %}{% trans "Editar propuesta" %}{% else %}{% trans "Nueva propuesta" %}{% endif %}{% endblock %}
+
+{% block extra_head %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+  .form-section {
+    background: var(--bg-card, #ffffff);
+    border: 1px solid var(--border, #dee2e6);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  .form-section:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
+  .form-section h3 {
+    margin: 0 0 1.5rem 0;
+    color: var(--primary, #0d6efd);
+    border-bottom: 3px solid var(--primary, #0d6efd);
+    padding-bottom: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .form-section h3 i {
+    font-size: 1.2em;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .form-label i {
+    color: var(--primary, #0d6efd);
+    font-size: 1.1em;
+  }
+  .form-input, .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+  }
+  .form-input:focus, .form-control:focus {
+    border-color: var(--primary, #0d6efd);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    outline: none;
+  }
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+  }
+  .form-check:hover {
+    background: #e9ecef;
+  }
+  .form-check input[type="checkbox"] {
+    transform: scale(1.3);
+    margin: 0;
+  }
+  .form-check label {
+    margin: 0;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .tech-sections {
+    margin-top: 1.5rem;
+  }
+  .facility-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .facility-section:hover {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .tech-card {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .tech-title {
+    color: var(--primary, #0d6efd);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.75rem;
+  }
+  .tech-title i {
+    font-size: 1.3em;
+  }
+  .section-title {
+    color: var(--primary, #0d6efd);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+  }
+  .section-title i {
+    font-size: 1.2em;
+  }
+  .btn-primary {
+    background: var(--primary, #0d6efd);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-primary:hover {
+    background: #0b5ed7;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+  }
+  .btn-secondary {
+    background: #6c757d;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-secondary:hover {
+    background: #5c636a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+  .btn-light {
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #495057;
+  }
+  .btn-light:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+  }
+  .alert {
+    border-radius: 0.75rem;
+    border: none;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+  }
+  .alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+  }
+  .muted {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+  .card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .card-header {
+    background: linear-gradient(135deg, var(--primary, #0d6efd), #0b5ed7);
+    color: white;
+    border: none;
+    padding: 1.5rem 2rem;
+  }
+  .card-header h2, .card-header h3 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .card-header h2 i, .card-header h3 i {
+    font-size: 1.2em;
+  }
+  .card-body {
+    padding: 2rem;
+  }
+  .participant-card, .sample-card {
+    background: #ffffff;
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+  }
+  .participant-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #0d6efd;
+    color: #ffffff;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .participant-card:hover, .sample-card:hover {
+    border-color: var(--primary, #0d6efd);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
+  }
+  .btn-add-participant, .btn-add-sample {
+    background: #28a745;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-add-participant:hover, .btn-add-sample:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+  .btn-remove-participant, .btn-remove-sample {
+    background: #dc3545;
+    border: none;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  .btn-remove-participant:hover, .btn-remove-sample:hover {
+    background: #c82333;
+    transform: scale(1.1);
+  }
+  .requirements-list {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+  }
+  .requirement-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+  }
+  .requirement-item:last-child {
+    margin-bottom: 0;
+  }
+  .requirement-icon {
+    color: var(--primary, #0d6efd);
+    font-size: 1.2rem;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+  .requirement-text {
+    color: #495057;
+    line-height: 1.6;
+  }
+  .info-question {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+  }
+  .info-question:hover {
+    background: #ffffff;
+    border-color: var(--primary, #0d6efd);
+  }
+  .question-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .info-question-text {
+    font-weight: 500;
+    color: #495057;
+    margin: 0;
+    flex: 1;
+  }
+  .info-checkbox {
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+  }
+  .info-label {
+    font-weight: 600;
+    color: var(--primary, #0d6efd);
+    min-width: 3.5rem;
+    text-align: center;
+    padding: 0.5rem 0.75rem;
+    background: #e9ecef;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+  }
+  .info-label:hover {
+    background: #dee2e6;
+  }
+  .periodic-table-section {
+    background: #ffffff;
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+  .periodic-table-title {
+    color: var(--primary, #0d6efd);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .periodic-table {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    gap: 3px;
+    margin-bottom: 1rem;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .element {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.7rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+  .element:hover {
+    background: #e9ecef;
+    transform: scale(1.05);
+  }
+  .element.selected {
+    background: var(--primary, #0d6efd);
+    color: white;
+    border-color: var(--primary, #0d6efd);
+  }
+  .selected-elements-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+  }
+  .selected-element-tag {
+    background: var(--primary, #0d6efd);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  .selected-element-tag:hover {
+    background: #0b5ed7;
+  }
+  .remove-element {
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 0.5rem;
+    transition: color 0.3s ease;
+  }
+  .remove-element:hover {
+    color: #ffc107;
+  }
+  .area-total-display {
+    padding: 1rem;
+    background: #e9ecef;
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: var(--primary, #0d6efd);
+    text-align: center;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .conductive-layer-section {
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+  .metallographic-warning {
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+  .warning-text {
+    color: #856404;
+    margin: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .warning-text i {
+    color: #f39c12;
+    margin-top: 0.1rem;
+    font-size: 1.2em;
+  }
+  .vdg-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .vdg-sample-data, .vdg-requirements {
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    transition: all 0.3s ease;
+  }
+  .vdg-sample-data:hover, .vdg-requirements:hover {
+    background: #ffffff;
+    border-color: var(--primary, #0d6efd);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
+  }
+  .experiment-description-section {
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 0.75rem;
+    padding: 2rem;
+  }
+  .experiment-description-section textarea {
+    min-height: 10rem;
+    resize: vertical;
+  }
+  .facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  .facility-item {
+    background: #ffffff;
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .facility-item:hover {
+    border-color: var(--primary, #0d6efd);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
+    transform: translateY(-2px);
+  }
+  .facility-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    margin: 0;
+  }
+  .facility-checkbox input[type="checkbox"] {
+    transform: scale(1.5);
+    margin: 0;
+  }
+  .facility-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .facility-icon {
+    font-size: 2rem;
+    color: var(--primary, #0d6efd);
+    text-align: center;
+  }
+  .facility-name {
+    font-weight: 600;
+    color: #495057;
+    font-size: 1.1rem;
+  }
+  .facility-desc {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  .facility-checkbox:has(input:checked) .facility-item {
+    border-color: var(--primary, #0d6efd);
+    background: #f8f9ff;
+  }
+  .facility-checkbox:has(input:checked) .facility-icon {
+    color: var(--primary, #0d6efd);
+  }
+  .facility-checkbox:has(input:checked) .facility-name {
+    color: var(--primary, #0d6efd);
+  }
+  
+  /* Estilos para botones de configuración modal */
+  .btn-modal-config {
+    background: #17a2b8;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    width: 100%;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .btn-modal-config:hover {
+    background: #138496;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .btn-modal-config:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  /* Estilos para modales */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+    backdrop-filter: blur(2px);
+  }
+  
+  .modal-overlay.show {
+    display: flex;
+  }
+  
+  .modal-content {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 800px;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+  }
+  
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9) translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  .modal-header {
+    background: linear-gradient(135deg, var(--primary, #0d6efd), #0b5ed7);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 1rem 1rem 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .modal-header h3 i {
+    font-size: 1.2em;
+  }
+  
+  .modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+  
+  .modal-body {
+    padding: 2rem;
+  }
+  
+  .modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    background: #f8f9fa;
+    border-radius: 0 0 1rem 1rem;
+  }
+  
+  .btn-modal-save {
+    background: #28a745;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .btn-modal-save:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+  
+  .btn-modal-cancel {
+    background: #6c757d;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .btn-modal-cancel:hover {
+    background: #5c636a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+  
+  /* Ocultar secciones de técnicas fuera de los modales */
+  .facility-section {
+    display: none !important;
+  }
+
+  /* Mostrar solo las secciones dentro de modales */
+  .modal-body .facility-section {
+    display: block !important;
+  }
+
+  /* Mostrar secciones clonadas en el contenedor dinámico */
+  .dynamic-forms-container .facility-section {
+    display: block !important;
+  }
+  
+  /* Estilos para el código de acceso */
+  .access-code-card {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+    border: 2px solid #28a745;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+  }
+  
+  .access-code-display {
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .access-code-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+  }
+  
+  .access-code-text {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+    background: #f8f9fa;
+    border: 2px solid #28a745;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    letter-spacing: 1px;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .access-code-text.updating {
+    background: #fff3cd;
+    border-color: #ffc107;
+    color: #856404;
+  }
+  
+  .access-code-text.masked {
+    color: #6c757d;
+    background: #f8f9fa;
+    border-color: #dee2e6;
+    position: relative;
+  }
+
+  .access-code-text.masked::after {
+    content: 'PENDIENTE DE APROBACIÓN';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(108, 117, 125, 0.9);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    z-index: 10;
+  }
+  
+  .access-code-explanation {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: rgba(40, 167, 69, 0.1);
+    border-radius: 0.5rem;
+    border-left: 4px solid #28a745;
+  }
+  @media (max-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    .vdg-layout {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .form-section {
+      padding: 1.5rem;
+    }
+    .card-body {
+      padding: 1.5rem;
+    }
+    .facilities-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 1200px;">
+  <div class="card mb-3">
+    <div class="card-header"><h2 class="mb-0"><i class="bi bi-plus-circle"></i> {% trans "Nueva propuesta" %}</h2></div>
+    <div class="card-body">
+      <p class="mb-0">Completa el formulario para solicitar acceso a las instalaciones ICTS. Puedes guardar como borrador y continuar más tarde.</p>
+    </div>
+  </div>
+
+    <!-- Codigo de acceso dinamico -->
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if form.errors or formset.non_form_errors or attachment_formset.non_form_errors %}
+      <div class="alert alert-danger">
+        <strong>Revisa los errores del formulario:</strong>
+        {{ form.non_field_errors }}
+        {{ formset.non_form_errors }}
+        {{ attachment_formset.non_form_errors }}
+      </div>
+    {% endif %}
+
+    <div class="card mb-3 project-title-card">
+      <div class="card-header"><h3 class="mb-0"><i class="bi bi-info-circle"></i> Paso 1: Información del Proyecto</h3></div>
+      <div class="card-body project-title-section">
+        <div class="form-group">
+          <label class="form-label">
+            {% render_field form.is_new_request class="form-check-input" %} Solicitud nueva
+          </label>
+          <p class="muted">Marca esta opción si es una nueva solicitud. Desmárcala solo si quieres reutilizar una propuesta aprobada.</p>
+          {{ form.is_new_request.errors }}
+        </div>
+
+        <div class="form-group" id="previous-access-block" style="display: none;">
+          <label class="form-label">Solicitud aprobada anterior (si no es nueva):</label>
+          {% render_field form.previous_access class="form-input" %}
+          {{ form.previous_access.errors }}
+        </div>
+
+        {% if form.instance and form.instance.pk and form.instance.access_code %}
+          <div class="alert alert-info">
+            <strong>Código de acceso actual:</strong>
+            <span class="role-badge">{{ form.instance.access_code }}</span>
+          </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label class="form-label project-title-label">Título del proyecto *</label>
+          {% render_field form.title class="form-input" placeholder="Título del proyecto" %}
+          {{ form.title.errors }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descripción breve</label>
+          {% render_field form.scope class="form-input" rows="4" placeholder="Describe brevemente tu proyecto" %}
+          {{ form.scope.errors }}
+        </div>
+      </div>
+    </div>
+
+    <div id="rest-of-form" class="form-disabled">
+
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-person-badge"></i> Paso 2: Datos del Solicitante</h3></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">
+              {% render_field form.applicant_is_different class="form-check-input" %} El solicitante es distinto del usuario registrado
+            </label>
+            <p class="muted">Cuando está desmarcado, se usan los datos del usuario registrado.</p>
+            {{ form.applicant_is_different.errors }}
+          </div>
+
+          <div id="current-user-info" class="user-info-display">
+            <div class="alert alert-info">
+              <h4>Usando tus datos registrados:</h4>
+              <div class="user-data-grid">
+                <div><strong>Contacto:</strong> <span id="display-contact">{{ user.get_full_name|default:user.username }}</span></div>
+                <div><strong>Email:</strong> <span id="display-email">{{ user.email }}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="applicant-info" class="applicant-info-section" style="display: none;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Centro/Institución *</label>
+                {% render_field form.organization class="form-input" placeholder="Centro o institución" %}
+                {{ form.organization.errors }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">Persona de contacto *</label>
+                {% render_field form.contact_person class="form-input" placeholder="Persona de contacto" %}
+                {{ form.contact_person.errors }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email *</label>
+                {% render_field form.email class="form-input" placeholder="correo@ejemplo.com" %}
+                {{ form.email.errors }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">Teléfono</label>
+                {% render_field form.phone class="form-input" placeholder="Teléfono" %}
+                {{ form.phone.errors }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 access-code-card">
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-hash"></i> Código de acceso (previsualización)</h3></div>
+        <div class="card-body">
+          <div class="access-code-display">
+            <div class="access-code-label">Se genera al enviar, según las técnicas seleccionadas.</div>
+            <div id="access-code-preview" class="access-code-text">--</div>
+            <div class="access-code-explanation">
+              Esta vista previa es orientativa para tu borrador.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-building"></i> Paso 3: Técnicas e Instalaciones</h3></div>
+        <div class="card-body">
+          <p class="muted mb-3">Selecciona las técnicas que necesitas y completa su configuración.</p>
+          <div class="facilities-grid">
+            <div class="facility-item" data-technique="sem" data-checkbox="id_facility_sem">
+              <div class="facility-checkbox">
+                {% render_field form.facility_sem class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-search"></i></div>
+                  <div class="facility-name">SEM/EDX</div>
+                  <div class="facility-desc">Microscopía electrónica de barrido</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-tech="sem" disabled>
+                <i class="bi bi-gear"></i> Ir a tarjeta
+              </button>
+            </div>
+
+            <div class="facility-item" data-technique="fib" data-checkbox="id_facility_sem_fib">
+              <div class="facility-checkbox">
+                {% render_field form.facility_sem_fib class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-lightning-charge"></i></div>
+                  <div class="facility-name">FIB</div>
+                  <div class="facility-desc">Focused Ion Beam</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-tech="fib" disabled>
+                <i class="bi bi-gear"></i> Ir a tarjeta
+              </button>
+            </div>
+
+            <div class="facility-item" data-technique="imp" data-checkbox="id_facility_imp">
+              <div class="facility-checkbox">
+                {% render_field form.facility_imp class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-bullseye"></i></div>
+                  <div class="facility-name">Ion Implanter</div>
+                  <div class="facility-desc">Implantación iónica</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-tech="imp" disabled>
+                <i class="bi bi-gear"></i> Ir a tarjeta
+              </button>
+            </div>
+
+            <div class="facility-item" data-technique="sims" data-checkbox="id_facility_sims">
+              <div class="facility-checkbox">
+                {% render_field form.facility_sims class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-graph-up"></i></div>
+                  <div class="facility-name">SIMS</div>
+                  <div class="facility-desc">Espectrometría de masas</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-tech="sims" disabled>
+                <i class="bi bi-gear"></i> Ir a tarjeta
+              </button>
+            </div>
+
+            <div class="facility-item" data-technique="confocal" data-checkbox="id_facility_confocal">
+              <div class="facility-checkbox">
+                {% render_field form.facility_confocal class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-binoculars"></i></div>
+                  <div class="facility-name">Metrología de superficies ópticas 3D</div>
+                  <div class="facility-desc">Metrología óptica 3D</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-tech="confocal" disabled>
+                <i class="bi bi-gear"></i> Ir a tarjeta
+              </button>
+            </div>
+
+            <div class="facility-item" data-technique="vdg" data-checkbox="id_facility_vdg">
+              <div class="facility-checkbox">
+                {% render_field form.facility_vdg class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-lightning"></i></div>
+                  <div class="facility-name">VDG</div>
+                  <div class="facility-desc">Generador Van de Graaff</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-tech="vdg" disabled>
+                <i class="bi bi-gear"></i> Ir a tarjeta
+              </button>
+            </div>
+
+            <div class="facility-item" data-technique="profilometer" data-checkbox="id_facility_profilometer">
+              <div class="facility-checkbox">
+                {% render_field form.facility_profilometer class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-rulers"></i></div>
+                  <div class="facility-name">Profilometer</div>
+                  <div class="facility-desc">Medición de perfiles</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-modal="profilometerModal" data-tech="profilometer" disabled>
+                <i class="bi bi-gear"></i> Configurar
+              </button>
+            </div>
+
+            <div class="facility-item" data-technique="olmat" data-checkbox="id_facility_olmat">
+              <div class="facility-checkbox">
+                {% render_field form.facility_olmat class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-droplet-half"></i></div>
+                  <div class="facility-name">OLMAT</div>
+                  <div class="facility-desc">Flujo independiente</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-modal="olmatModal" data-tech="olmat" disabled>
+                <i class="bi bi-gear"></i> Configurar
+              </button>
+            </div>
+          </div>
+
+          <div class="dynamic-forms-container">
+            <div class="section-title"><i class="bi bi-clipboard-check"></i> Configuración por técnica</div>
+            <p class="muted">Al seleccionar una técnica, aparecerá su formulario aquí.</p>
+            <div id="dynamic-technique-forms"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-cash-coin"></i> Paso 4: Proyecto de financiación</h3></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nombre del proyecto</label>
+              {% render_field form.project_name class="form-input" placeholder="Nombre del proyecto" %}
+              {{ form.project_name.errors }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de proyecto</label>
+              {% render_field form.project_type class="form-input" %}
+              {{ form.project_type.errors }}
+              <small class="muted">(International, European, National, Regional)</small>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fuente de financiación</label>
+              {% render_field form.funding_source class="form-input" placeholder="Fuente de financiación" %}
+              {{ form.funding_source.errors }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Año de inicio</label>
+              {% render_field form.start_year class="form-input" placeholder="2024" %}
+              {{ form.start_year.errors }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Año de fin</label>
+              {% render_field form.end_year class="form-input" placeholder="2025" %}
+              {{ form.end_year.errors }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" id="facility_data_json" name="facility_data_json" value='{{ initial_facility_data|tojson }}'>
+      {{ initial_facility_data|json_script:"initial-facility-data" }}
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h3 class="mb-0"><i class="bi bi-people"></i> Paso 5: Participantes</h3>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="small text-muted">¿Hay más participantes además del solicitante?</span>
+                <div class="form-check form-switch m-0">
+                  <input class="form-check-input" type="checkbox" id="has-more-participants" data-participants-count="{{ participants_count }}">
+                  <label class="form-check-label" for="has-more-participants">Sí</label>
+                </div>
+              </div>
+              <button type="button" id="add-participant" class="btn btn-sm btn-outline-primary" style="display: none;"><i class="bi bi-plus-circle"></i> Añadir Participante</button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          {{ formset.management_form }}
+          <div id="participants-forms">
+            {% for f in formset %}
+              <div class="card participant-card">
+                {{ f.id }}
+                {% if forloop.first %}
+                  <div class="participant-badge">Solicitante</div>
+                {% endif %}
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label"><i class="bi bi-person"></i> Nombre completo *</label>
+                    {% render_field f.name class="form-input" placeholder="Nombre completo" %}
+                    {{ f.name.errors }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label"><i class="bi bi-building"></i> Centro/Afiliación</label>
+                    {% render_field f.center class="form-input" placeholder="Centro o institución" %}
+                    {{ f.center.errors }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label"><i class="bi bi-geo-alt"></i> Dirección</label>
+                    {% render_field f.address class="form-input" placeholder="Dirección completa" %}
+                    {{ f.address.errors }}
+                  </div>
+                </div>
+                {% if f.DELETE %}
+                  <div class="mt-2{% if forloop.first %} d-none{% endif %}">
+                    <label class="small text-muted">{{ f.DELETE|add_class:"participant-delete" }} Eliminar este participante</label>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-journal-text"></i> Paso 6: Información Adicional</h3></div>
+        <div class="card-body experiment-description-section">
+          <div class="form-group mb-3">
+            <label class="form-label">Experimentos previos</label>
+            {% render_field form.previous_experiments class="form-input" rows="3" placeholder="Describe experimentos previos relacionados con tu proyecto" %}
+            {{ form.previous_experiments.errors }}
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label"><i class="bi bi-book"></i> Referencias</label>
+            {% render_field form.references class="form-input" rows="3" placeholder="Referencias bibliográficas relevantes" %}
+            {{ form.references.errors }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-paperclip"></i> Paso 7: Archivos Adjuntos</h3></div>
+        <div class="card-body">
+          {{ attachment_formset.management_form }}
+          <div id="attachments-forms">
+            {% for f in attachment_formset %}
+              <div class="card attachment-card">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label"><i class="bi bi-file-text"></i> Nombre del documento</label>
+                    {% render_field f.name class="form-input" placeholder="Nombre descriptivo del documento" %}
+                    {{ f.name.errors }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label"><i class="bi bi-folder"></i> Archivo</label>
+                    {% render_field f.file class="form-input" %}
+                    {{ f.file.errors }}
+                  </div>
+                </div>
+                {% if f.DELETE %}
+                  <div class="mt-2">
+                    <label class="small text-muted">{{ f.DELETE }} Eliminar este archivo</label>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body d-flex gap-2 justify-content-center">
+          <button type="submit" class="btn btn-secondary"><i class="bi bi-save"></i> {% trans "Guardar Borrador" %}</button>
+          {% if editing %}
+            <a href="{% url 'icts:proposal_detail' form.instance.pk %}" class="btn btn-light"><i class="bi bi-x-circle"></i> {% trans "Cancelar" %}</a>
+          {% else %}
+            <a href="{% url 'icts:dashboard' %}" class="btn btn-light"><i class="bi bi-x-circle"></i> {% trans "Cancelar" %}</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Paso 2b: Datos especificos por tecnica (MODALES) -->
+      <!-- Los modales se definen al final del archivo -->
+
+    </div> <!-- /rest-of-form -->
+  </form>
+</div>
+
+<!-- MODALES PARA CONFIGURACIÓN DE TÉCNICAS -->
+<!-- Modal SEM (oculto, solo para extraer contenido) -->
+<div id="semModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-search"></i> Configuración SEM/EDX</h3>
+      <button type="button" class="modal-close" data-modal="semModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="sem" data-checkbox-id="id_facility_sem">
+        {% include 'icts/forms/_sem.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="semModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="semModal" data-tech="sem">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal FIB (oculto, solo para extraer contenido) -->
+<div id="fibModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-lightning-charge"></i> Configuración FIB</h3>
+      <button type="button" class="modal-close" data-modal="fibModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="fib" data-checkbox-id="id_facility_sem_fib">
+        {% include 'icts/forms/_fib.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="fibModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="fibModal" data-tech="fib">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal IMP (oculto, solo para extraer contenido) -->
+<div id="impModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-bullseye"></i> Configuración Ion Implanter</h3>
+      <button type="button" class="modal-close" data-modal="impModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="imp" data-checkbox-id="id_facility_imp">
+        {% include 'icts/forms/_imp.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="impModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="impModal" data-tech="imp">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal SIMS (oculto, solo para extraer contenido) -->
+<div id="simsModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-graph-up"></i> Configuración SIMS</h3>
+      <button type="button" class="modal-close" data-modal="simsModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="sims" data-checkbox-id="id_facility_sims">
+        {% include 'icts/forms/_sims.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="simsModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="simsModal" data-tech="sims">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confocal (oculto, solo para extraer contenido) -->
+<div id="confocalModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-binoculars"></i> Configuración Metrología de superficies ópticas 3D</h3>
+      <button type="button" class="modal-close" data-modal="confocalModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="confocal" data-checkbox-id="id_facility_confocal">
+        {% include 'icts/forms/_confocal.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="confocalModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="confocalModal" data-tech="confocal">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal VDG (oculto, solo para extraer contenido) -->
+<div id="vdgModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-lightning-charge"></i> Configuración VDG</h3>
+      <button type="button" class="modal-close" data-modal="vdgModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="vdg" data-checkbox-id="id_facility_vdg">
+        {% include 'icts/forms/_vdg.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="vdgModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="vdgModal" data-tech="vdg">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Profilometer (oculto, solo para extraer contenido) -->
+<div id="profilometerModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-rulers"></i> Configuración Profilometer</h3>
+      <button type="button" class="modal-close" data-modal="profilometerModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="profilometer" data-checkbox-id="id_facility_profilometer">
+        {% include 'icts/forms/_profilometer.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="profilometerModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="profilometerModal" data-tech="profilometer">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal OLMAT (oculto, solo para extraer contenido) -->
+<div id="olmatModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-droplet-half"></i> Configuración OLMAT</h3>
+      <button type="button" class="modal-close" data-modal="olmatModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="olmat" data-checkbox-id="id_facility_olmat">
+        {% include 'icts/forms/_olmat.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="olmatModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="olmatModal" data-tech="olmat">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Plantilla para añadir participantes nuevos -->
+<template id="empty-participant-form">
+  <div class="card participant-card">
+    <input type="hidden" name="{{ formset.prefix }}-__prefix__-id" id="id_{{ formset.prefix }}-__prefix__-id">
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label"><i class="bi bi-person"></i> Nombre completo *</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-name" id="id_{{ formset.prefix }}-__prefix__-name" class="form-input" placeholder="Nombre completo" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label"><i class="bi bi-building"></i> Centro/Afiliación</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-center" id="id_{{ formset.prefix }}-__prefix__-center" class="form-input" placeholder="Centro o institución">
+      </div>
+      <div class="form-group">
+        <label class="form-label"><i class="bi bi-geo-alt"></i> Dirección</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-address" id="id_{{ formset.prefix }}-__prefix__-address" class="form-input" placeholder="Dirección completa">
+      </div>
+    </div>
+    <input type="checkbox" name="{{ formset.prefix }}-__prefix__-DELETE" id="id_{{ formset.prefix }}-__prefix__-DELETE" class="participant-delete" style="display:none">
+  </div>
+</template>
+
+<style>
+/* Estilos generales del formulario */
+.form-grid{ 
+  display:grid; 
+  grid-template-columns:repeat(3,1fr); 
+  gap:1rem; 
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px){ 
+  .form-grid{ grid-template-columns:1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+.project-title-card{
+  border:2px solid var(--primary);
+  background:linear-gradient(135deg, rgba(26,54,93,.08), rgba(26,54,93,.12));
+  box-shadow:var(--shadow);
+}
+
+.project-title-label{ 
+  font-size:1.1rem; 
+  font-weight:800; 
+  color:var(--primary) 
+}
+
+.form-disabled{ 
+  opacity:.6; 
+  pointer-events:none; 
+  filter:blur(1px); 
+  transition:.2s 
+}
+
+.form-enabled{ 
+  opacity:1; 
+  pointer-events:auto; 
+  filter:none 
+}
+
+.form-input, textarea.form-input, select.form-input{
+  width:100%; 
+  padding:.9rem 1rem; 
+  border:2px solid var(--border); 
+  border-radius:.75rem;
+  background:var(--bg-card); 
+  box-shadow:var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.form-input:focus{ 
+  outline:none; 
+  border-color:var(--primary); 
+  box-shadow:0 0 0 4px rgba(26,54,93,.15) 
+}
+
+.form-check {
+  margin-top: 0.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Grid de instalaciones */
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.facility-item {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.facility-item:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.facility-item.selected {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(26,54,93,.05), rgba(26,54,93,.1));
+  box-shadow: 0 4px 12px rgba(26,54,93,0.15);
+}
+
+.facility-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 0;
+}
+
+.facility-checkbox input[type="checkbox"] {
+  margin-right: 0.75rem;
+  transform: scale(1.2);
+}
+
+.facility-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.facility-icon {
+  font-size: 1.5rem;
+}
+
+.facility-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.facility-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Estilos para el contenedor dinámico de formularios */
+.dynamic-forms-container {
+  margin: 2rem 0;
+}
+
+.technique-form-card {
+  background: white;
+  border: 2px solid var(--primary);
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+  overflow: hidden;
+  animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.technique-form-header {
+  background: linear-gradient(135deg, var(--primary), #0056b3);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.technique-form-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.technique-form-icon {
+  font-size: 2rem;
+}
+
+.technique-form-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.technique-status {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.technique-status.ready {
+  background: #28a745;
+  color: white;
+}
+
+.technique-status.not-ready {
+  background: #ffc107;
+  color: #000;
+}
+
+.technique-status.incomplete {
+  background: #6c757d;
+  color: white;
+}
+
+/* Estilos para campos faltantes */
+.form-input.missing {
+  border-color: #dc3545 !important;
+  background-color: #f8d7da !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.form-input.missing:focus {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.missing-field-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.missing-field-message i {
+  font-size: 0.75rem;
+}
+
+.btn-add-technique {
+  background: var(--success);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-add-technique:hover {
+  background: #198754;
+  transform: translateY(-1px);
+}
+
+.btn-remove-technique {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2rem;
+}
+
+.btn-remove-technique:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+.technique-form-body {
+  padding: 2rem;
+}
+
+.technique-form-body .tech-card {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.technique-form-body .tech-title {
+  display: none; /* Ocultamos el título porque ya está en el header */
+}
+
+/* Animaciones para notificaciones */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Estilos para placeholders de carga */
+.technique-form-placeholder {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Responsive design para formularios dinámicos */
+@media (max-width: 768px) {
+  .technique-form-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .technique-form-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .technique-form-body {
+    padding: 1rem;
+  }
+}
+
+/* Sección de información del solicitante */
+.applicant-info-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-main);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+/* Tarjetas de participantes y archivos */
+.participant-card, .attachment-card{ 
+  margin:.75rem 0; 
+  padding:1rem; 
+  border:1px solid var(--border); 
+  background:var(--bg-main);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.participant-card:hover, .attachment-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.muted{ 
+  color:var(--text-secondary) 
+}
+
+/* Botones */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  border: 1px solid #6c757d;
+}
+
+.btn-secondary:hover {
+  background: #5c636a;
+  border-color: #5c636a;
+  color: white;
+}
+
+.btn-info {
+  background: #17a2b8;
+  color: white;
+  border: 1px solid #17a2b8;
+}
+
+.btn-info:hover {
+  background: #138496;
+  border-color: #138496;
+  color: white;
+}
+
+.btn-light {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-light:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn-outline-primary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+  .btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* Secciones por técnica */
+  .tech-sections { display: grid; gap: 1rem; }
+  .tech-card{ background: var(--bg-card); border:1px solid var(--border); border-radius:.75rem; padding:1rem; box-shadow:var(--shadow); }
+  .tech-title{ margin:0 0 .75rem 0; font-size:1.1rem; font-weight:700; color: var(--text-primary); display:flex; align-items:center; gap:.5rem }
+
+  /* Alertas */
+.alert {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.alert-danger {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .facilities-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<script>
+// Sistema de modales para configuración de técnicas
+(function(){
+  // Techniques that already have dynamic cards; keep users on the card to avoid modal/card conflicts.
+  const CARD_TECHNIQUES = new Set(['sem', 'fib', 'sims', 'confocal', 'vdg', 'imp']);
+
+  function getTechniqueCheckboxId(tech) {
+    if (tech === 'fib') {
+      return 'id_facility_sem_fib';
+    }
+    return `id_facility_${tech}`;
+  }
+
+  function focusTechniqueCard(tech) {
+    const formCard = document.getElementById(`technique-form-${tech}`);
+    if (!formCard) {
+      return;
+    }
+    formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const focusTarget = formCard.querySelector('input, select, textarea, button');
+    if (focusTarget) {
+      focusTarget.focus({ preventScroll: true });
+    }
+  }
+
+  // Función para abrir modal
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+    }
+  }
+  
+  // Función para cerrar modal
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.remove('show');
+      document.body.style.overflow = ''; // Restaurar scroll del body
+    }
+  }
+  
+  // Función para habilitar/deshabilitar botones de configuración
+  function updateConfigButtons() {
+    document.querySelectorAll('.btn-modal-config').forEach(function(btn) {
+      const tech = btn.getAttribute('data-tech');
+      const checkboxId = getTechniqueCheckboxId(tech);
+      if (CARD_TECHNIQUES.has(tech)) {
+        btn.removeAttribute('data-modal');
+      }
+      
+      const checkbox = document.getElementById(checkboxId);
+      if (checkbox) {
+        btn.disabled = !checkbox.checked;
+        if (checkbox.checked) {
+          btn.style.opacity = '1';
+        } else {
+          btn.style.opacity = '0.5';
+        }
+      }
+    });
+  }
+  
+  // Event listeners para botones de configuración
+  document.addEventListener('click', function(e) {
+    const configTrigger = e.target.closest('.btn-modal-config');
+    if (configTrigger) {
+      e.preventDefault();
+      const tech = configTrigger.getAttribute('data-tech');
+      if (CARD_TECHNIQUES.has(tech)) {
+        const checkboxId = getTechniqueCheckboxId(tech);
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox) {
+          if (!checkbox.checked) {
+            checkbox.checked = true;
+          }
+          const event = new Event('change', { bubbles: true });
+          checkbox.dispatchEvent(event);
+        }
+        requestAnimationFrame(function() {
+          focusTechniqueCard(tech);
+        });
+        return;
+      }
+      const modalId = configTrigger.getAttribute('data-modal');
+      if (modalId) {
+        openModal(modalId);
+      }
+    }
+
+    // Cerrar modal con botones de cerrar
+    if (e.target.closest('.modal-close') || e.target.closest('.btn-modal-cancel')) {
+      const btn = e.target.closest('.modal-close') || e.target.closest('.btn-modal-cancel');
+      const modalId = btn.getAttribute('data-modal');
+      if (modalId) {
+        closeModal(modalId);
+      }
+    }
+    
+    // Guardar datos del modal
+    if (e.target.closest('.btn-modal-save')) {
+      const btn = e.target.closest('.btn-modal-save');
+      const modalId = btn.getAttribute('data-modal');
+      if (modalId) {
+        // Los datos se guardan automáticamente en el JSON al enviar el formulario
+        closeModal(modalId);
+      }
+    }
+  });
+  
+  // Cerrar modal al hacer clic fuera del contenido
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+      closeModal(e.target.id);
+    }
+  });
+  
+  // Cerrar modal con tecla Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const openModal = document.querySelector('.modal-overlay.show');
+      if (openModal) {
+        closeModal(openModal.id);
+      }
+    }
+  });
+  
+  // Manejar cambios en los checkboxes de técnicas
+  document.addEventListener('change', function(e) {
+    if (e.target.matches('input[type="checkbox"]') && e.target.id.startsWith('id_facility_')) {
+      handleTechniqueToggle(e.target);
+      updateAccessCode();
+    }
+  });
+
+  // Manejar cambio en el campo de solicitud anterior
+  document.addEventListener('change', function(e) {
+    if (e.target.id === 'id_previous_access') {
+      handlePreviousAccessChange(e.target);
+    }
+    
+    // Manejar cambio en "¿Es una nueva solicitud?"
+    if (e.target.id === 'id_is_new_request') {
+      handleNewRequestChange(e.target);
+    }
+  });
+
+  // Manejar clicks en las tarjetas de técnicas
+  document.addEventListener('click', function(e) {
+    const facilityItem = e.target.closest('.facility-item');
+    if (facilityItem && e.target.closest('.btn-modal-config')) {
+      return;
+    }
+    if (facilityItem && facilityItem.hasAttribute('data-technique')) {
+      const technique = facilityItem.getAttribute('data-technique');
+      const checkboxId = facilityItem.getAttribute('data-checkbox');
+      const checkbox = document.getElementById(checkboxId);
+      
+      if (checkbox) {
+        // Toggle del checkbox
+        checkbox.checked = !checkbox.checked;
+        
+        // Trigger del evento change
+        const event = new Event('change', { bubbles: true });
+        checkbox.dispatchEvent(event);
+      }
+    }
+    
+    // Manejar clicks en botones de añadir muestras
+    if (e.target.matches('.btn-add-sample') || e.target.closest('.btn-add-sample')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const button = e.target.matches('.btn-add-sample') ? e.target : e.target.closest('.btn-add-sample');
+      const onclick = button.getAttribute('onclick');
+      if (onclick) {
+        try {
+          eval(onclick);
+        } catch (error) {
+          console.error('Error executing add sample function:', error);
+        }
+      }
+    }
+    
+    // Manejar clicks en botones de remover muestras
+    if (e.target.matches('.btn-remove-sample') || e.target.closest('.btn-remove-sample')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const button = e.target.matches('.btn-remove-sample') ? e.target : e.target.closest('.btn-remove-sample');
+      const onclick = button.getAttribute('onclick');
+      if (onclick) {
+        try {
+          eval(onclick);
+        } catch (error) {
+          console.error('Error executing remove sample function:', error);
+        }
+      }
+    }
+    
+    // Manejar clicks en botones Add Technique
+    if (e.target.matches('.btn-add-technique') || e.target.closest('.btn-add-technique')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const button = e.target.matches('.btn-add-technique') ? e.target : e.target.closest('.btn-add-technique');
+      const onclick = button.getAttribute('onclick');
+      if (onclick) {
+        try {
+          eval(onclick);
+        } catch (error) {
+          console.error('Error executing add technique function:', error);
+        }
+      }
+    }
+    
+    // Manejar clicks en botones de remover técnica
+    if (e.target.matches('.btn-remove-technique') || e.target.closest('.btn-remove-technique')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const button = e.target.matches('.btn-remove-technique') ? e.target : e.target.closest('.btn-remove-technique');
+      const onclick = button.getAttribute('onclick');
+      if (onclick) {
+        try {
+          eval(onclick);
+        } catch (error) {
+          console.error('Error executing remove technique function:', error);
+        }
+      }
+    }
+  });
+  
+  // Inicializar al cargar la página
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      updateConfigButtons();
+      updateAccessCode();
+      initializeDynamicForms();
+      
+      // Inicializar el estado del campo "¿Es una nueva solicitud?"
+      const isNewRequestCheckbox = document.getElementById('id_is_new_request');
+      if (isNewRequestCheckbox) {
+        handleNewRequestChange(isNewRequestCheckbox);
+      }
+    });
+  } else {
+    updateConfigButtons();
+    updateAccessCode();
+    initializeDynamicForms();
+    
+    // Inicializar el estado del campo "¿Es una nueva solicitud?"
+    const isNewRequestCheckbox = document.getElementById('id_is_new_request');
+    if (isNewRequestCheckbox) {
+      handleNewRequestChange(isNewRequestCheckbox);
+    }
+  }
+
+  // Función para inicializar formularios dinámicos basados en checkboxes marcados
+  function initializeDynamicForms() {
+    Object.keys(techniqueConfig).forEach(checkboxId => {
+      const checkbox = document.getElementById(checkboxId);
+      if (checkbox) {
+        const template = techniqueConfig[checkboxId].template;
+        
+        // Verificar si hay datos guardados para esta técnica
+        const hasSavedData = techniqueData[template] && Object.keys(techniqueData[template]).length > 0;
+        
+        // Si hay datos guardados, marcar el checkbox
+        if (hasSavedData && !checkbox.checked) {
+          checkbox.checked = true;
+        }
+        
+        // Actualizar estado visual
+        updateFacilityItemState(checkboxId, checkbox.checked);
+        
+        // Mostrar formulario si está marcado
+        if (checkbox.checked) {
+          const config = techniqueConfig[checkboxId];
+          showTechniqueForm(checkboxId, config);
+        }
+      }
+    });
+  }
+  
+  // Función para generar código de acceso dinámico
+  const userInitials = '{{ user_initials|escapejs }}';
+  const previewMonth = '{{ preview_month }}';
+  const previewYear = '{{ preview_year }}';
+  const nextSeqPreview = '{{ next_seq_preview }}';
+  const proposalId = '{{ proposal_id|default:"" }}';
+  const isEditing = {{ editing|yesno:"true,false" }};
+  function updateAccessCode() {
+    const codeElement = document.getElementById('access-code-preview');
+    if (!codeElement) return;
+
+    const techniqueOrder = [
+      { checkboxId: 'id_facility_confocal', code: 'CONF' },
+      { checkboxId: 'id_facility_sem_fib', code: 'FIB' },
+      { checkboxId: 'id_facility_imp', code: 'IMP' },
+      { checkboxId: 'id_facility_profilometer', code: 'PERF' },
+      { checkboxId: 'id_facility_sem', code: 'SEM' },
+      { checkboxId: 'id_facility_sims', code: 'SIMS' },
+      { checkboxId: 'id_facility_vdg', code: 'VDG' },
+    ];
+
+    const selectedTechniques = [];
+    techniqueOrder.forEach(item => {
+      const checkbox = document.getElementById(item.checkboxId);
+      if (checkbox && checkbox.checked) {
+        selectedTechniques.push(item.code);
+      }
+    });
+
+    let techniquesStr = selectedTechniques.join('_');
+    if (techniquesStr) {
+      techniquesStr += '_';
+    }
+
+    const accessCode = `${techniquesStr}${userInitials}_${previewMonth}_${previewYear}_${nextSeqPreview}`;
+
+    codeElement.classList.add('updating');
+    setTimeout(() => {
+      codeElement.textContent = accessCode;
+      codeElement.classList.remove('updating');
+    }, 200);
+
+  }
+
+  // Funci¢n para serializar todos los datos de t‚cnicas
+  // Helpers for technique serialization
+  const DEBUG_TECHNIQUE_SERIALIZATION = false;
+
+  function getNameSelector(name) {
+    if (window.CSS && CSS.escape) {
+      return `[name="${CSS.escape(name)}"]`;
+    }
+    return `[name="${name.replace(/"/g, '\"')}"]`;
+  }
+
+  function collectTechniqueFormData(container) {
+    const data = {};
+    if (!container) return data;
+
+    const fields = container.querySelectorAll('input, select, textarea');
+    const checkboxGroups = {};
+    const radioGroups = {};
+
+    fields.forEach(field => {
+      if (!field.name) return;
+
+      if (field.type === 'checkbox') {
+        checkboxGroups[field.name] = checkboxGroups[field.name] || [];
+        checkboxGroups[field.name].push(field);
+        return;
+      }
+
+      if (field.type === 'radio') {
+        radioGroups[field.name] = radioGroups[field.name] || [];
+        radioGroups[field.name].push(field);
+        return;
+      }
+
+      if (field.tagName === 'SELECT' && field.multiple) {
+        const values = Array.from(field.selectedOptions).map(option => option.value);
+        data[field.name] = values;
+        return;
+      }
+
+      data[field.name] = field.value;
+    });
+
+    Object.keys(checkboxGroups).forEach(name => {
+      const group = checkboxGroups[name];
+      if (group.length > 1) {
+        const values = group.filter(input => input.checked).map(input => input.value);
+        data[name] = values;
+      } else {
+        data[name] = !!group[0].checked;
+      }
+    });
+
+    Object.keys(radioGroups).forEach(name => {
+      const group = radioGroups[name];
+      const checked = group.find(input => input.checked);
+      if (checked) {
+        data[name] = checked.value;
+      }
+    });
+
+    return data;
+  }
+
+  function debugAssertOlmatArrays(formData) {
+    if (!DEBUG_TECHNIQUE_SERIALIZATION || !formData) return;
+    const fields = ['olmat_diagnostics', 'olmat_sample_prep', 'olmat_beam_usage'];
+    fields.forEach(name => {
+      if (Object.prototype.hasOwnProperty.call(formData, name)) {
+        console.assert(Array.isArray(formData[name]), name + ' should be an array');
+      }
+    });
+  }
+
+  function normalizeOlmatArrays(formData) {
+    if (!formData || typeof formData !== 'object') return;
+    const fields = ['olmat_diagnostics', 'olmat_sample_prep', 'olmat_beam_usage'];
+    fields.forEach(name => {
+      if (!Object.prototype.hasOwnProperty.call(formData, name)) {
+        return;
+      }
+      const value = formData[name];
+      if (Array.isArray(value)) {
+        return;
+      }
+      if (typeof value === 'string' && value.trim()) {
+        formData[name] = [value];
+      } else {
+        formData[name] = [];
+      }
+    });
+  }
+
+  function isEmptyValue(value) {
+    if (value === null || value === undefined) {
+      return true;
+    }
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+    if (typeof value === 'string') {
+      return value.trim() === '';
+    }
+    return false;
+  }
+
+  function mergeTechniqueData(primaryData, secondaryData) {
+    const base = primaryData && typeof primaryData === 'object' ? primaryData : {};
+    const merged = Object.assign({}, base);
+    if (!secondaryData || typeof secondaryData !== 'object') {
+      return merged;
+    }
+
+    Object.keys(secondaryData).forEach(name => {
+      const secondaryValue = secondaryData[name];
+      const primaryValue = merged[name];
+
+      if (Array.isArray(secondaryValue)) {
+        if (!secondaryValue.length) {
+          return;
+        }
+        if (Array.isArray(primaryValue) && primaryValue.length) {
+          merged[name] = Array.from(new Set(primaryValue.concat(secondaryValue)));
+          return;
+        }
+        if (isEmptyValue(primaryValue)) {
+          merged[name] = secondaryValue.slice();
+        }
+        return;
+      }
+
+      if (isEmptyValue(primaryValue) && !isEmptyValue(secondaryValue)) {
+        merged[name] = secondaryValue;
+      }
+    });
+
+    return merged;
+  }
+
+  function getSelectedTechniqueTemplates() {
+    if (typeof techniqueConfig !== 'object' || !techniqueConfig) {
+      return [];
+    }
+    var selected = [];
+    Object.keys(techniqueConfig).forEach(function(checkboxId) {
+      var checkbox = document.getElementById(checkboxId);
+      if (checkbox && checkbox.checked) {
+        selected.push(techniqueConfig[checkboxId].template);
+      }
+    });
+    return selected;
+  }
+
+  // Funcion para serializar todos los datos de tecnicas
+  function serializeAllTechniqueData() {
+    var data = {};
+    var cardDataByTech = {};
+    var modalDataByTech = {};
+    var selectedTechniques = getSelectedTechniqueTemplates();
+
+    // Do not merge modal template data over card data; templates can reset real values.
+    selectedTechniques.forEach(function(tech) {
+      var card = document.getElementById(`technique-form-${tech}`);
+      if (card) {
+        var cardData = collectTechniqueFormData(card);
+        if (tech === 'olmat') {
+          normalizeOlmatArrays(cardData);
+          debugAssertOlmatArrays(cardData);
+        }
+        cardDataByTech[tech] = cardData;
+        data[tech] = cardData;
+        return;
+      }
+
+      if (techniqueData[tech] && Object.keys(techniqueData[tech]).length > 0) {
+        if (tech === 'olmat') {
+          normalizeOlmatArrays(techniqueData[tech]);
+          debugAssertOlmatArrays(techniqueData[tech]);
+        }
+        data[tech] = techniqueData[tech];
+        return;
+      }
+
+      var modalSection = document.querySelector(`#${tech}Modal .facility-section`);
+      if (modalSection) {
+        var modalData = collectTechniqueFormData(modalSection);
+        if (tech === 'olmat') {
+          normalizeOlmatArrays(modalData);
+          debugAssertOlmatArrays(modalData);
+        }
+        modalDataByTech[tech] = modalData;
+        data[tech] = modalData;
+        return;
+      }
+
+      data[tech] = {};
+    });
+
+    if (DEBUG_TECHNIQUE_SERIALIZATION) {
+      console.log('serializeAllTechniqueData techniqueData', techniqueData);
+      console.log('serializeAllTechniqueData cardDataByTech', cardDataByTech);
+      console.log('serializeAllTechniqueData modalDataByTech', modalDataByTech);
+      console.log('serializeAllTechniqueData data', data);
+    }
+
+    var hidden = document.getElementById('facility_data_json');
+    if (hidden) {
+      hidden.value = JSON.stringify(data);
+    }
+
+    return data;
+  }
+
+  function persistFacilityDataJson() {
+    serializeAllTechniqueData();
+  }
+
+// Serializar secciones visibles a JSON antes de enviar
+  var form = document.querySelector('form[method=post]');
+  if(form){
+    form.addEventListener('submit', function(){
+      // Mostrar código tapado al enviar
+      maskAccessCode();
+      
+      // Serializar todos los datos de técnicas
+      serializeAllTechniqueData();
+      if (DEBUG_TECHNIQUE_SERIALIZATION) {
+        var hidden = document.getElementById('facility_data_json');
+        console.log('facility_data_json about to submit', hidden ? hidden.value : null);
+      }
+
+      if (!isEditing) {
+        localStorage.removeItem(getTechniqueStorageKey());
+      }
+    });
+  }
+  // Prefill desde json_script
+  const initialFacilityData = JSON.parse(document.getElementById('initial-facility-data').textContent || "{}");
+
+  function applyTechniqueDataToContainer(container, templateData) {
+    if (!container || !templateData) return;
+    Object.keys(templateData).forEach(name => {
+      const value = templateData[name];
+      const selector = getNameSelector(name);
+      const fields = container.querySelectorAll(selector);
+      if (!fields.length) return;
+
+      fields.forEach(field => {
+        if (field.type === 'checkbox') {
+          if (Array.isArray(value)) {
+            field.checked = value.map(String).includes(String(field.value));
+          } else if (typeof value === 'boolean') {
+            field.checked = fields.length === 1 ? value : false;
+          } else {
+            field.checked = String(value) === String(field.value);
+          }
+          return;
+        }
+
+        if (field.type === 'radio') {
+          field.checked = String(value) === String(field.value);
+          return;
+        }
+
+        if (field.tagName === 'SELECT' && field.multiple) {
+          const values = Array.isArray(value) ? value.map(String) : [];
+          Array.from(field.options).forEach(option => {
+            option.selected = values.includes(String(option.value));
+          });
+          return;
+        }
+
+        if (value === null || value === undefined) {
+          field.value = '';
+        } else {
+          field.value = value;
+        }
+      });
+    });
+  }
+
+  function getDynamicSampleCount(template, templateData) {
+    if (!templateData || typeof templateData !== 'object') return 1;
+    const pattern = new RegExp(`^${template}_sample_(\\d+)_`);
+    let maxIndex = -1;
+    Object.keys(templateData).forEach(name => {
+      const match = name.match(pattern);
+      if (!match) return;
+      const index = parseInt(match[1], 10);
+      if (!Number.isNaN(index) && index > maxIndex) {
+        maxIndex = index;
+      }
+    });
+    return Math.max(maxIndex + 1, 1);
+  }
+
+  function ensureSampleCards(template, formCard, neededCount) {
+    const samplesTemplates = ['sem', 'fib', 'sims', 'confocal', 'imp', 'vdg'];
+    if (!samplesTemplates.includes(template) || !formCard) return;
+    const needed = Math.max(neededCount || 1, 1);
+
+    const container = formCard.querySelector(`#${template}-samples-container`);
+    if (!container) return;
+
+    const adders = {
+      sem: typeof addSemSample === 'function' ? addSemSample : null,
+      fib: typeof addFibSample === 'function' ? addFibSample : null,
+      sims: typeof addSimsSample === 'function' ? addSimsSample : null,
+      confocal: typeof addConfocalSample === 'function' ? addConfocalSample : null,
+      imp: typeof addImpSample === 'function' ? addImpSample : null,
+      vdg: typeof addVdgSample === 'function' ? addVdgSample : null
+    };
+    const addFn = adders[template];
+    if (!addFn) return;
+
+    let current = container.querySelectorAll('.sample-card').length;
+    while (current < needed) {
+      const before = current;
+      addFn(container);
+      current = container.querySelectorAll('.sample-card').length;
+      if (current <= before) {
+        break;
+      }
+    }
+  }
+
+  function syncTechniqueCheckboxLabels(container) {
+    if (!container) return;
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+      const label = checkbox.nextElementSibling;
+      if (!label) return;
+      if (label.classList.contains('info-label') || label.classList.contains('safety-label')) {
+        label.textContent = checkbox.checked ? 'YES' : 'NO';
+      }
+    });
+  }
+
+  function getTechniqueStorageKey() {
+    if (isEditing && proposalId) {
+      return `technique_drafts_${proposalId}`;
+    }
+    return 'technique_drafts_new';
+  }
+
+  Object.keys(initialFacilityData).forEach(tech => {
+    const modalSection = document.querySelector(`#${tech}Modal .facility-section`);
+    if (modalSection) {
+      applyTechniqueDataToContainer(modalSection, initialFacilityData[tech]);
+    }
+  });
+
+  // ========= FUNCIONALIDAD DINÁMICA DE TÉCNICAS =========
+  
+  // Mapeo de técnicas
+  const techniqueConfig = {
+    'id_facility_sem': {
+      name: 'SEM/EDX',
+      icon: 'bi-search',
+      template: 'sem'
+    },
+    'id_facility_sem_fib': {
+      name: 'FIB',
+      icon: 'bi-lightning-charge',
+      template: 'fib'
+    },
+    'id_facility_imp': {
+      name: 'Ion Implanter',
+      icon: 'bi-bullseye',
+      template: 'imp'
+    },
+    'id_facility_sims': {
+      name: 'SIMS',
+      icon: 'bi-graph-up',
+      template: 'sims'
+    },
+    'id_facility_confocal': {
+      name: 'Metrolog\u00eda de superficies \u00f3pticas 3D',
+      icon: 'bi-binoculars',
+      template: 'confocal'
+    },
+    'id_facility_vdg': {
+      name: 'VDG',
+      icon: 'bi-lightning-charge',
+      template: 'vdg'
+    },
+    'id_facility_profilometer': {
+      name: 'Profilometer',
+      icon: 'bi-rulers',
+      template: 'profilometer'
+    },
+    'id_facility_olmat': {
+      name: 'OLMAT',
+      icon: 'bi-droplet-half',
+      template: 'olmat'
+    }
+  };
+
+  // Almacenamiento de datos de técnicas
+  let techniqueData = initialFacilityData;
+
+  // Función para manejar el toggle de técnicas
+  function handleTechniqueToggle(checkbox) {
+    const techniqueId = checkbox.id;
+    const config = techniqueConfig[techniqueId];
+    
+    if (!config) return;
+
+    // Actualizar estado visual de la tarjeta
+    updateFacilityItemState(techniqueId, checkbox.checked);
+
+    if (checkbox.checked) {
+      // Cerrar cualquier otra técnica activa
+      const canProceed = closeAllOtherTechniques(techniqueId);
+      
+      // Solo mostrar la nueva técnica si se completó el cierre
+      if (canProceed) {
+        showTechniqueForm(techniqueId, config);
+      }
+    } else {
+      hideTechniqueForm(techniqueId);
+    }
+  }
+
+  // Función para cerrar todas las otras técnicas
+  function closeAllOtherTechniques(currentTechniqueId) {
+    let shouldCancel = false;
+    
+    Object.keys(techniqueConfig).forEach(checkboxId => {
+      if (checkboxId !== currentTechniqueId) {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox && checkbox.checked) {
+          const template = techniqueConfig[checkboxId].template;
+          
+          // Verificar si la técnica ha sido guardada
+          const isSaved = techniqueData[template] && Object.keys(techniqueData[template]).length > 0;
+          
+          if (isSaved) {
+            // Si está guardada, solo ocultar el formulario pero mantener el checkbox marcado
+            hideTechniqueFormOnly(checkboxId);
+          } else {
+            // Si no está guardada, verificar si hay datos no guardados
+            const hasUnsavedData = hasUnsavedTechniqueData(template);
+            
+            if (hasUnsavedData) {
+              // Mostrar confirmación antes de cerrar
+              const confirmed = confirm(`¿Estás seguro de que quieres cerrar ${techniqueConfig[checkboxId].name}? Se perderán los datos no guardados.`);
+              if (!confirmed) {
+                shouldCancel = true;
+                return;
+              }
+            }
+            
+            // Cerrar la técnica no guardada
+            checkbox.checked = false;
+            updateFacilityItemState(checkboxId, false);
+            hideTechniqueForm(checkboxId);
+          }
+        }
+      }
+    });
+    
+    // Si se canceló, desmarcar la técnica actual y no mostrar su formulario
+    if (shouldCancel) {
+      const currentCheckbox = document.getElementById(currentTechniqueId);
+      if (currentCheckbox) {
+        currentCheckbox.checked = false;
+        updateFacilityItemState(currentTechniqueId, false);
+      }
+      return false; // Indicar que se canceló
+    }
+    
+    return true; // Indicar que se completó
+  }
+
+  // Función para verificar si hay datos no guardados
+  function hasUnsavedTechniqueData(template) {
+    const formCard = document.getElementById(`technique-form-${template}`);
+    if (!formCard) return false;
+
+    // Verificar si hay datos en el formulario
+    const inputs = formCard.querySelectorAll('input, select, textarea');
+    let hasData = false;
+
+    inputs.forEach(input => {
+      if (input.name && input.name.includes(template)) {
+        if (input.type === 'checkbox' || input.type === 'radio') {
+          if (input.checked) hasData = true;
+        } else {
+          if (input.value.trim()) hasData = true;
+        }
+      }
+    });
+
+    // Verificar si hay datos guardados en el servidor
+    const hasSavedData = techniqueData[template] && Object.keys(techniqueData[template]).length > 0;
+
+    return hasData && !hasSavedData;
+  }
+
+  // Función para actualizar el estado visual de las tarjetas
+  function updateFacilityItemState(techniqueId, isSelected) {
+    const facilityItem = document.querySelector(`[data-checkbox="${techniqueId}"]`);
+    if (facilityItem) {
+      if (isSelected) {
+        facilityItem.classList.add('selected');
+      } else {
+        facilityItem.classList.remove('selected');
+      }
+    }
+  }
+
+  // Función para mostrar el formulario de una técnica
+  function showTechniqueForm(techniqueId, config) {
+    const container = document.getElementById('dynamic-technique-forms');
+    if (!container) return;
+
+    // Verificar si ya existe
+    if (document.getElementById(`technique-form-${config.template}`)) {
+      return;
+    }
+
+    // Crear el contenedor del formulario
+    const formCard = document.createElement('div');
+    formCard.className = 'technique-form-card';
+    formCard.id = `technique-form-${config.template}`;
+    formCard.setAttribute('data-technique', config.template);
+
+    // Crear el header
+    const header = document.createElement('div');
+    header.className = 'technique-form-header';
+    header.innerHTML = `
+      <div class="technique-form-title">
+        <i class="bi ${config.icon} technique-form-icon"></i>
+        <span>Configuración ${config.name}</span>
+      </div>
+           <div class="technique-form-actions">
+             <span class="technique-status not-ready" id="status-${config.template}">Not ready</span>
+             <button type="button" class="btn-add-technique" onclick="addTechnique('${config.template}')">
+               <i class="bi bi-plus-circle"></i> Add Technique
+             </button>
+             <button type="button" class="btn-remove-technique" onclick="removeTechnique('${config.template}')">
+               <i class="bi bi-x"></i>
+             </button>
+           </div>
+    `;
+
+    // Crear el body con el formulario
+    const body = document.createElement('div');
+    body.className = 'technique-form-body';
+    body.innerHTML = getTechniqueFormHTML(config.template);
+
+    formCard.appendChild(header);
+    formCard.appendChild(body);
+    container.appendChild(formCard);
+
+    // Inicializar funcionalidad específica de la técnica
+    initializeTechniqueForm(config.template);
+
+    // Re-ejecutar scripts del formulario
+    reinitializeFormScripts(config.template);
+
+    // Cargar datos guardados si existen
+    loadTechniqueData(config.template);
+  }
+
+  // Función para ocultar el formulario de una técnica
+  function hideTechniqueForm(techniqueId) {
+    const config = techniqueConfig[techniqueId];
+    if (!config) return;
+
+    const formCard = document.getElementById(`technique-form-${config.template}`);
+    if (formCard) {
+      formCard.remove();
+      // Limpiar datos de la técnica
+      delete techniqueData[config.template];
+      persistFacilityDataJson();
+    }
+  }
+
+  // Función para ocultar solo el formulario sin eliminar los datos (para técnicas guardadas)
+  function hideTechniqueFormOnly(techniqueId) {
+    const config = techniqueConfig[techniqueId];
+    if (!config) return;
+
+    const formCard = document.getElementById(`technique-form-${config.template}`);
+    if (formCard) {
+      formCard.remove();
+      // NO eliminar los datos de techniqueData para técnicas guardadas
+    }
+  }
+
+  // Función para obtener el HTML del formulario de una técnica
+  function getTechniqueFormHTML(template) {
+    // Obtener el contenido del modal correspondiente
+    const modal = document.getElementById(`${template}Modal`);
+    if (!modal) {
+      return `<div class="technique-form-placeholder" data-template="${template}">
+        <p>Formulario de ${template} no encontrado.</p>
+      </div>`;
+    }
+
+    // Extraer el contenido del modal
+    const modalBody = modal.querySelector('.modal-body');
+    if (!modalBody) {
+      return `<div class="technique-form-placeholder" data-template="${template}">
+        <p>Contenido del formulario de ${template} no encontrado.</p>
+      </div>`;
+    }
+
+    // Clonar el contenido completo
+    const clonedContent = modalBody.cloneNode(true);
+    
+    // Remover atributos específicos del modal pero mantener toda la funcionalidad
+    const facilitySection = clonedContent.querySelector('.facility-section');
+    if (facilitySection) {
+      facilitySection.removeAttribute('data-checkbox-id');
+      // Mantener el data-tech para identificación
+      facilitySection.setAttribute('data-tech', template);
+    }
+
+    return clonedContent.innerHTML;
+  }
+
+  // Función para inicializar el formulario de una técnica
+  function initializeTechniqueForm(template) {
+    const formCard = document.getElementById(`technique-form-${template}`);
+    if (!formCard) return;
+
+    // Inicializar funcionalidad específica según la técnica
+    switch (template) {
+      case 'sem':
+        initializeSemForm(formCard);
+        break;
+      case 'fib':
+        initializeFibForm(formCard);
+        break;
+      case 'sims':
+        initializeSimsForm(formCard);
+        break;
+      case 'confocal':
+        initializeConfocalForm(formCard);
+        break;
+      case 'imp':
+      case 'vdg':
+      case 'profilometer':
+        // Estas técnicas no requieren inicialización especial
+        break;
+    }
+
+    // Agregar listeners para validación en tiempo real
+    addValidationListeners(formCard, template);
+  }
+
+  // Función para re-ejecutar scripts del formulario
+  function reinitializeFormScripts(template) {
+    const formCard = document.getElementById(`technique-form-${template}`);
+    if (!formCard) return;
+
+    // Buscar y ejecutar scripts dentro del formulario
+    const scripts = formCard.querySelectorAll('script');
+    scripts.forEach(script => {
+      try {
+        // Crear un nuevo script y ejecutarlo
+        const newScript = document.createElement('script');
+        newScript.textContent = script.textContent;
+        document.head.appendChild(newScript);
+        document.head.removeChild(newScript);
+      } catch (e) {
+        console.log('Script execution error:', e);
+      }
+    });
+  }
+
+  // Función para inicializar formulario SEM
+  function initializeSemForm(formCard) {
+    // Inicializar tabla periódica si existe
+    const periodicTable = formCard.querySelector('.periodic-table');
+    if (periodicTable && typeof createPeriodicTable === 'function') {
+      createPeriodicTable();
+    }
+
+    // Inicializar funcionalidad de checkboxes
+    const checkboxes = formCard.querySelectorAll('.info-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (label && label.classList.contains('info-label')) {
+          label.textContent = this.checked ? 'YES' : 'NO';
+        }
+      });
+    });
+
+    // Inicializar funcionalidad específica de SEM
+    const edxCheckbox = formCard.querySelector('#sem-edx-request');
+    const periodicTableContainer = formCard.querySelector('#periodic-table-container');
+    const conductiveCheckbox = formCard.querySelector('#sem-sample-conductive');
+    const conductiveLayerContainer = formCard.querySelector('#conductive-layer-container');
+
+    // Funcionalidad para mostrar/ocultar tabla periódica
+    if (edxCheckbox && periodicTableContainer) {
+      edxCheckbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (label && label.classList.contains('info-label')) {
+          label.textContent = this.checked ? 'YES' : 'NO';
+        }
+
+        if (this.checked) {
+          periodicTableContainer.style.display = 'block';
+          if (typeof createPeriodicTable === 'function') {
+            createPeriodicTable();
+          }
+        } else {
+          periodicTableContainer.style.display = 'none';
+          if (typeof selectedElements !== 'undefined') {
+            selectedElements = [];
+            if (typeof updateSelectedElementsDisplay === 'function') {
+              updateSelectedElementsDisplay();
+            }
+          }
+        }
+      });
+    }
+
+    // Funcionalidad para mostrar/ocultar selección de capa conductiva
+    if (conductiveCheckbox && conductiveLayerContainer) {
+      conductiveCheckbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (label && label.classList.contains('info-label')) {
+          label.textContent = this.checked ? 'YES' : 'NO';
+        }
+
+        if (this.checked) {
+          conductiveLayerContainer.style.display = 'none';
+        } else {
+          conductiveLayerContainer.style.display = 'block';
+        }
+      });
+    }
+  }
+
+  // Función para inicializar formulario FIB
+  function initializeFibForm(formCard) {
+    // Inicializar funcionalidad de checkboxes
+    const checkboxes = formCard.querySelectorAll('.safety-checkbox, .info-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (label && (label.classList.contains('safety-label') || label.classList.contains('info-label'))) {
+          label.textContent = this.checked ? 'YES' : 'NO';
+        }
+      });
+    });
+  }
+
+  // Función para inicializar formulario SIMS
+  function initializeSimsForm(formCard) {
+    // Inicializar funcionalidad de checkboxes
+    const checkboxes = formCard.querySelectorAll('.info-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (label && label.classList.contains('info-label')) {
+          label.textContent = this.checked ? 'YES' : 'NO';
+        }
+      });
+    });
+
+    // Inicializar funcionalidad específica de SIMS
+    const atomicElementsCheckbox = formCard.querySelector('#sims-atomic-elements');
+    const periodicTableContainer = formCard.querySelector('#sims-periodic-table-container');
+
+    // Funcionalidad para mostrar/ocultar tabla periódica SIMS
+    if (atomicElementsCheckbox && periodicTableContainer) {
+      atomicElementsCheckbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (label && label.classList.contains('info-label')) {
+          label.textContent = this.checked ? 'YES' : 'NO';
+        }
+
+        if (this.checked) {
+          periodicTableContainer.style.display = 'block';
+          if (typeof createSimsPeriodicTable === 'function') {
+            createSimsPeriodicTable();
+          }
+        } else {
+          periodicTableContainer.style.display = 'none';
+          if (typeof simsSelectedElements !== 'undefined') {
+            simsSelectedElements = [];
+            if (typeof updateSimsSelectedElementsDisplay === 'function') {
+              updateSimsSelectedElementsDisplay();
+            }
+          }
+        }
+      });
+    }
+
+    // Inicializar cálculo de área
+    const areaWidthInput = formCard.querySelector('#sims-area-width');
+    const areaHeightInput = formCard.querySelector('#sims-area-height');
+    const areaTotalDisplay = formCard.querySelector('#sims-area-total');
+
+    if (areaWidthInput && areaHeightInput && areaTotalDisplay) {
+      const calculateArea = () => {
+        const width = parseFloat(areaWidthInput.value) || 0;
+        const height = parseFloat(areaHeightInput.value) || 0;
+        const totalArea = width * height;
+
+        if (totalArea > 0) {
+          areaTotalDisplay.textContent = `${totalArea.toFixed(2)} mm²`;
+        } else {
+          areaTotalDisplay.textContent = '0 mm²';
+        }
+      };
+
+      areaWidthInput.addEventListener('input', calculateArea);
+      areaHeightInput.addEventListener('input', calculateArea);
+    }
+  }
+
+  // Función para inicializar formulario Confocal
+  function initializeConfocalForm(formCard) {
+    // Inicializar funcionalidad de checkboxes
+    const checkboxes = formCard.querySelectorAll('.info-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (label && label.classList.contains('info-label')) {
+          label.textContent = this.checked ? 'YES' : 'NO';
+        }
+      });
+    });
+  }
+
+  // Función para agregar listeners de validación
+  function addValidationListeners(formCard, template) {
+    const inputs = formCard.querySelectorAll('input, select, textarea');
+    
+    inputs.forEach(input => {
+      input.addEventListener('change', function() {
+        validateTechniqueForm(template);
+      });
+      
+        input.addEventListener('input', function() {
+          // Limpiar resaltado cuando el usuario empiece a escribir
+          if (this.classList.contains('missing')) {
+            this.classList.remove('missing');
+          }
+          const container = this.closest('.form-group') || this.parentNode;
+          if (container) {
+            const message = container.querySelector('.missing-field-message');
+            if (message) {
+              message.remove();
+            }
+          }
+          validateTechniqueForm(template);
+        });
+    });
+  }
+
+  // Definir campos requeridos para cada técnica
+  function getRequiredFields(template) {
+    const requiredFields = {
+      'sem': [
+        { name: 'sem_sample_0_identification', label: 'Sample Identification', type: 'text' },
+        { name: 'sem_sample_0_name', label: 'Sample Name', type: 'text' },
+        { name: 'sem_sample_0_details', label: 'Sample Details', type: 'textarea' }
+      ],
+      'sims': [
+        { name: 'sims_sample_0_identification', label: 'Sample Identification', type: 'text' },
+        { name: 'sims_sample_0_name', label: 'Sample Name', type: 'text' },
+        { name: 'sims_sample_0_details', label: 'Sample Details', type: 'textarea' }
+      ],
+      'fib': [
+        { name: 'fib_sample_0_identification', label: 'Sample Identification', type: 'text' },
+        { name: 'fib_sample_0_name', label: 'Sample Name', type: 'text' },
+        { name: 'fib_sample_0_details', label: 'Sample Details', type: 'textarea' }
+      ],
+      'confocal': [
+        { name: 'confocal_sample_0_identification', label: 'Sample Identification', type: 'text' },
+        { name: 'confocal_sample_0_name', label: 'Sample Name', type: 'text' },
+        { name: 'confocal_sample_0_details', label: 'Sample Details', type: 'textarea' }
+      ],
+        'imp': [
+          { name: 'imp_sample_0_identification', label: 'Sample Identification', type: 'text' },
+          { name: 'imp_species', label: 'Species', type: 'checkbox' },
+          { name: 'imp_energy_keV', label: 'Energy (keV)', type: 'number' },
+          { name: 'imp_fluence_ion_cm2', label: 'Fluence (ion/cm2)', type: 'number' },
+          { name: 'imp_temperature_C', label: 'Temperature (C)', type: 'number' },
+          { name: 'imp_chamber', label: 'Chamber', type: 'select' },
+          { name: 'imp_sample_diameter_mm', label: 'Sample diameter (mm)', type: 'number' },
+          { name: 'imp_sample_thickness_mm', label: 'Sample thickness (mm)', type: 'number' }
+        ],
+      'vdg': [
+        { name: 'vdg_sample_0_code', label: 'Code', type: 'text' },
+        { name: 'vdg_sample_0_material', label: 'Material', type: 'text' },
+        { name: 'vdg_sample_0_electron_fluence', label: 'Electron fluence', type: 'number' },
+        { name: 'vdg_sample_0_temperature', label: 'Temperature', type: 'number' },
+        { name: 'vdg_sample_0_atmosphere', label: 'Atmosphere', type: 'text' },
+        { name: 'vdg_experiment_description', label: 'Experiment Description', type: 'textarea' }
+      ],
+      'profilometer': [
+        { name: 'profilometer_num_samples', label: 'Number of Samples', type: 'text' },
+        { name: 'profilometer_range_um', label: 'Range (μm)', type: 'text' },
+        { name: 'profilometer_resolution_nm', label: 'Resolution (nm)', type: 'text' }
+      ],
+      'olmat': [
+        { name: 'olmat_activity_description', label: 'Short Description', type: 'textarea' },
+        { name: 'olmat_irradiation_requirements', label: 'Heat Load / Irradiation', type: 'textarea' },
+        { name: 'olmat_service_type', label: 'Service Type', type: 'select' },
+        { name: 'olmat_preferred_dates', label: 'Preferred Dates', type: 'text' },
+        { name: 'olmat_additional_requirements', label: 'Additional Requirements', type: 'textarea' }
+      ]
+    };
+    
+    return requiredFields[template] || [];
+  }
+
+  function getFieldInputs(formCard, fieldName) {
+    if (!formCard) return [];
+    const selector = getNameSelector(fieldName);
+    return Array.from(formCard.querySelectorAll(selector));
+  }
+
+  function hasFieldValue(formCard, fieldName) {
+    const inputs = getFieldInputs(formCard, fieldName);
+    if (!inputs.length) return false;
+    const input = inputs[0];
+
+    if (input.type === 'checkbox') {
+      if (inputs.length > 1) {
+        return inputs.some(item => item.checked);
+      }
+      return input.checked;
+    }
+
+    if (input.type === 'radio') {
+      return inputs.some(item => item.checked);
+    }
+
+    if (input.tagName === 'SELECT' && input.multiple) {
+      return Array.from(input.selectedOptions).length > 0;
+    }
+
+    const value = input.value !== undefined && input.value !== null ? String(input.value) : '';
+    return value.trim().length > 0;
+  }
+
+  // Función para validar formulario de técnica
+  function validateTechniqueForm(template) {
+    const formCard = document.getElementById(`technique-form-${template}`);
+    if (!formCard) return;
+
+    const requiredFields = getRequiredFields(template);
+    let allRequiredFieldsValid = true;
+    let hasAnyData = false;
+
+    // Verificar campos requeridos
+    requiredFields.forEach(field => {
+      const hasValue = hasFieldValue(formCard, field.name);
+      if (!hasValue) {
+        allRequiredFieldsValid = false;
+      } else {
+        hasAnyData = true;
+      }
+    });
+
+    // Verificar si hay algún dato ingresado en general
+    const allInputs = formCard.querySelectorAll('input, select, textarea');
+    allInputs.forEach(input => {
+      if (input.name && input.name.includes(template)) {
+        if (input.type === 'checkbox') {
+          if (input.checked) hasAnyData = true;
+        } else if (input.type === 'radio') {
+          if (input.checked) hasAnyData = true;
+        } else {
+          if (input.value.trim()) hasAnyData = true;
+        }
+      }
+    });
+
+    // Determinar estado
+    let status = 'incomplete';
+    if (hasAnyData && allRequiredFieldsValid) {
+      status = 'ready';
+    } else if (hasAnyData && !allRequiredFieldsValid) {
+      status = 'not-ready';
+    }
+
+    updateTechniqueStatus(template, status);
+    return allRequiredFieldsValid;
+  }
+
+  // Funciones de validación específicas por técnica
+  function validateSemForm(formCard) {
+    // Validar que al menos haya una muestra
+    const sampleCards = formCard.querySelectorAll('.sample-card');
+    if (sampleCards.length === 0) return false;
+    
+    // Validar que la primera muestra tenga datos básicos
+    const firstSample = sampleCards[0];
+    const identification = firstSample.querySelector('input[name*="identification"]');
+    const name = firstSample.querySelector('input[name*="name"]');
+    
+    return identification && identification.value.trim() && 
+           name && name.value.trim();
+  }
+
+  function validateFibForm(formCard) {
+    // Similar validación para FIB
+    const sampleCards = formCard.querySelectorAll('.sample-card');
+    if (sampleCards.length === 0) return false;
+    
+    const firstSample = sampleCards[0];
+    const identification = firstSample.querySelector('input[name*="identification"]');
+    const name = firstSample.querySelector('input[name*="name"]');
+    
+    return identification && identification.value.trim() && 
+           name && name.value.trim();
+  }
+
+  function validateSimsForm(formCard) {
+    // Similar validación para SIMS
+    const sampleCards = formCard.querySelectorAll('.sample-card');
+    if (sampleCards.length === 0) return false;
+    
+    const firstSample = sampleCards[0];
+    const identification = firstSample.querySelector('input[name*="identification"]');
+    const name = firstSample.querySelector('input[name*="name"]');
+    
+    return identification && identification.value.trim() && 
+           name && name.value.trim();
+  }
+
+  function validateConfocalForm(formCard) {
+    // Similar validación para Confocal
+    const sampleCards = formCard.querySelectorAll('.sample-card');
+    if (sampleCards.length === 0) return false;
+    
+    const firstSample = sampleCards[0];
+    const identification = firstSample.querySelector('input[name*="identification"]');
+    const name = firstSample.querySelector('input[name*="name"]');
+    
+    return identification && identification.value.trim() && 
+           name && name.value.trim();
+  }
+
+  function validateImpForm(formCard) {
+    const requiredFields = getRequiredFields('imp');
+    return requiredFields.every(field => hasFieldValue(formCard, field.name));
+  }
+
+  function validateVdgForm(formCard) {
+    const requiredFields = getRequiredFields('vdg');
+    return requiredFields.every(field => hasFieldValue(formCard, field.name));
+  }
+
+  function validateProfilometerForm(formCard) {
+    // Validar campos básicos de Profilometer
+    const numSamples = formCard.querySelector('input[name="profilometer_num_samples"]');
+    const range = formCard.querySelector('input[name="profilometer_range_um"]');
+    const resolution = formCard.querySelector('input[name="profilometer_resolution_nm"]');
+    
+    return numSamples && numSamples.value.trim() && 
+           range && range.value.trim() && 
+           resolution && resolution.value.trim();
+  }
+
+  // Función para resaltar campos faltantes
+  function highlightMissingFields(template) {
+    const formCard = document.getElementById(`technique-form-${template}`);
+    if (!formCard) return;
+
+    const requiredFields = getRequiredFields(template);
+    let hasMissingFields = false;
+
+    // Limpiar resaltados anteriores
+    formCard.querySelectorAll('.form-input.missing').forEach(input => {
+      input.classList.remove('missing');
+    });
+    formCard.querySelectorAll('.missing-field-message').forEach(msg => {
+      msg.remove();
+    });
+
+    // Verificar y resaltar campos faltantes
+    requiredFields.forEach(field => {
+      const inputs = getFieldInputs(formCard, field.name);
+      if (!inputs.length) {
+        return;
+      }
+      const hasValue = hasFieldValue(formCard, field.name);
+      if (!hasValue) {
+        hasMissingFields = true;
+        inputs.forEach(input => {
+          if (input.classList.contains('form-input')) {
+            input.classList.add('missing');
+          }
+        });
+
+        const container = inputs[0].closest('.form-group') || inputs[0].parentNode;
+        if (container) {
+          const message = document.createElement('div');
+          message.className = 'missing-field-message';
+          message.innerHTML = `<i class="bi bi-exclamation-triangle"></i> Please fill in ${field.label.toLowerCase()}`;
+          container.appendChild(message);
+        }
+      }
+    });
+
+    return hasMissingFields;
+  }
+
+  // Función para añadir técnica (antes saveTechniqueDraft)
+  function addTechnique(template) {
+    const formCard = document.getElementById(`technique-form-${template}`);
+    if (!formCard) return;
+
+    // Resaltar campos faltantes
+    const hasMissingFields = highlightMissingFields(template);
+    
+    if (hasMissingFields) {
+      showNotification('Please complete all required fields before adding the technique', 'warning');
+      return;
+    }
+
+    // Guardar los datos
+    saveTechniqueDraft(template);
+  }
+
+  // Función para guardar borrador de una técnica
+  function saveTechniqueDraft(template) {
+    const formCard = document.getElementById(`technique-form-${template}`);
+    if (!formCard) return;
+
+    // Recopilar datos del formulario
+    const formData = collectTechniqueFormData(formCard);
+    if (template === 'olmat') {
+      normalizeOlmatArrays(formData);
+      debugAssertOlmatArrays(formData);
+    }
+
+    // Guardar en el servidor
+    fetch('{% url "icts:save_technique_draft" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: JSON.stringify({
+        technique: template,
+        form_data: formData,
+        proposal_id: proposalId || null
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // También guardar localmente como backup
+        techniqueData[template] = formData;
+        localStorage.setItem(getTechniqueStorageKey(), JSON.stringify(techniqueData));
+        persistFacilityDataJson();
+        
+        // Actualizar estado
+        updateTechniqueStatus(template, 'ready');
+        
+        // Mostrar mensaje de éxito
+        showNotification('Technique added successfully!', 'success');
+        
+        // Ocultar el formulario pero mantener la técnica marcada
+        const checkboxId = Object.keys(techniqueConfig).find(id => techniqueConfig[id].template === template);
+        if (checkboxId) {
+          // Asegurar que el checkbox esté marcado y actualizar estado visual
+          const checkbox = document.getElementById(checkboxId);
+          if (checkbox) {
+            checkbox.checked = true;
+            updateFacilityItemState(checkboxId, true);
+          }
+          hideTechniqueFormOnly(checkboxId);
+        }
+      } else {
+        showNotification('Error al guardar borrador: ' + data.error, 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('Error de conexión al guardar borrador', 'error');
+    });
+  }
+
+  // Función para cargar datos de una técnica
+  function loadTechniqueData(template) {
+    const formCard = document.getElementById(`technique-form-${template}`);
+    const initOlmatIfEmpty = function() {
+      if (template === 'olmat' && typeof initOlmatPartial === 'function' && formCard) {
+        initOlmatPartial(formCard);
+      }
+    };
+
+    const existing = techniqueData[template];
+    if (existing && Object.keys(existing).length > 0) {
+      applyTechniqueData(template, existing);
+      return;
+    }
+
+    const savedData = localStorage.getItem(getTechniqueStorageKey());
+    if (savedData) {
+      try {
+        const allData = JSON.parse(savedData);
+        const templateData = allData[template];
+        if (templateData) {
+          applyTechniqueData(template, templateData);
+          return;
+        }
+      } catch (e) {
+        console.error('Error cargando datos locales de técnica:', e);
+      }
+    }
+
+    fetch(`{% url "icts:load_technique_draft" %}?technique=${template}&proposal_id=${proposalId || ""}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.form_data) {
+          applyTechniqueData(template, data.form_data);
+        } else {
+          initOlmatIfEmpty();
+        }
+      })
+      .catch(error => {
+        console.error('Error cargando datos del servidor:', error);
+        initOlmatIfEmpty();
+      });
+  }
+
+  // Función auxiliar para aplicar datos a un formulario
+  function applyTechniqueData(template, templateData) {
+    if (!templateData || typeof templateData !== 'object') return;
+
+    if (template === 'olmat') {
+      normalizeOlmatArrays(templateData);
+    }
+    if (template === 'vdg') {
+      const legacyMap = {
+        vdg_code: 'vdg_sample_0_code',
+        vdg_material: 'vdg_sample_0_material',
+        vdg_electron_fluence: 'vdg_sample_0_electron_fluence',
+        vdg_temperature: 'vdg_sample_0_temperature',
+        vdg_atmosphere: 'vdg_sample_0_atmosphere',
+        vdg_sample_size: 'vdg_sample_0_sample_size',
+        vdg_sample_geometry: 'vdg_sample_0_sample_geometry'
+      };
+      Object.keys(legacyMap).forEach(oldKey => {
+        const newKey = legacyMap[oldKey];
+        if (templateData[oldKey] !== undefined && templateData[newKey] === undefined) {
+          templateData[newKey] = templateData[oldKey];
+        }
+      });
+    }
+
+    techniqueData[template] = templateData;
+
+    const needsSamples = ['sem', 'fib', 'sims', 'confocal', 'imp', 'vdg'].includes(template);
+    const needsCheckboxSync = ['sem', 'fib', 'sims', 'confocal'].includes(template);
+    const formCard = document.getElementById(`technique-form-${template}`);
+    if (formCard) {
+      if (needsSamples) {
+        const neededCount = getDynamicSampleCount(template, templateData);
+        ensureSampleCards(template, formCard, neededCount);
+      }
+      applyTechniqueDataToContainer(formCard, templateData);
+      if (needsCheckboxSync) {
+        syncTechniqueCheckboxLabels(formCard);
+      }
+    }
+
+    const modalSection = document.querySelector(`#${template}Modal .facility-section`);
+    if (modalSection) {
+      applyTechniqueDataToContainer(modalSection, templateData);
+      if (needsCheckboxSync) {
+        syncTechniqueCheckboxLabels(modalSection);
+      }
+    }
+
+    if (template === 'olmat' && typeof initOlmatPartial === 'function' && formCard) {
+      initOlmatPartial(formCard);
+    }
+
+    const hasData = Object.keys(templateData).length > 0;
+    updateTechniqueStatus(template, hasData ? 'ready' : 'not-ready');
+    persistFacilityDataJson();
+  }
+
+  function isTechniqueComplete(template, formCard) {
+    if (!formCard) {
+      return !!(techniqueData[template] && Object.keys(techniqueData[template]).length > 0);
+    }
+    switch (template) {
+      case 'sem':
+        return validateSemForm(formCard);
+      case 'fib':
+        return validateFibForm(formCard);
+      case 'sims':
+        return validateSimsForm(formCard);
+      case 'confocal':
+        return validateConfocalForm(formCard);
+      case 'imp':
+        return validateImpForm(formCard);
+      case 'vdg':
+        return validateVdgForm(formCard);
+      case 'profilometer':
+        return validateProfilometerForm(formCard);
+      default:
+        return true;
+    }
+  }
+
+  // Función para actualizar el estado de una técnica
+  function updateTechniqueStatus(template, status) {
+    const statusElement = document.getElementById(`status-${template}`);
+    if (!statusElement) return;
+
+    switch (status) {
+      case 'ready':
+        statusElement.textContent = 'Ready';
+        statusElement.className = 'technique-status ready';
+        break;
+      case 'not-ready':
+        statusElement.textContent = 'Not ready';
+        statusElement.className = 'technique-status not-ready';
+        break;
+      case 'incomplete':
+      default:
+        statusElement.textContent = 'Incomplete';
+        statusElement.className = 'technique-status incomplete';
+        break;
+    }
+  }
+
+  // Función para remover una técnica
+  function removeTechnique(template) {
+    const checkboxId = Object.keys(techniqueConfig).find(id => 
+      techniqueConfig[id].template === template
+    );
+    
+    if (checkboxId) {
+      const checkbox = document.getElementById(checkboxId);
+      if (checkbox) {
+        // Verificar si la técnica está guardada
+        const isSaved = techniqueData[template] && Object.keys(techniqueData[template]).length > 0;
+        
+        if (isSaved) {
+          // Si está guardada, preguntar si quiere removerla completamente
+          const confirmed = confirm(`¿Estás seguro de que quieres remover ${techniqueConfig[checkboxId].name}? Se eliminará de la propuesta.`);
+          if (!confirmed) {
+            return; // No hacer nada si cancela
+          }
+        } else {
+          // Si no está guardada, verificar si hay datos no guardados
+          const hasUnsavedData = hasUnsavedTechniqueData(template);
+          
+          if (hasUnsavedData) {
+            const confirmed = confirm(`¿Estás seguro de que quieres cerrar ${techniqueConfig[checkboxId].name}? Se perderán los datos no guardados.`);
+            if (!confirmed) {
+              return; // No hacer nada si cancela
+            }
+          }
+        }
+        
+        // Cerrar la técnica
+        checkbox.checked = false;
+        updateFacilityItemState(checkboxId, false);
+        hideTechniqueForm(checkboxId);
+        updateAccessCode();
+        
+        // Limpiar datos de la técnica
+        delete techniqueData[template];
+        localStorage.setItem(getTechniqueStorageKey(), JSON.stringify(techniqueData));
+        persistFacilityDataJson();
+      }
+    }
+  }
+
+  // Función para mostrar el código de acceso tapado
+  function maskAccessCode() {
+    const codeElement = document.getElementById('access-code-preview');
+    if (codeElement) {
+      codeElement.classList.add('masked');
+    }
+  }
+
+  // Función para desenmascarar el código de acceso
+  function unmaskAccessCode() {
+    const codeElement = document.getElementById('access-code-preview');
+    if (codeElement) {
+      codeElement.classList.remove('masked');
+    }
+  }
+
+  // Función para manejar el cambio en "¿Es una nueva solicitud?"
+  function handleNewRequestChange(checkbox) {
+    const previousAccessField = document.getElementById('id_previous_access');
+    const previousAccessGroup = previousAccessField ? previousAccessField.closest('.form-group') : null;
+    
+    if (previousAccessGroup) {
+      if (checkbox.checked) {
+        // Si es nueva solicitud, ocultar el campo de solicitud anterior
+        previousAccessGroup.style.display = 'none';
+        if (previousAccessField) {
+          previousAccessField.value = '';
+        }
+      } else {
+        // Si no es nueva solicitud, mostrar el campo de solicitud anterior
+        previousAccessGroup.style.display = 'block';
+      }
+    }
+  }
+
+  // Función para manejar el cambio en solicitud anterior
+  function handlePreviousAccessChange(selectElement) {
+    const selectedValue = selectElement.value;
+    
+    if (selectedValue && selectedValue !== '') {
+      // Mostrar confirmación antes de cargar datos
+      const confirmed = confirm(
+        '¿Estás seguro de que quieres cargar los datos de la solicitud anterior?\n\n' +
+        'IMPORTANTE: Los datos se cargarán automáticamente, pero debes revisar y actualizar ' +
+        'toda la información antes de enviar la nueva solicitud.'
+      );
+      
+      if (confirmed) {
+        loadPreviousProposalData(selectedValue);
+      } else {
+        // Si no se confirma, limpiar la selección
+        selectElement.value = '';
+      }
+    }
+  }
+
+  // Función para cargar datos de una propuesta anterior
+  function loadPreviousProposalData(proposalId) {
+    fetch(`{% url "icts:load_previous_proposal" %}?proposal_id=${proposalId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Cargar datos básicos del formulario
+          if (data.proposal_data) {
+            loadBasicFormData(data.proposal_data);
+          }
+          
+          // Cargar datos de técnicas si existen
+          if (data.technique_data) {
+            loadPreviousTechniqueData(data.technique_data);
+          }
+          
+          // Mostrar notificación de éxito
+          showNotification('Datos de la solicitud anterior cargados. Por favor, revisa toda la información antes de enviar.', 'info');
+          
+          // Actualizar código de acceso
+          updateAccessCode();
+        } else {
+          showNotification('Error al cargar datos de la solicitud anterior: ' + data.error, 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error cargando datos de solicitud anterior:', error);
+        showNotification('Error de conexión al cargar datos de la solicitud anterior', 'error');
+      });
+  }
+
+  // Función para cargar datos básicos del formulario
+  function loadBasicFormData(proposalData) {
+    // Cargar título si está vacío
+    const titleField = document.getElementById('id_title');
+    if (titleField && !titleField.value && proposalData.title) {
+      titleField.value = proposalData.title;
+      if (typeof window.updateRestOfFormState === 'function') {
+        window.updateRestOfFormState();
+      }
+    }
+    
+    // Cargar descripción si está vacía
+    const scopeField = document.getElementById('id_scope');
+    if (scopeField && !scopeField.value && proposalData.scope) {
+      scopeField.value = proposalData.scope;
+    }
+    
+    // Cargar información del proyecto
+    if (proposalData.project_name) {
+      const projectNameField = document.getElementById('id_project_name');
+      if (projectNameField && !projectNameField.value) {
+        projectNameField.value = proposalData.project_name;
+      }
+    }
+    
+    if (proposalData.funding_source) {
+      const fundingField = document.getElementById('id_funding_source');
+      if (fundingField && !fundingField.value) {
+        fundingField.value = proposalData.funding_source;
+      }
+    }
+    
+    // Cargar otros campos básicos
+    const fieldsToLoad = [
+      'organization', 'contact_person', 'email', 'phone',
+      'start_year', 'end_year', 'previous_experiments', 'references'
+    ];
+    
+    fieldsToLoad.forEach(fieldName => {
+      const field = document.getElementById(`id_${fieldName}`);
+      if (field && !field.value && proposalData[fieldName]) {
+        field.value = proposalData[fieldName];
+      }
+    });
+  }
+
+  // Función para cargar datos de técnicas de la propuesta anterior
+  function loadPreviousTechniqueData(techniqueData) {
+    Object.keys(techniqueData).forEach(technique => {
+      const checkboxId = Object.keys(techniqueConfig).find(id => techniqueConfig[id].template === technique);
+      if (checkboxId) {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox) {
+          // Marcar el checkbox
+          checkbox.checked = true;
+          updateFacilityItemState(checkboxId, true);
+          
+          // Mostrar el formulario de la técnica
+          const config = techniqueConfig[checkboxId];
+          showTechniqueForm(checkboxId, config);
+          
+          // Cargar los datos específicos de la técnica
+          setTimeout(() => {
+            applyTechniqueData(technique, techniqueData[technique]);
+          }, 100);
+        }
+      }
+    });
+  }
+
+  // Función para mostrar notificaciones
+  function showNotification(message, type = 'info') {
+    // Crear elemento de notificación
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    // Estilos básicos
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 500;
+      z-index: 10000;
+      animation: slideInRight 0.3s ease-out;
+    `;
+    
+    if (type === 'success') {
+      notification.style.background = '#28a745';
+    } else if (type === 'error') {
+      notification.style.background = '#dc3545';
+    } else {
+      notification.style.background = '#17a2b8';
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+})();
+// Funcionalidad para mostrar/ocultar información del solicitante
+(function() {
+  const applicantDifferent = document.getElementById('id_applicant_is_different');
+  const applicantInfo = document.getElementById('applicant-info');
+  
+  if (applicantDifferent && applicantInfo) {
+    function toggleApplicantInfo() {
+      if (applicantDifferent.checked) {
+        applicantInfo.style.display = 'block';
+      } else {
+        applicantInfo.style.display = 'none';
+      }
+    }
+    
+    applicantDifferent.addEventListener('change', toggleApplicantInfo);
+    toggleApplicantInfo(); // Estado inicial
+  }
+})();
+
+// Añadir participante
+(function(){
+  const addBtn = document.getElementById('add-participant');
+  const toggle = document.getElementById('has-more-participants');
+  const container = document.getElementById('participants-forms');
+  const tmpl = document.getElementById('empty-participant-form');
+  const total = document.getElementById('id_{{ formset.prefix }}-TOTAL_FORMS');
+
+  if(!addBtn||!container||!tmpl||!total) return;
+
+  function syncAddButtonVisibility() {
+    if (!toggle) {
+      addBtn.style.display = 'none';
+      return;
+    }
+    addBtn.style.display = toggle.checked ? 'inline-flex' : 'none';
+  }
+
+  function getParticipantCards() {
+    return Array.from(container.querySelectorAll('.participant-card'));
+  }
+
+  function applyToggleState() {
+    if (!toggle) {
+      syncAddButtonVisibility();
+      return;
+    }
+
+    const cards = getParticipantCards();
+    cards.forEach((card, idx) => {
+      const deleteInput = card.querySelector('input[name$="-DELETE"]');
+
+      if (toggle.checked) {
+        if (deleteInput && deleteInput.dataset.autoDeleted === '1') {
+          deleteInput.checked = false;
+          deleteInput.dataset.autoDeleted = '';
+        }
+        card.style.display = '';
+        return;
+      }
+
+      if (idx === 0) {
+        if (deleteInput) {
+          deleteInput.checked = false;
+          deleteInput.dataset.autoDeleted = '';
+        }
+        card.style.display = '';
+        return;
+      }
+
+      if (deleteInput) {
+        if (!deleteInput.checked) {
+          deleteInput.dataset.autoDeleted = '1';
+        }
+        deleteInput.checked = true;
+      }
+      card.style.display = 'none';
+    });
+
+    syncAddButtonVisibility();
+  }
+
+  if (toggle) {
+    const count = parseInt(toggle.getAttribute('data-participants-count') || '1', 10);
+    if (count > 1) {
+      toggle.checked = true;
+    }
+    toggle.addEventListener('change', applyToggleState);
+  }
+
+  applyToggleState();
+
+  addBtn.addEventListener('click', ()=>{
+    const idx = parseInt(total.value||'0',10);
+    const html = tmpl.innerHTML.replace(/__prefix__/g, idx);
+    const node = document.createElement('div');
+    node.innerHTML = html.trim();
+    container.appendChild(node.firstElementChild);
+    total.value = idx+1;
+    applyToggleState();
+  });
+})();
+
+// Validación del título para habilitar el resto del formulario
+(function() {
+  const titleInput = document.getElementById('id_title');
+  const restOfForm = document.getElementById('rest-of-form');
+  
+  if (titleInput && restOfForm) {
+    function toggleForm() {
+      if (titleInput.value.trim()) {
+        restOfForm.classList.remove('form-disabled');
+        restOfForm.classList.add('form-enabled');
+      } else {
+        restOfForm.classList.remove('form-enabled');
+        restOfForm.classList.add('form-disabled');
+      }
+    }
+    
+    window.updateRestOfFormState = toggleForm;
+    titleInput.addEventListener('input', toggleForm);
+    toggleForm(); // Estado inicial
+  }
+})();
+</script>
+{% endblock %}

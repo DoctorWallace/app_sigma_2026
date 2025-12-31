@@ -1,0 +1,125 @@
+{% extends "lab_base.html" %}
+
+{% block title %}Nueva Solicitud | SIGMA LAB{% endblock %}
+
+{% block content %}
+<div class="card" style="padding:24px; border-radius:16px;">
+    <h1 class="page-title" style="margin-bottom:8px;">Nueva solicitud de preparación</h1>
+    <p class="muted" style="margin-bottom:24px;">Complete los campos necesarios y envíe la petición. El estado inicial será "Pendiente".</p>
+
+    <form method="post" style="margin-top:16px;">
+        {% csrf_token %}
+
+        <!-- Información básica -->
+        <h3>Información de la muestra</h3>
+        <div class="grid grid-2" style="margin-bottom:24px;">
+            <p>
+                <label for="{{ form.material.id_for_label }}"><strong>Material</strong></label><br>
+                {{ form.material }}
+                {% if form.material.errors %}
+                    <small class="error">{{ form.material.errors.0 }}</small>
+                {% endif %}
+            </p>
+            <p>
+                <label for="{{ form.procedencia.id_for_label }}"><strong>Procedencia</strong></label><br>
+                {{ form.procedencia }}
+                {% if form.procedencia.errors %}
+                    <small class="error">{{ form.procedencia.errors.0 }}</small>
+                {% endif %}
+            </p>
+        </div>
+
+        <p style="margin-bottom:24px;">
+            <label for="{{ form.tratamiento_previo.id_for_label }}"><strong>Tratamiento previo</strong></label><br>
+            {{ form.tratamiento_previo }}
+            {% if form.tratamiento_previo.errors %}
+                <small class="error">{{ form.tratamiento_previo.errors.0 }}</small>
+            {% endif %}
+        </p>
+
+        <!-- Tareas de preparación -->
+        <h3>Tareas de preparación requeridas</h3>
+        <div class="grid grid-3" style="margin:16px 0 24px 0;">
+            <label class="checkbox-label">
+                {{ form.corte }} {{ form.corte.label }}
+            </label>
+            <label class="checkbox-label">
+                {{ form.empastillado }} {{ form.empastillado.label }}
+            </label>
+            <label class="checkbox-label">
+                {{ form.lijado }} {{ form.lijado.label }}
+            </label>
+            <label class="checkbox-label">
+                {{ form.pulido }} {{ form.pulido.label }}
+            </label>
+            <label class="checkbox-label">
+                {{ form.electropulido }} {{ form.electropulido.label }}
+            </label>
+            <label class="checkbox-label">
+                {{ form.trat_quimico }} {{ form.trat_quimico.label }}
+            </label>
+            <label class="checkbox-label">
+                {{ form.trat_termico }} {{ form.trat_termico.label }}
+            </label>
+        </div>
+
+        <!-- Detalles adicionales -->
+        <h3>Detalles adicionales</h3>
+        <p>
+            <label for="{{ form.requisitos_finales.id_for_label }}"><strong>Requisitos finales</strong></label><br>
+            {{ form.requisitos_finales }}
+            {% if form.requisitos_finales.errors %}
+                <small class="error">{{ form.requisitos_finales.errors.0 }}</small>
+            {% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.observaciones.id_for_label }}"><strong>Observaciones (Preparación autónoma)</strong></label><br>
+            {{ form.observaciones }}
+            {% if form.observaciones.errors %}
+                <small class="error">{{ form.observaciones.errors.0 }}</small>
+            {% endif %}
+        </p>
+
+        <!-- Botones -->
+        <div style="display:flex;gap:12px;margin-top:24px;">
+            <input type="submit" value="Crear solicitud" class="btn">
+            <a href="{% url 'dtf:lab' %}" class="btn" style="background:#f5f5f5;">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.checkbox-label:hover {
+    background-color: #f8f9fa;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 0.875em;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,513 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Detalle solicitud{% endblock %}
+{% block page_title %}Detalle solicitud{% endblock %}
+
+{% block extra_css %}
+<style>
+  .info-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .info-section h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+  }
+  .info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .info-item {
+    margin-bottom: 0.75rem;
+  }
+  .info-label {
+    font-weight: 600;
+    color: #495057;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .info-value {
+    color: #6c757d;
+  }
+  .sample-item {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .sample-header {
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 0.5rem;
+  }
+  .checkbox-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+  }
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .file-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+  }
+  .toggle-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  .toggle-button:hover {
+    background: #0056b3;
+  }
+  .full-details {
+    display: none;
+  }
+  .full-details.show {
+    display: block;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .status-pendiente { background: #fff3cd; color: #856404; }
+  .status-aprobada { background: #d1e7dd; color: #0f5132; }
+  .status-rechazada { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2 style="margin:0 0 .5rem">SOL#{{ solicitud.pk }} 
+    <span class="badge" style="margin-left:.5rem">{{ solicitud.get_estado_display }}</span>
+    {% if solicitud.autonomo %}
+      <span class="badge" style="margin-left:.5rem;background:#28a745;color:white;">Usuario Autónomo</span>
+    {% endif %}
+  </h2>
+  
+  <!-- Información básica (siempre visible) -->
+  <div class="info-section">
+    <h3><i class="bi bi-info-circle"></i> Información básica</h3>
+    <div class="info-row">
+      <div class="info-item">
+        <span class="info-label">Solicitante:</span>
+        <span class="info-value">{{ solicitud.solicitante.first_name }} {{ solicitud.solicitante.last_name }} ({{ solicitud.solicitante.email }})</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Fecha de solicitud:</span>
+        <span class="info-value">{{ solicitud.creado_en|date:"d/m/Y H:i" }}</span>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="info-item">
+        <span class="info-label">Material:</span>
+        <span class="info-value">{{ solicitud.material|default:"No especificado" }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Número de muestras:</span>
+        <span class="info-value">{{ solicitud.numero_muestras|default:"1" }}</span>
+      </div>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Código muestra:</span>
+    {% if solicitud.codigo_muestra %}
+      <span class="badge" style="background:#d1e7dd;color:#0f5132;font-weight:bold;">{{ solicitud.codigo_muestra }}</span>
+    {% else %}
+      <span class="badge" style="background:#f8d7da;color:#721c24;">Sin asignar</span>
+    {% endif %}
+    </div>
+  </div>
+
+  <!-- Botón para ver detalles completos -->
+  <button class="toggle-button" onclick="toggleFullDetails()">
+    <i class="bi bi-eye"></i> Ver solicitud completa
+  </button>
+
+  <!-- Detalles completos (inicialmente ocultos) -->
+  <div class="full-details" id="full-details">
+    
+    <!-- Información de tiempo estimado -->
+    {% if solicitud.estado != 'pendiente' and solicitud.tiempo_estimado_numero or solicitud.tiempo_estimado_indeterminado %}
+    <div class="info-section">
+      <h3><i class="bi bi-clock"></i> Tiempo estimado de finalización</h3>
+      <div class="info-row">
+        <div class="info-item">
+          <span class="info-label">Tiempo estimado:</span>
+          <span class="info-value">
+            <span class="badge" style="background: #17a2b8; color: white;">
+              {{ solicitud.get_tiempo_estimado_display }}
+            </span>
+          </span>
+        </div>
+        {% if solicitud.fecha_estimada_finalizacion %}
+        <div class="info-item">
+          <span class="info-label">Fecha estimada:</span>
+          <span class="info-value">{{ solicitud.fecha_estimada_finalizacion|date:"d/m/Y" }}</span>
+        </div>
+        {% endif %}
+      </div>
+      <div class="info-row">
+        {% if solicitud.aceptado_en %}
+        <div class="info-item">
+          <span class="info-label">Fecha de aceptación:</span>
+          <span class="info-value">{{ solicitud.aceptado_en|date:"d/m/Y H:i" }}</span>
+        </div>
+        {% endif %}
+        {% if solicitud.finalizado_en %}
+        <div class="info-item">
+          <span class="info-label">Fecha de finalización:</span>
+          <span class="info-value">{{ solicitud.finalizado_en|date:"d/m/Y H:i" }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% if solicitud.get_eficiencia_tiempo %}
+      <div class="info-row">
+        <div class="info-item">
+          <span class="info-label">Eficiencia del proceso:</span>
+          <span class="info-value">
+            <span class="badge" style="background: {% if solicitud.get_eficiencia_tiempo >= 80 %}#28a745{% elif solicitud.get_eficiencia_tiempo >= 60 %}#ffc107{% else %}#dc3545{% endif %}; color: white;">
+              {{ solicitud.get_eficiencia_tiempo }}%
+            </span>
+            <small class="text-muted">(estimado vs real)</small>
+          </span>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Muestras individuales -->
+    {% if solicitud.muestras.exists %}
+    <div class="info-section">
+      <h3><i class="bi bi-collection"></i> Muestras individuales</h3>
+      {% for muestra in solicitud.muestras.all %}
+      <div class="sample-item">
+        <div class="sample-header">Muestra {{ muestra.numero_secuencia }} (Código: {{ muestra.codigo_completo }})</div>
+        <div class="info-row">
+          <div class="info-item">
+            <span class="info-label">Identificación:</span>
+            <span class="info-value">{{ muestra.identificacion }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Descripción:</span>
+            <span class="info-value">{{ muestra.descripcion|default:"Sin descripción adicional" }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Información de seguridad -->
+    <div class="info-section">
+      <h3><i class="bi bi-shield-exclamation"></i> Información de seguridad</h3>
+      <div class="info-item">
+        <span class="info-label">¿Es material radiactivo o contaminado?</span>
+        <span class="info-value">
+          {% if solicitud.material_radioactivo %}
+            <span class="badge" style="background:#dc3545;color:white;">SÍ</span>
+          {% else %}
+            <span class="badge" style="background:#28a745;color:white;">NO</span>
+          {% endif %}
+        </span>
+      </div>
+      {% if solicitud.manejo_especial %}
+      <div class="info-item">
+        <span class="info-label">Manejo especial requerido:</span>
+        <span class="info-value">{{ solicitud.manejo_especial|linebreaksbr }}</span>
+      </div>
+      {% endif %}
+      {% if solicitud.tratamiento_previo %}
+      <div class="info-item">
+        <span class="info-label">Tratamiento previo:</span>
+        <span class="info-value">{{ solicitud.tratamiento_previo|linebreaksbr }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Información adicional -->
+    <div class="info-section">
+      <h3><i class="bi bi-file-text"></i> Información adicional</h3>
+      {% if solicitud.procedencia %}
+      <div class="info-item">
+        <span class="info-label">Procedencia:</span>
+        <span class="info-value">{{ solicitud.procedencia }}</span>
+      </div>
+      {% endif %}
+      {% if solicitud.otro_dato_importante %}
+      <div class="info-item">
+        <span class="info-label">Otro dato importante:</span>
+        <span class="info-value">{{ solicitud.otro_dato_importante|linebreaksbr }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Operaciones de preparación -->
+    <div class="info-section">
+      <h3><i class="bi bi-gear"></i> Operaciones de preparación</h3>
+      <div class="checkbox-list">
+        <div class="checkbox-item">
+          <i class="bi bi-{% if solicitud.corte %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Corte</span>
+        </div>
+        <div class="checkbox-item">
+          <i class="bi bi-{% if solicitud.empastillado %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Empastillado</span>
+        </div>
+        <div class="checkbox-item">
+          <i class="bi bi-{% if solicitud.lijado %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Lijado</span>
+        </div>
+        <div class="checkbox-item">
+          <i class="bi bi-{% if solicitud.pulido %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Pulido</span>
+        </div>
+        <div class="checkbox-item">
+          <i class="bi bi-{% if solicitud.electropulido %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Electropulido</span>
+        </div>
+        <div class="checkbox-item">
+          <i class="bi bi-{% if solicitud.trat_quimico %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Tratamiento químico</span>
+        </div>
+        <div class="checkbox-item">
+          <i class="bi bi-{% if solicitud.trat_termico %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+          <span>Tratamiento térmico</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requisitos y observaciones -->
+    <div class="info-section">
+      <h3><i class="bi bi-clipboard-check"></i> Requisitos y observaciones</h3>
+      {% if solicitud.requisitos_finales %}
+      <div class="info-item">
+        <span class="info-label">Requisitos finales:</span>
+        <span class="info-value">{{ solicitud.requisitos_finales|linebreaksbr }}</span>
+      </div>
+      {% endif %}
+      {% if solicitud.observaciones %}
+      <div class="info-item">
+        <span class="info-label">Observaciones (Trabajo autónomo):</span>
+        <span class="info-value">{{ solicitud.observaciones|linebreaksbr }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Archivos adjuntos -->
+    {% if solicitud.imagen_muestra or solicitud.croquis %}
+    <div class="info-section">
+      <h3><i class="bi bi-paperclip"></i> Archivos adjuntos</h3>
+      {% if solicitud.imagen_muestra %}
+      <div class="info-item">
+        <span class="info-label">Imagen de la muestra:</span>
+        <div>
+          <a href="{{ solicitud.imagen_muestra.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-image"></i> Ver imagen
+          </a>
+          <img src="{{ solicitud.imagen_muestra.url }}" alt="Imagen de la muestra" class="file-preview">
+        </div>
+      </div>
+      {% endif %}
+      {% if solicitud.croquis %}
+      <div class="info-item">
+        <span class="info-label">Croquis:</span>
+        <div>
+          <a href="{{ solicitud.croquis.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-diagram-3"></i> Ver croquis
+          </a>
+          <img src="{{ solicitud.croquis.url }}" alt="Croquis" class="file-preview">
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div style="margin:1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
+    <a class="cta" href="{% url 'sigmalab:nuevo-avance' solicitud.pk %}"><i class="bi bi-plus-circle"></i> Añadir avance</a>
+    
+    <!-- Botón para solicitar modificación (solo para usuarios y solicitudes aceptadas/en curso) -->
+    {% if request.user == solicitud.solicitante and solicitud.estado in 'aceptada,en_curso' %}
+      <a class="cta" href="{% url 'sigmalab:solicitar-modificacion' solicitud.pk %}" style="background:#ffc107; color: #000;">
+        <i class="bi bi-pencil-square"></i> Solicitar modificación
+      </a>
+    {% endif %}
+    
+    <!-- Botón para anular solicitud (solo para usuarios y solicitudes no finalizadas/anuladas) -->
+    {% if request.user == solicitud.solicitante and solicitud.estado not in 'finalizada,anulada' %}
+      <a class="cta" href="{% url 'sigmalab:anular-solicitud' solicitud.pk %}" style="background:#dc3545; color: white;">
+        <i class="bi bi-x-circle"></i> Anular solicitud
+      </a>
+    {% endif %}
+    
+    <!-- Botón para anular solicitud (para técnicos) -->
+    {% if request.user|has_group:"tecnico_responsable_s_lab" and solicitud.estado not in 'finalizada,anulada' %}
+      <a class="cta" href="{% url 'sigmalab:anular-solicitud-tecnico' solicitud.pk %}" style="background:#dc3545; color: white;">
+        <i class="bi bi-x-circle"></i> Anular (técnico)
+      </a>
+    {% endif %}
+    
+    {% if request.user.is_staff or request.user|has_group:"tecnico_responsable_s_lab" %}
+      {% if solicitud.estado == 'pendiente' %}
+        <a class="cta" href="{% url 'sigmalab:aceptar-con-tiempo' solicitud.pk %}" style="background:#28a745; color: white;">
+          <i class="bi bi-check-circle"></i> Aceptar con tiempo estimado
+        </a>
+      {% endif %}
+      <a class="cta" href="{% url 'sigmalab:cambiar-estado' solicitud.pk %}" style="background:var(--accent)"><i class="bi bi-gear"></i> Cambiar estado</a>
+      <a class="cta" href="{% url 'sigmalab:toggle-autonomia' solicitud.pk %}" style="background:{% if solicitud.autonomo %}#dc3545{% else %}#28a745{% endif %}; color: white;">
+        <i class="bi bi-{% if solicitud.autonomo %}person-x{% else %}person-check{% endif %}"></i> 
+        {% if solicitud.autonomo %}Desactivar{% else %}Activar{% endif %} autonomía
+      </a>
+    {% endif %}
+    {% if solicitud.autonomo and request.user == solicitud.solicitante or request.user|has_group:"tecnico_responsable_s_lab" %}
+      <a class="cta" href="{% url 'sigmalab:diario-solicitud' solicitud.pk %}"><i class="bi bi-journal-text"></i> Registro diario</a>
+    {% endif %}
+    <a class="cta" href="{% url 'sigmalab:mis-solicitudes' %}">Mis solicitudes</a>
+  </div>
+
+  <h3>Avances</h3>
+  <ul>
+    {% for a in avances %}
+      {% if a.visible_para_usuario or request.user.is_staff %}
+      <li>
+        <strong>[{{ a.get_tipo_display }}]</strong>
+        {{ a.contenido|linebreaksbr }}
+        <small> - {{ a.creado_en|date:"Y-m-d H:i" }} por {{ a.autor.first_name }} {{ a.autor.last_name|default:a.autor.username }}</small>
+        {% if a.adjunto %} - <a href="{{ a.adjunto.url }}" target="_blank">Adjunto</a>{% endif %}
+      </li>
+      {% endif %}
+    {% empty %}
+      <li>No hay avances.</li>
+    {% endfor %}
+  </ul>
+
+  <!-- Historial de Modificaciones -->
+  {% if modificaciones %}
+  <h3><i class="bi bi-pencil-square"></i> Historial de Modificaciones</h3>
+  <div class="modifications-history">
+    {% for mod in modificaciones %}
+    <div class="modification-item" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+      <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.5rem;">
+        <h4 style="margin: 0; color: #495057;">
+          <i class="bi bi-{% if mod.estado == 'aprobada' %}check-circle-fill text-success{% elif mod.estado == 'rechazada' %}x-circle-fill text-danger{% else %}clock-fill text-warning{% endif %}"></i>
+          {{ mod.get_tipo_modificacion_display }}
+        </h4>
+        <span class="badge status-{{ mod.estado }}">
+          {{ mod.get_estado_display }}
+        </span>
+      </div>
+      
+      <div style="margin-bottom: 0.5rem;">
+        <strong>Descripción del cambio:</strong>
+        <p style="margin: 0.25rem 0;">{{ mod.descripcion_cambio|linebreaksbr }}</p>
+      </div>
+      
+      <div style="margin-bottom: 0.5rem;">
+        <strong>Justificación:</strong>
+        <p style="margin: 0.25rem 0;">{{ mod.justificacion|linebreaksbr }}</p>
+      </div>
+      
+      {% if mod.comentarios_tecnico %}
+      <div style="margin-bottom: 0.5rem;">
+        <strong>Comentarios del técnico:</strong>
+        <p style="margin: 0.25rem 0; color: #6c757d;">{{ mod.comentarios_tecnico|linebreaksbr }}</p>
+      </div>
+      {% endif %}
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #6c757d;">
+        <span>
+          <i class="bi bi-person"></i> {{ mod.solicitante.first_name }} {{ mod.solicitante.last_name }}
+          <i class="bi bi-calendar"></i> {{ mod.fecha_solicitud|date:"d/m/Y H:i" }}
+        </span>
+        {% if mod.tecnico_responsable %}
+        <span>
+          <i class="bi bi-person-check"></i> {{ mod.tecnico_responsable.first_name }} {{ mod.tecnico_responsable.last_name }}
+          {% if mod.fecha_resolucion %}
+            <i class="bi bi-calendar-check"></i> {{ mod.fecha_resolucion|date:"d/m/Y H:i" }}
+          {% endif %}
+        </span>
+        {% endif %}
+      </div>
+      
+      {% if request.user|has_group:"tecnico_responsable_s_lab" and mod.estado == 'pendiente' %}
+      <div style="margin-top: 0.5rem;">
+        <a href="{% url 'sigmalab:revisar-modificacion' mod.pk %}" class="btn btn-sm btn-primary">
+          <i class="bi bi-eye"></i> Revisar modificación
+        </a>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Historial de Anulaciones -->
+  {% if anulaciones %}
+  <h3><i class="bi bi-x-circle"></i> Historial de Anulaciones</h3>
+  <div class="anulaciones-history">
+    {% for anulacion in anulaciones %}
+    <div class="anulacion-item" style="background: #f8d7da; border: 1px solid #f5c2c7; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h4 style="margin: 0; color: #721c24;">
+          <i class="bi bi-x-circle-fill text-danger"></i>
+          {{ anulacion.get_tipo_anulacion_display }}
+        </h4>
+        <span class="badge" style="background: #dc3545; color: white;">
+          Anulada
+        </span>
+      </div>
+      
+      <div style="margin-bottom: 0.5rem;">
+        <strong>Justificación:</strong>
+        <p style="margin: 0.25rem 0;">{{ anulacion.justificacion|linebreaksbr }}</p>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #6c757d;">
+        <span>
+          <i class="bi bi-person"></i> {{ anulacion.usuario_anulacion.first_name }} {{ anulacion.usuario_anulacion.last_name }}
+          <i class="bi bi-calendar"></i> {{ anulacion.fecha_anulacion|date:"d/m/Y H:i" }}
+        </span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<script>
+function toggleFullDetails() {
+    const details = document.getElementById('full-details');
+    const button = document.querySelector('.toggle-button');
+    
+    if (details.classList.contains('show')) {
+        details.classList.remove('show');
+        button.innerHTML = '<i class="bi bi-eye"></i> Ver solicitud completa';
+    } else {
+        details.classList.add('show');
+        button.innerHTML = '<i class="bi bi-eye-slash"></i> Ocultar detalles';
+    }
+}
+</script>
+{% endblock %}

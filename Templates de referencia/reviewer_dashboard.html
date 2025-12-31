@@ -1,0 +1,70 @@
+{% extends "base_generic.html" %}
+{% block title %}Panel del Revisor{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Panel del Revisor</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:10px">
+    <div class="card" style="margin:0">
+      <h3 style="margin-top:0">Pendientes</h3>
+      <p style="font-size:28px;margin:6px 0">{{ kpis.pending }}</p>
+    </div>
+    <div class="card" style="margin:0">
+      <h3 style="margin-top:0">Hechas</h3>
+      <p style="font-size:28px;margin:6px 0">{{ kpis.done }}</p>
+    </div>
+    <div class="card" style="margin:0">
+      <h3 style="margin-top:0">Aprobadas</h3>
+      <p style="font-size:28px;margin:6px 0">{{ kpis.approved }}</p>
+    </div>
+    <div class="card" style="margin:0">
+      <h3 style="margin-top:0">Rechazadas</h3>
+      <p style="font-size:28px;margin:6px 0">{{ kpis.rejected }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Pendientes de evaluar</h2>
+  {% if pendientes %}
+  <table style="width:100%;border-collapse:collapse">
+    <thead><tr><th>ID</th><th>Título</th><th>Solicitante</th><th>Creada</th><th></th></tr></thead>
+    <tbody>
+      {% for a in pendientes %}
+      <tr>
+        <td>{{ a.proposal.id }}</td>
+        <td>{{ a.proposal.title }}</td>
+        <td>{{ a.proposal.user.username }}</td>
+        <td>{{ a.proposal.created_at|date:"Y-m-d H:i" }}</td>
+        <td><a class="btn" href="{% url 'icts:review_proposal' a.proposal.id %}">Evaluar</a></td>
+      <a class="btn" href="{% url 'icts:proposal_detail' a.proposal.id %}" target="_blank" rel="noopener">Ver propuesta</a>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">No tienes solicitudes pendientes.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Evaluaciones completadas</h2>
+  {% if hechas %}
+  <table style="width:100%;border-collapse:collapse">
+    <thead><tr><th>ID</th><th>Título</th><th>Decisión</th><th>Fecha</th></tr></thead>
+    <tbody>
+      {% for a in hechas %}
+      <tr>
+        <td>{{ a.proposal.id }}</td>
+        <td>{{ a.proposal.title }}</td>
+        <td>{{ a.decision }}</td>
+        <td>{{ a.created_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">Aún no has completado evaluaciones.</p>
+  {% endif %}
+</div>
+{% endblock %}

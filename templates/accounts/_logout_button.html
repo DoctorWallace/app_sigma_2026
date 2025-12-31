@@ -1,0 +1,12 @@
+{% if user.is_authenticated %}
+<li class="sidebar-item">
+  <form method="post"
+        action="{% url 'accounts:logout' %}?next={{ next_url|default:'/' }}"
+        style="margin:0">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+      ⎋ Salir
+    </button>
+  </form>
+</li>
+{% endif %}

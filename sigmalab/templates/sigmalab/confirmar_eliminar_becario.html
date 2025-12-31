@@ -1,0 +1,41 @@
+{% extends "base_dtf.html" %}
+{% block title %}Eliminar Becario - S-LAB{% endblock %}
+{% block page_title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:600px; margin:0 auto;">
+  <div style="text-align:center; padding:2rem;">
+    <i class="bi bi-exclamation-triangle" style="font-size:4rem; color:#dc3545; margin-bottom:1rem;"></i>
+    <h3 style="color:#dc3545; margin-bottom:1rem;">¿Eliminar Becario?</h3>
+    <p style="font-size:1.1rem; margin-bottom:1.5rem;">
+      Estás a punto de eliminar permanentemente al becario:
+    </p>
+    
+    <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:.5rem; padding:1.5rem; margin-bottom:2rem;">
+      <h4 style="margin:0; color:#495057;">{{ becario.nombre_completo }}</h4>
+      <p style="margin:.5rem 0 0; color:#6c757d;">
+        {{ becario.email }} • {{ becario.get_tipo_becario_display }}
+      </p>
+    </div>
+    
+    <div style="background:#fff3cd; border:1px solid #ffeaa7; border-radius:.5rem; padding:1rem; margin-bottom:2rem;">
+      <h5 style="color:#856404; margin:0 0 .5rem;"><i class="bi bi-warning"></i> Advertencia</h5>
+      <p style="margin:0; color:#856404; font-size:.9rem;">
+        Esta acción no se puede deshacer. Se eliminará permanentemente toda la información del becario.
+      </p>
+    </div>
+    
+    <div style="display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap;">
+      <a class="btn btn-outline-secondary" href="{% url 'sigmalab:detalle-becario' becario.id %}">
+        <i class="bi bi-arrow-left"></i> Cancelar
+      </a>
+      <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background:#dc3545; border-color:#dc3545;">
+          <i class="bi bi-trash"></i> Eliminar Definitivamente
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

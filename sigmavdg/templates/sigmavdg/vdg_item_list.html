@@ -1,0 +1,76 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Items VDG{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Control de items{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_home' %}">Portal VDG</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>Items</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Items registrados</h2>
+      <div class="vdg-card-subtitle">Catalogo de items para control de entradas y salidas.</div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+      <a class="vdg-btn vdg-btn-secondary" href="{% url 'sigmavdg:vdg_item_movements' %}">
+        <i class="bi bi-arrow-left-right"></i>
+        Ver movimientos
+      </a>
+      <a class="vdg-btn vdg-btn-primary" href="{% url 'sigmavdg:vdg_item_create' %}">
+        <i class="bi bi-plus-circle"></i>
+        Nuevo item
+      </a>
+    </div>
+  </div>
+
+  {% if items %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th>Estado</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <td><strong>{{ item.code }}</strong></td>
+              <td>{{ item.description|default:"-" }}</td>
+              <td>
+                {% if item.active %}
+                  <span class="vdg-badge vdg-badge--success">Activo</span>
+                {% else %}
+                  <span class="vdg-badge vdg-badge--muted">Inactivo</span>
+                {% endif %}
+              </td>
+              <td>
+                <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_item_movement_create' %}?item={{ item.id }}">
+                  <i class="bi bi-box-arrow-up"></i>
+                  Registrar salida
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vdg-empty">
+      <i class="bi bi-box"></i>
+      <div>No hay items registrados.</div>
+      <small>Registra un item para comenzar el control logístico.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

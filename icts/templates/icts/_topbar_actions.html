@@ -1,0 +1,44 @@
+{% load role_filters %}
+{% if request.user.is_authenticated %}
+  {% with role=icts_role_name %}
+    {% if role == 'Usuario' %}
+      <span class="role-chip">USER</span>
+    {% elif role == 'Revisor' %}
+      <span class="role-chip">REVIEWER</span>
+    {% elif role == 'Técnico' %}
+      <span class="role-chip">TÉCNICO</span>
+    {% elif role %}
+      <span class="role-chip">{{ role|upper }}</span>
+    {% else %}
+      <span class="role-chip">USER</span>
+    {% endif %}
+  {% endwith %}
+  <nav class="top-actions">
+    {% if request.user|is_confocal_technician %}
+      <a href="{% url 'sigmaconf:lo3_home' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% elif request.user|is_vdg_technician %}
+      <a href="{% url 'sigmavdg:vdg_home' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% elif request.user|is_imp_technician %}
+      <a href="{% url 'sigmaimp:imp_dashboard' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% elif request.user|is_sem_technician %}
+      <a href="{% url 'icts:sigmasem:dashboard' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% elif request.user|is_reviewer and not request.user|is_responsable %}
+      <a href="{% url 'icts:reviewer_dashboard_new' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% elif request.user|is_responsable %}
+      <a href="{% url 'icts:responsable_dashboard' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% elif request.user|is_manager %}
+      <a href="{% url 'icts:manager_dashboard' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% else %}
+      <a href="{% url 'icts:dashboard' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% endif %}
+    <a href="javascript:history.back()" class="chip"><i class="bi bi-arrow-left"></i> Atrás</a>
+    <a href="{% url 'accounts:logout' %}" class="chip"><i class="bi bi-box-arrow-right"></i> Salir</a>
+  </nav>
+  <style>
+    .top-actions{display:inline-flex;gap:.5rem;align-items:center;margin-left:.5rem}
+    .chip{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .65rem;border:1px solid #dee2e6;
+      border-radius:999px;text-decoration:none;color:#212529;background:#ffffff;font-weight:600}
+    .chip:hover{background:#e9ecef;border-color:var(--primary);color:#212529}
+    .role-chip{padding:.35rem .65rem;border-radius:999px;font-weight:700;background:var(--primary);color:#ffffff;text-shadow:none}
+  </style>
+{% endif %}

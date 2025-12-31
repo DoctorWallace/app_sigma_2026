@@ -1,0 +1,38 @@
+{% extends "base_dtf.html" %}
+{% block title %}Mis solicitudes{% endblock %}
+{% block page_title %}Mis solicitudes{% endblock %}
+{% block content %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center">
+    <h2 style="margin:0">Listado</h2>
+    <a class="cta" href="{% url 'sigmalab:nueva-solicitud' %}" style="background:var(--accent)">Nueva</a>
+  </div>
+  <ul style="margin-top:1rem;">
+    {% for s in solicitudes %}
+      <li style="margin:.25rem 0; display: flex; align-items: center; gap: 0.5rem;">
+        <a href="{% url 'sigmalab:detalle-solicitud' s.pk %}">SOL#{{ s.pk }} · {{ s.material|default:"(sin material)" }}</a>
+        - 
+        {% if s.estado == "pendiente" %}
+          <span class="badge" style="background: #ffc107; color: #000;">{{ s.get_estado_display }}</span>
+        {% elif s.estado == "aceptada" %}
+          <span class="badge" style="background: #17a2b8; color: white;">{{ s.get_estado_display }}</span>
+        {% elif s.estado == "rechazada" %}
+          <span class="badge" style="background: #6c757d; color: white;">{{ s.get_estado_display }}</span>
+        {% elif s.estado == "en_curso" %}
+          <span class="badge" style="background: #007bff; color: white;">{{ s.get_estado_display }}</span>
+        {% elif s.estado == "finalizada" %}
+          <span class="badge" style="background: #28a745; color: white;">{{ s.get_estado_display }}</span>
+        {% elif s.estado == "anulada" %}
+          <span class="badge" style="background: #dc3545; color: white;">{{ s.get_estado_display }}</span>
+        {% else %}
+          <em>{{ s.get_estado_display }}</em>
+        {% endif %}
+        - {{ s.creado_en|date:"Y-m-d H:i" }}
+      </li>
+    {% empty %}
+      <li>No tienes solicitudes.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+

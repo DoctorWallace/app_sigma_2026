@@ -1,0 +1,168 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FAQ · Σ-SIGMA Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+        
+        .sigma-topbar{
+          background: #fff;
+          border-bottom: 1px solid #e9ecef;
+          position: sticky; top: 0; z-index: 1020;
+        }
+        .sigma-topbar .brand{
+          font-weight: 800; letter-spacing: -.02em; color: #334155;
+        }
+        .sigma-topbar .logo-mini{
+          height: 36px; width: auto; object-fit: contain; opacity: .95;
+          filter: drop-shadow(0 2px 6px rgba(0,0,0,.08));
+        }
+        
+        .faq-card {
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,.08);
+            border: none;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="sigma-topbar">
+        <div class="container d-flex align-items-center justify-content-between py-3">
+            <div class="brand">
+                <a href="{% url 'portal:home' %}" class="text-decoration-none text-dark">
+                    <i class="bi bi-arrow-left me-2"></i>SIGMA PORTAL
+                </a>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <img src="/media/Logos/logo_sol.png" alt="LNF" class="logo-mini" loading="lazy" decoding="async">
+                <img src="/media/Logos/sol_icts.png.jpg" alt="ICTS" class="logo-mini" loading="lazy" decoding="async">      
+            </div>
+        </div>
+    </header>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-5">
+                    <h1 class="h2 mb-3">Preguntas Frecuentes</h1>
+                    <p class="lead text-muted">
+                        Encuentra respuestas a las preguntas más comunes sobre el Portal SIGMA
+                    </p>
+                </div>
+
+                <div class="accordion" id="faqAccordion">
+                    <!-- Pregunta 1 -->
+                    <div class="accordion-item faq-card">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#faq1" aria-expanded="true" aria-controls="faq1">
+                                ¿Qué es SIGMA Portal?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Es el punto de entrada a la plataforma unificada SIGMA - Sistema Integrado de Gestión de Muestras
+                                y Accesos - que permite acceder a los sistemas de gestión
+                                de equipos científicos pertenecientes a la ICTS del Laboratorio Nacional de Fusión (SIGMA ICTS)
+                                y sistema de gestión de otros equipos e instalaciones de interés que forman parte de la División de Tecnologías de Fusión (SIGMA DTF).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="accordion-item faq-card">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                                ¿Cuál es la diferencia entre SIGMA ICTS y SIGMA DTF?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <strong>SIGMA ICTS</strong> gestiona las solicitudes para equipos científicos principales como 
+                                SEM, FIB, SIMS, Confocal, Ion Implanter, acelerador Van der Graff permitiendo de forma sencilla enviar
+                                solicitudes que serán revisadas por un panel de expertor internacionales.<br><br>
+                                <strong>SIGMA DTF</strong> gestiona laboratorios y servicios especializados como
+                                Σ-LAB, Σ-MEC, Σ-SIMS-Implant, y Σ-D&P, permitiendo que los usuarios y responsables de los
+                                distintos laboratorios tengan trazabilidad total de la comunicación cliente-técnico así como de las muestras y análisis llevados a cabo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="accordion-item faq-card">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+                                ¿Cómo solicito acceso a un equipo?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                1. Accede a la plataforma correspondiente (ICTS o DTF)<br>
+                                2. Regístrate o inicia sesión<br>
+                                3. Completa el formulario de solicitud específico para el equipo<br>
+                                4. Espera la revisión y aprobación de tu solicitud<br>
+                                5. Recibirás un código de acceso una vez aprobada
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="accordion-item faq-card">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">
+                                ¿Necesito registro por separado para cada plataforma?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Actualmente, cada plataforma (ICTS y DTF) requiere un registro independiente. 
+                                Estamos trabajando en un sistema de autenticación unificado para futuras versiones.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="accordion-item faq-card">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#faq5" aria-expanded="false" aria-controls="faq5">
+                                ¿A quién contacto si tengo problemas técnicos?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Para soporte técnico, puedes:<br>
+                                • Enviar un email a: <strong>sigma@ciemat.es</strong><br>
+                                • Contactar directamente con el Laboratorio Nacional de Fusión<br>
+                                • Visitar el sitio web oficial de CIEMAT
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de regreso -->
+                <div class="text-center mt-5">
+                    <a href="{% url 'portal:home' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-house me-2"></i>
+                        Volver al Portal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

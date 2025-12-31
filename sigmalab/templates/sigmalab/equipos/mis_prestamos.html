@@ -1,0 +1,95 @@
+{% extends "base_dtf.html" %}
+
+{% block title %}Mis Préstamos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-hand-holding me-2"></i>Mis Préstamos
+                    </h3>
+                    <a href="{% url 'sigmalab:prestamo_solicitar' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Nuevo Préstamo
+                    </a>
+                </div>
+                
+                <div class="card-body">
+                    {% if prestamos %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Equipo</th>
+                                    <th>Fecha Préstamo</th>
+                                    <th>Días</th>
+                                    <th>Fecha Devolución</th>
+                                    <th>Estado</th>
+                                    <th>Días Restantes</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prestamo in prestamos %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ prestamo.equipo.nombre }}</strong><br>
+                                        <small class="text-muted">{{ prestamo.equipo.codigo }}</small>
+                                    </td>
+                                    <td>{{ prestamo.fecha_prestamo|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ prestamo.dias_prestamo }}</td>
+                                    <td>{{ prestamo.fecha_devolucion_estimada|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <span class="badge" style="background-color: {{ prestamo.get_estado_color }}">
+                                            {{ prestamo.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if prestamo.estado == 'activo' %}
+                                            {% if prestamo.esta_vencido %}
+                                                <span class="text-danger">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                    Vencido ({{ prestamo.dias_vencido }} días)
+                                                </span>
+                                            {% else %}
+                                                <span class="text-success">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ prestamo.dias_restantes }} días
+                                                </span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if prestamo.estado == 'activo' %}
+                                        <a href="{% url 'sigmalab:prestamo_devolver' prestamo.id %}" class="btn btn-success btn-sm">
+                                            <i class="fas fa-undo me-1"></i>Devolver
+                                        </a>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No tienes préstamos registrados.
+                        <br>
+                        <a href="{% url 'sigmalab:prestamo_solicitar' %}" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus me-1"></i>Solicitar Primer Préstamo
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

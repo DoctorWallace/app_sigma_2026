@@ -1,0 +1,306 @@
+{% extends "base_icts.html" %}
+{% load static %}
+
+{% block title %}Solicitud CONF#{{ solicitud.pk }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-file-text"></i> Solicitud CONF#{{ solicitud.pk }}
+                </h1>
+                <div>
+                    <a href="{% url 'sigmaconf:solicitud_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    {% if can_edit %}
+                        <a href="#" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Información principal -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle"></i> Información de la Solicitud
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Material:</strong> {{ solicitud.material }}</p>
+                            <p><strong>Tipo de Microscopía:</strong> {{ solicitud.get_tipo_microscopia_display }}</p>
+                            <p><strong>Número de Muestras:</strong> {{ solicitud.numero_muestras }}</p>
+                            <p><strong>Estado:</strong> 
+                                <span class="badge 
+                                    {% if solicitud.estado == 'pendiente' %}bg-warning
+                                    {% elif solicitud.estado == 'aceptada' %}bg-info
+                                    {% elif solicitud.estado == 'en_curso' %}bg-primary
+                                    {% elif solicitud.estado == 'finalizada' %}bg-success
+                                    {% elif solicitud.estado == 'rechazada' %}bg-danger
+                                    {% endif %}">
+                                    {{ solicitud.get_estado_display }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Solicitante:</strong> {{ solicitud.solicitante.get_full_name }}</p>
+                            <p><strong>Técnico Asignado:</strong> 
+                                {% if solicitud.tecnico_asignado %}
+                                    {{ solicitud.tecnico_asignado.get_full_name }}
+                                {% else %}
+                                    <span class="text-muted">Sin asignar</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Fecha de Creación:</strong> {{ solicitud.creado_en|date:"d/m/Y H:i" }}</p>
+                            {% if solicitud.becario_asociado %}
+                                <p><strong>Becario Asociado:</strong> {{ solicitud.becario_asociado.nombre_completo }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parámetros técnicos -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-gear"></i> Parámetros Técnicos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Longitud de Onda de Excitación:</strong> {{ solicitud.longitud_onda_excitacion|default:"No especificada" }}</p>
+                            <p><strong>Longitud de Onda de Emisión:</strong> {{ solicitud.longitud_onda_emision|default:"No especificada" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Objetivo Requerido:</strong> {{ solicitud.objetivo_requerido|default:"No especificado" }}</p>
+                            <p><strong>Espesor de la Muestra:</strong> {{ solicitud.espesor_muestra|default:"No especificado" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción y requisitos -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-file-text"></i> Descripción y Requisitos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if solicitud.tincion_utilizada %}
+                        <p><strong>Tinción Utilizada:</strong></p>
+                        <p>{{ solicitud.tincion_utilizada }}</p>
+                    {% endif %}
+                    
+                    {% if solicitud.preparacion_muestra %}
+                        <p><strong>Preparación de la Muestra:</strong></p>
+                        <p>{{ solicitud.preparacion_muestra }}</p>
+                    {% endif %}
+                    
+                    {% if solicitud.requisitos_finales %}
+                        <p><strong>Requisitos Finales:</strong></p>
+                        <p>{{ solicitud.requisitos_finales }}</p>
+                    {% endif %}
+                    
+                    {% if solicitud.observaciones %}
+                        <p><strong>Observaciones:</strong></p>
+                        <p>{{ solicitud.observaciones }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Avances -->
+            {% if avances %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-chat-dots"></i> Avances
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for avance in avances %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ avance.get_tipo_display }}</h6>
+                                <small class="text-muted">Por {{ avance.autor.get_full_name }} - {{ avance.creado_en|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </div>
+                        <p class="mt-2">{{ avance.contenido }}</p>
+                        {% if avance.adjunto %}
+                            <a href="{{ avance.adjunto.url }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-download"></i> Descargar Adjunto
+                            </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <!-- Acciones para técnicos -->
+            {% if can_manage %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-tools"></i> Acciones de Técnico
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if solicitud.estado == 'pendiente' %}
+                        <form method="post" action="{% url 'sigmaconf:solicitud_accept' solicitud.pk %}" class="mb-2">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check-circle"></i> Aceptar Solicitud
+                            </button>
+                        </form>
+                        
+                        <button type="button" class="btn btn-danger w-100 mb-2" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                            <i class="bi bi-x-circle"></i> Rechazar Solicitud
+                        </button>
+                    {% elif solicitud.estado == 'aceptada' %}
+                        <form method="post" action="{% url 'sigmaconf:solicitud_start' solicitud.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-play-circle"></i> Iniciar Trabajo
+                            </button>
+                        </form>
+                    {% elif solicitud.estado == 'en_curso' %}
+                        <form method="post" action="{% url 'sigmaconf:solicitud_finish' solicitud.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check-circle"></i> Finalizar Solicitud
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                    <a href="#" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="bi bi-plus-circle"></i> Agregar Avance
+                    </a>
+                    
+                    <a href="#" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-journal-text"></i> Entrada en Diario
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Operaciones de preparación -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-list-check"></i> Operaciones de Preparación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {% if solicitud.montaje_fluorescente %}checked{% endif %} disabled>
+                                <label class="form-check-label">Montaje Fluorescente</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {% if solicitud.fijacion %}checked{% endif %} disabled>
+                                <label class="form-check-label">Fijación</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {% if solicitud.deshidratacion %}checked{% endif %} disabled>
+                                <label class="form-check-label">Deshidratación</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {% if solicitud.inclusion %}checked{% endif %} disabled>
+                                <label class="form-check-label">Inclusión</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {% if solicitud.corte_fino %}checked{% endif %} disabled>
+                                <label class="form-check-label">Corte Fino</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {% if solicitud.tincion_histologica %}checked{% endif %} disabled>
+                                <label class="form-check-label">Tinción Histológica</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {% if solicitud.inmunotincion %}checked{% endif %} disabled>
+                                <label class="form-check-label">Inmunotinción</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {% if solicitud.tincion_nuclear %}checked{% endif %} disabled>
+                                <label class="form-check-label">Tinción Nuclear</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archivos adjuntos -->
+            {% if solicitud.imagen_muestra or solicitud.croquis %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-paperclip"></i> Archivos Adjuntos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if solicitud.imagen_muestra %}
+                        <p><strong>Imagen de la Muestra:</strong></p>
+                        <a href="{{ solicitud.imagen_muestra.url }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-image"></i> Ver Imagen
+                        </a>
+                    {% endif %}
+                    
+                    {% if solicitud.croquis %}
+                        <p class="mt-3"><strong>Croquis:</strong></p>
+                        <a href="{{ solicitud.croquis.url }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-image"></i> Ver Croquis
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal para rechazar solicitud -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rechazar Solicitud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'sigmaconf:solicitud_reject' solicitud.pk %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="justificacion" class="form-label">Justificación del rechazo:</label>
+                        <textarea class="form-control" id="justificacion" name="justificacion" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Rechazar Solicitud</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

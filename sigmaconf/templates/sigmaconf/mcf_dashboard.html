@@ -1,0 +1,187 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Panel técnico LO3{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>Solicitudes de análisis</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-stat-grid">
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ in_progress_count }}</div>
+    <div class="lo3-stat-label">Sesiones en curso</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ completed_count }}</div>
+    <div class="lo3-stat-label">Sesiones completadas</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ accepted_proposals|length }}</div>
+    <div class="lo3-stat-label">Propuestas aceptadas</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ sessions|length }}</div>
+    <div class="lo3-stat-label">Sesiones registradas</div>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Acciones rápidas</h2>
+      <div class="lo3-card-subtitle">Crear sesiones o consultar resultados LO3.</div>
+    </div>
+    <a class="lo3-btn lo3-btn-primary" href="{% url 'sigmaconf:mcf_create_session' %}">
+      <i class="bi bi-plus-circle"></i>
+      Crear sesión
+    </a>
+  </div>
+  <div class="lo3-action-grid">
+    <a class="lo3-action-card" href="{% url 'sigmaconf:mcf_create_session' %}">
+      <div>
+        <div>Crear sesión LO3</div>
+        <small class="text-muted">Asignar lote a solicitud aceptada</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_results' %}">
+      <div>
+        <div>Resultados LO3</div>
+        <small class="text-muted">Avisos PDF y registros Excel</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_communications_list' %}">
+      <div>
+        <div>Comunicaciones</div>
+        <small class="text-muted">Seguimiento con el cliente</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Propuestas aceptadas</h2>
+      <div class="lo3-card-subtitle">Solicitudes ICTS disponibles para crear sesión LO3.</div>
+    </div>
+  </div>
+
+  {% if accepted_proposals %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Código acceso</th>
+            <th>Título</th>
+            <th>Solicitante</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for proposal in accepted_proposals %}
+            <tr>
+              <td>#{{ proposal.id }}</td>
+              <td>{{ proposal.access_code|default:"-" }}</td>
+              <td>{{ proposal.title|default:"(Sin título)" }}</td>
+              <td>{{ proposal.applicant.get_full_name|default:proposal.applicant.username }}</td>
+              <td>{{ proposal.created_at|date:"d/m/Y" }}</td>
+              <td>
+                <form method="post" action="{% url 'sigmaconf:mcf_create_session_from_proposal' proposal.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="lo3-btn lo3-btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Crear sesión
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-inbox"></i>
+      <div>No hay propuestas aceptadas disponibles.</div>
+      <small>Cuando se aprueben solicitudes LO3 aparecerán aquí.</small>
+    </div>
+  {% endif %}
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Sesiones LO3</h2>
+      <div class="lo3-card-subtitle">Seguimiento de lotes en curso y completados.</div>
+    </div>
+  </div>
+
+  {% if sessions %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Lote</th>
+            <th>Propuesta</th>
+            <th>Estado</th>
+            <th>Muestras</th>
+            <th>Creada</th>
+            <th>Finalización</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in sessions %}
+            <tr>
+              <td><strong>{{ session.lot_code }}</strong></td>
+              <td>{{ session.access_proposal.title|default:"-" }}</td>
+              <td>
+                {% if session.status == "completed" %}
+                  <span class="lo3-badge lo3-badge--success">Completada</span>
+                {% else %}
+                  <span class="lo3-badge lo3-badge--warning">En curso</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="lo3-chip">{{ session.sample_count }}</span>
+                {% if session.extra_samples %}
+                  <span class="lo3-badge lo3-badge--warning">+{{ session.extra_samples }} no declaradas</span>
+                {% endif %}
+                {% if session.analyzed_samples %}
+                  <span class="lo3-badge lo3-badge--info">{{ session.analyzed_samples }} analizadas</span>
+                {% endif %}
+              </td>
+              <td>{{ session.created_at|date:"d/m/Y H:i" }}</td>
+              <td>{{ session.completion_date|date:"d/m/Y"|default:"-" }}</td>
+              <td>
+                <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_session_detail' session.pk %}">
+                  <i class="bi bi-eye"></i>
+                  Ver sesión
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-clipboard-x"></i>
+      <div>No hay sesiones registradas.</div>
+      <small>Crea una sesión desde una propuesta aceptada para empezar.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

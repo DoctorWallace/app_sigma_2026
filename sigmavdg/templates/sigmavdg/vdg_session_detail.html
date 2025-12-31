@@ -1,0 +1,267 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Sesion {{ session.lot_code }}{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Registro de irradiaciones VDG{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  {% if read_only %}
+    <a href="{% url 'icts:user_dashboard' %}">Resultados</a>
+  {% else %}
+    <a href="{% url 'sigmavdg:vdg_dashboard' %}">Solicitudes de analisis</a>
+  {% endif %}
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>Sesion {{ session.lot_code }}</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-page-header">
+  <div>
+    <div class="vdg-page-title">Sesion {{ session.lot_code }}</div>
+    <div class="vdg-page-meta">
+      <span>Solicitud: {{ session.access_proposal.access_code|default:"-" }}</span>
+      <span>Propuesta: {{ session.access_proposal.title|default:"(Sin titulo)" }}</span>
+      <span>Tecnico: {{ session.technician.get_full_name|default:session.technician.username }}</span>
+    </div>
+    <div style="margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+      {% if session.status == "completed" %}
+        <span class="vdg-badge vdg-badge--success">Completada</span>
+      {% else %}
+        <span class="vdg-badge vdg-badge--warning">En curso</span>
+      {% endif %}
+      <span class="vdg-badge vdg-badge--info">Informe {{ session.report_code }}</span>
+      {% if session.completed_at %}
+        <span class="vdg-badge vdg-badge--muted">Finalizada {{ session.completed_at|date:"d/m/Y" }}</span>
+      {% endif %}
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a class="vdg-btn vdg-btn-secondary" href="{% url back_url %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+    {% if session.notice_pdf %}
+      <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_notice_download' session.pk %}">
+        <i class="bi bi-file-earmark-pdf"></i>
+        Aviso PDF
+      </a>
+    {% endif %}
+    {% if session.report_pdf %}
+      <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_report_download' session.pk %}">
+        <i class="bi bi-file-earmark-pdf"></i>
+        Informe PDF
+      </a>
+    {% endif %}
+    {% if not read_only %}
+      <a class="vdg-btn vdg-btn-primary" href="{% url 'sigmavdg:vdg_add_sample' session.pk %}">
+        <i class="bi bi-plus-circle"></i>
+        Anadir muestra
+      </a>
+      {% if session.status == "in_progress" %}
+        <form id="vdg-finish-form" method="post" action="{% url 'sigmavdg:vdg_finish_session' session.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="vdg-btn vdg-btn-primary">
+            <i class="bi bi-check2-circle"></i>
+            Finalizar sesion
+          </button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+<div class="vdg-stat-grid">
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ sample_stats.total }}</div>
+    <div class="vdg-stat-label">Muestras registradas</div>
+  </div>
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ sample_stats.declared }}</div>
+    <div class="vdg-stat-label">Declaradas</div>
+  </div>
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ sample_stats.extra }}</div>
+    <div class="vdg-stat-label">No declaradas</div>
+  </div>
+</div>
+
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Datos de sesion</h2>
+      <div class="vdg-card-subtitle">Fechas y observaciones generales de la sesion.</div>
+    </div>
+  </div>
+
+  {% if read_only %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <tbody>
+          <tr>
+            <th>Recepcion</th>
+            <td>{{ session.received_date|date:"d/m/Y"|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Inicio irradiacion</th>
+            <td>{{ session.irradiation_start_date|date:"d/m/Y"|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Fin irradiacion</th>
+            <td>{{ session.irradiation_end_date|date:"d/m/Y"|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Emision informe</th>
+            <td>{{ session.report_issue_date|date:"d/m/Y"|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Entrega informe</th>
+            <td>{{ session.report_delivery_date|date:"d/m/Y"|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Observaciones</th>
+            <td>{{ session.observations|default:"-" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <form id="vdg-session-form" method="post" action="{% url 'sigmavdg:vdg_session_update' session.pk %}">
+      {% csrf_token %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+        <div>
+          {{ session_form.received_date.label_tag }}
+          {{ session_form.received_date }}
+        </div>
+        <div>
+          {{ session_form.irradiation_start_date.label_tag }}
+          {{ session_form.irradiation_start_date }}
+        </div>
+        <div>
+          {{ session_form.irradiation_end_date.label_tag }}
+          {{ session_form.irradiation_end_date }}
+        </div>
+        <div>
+          {{ session_form.report_issue_date.label_tag }}
+          {{ session_form.report_issue_date }}
+        </div>
+        <div>
+          {{ session_form.report_delivery_date.label_tag }}
+          {{ session_form.report_delivery_date }}
+        </div>
+        <div style="grid-column: 1 / -1;">
+          {{ session_form.observations.label_tag }}
+          {{ session_form.observations }}
+        </div>
+      </div>
+      <div style="margin-top: 1rem;">
+        <button type="submit" class="vdg-btn vdg-btn-primary">
+          <i class="bi bi-save"></i>
+          Guardar sesion
+        </button>
+      </div>
+    </form>
+  {% endif %}
+</div>
+
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Registro de muestras</h2>
+      <div class="vdg-card-subtitle">Parametros declarados y resultados registrados.</div>
+    </div>
+  </div>
+
+  {% if samples %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Origen</th>
+            <th>Codigo</th>
+            <th>Material</th>
+            <th>Fluencia</th>
+            <th>Temperatura</th>
+            <th>Atmosfera</th>
+            <th>Tamano</th>
+            <th>Geometria</th>
+            <th>Resultado</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in samples %}
+            <tr>
+              <td>{{ sample.sequence }}</td>
+              <td>
+                {% if sample.source == "session" %}
+                  <span class="vdg-badge vdg-badge--warning">No declarada</span>
+                {% else %}
+                  <span class="vdg-badge vdg-badge--muted">Declarada</span>
+                {% endif %}
+              </td>
+              <td>{{ sample.code|default:"-" }}</td>
+              <td>{{ sample.material|default:"-" }}</td>
+              <td>{{ sample.electron_fluence|default:"-" }}</td>
+              <td>{{ sample.temperature|default:"-" }}</td>
+              <td>{{ sample.atmosphere|default:"-" }}</td>
+              <td>{{ sample.sample_size|default:"-" }}</td>
+              <td>{{ sample.sample_geometry|default:"-" }}</td>
+              <td>{{ sample.fluence_result|default:"-" }}</td>
+              <td>
+                {% if not read_only %}
+                  <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_sample_edit' sample.pk %}">
+                    <i class="bi bi-pencil-square"></i>
+                    Editar
+                  </a>
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vdg-empty">
+      <i class="bi bi-clipboard-x"></i>
+      <div>No hay muestras registradas.</div>
+      <small>Agrega muestras para completar el registro VDG.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+(function(){
+  const finishForm = document.getElementById('vdg-finish-form');
+  const sessionForm = document.getElementById('vdg-session-form');
+  if (!finishForm || !sessionForm) return;
+  const fieldNames = [
+    'received_date',
+    'irradiation_start_date',
+    'irradiation_end_date',
+    'report_issue_date',
+    'report_delivery_date',
+    'observations',
+  ];
+
+  finishForm.addEventListener('submit', function(){
+    fieldNames.forEach((name) => {
+      const source = sessionForm.querySelector(`[name="${name}"]`);
+      if (!source) return;
+      let target = finishForm.querySelector(`[name="${name}"]`);
+      if (!target) {
+        target = document.createElement('input');
+        target.type = 'hidden';
+        target.name = name;
+        finishForm.appendChild(target);
+      }
+      target.value = source.value || '';
+    });
+  });
+})();
+{% endblock %}

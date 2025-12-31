@@ -1,0 +1,210 @@
+{% extends "base_dtf.html" %}
+{% block title %}Información Importante - DTF S Lab{% endblock %}
+{% block page_title %}Información Importante{% endblock %}
+
+{% block extra_css %}
+<style>
+  .info-header {
+    background: linear-gradient(135deg, var(--primary, #0d6efd), #0b5ed7);
+    color: white;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2rem;
+    text-align: center;
+  }
+  .info-header h3 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .info-header i {
+    font-size: 1.5em;
+  }
+  .progress-container {
+    background: rgba(255,255,255,0.1);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  .progress {
+    height: 12px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    transition: width 0.3s ease;
+  }
+  .info-card {
+    transition: all 0.3s ease;
+    border: 2px solid #e9ecef;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: var(--primary, #0d6efd);
+  }
+  .info-icon {
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+  }
+  .info-card:hover .info-icon {
+    transform: scale(1.1);
+  }
+  .completion-card {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border: 2px solid #28a745;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 2rem;
+  }
+  .completion-card h4 {
+    color: #155724;
+    margin-bottom: 1rem;
+  }
+  .completion-card p {
+    color: #155724;
+    margin-bottom: 1.5rem;
+  }
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card info-card">
+    <div class="info-header">
+        <h3>
+            <i class="bi bi-info-circle"></i> 
+            Información Importante para Usuarios DTF S Lab
+        </h3>
+        {% if completado %}
+            <div class="alert alert-success" style="margin-top: 1rem; background: rgba(40, 167, 69, 0.2); border: 1px solid rgba(40, 167, 69, 0.3); color: #155724;">
+                <i class="bi bi-check-circle-fill"></i> 
+                <strong>¡Completado!</strong> Has revisado toda la información importante.
+                <br><small>Inicio: {{ profile.info_importante_inicio|date:"d/m/Y H:i" }} | 
+                Fin: {{ profile.info_importante_fin|date:"d/m/Y H:i" }}</small>
+            </div>
+        {% else %}
+            <div class="progress-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span><i class="bi bi-info-circle-fill"></i> Progreso de lectura</span>
+                    <span><strong>{{ secciones_completadas }}/{{ total_secciones }}</strong> secciones</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: {{ porcentaje_progreso }}%">
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card info-card" data-seccion="seguridad">
+            <div class="card-body text-center">
+                <div class="info-icon">
+                    <i class="bi bi-shield-exclamation" style="font-size: 3rem; color: #dc3545;"></i>
+                </div>
+                <h5 class="card-title">Seguridad</h5>
+                <p class="card-text">Normas y protocolos de seguridad en el laboratorio</p>
+                {% if 'seguridad' in secciones_accedidas %}
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Completado
+                    </span>
+                {% else %}
+                    <span class="badge bg-warning">
+                        <i class="bi bi-clock"></i> Pendiente
+                    </span>
+                {% endif %}
+                <div style="margin-top: 1rem;">
+                    <a href="{% url 'dtf:info-importante-seccion' 'seguridad' %}" class="btn btn-primary">
+                        <i class="bi bi-eye"></i> Ver Información
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card info-card" data-seccion="uso_equipos">
+            <div class="card-body text-center">
+                <div class="info-icon">
+                    <i class="bi bi-tools" style="font-size: 3rem; color: #0d6efd;"></i>
+                </div>
+                <h5 class="card-title">Uso de Equipos</h5>
+                <p class="card-text">Instrucciones para el uso correcto de equipos</p>
+                {% if 'uso_equipos' in secciones_accedidas %}
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Completado
+                    </span>
+                {% else %}
+                    <span class="badge bg-warning">
+                        <i class="bi bi-clock"></i> Pendiente
+                    </span>
+                {% endif %}
+                <div style="margin-top: 1rem;">
+                    <a href="{% url 'dtf:info-importante-seccion' 'uso_equipos' %}" class="btn btn-primary">
+                        <i class="bi bi-eye"></i> Ver Información
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card info-card" data-seccion="normas_obligatorias">
+            <div class="card-body text-center">
+                <div class="info-icon">
+                    <i class="bi bi-file-earmark-text" style="font-size: 3rem; color: #198754;"></i>
+                </div>
+                <h5 class="card-title">Normas Obligatorias</h5>
+                <p class="card-text">Reglamentos y normas que debes conocer</p>
+                {% if 'normas_obligatorias' in secciones_accedidas %}
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Completado
+                    </span>
+                {% else %}
+                    <span class="badge bg-warning">
+                        <i class="bi bi-clock"></i> Pendiente
+                    </span>
+                {% endif %}
+                <div style="margin-top: 1rem;">
+                    <a href="{% url 'dtf:info-importante-seccion' 'normas_obligatorias' %}" class="btn btn-primary">
+                        <i class="bi bi-eye"></i> Ver Información
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if completado %}
+<div class="completion-card">
+    <h4><i class="bi bi-check-circle-fill"></i> ¡Información Completada!</h4>
+    <p>Has revisado toda la información importante. Ahora puedes acceder a todas las funcionalidades de DTF S Lab.</p>
+    <a href="{% url 'sigmalab:panel-usuario' %}" class="btn btn-success btn-lg">
+        <i class="bi bi-arrow-right"></i> Ir a Mi Panel
+    </a>
+</div>
+{% endif %}
+{% endblock %}

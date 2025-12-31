@@ -1,0 +1,54 @@
+{% extends "base_generic.html" %}
+{% block title %}SEM / EDX details | SIGMA-Lab{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 class="page-title">SEM / EDX — Details for: {{ proposal.title }}</h2>
+  <p class="muted">* Detectable elements from Z = 5 (EDX)</p>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>SAMPLE DESCRIPTION</legend>
+      {{ sample_formset.management_form }}
+      {% for f in sample_formset %}
+        <div class="card" style="margin:8px 0;padding:8px">
+          <div class="grid">
+            <p><label>{{ f.identification.label }}</label>{{ f.identification }}</p>
+            <p><label>{{ f.name.label }}</label>{{ f.name }}</p>
+          </div>
+          <p><label>{{ f.details.label }}</label>{{ f.details }}</p>
+          {% if f.DELETE %}<label style="color:#b00020">{{ f.DELETE }} Remove</label>{% endif %}
+        </div>
+      {% endfor %}
+    </fieldset>
+
+    <fieldset>
+      <legend>SAMPLE SAFE HANDLING</legend>
+      <div class="grid">
+        <p>{{ form.toxic }} {{ form.toxic.label }}</p>
+        <p>{{ form.corrosive }} {{ form.corrosive.label }}</p>
+        <p>{{ form.irritating }} {{ form.irritating.label }}</p>
+        <p>{{ form.radioactive }} {{ form.radioactive.label }}</p>
+      </div>
+      <p><label>{{ form.safe_comments.label }}</label>{{ form.safe_comments }}</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>IMPORTANT INFORMATION</legend>
+      <div class="grid">
+        <p>{{ form.request_sem }} {{ form.request_sem.label }}</p>
+        <p>{{ form.request_edx }} {{ form.request_edx.label }}</p>
+        <p>{{ form.edx_section_view }} {{ form.edx_section_view.label }}</p>
+        <p>{{ form.conductive }} {{ form.conductive.label }}</p>
+      </div>
+      <p><label>{{ form.further_comments.label }}</label>{{ form.further_comments }}</p>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" class="btn">Save SEM details</button>
+      <a class="btn secondary" href="{% url 'icts:proposal_edit' proposal.pk %}">Back to proposal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

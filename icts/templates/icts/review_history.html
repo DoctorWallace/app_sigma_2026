@@ -1,0 +1,727 @@
+{% extends "base_icts.html" %}
+{% load form_extras %}
+{% block title %}Historial de Evaluaciones - SIGMA ICTS{% endblock %}
+{% block page_title %}Historial de Evaluaciones{% endblock %}
+
+{% block content %}
+<div class="history-container">
+  
+  <!-- Filtros de búsqueda -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <h3 class="filters-title"><i class="bi bi-search"></i> Filtros de Búsqueda</h3>
+      <button type="button" id="toggle-filters" class="toggle-filters-btn">
+        <span class="toggle-icon"><i class="bi bi-gear"></i></span>
+        <span class="toggle-text">Mostrar/Ocultar Filtros</span>
+      </button>
+    </div>
+    
+    <div class="filters-content" id="filters-content">
+      <form method="get" class="filters-form">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label class="filter-label">Estado de la evaluación:</label>
+            <select name="decision" class="filter-select">
+              <option value="">Todos</option>
+              <option value="approve" {% if request.GET.decision == 'approve' %}selected{% endif %}><i class="bi bi-check-circle"></i> Aprobadas</option>
+              <option value="reject" {% if request.GET.decision == 'reject' %}selected{% endif %}><i class="bi bi-x-circle"></i> Rechazadas</option>
+              <option value="request_changes" {% if request.GET.decision == 'request_changes' %}selected{% endif %}><i class="bi bi-arrow-clockwise"></i> Cambios solicitados</option>
+              <option value="pending" {% if request.GET.decision == 'pending' %}selected{% endif %}><i class="bi bi-clock"></i> Pendientes</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">Fecha desde:</label>
+            <input type="date" name="date_from" value="{{ request.GET.date_from }}" class="filter-input">
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">Fecha hasta:</label>
+            <input type="date" name="date_to" value="{{ request.GET.date_to }}" class="filter-input">
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">Buscar en título:</label>
+            <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Título de la propuesta..." class="filter-input">
+          </div>
+        </div>
+        
+        <div class="filters-actions">
+          <button type="submit" class="filter-btn primary">
+            <span class="btn-icon"><i class="bi bi-search"></i></span>
+            <span class="btn-text">Buscar</span>
+          </button>
+          <a href="{% url 'icts:review_history' %}" class="filter-btn secondary">
+            <span class="btn-icon"><i class="bi bi-arrow-clockwise"></i></span>
+            <span class="btn-text">Limpiar</span>
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Estadísticas de resultados -->
+  <div class="results-stats">
+    <div class="stats-summary">
+      <span class="stats-text">Mostrando {{ reviews|length }} de {{ total_reviews }} evaluaciones</span>
+      {% if request.GET.decision or request.GET.date_from or request.GET.date_to or request.GET.search %}
+        <span class="filters-active">(con filtros aplicados)</span>
+      {% endif %}
+    </div>
+    
+    <div class="export-actions">
+      <button type="button" class="export-btn" onclick="exportToCSV()">
+        <span class="btn-icon"><i class="bi bi-file-text"></i></span>
+        <span class="btn-text">Exportar CSV</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Lista de evaluaciones -->
+  <div class="reviews-section">
+    {% if reviews %}
+      <div class="reviews-list">
+        {% for review in reviews %}
+        <div class="review-item">
+          <div class="review-header">
+            <div class="review-title">
+              <h4 class="proposal-title">{{ review.proposal.title|default:"(Sin título)" }}</h4>
+              <span class="proposal-id">#{{ review.proposal.id }}</span>
+            </div>
+            <div class="review-status">
+              <span class="status-badge decision-{{ review.decision }}">
+                {% if review.decision == 'approve' %}<i class="bi bi-check-circle"></i> Aprobada
+                {% elif review.decision == 'reject' %}<i class="bi bi-x-circle"></i> Rechazada
+                {% elif review.decision == 'request_changes' %}<i class="bi bi-arrow-clockwise"></i> Cambios solicitados
+                {% else %}<i class="bi bi-clock"></i> Pendiente{% endif %}
+              </span>
+            </div>
+          </div>
+          
+          <div class="review-details">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Solicitante:</span>
+                <span class="detail-value">{{ review.proposal.applicant.get_full_name|default:review.proposal.applicant.get_username }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Fecha de evaluación:</span>
+                <span class="detail-value">{{ review.updated_at|date:"d/m/Y H:i" }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Fecha de envío:</span>
+                <span class="detail-value">{{ review.proposal.created_at|date:"d/m/Y H:i" }}</span>
+              </div>
+              {% if review.score_scientific_quality %}
+              <div class="detail-item">
+                <span class="detail-label">Calidad científica:</span>
+                <span class="detail-value score">{{ review.score_scientific_quality }}/5</span>
+              </div>
+              {% endif %}
+              {% if review.score_need_infrastructure %}
+              <div class="detail-item">
+                <span class="detail-label">Necesidad infraestructura:</span>
+                <span class="detail-value score">{{ review.score_need_infrastructure }}/5</span>
+              </div>
+              {% endif %}
+              {% if review.score_industrial_potential %}
+              <div class="detail-item">
+                <span class="detail-label">Potencial industrial:</span>
+                <span class="detail-value score">{{ review.score_industrial_potential }}/5</span>
+              </div>
+              {% endif %}
+            </div>
+            
+            {% if review.comments %}
+            <div class="review-comments">
+              <span class="comments-label">Comentarios:</span>
+              <div class="comments-content">{{ review.comments }}</div>
+            </div>
+            {% endif %}
+          </div>
+          
+          <div class="review-actions">
+            <a href="{% url 'icts:proposal_detail' review.proposal.pk %}" class="action-btn view">
+              <span class="btn-icon"><i class="bi bi-eye"></i></span>
+              <span class="btn-text">Ver Propuesta</span>
+            </a>
+            {% if review.decision == 'pending' %}
+            <a href="{% url 'icts:review_start' review.proposal.pk %}" class="action-btn evaluate">
+              <span class="btn-icon"><i class="bi bi-file-earmark-text"></i></span>
+              <span class="btn-text">Continuar Evaluación</span>
+            </a>
+            {% else %}
+            <a href="{% url 'icts:review_start' review.proposal.pk %}" class="action-btn edit">
+              <span class="btn-icon"><i class="bi bi-pencil"></i></span>
+              <span class="btn-text">Ver Evaluación</span>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      <!-- Paginación -->
+      {% if is_paginated %}
+      <div class="pagination">
+        <div class="pagination-info">
+          Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </div>
+        <div class="pagination-links">
+          {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.decision %}&decision={{ request.GET.decision }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">« Primera</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.decision %}&decision={{ request.GET.decision }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">‹ Anterior</a>
+          {% endif %}
+          
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <span class="pagination-btn current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="?page={{ num }}{% if request.GET.decision %}&decision={{ request.GET.decision }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">{{ num }}</a>
+            {% endif %}
+          {% endfor %}
+          
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.decision %}&decision={{ request.GET.decision }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">Siguiente ›</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.decision %}&decision={{ request.GET.decision }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">Última »</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+      
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-clipboard"></i></div>
+        <h3 class="empty-title">No se encontraron evaluaciones</h3>
+        <p class="empty-description">
+          {% if request.GET.decision or request.GET.date_from or request.GET.date_to or request.GET.search %}
+            No hay evaluaciones que coincidan con los filtros aplicados.
+          {% else %}
+            Aún no has realizado ninguna evaluación.
+          {% endif %}
+        </p>
+        {% if request.GET.decision or request.GET.date_from or request.GET.date_to or request.GET.search %}
+          <a href="{% url 'icts:review_history' %}" class="clear-filters-btn">Limpiar filtros</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<style>
+.history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Sección de filtros */
+.filters-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filters-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.toggle-filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-filters-btn:hover {
+  background: var(--primary-dark);
+}
+
+.filters-content {
+  display: block;
+}
+
+.filters-content.hidden {
+  display: none;
+}
+
+.filters-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.filter-select, .filter-input {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus, .filter-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+}
+
+.filters-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.filter-btn.primary {
+  background: var(--primary);
+  color: white;
+}
+
+.filter-btn.primary:hover {
+  background: var(--primary-dark);
+}
+
+.filter-btn.secondary {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.filter-btn.secondary:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Estadísticas de resultados */
+.results-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-main);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.stats-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stats-text {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.filters-active {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-btn:hover {
+  background: #138496;
+}
+
+/* Lista de evaluaciones */
+.reviews-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.review-item {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.review-item:hover {
+  box-shadow: var(--shadow);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.review-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.proposal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.proposal-id {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.decision-approve { background: #d4edda; color: #155724; }
+.decision-reject { background: #f8d7da; color: #721c24; }
+.decision-request_changes { background: #fff3cd; color: #856404; }
+.decision-pending { background: #e2e3e5; color: #6c757d; }
+
+.review-details {
+  margin-bottom: 1rem;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.detail-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.detail-value.score {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.review-comments {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-card);
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary);
+}
+
+.comments-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.comments-content {
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.review-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.action-btn.view {
+  background: var(--primary);
+  color: white;
+}
+
+.action-btn.view:hover {
+  background: var(--primary-dark);
+  color: white;
+}
+
+.action-btn.evaluate {
+  background: #28a745;
+  color: white;
+}
+
+.action-btn.evaluate:hover {
+  background: #1e7e34;
+  color: white;
+}
+
+.action-btn.edit {
+  background: #17a2b8;
+  color: white;
+}
+
+.action-btn.edit:hover {
+  background: #138496;
+  color: white;
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.pagination-info {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.pagination-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.pagination-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.pagination-btn.current {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.clear-filters-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.clear-filters-btn:hover {
+  background: var(--primary-dark);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filters-actions {
+    justify-content: stretch;
+  }
+  
+  .filter-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .results-stats {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .review-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .review-title {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .pagination-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+</style>
+
+<script>
+// Toggle de filtros
+document.getElementById('toggle-filters').addEventListener('click', function() {
+  const content = document.getElementById('filters-content');
+  const icon = this.querySelector('.toggle-icon');
+  const text = this.querySelector('.toggle-text');
+  
+  if (content.classList.contains('hidden')) {
+    content.classList.remove('hidden');
+    icon.innerHTML = '<i class="bi bi-gear"></i>';
+    text.textContent = 'Ocultar Filtros';
+  } else {
+    content.classList.add('hidden');
+    icon.innerHTML = '<i class="bi bi-gear"></i>';
+    text.textContent = 'Mostrar Filtros';
+  }
+});
+
+// Exportar a CSV
+function exportToCSV() {
+  // Aquí implementarías la funcionalidad de exportación
+  alert('Funcionalidad de exportación a CSV - Por implementar');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base_dtf.html" %}
+{% block title %}{{ mensaje.asunto }} - S-LAB{% endblock %}
+{% block page_title %}Detalle del Mensaje{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:800px; margin:0 auto;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <h3 style="margin:0;">{{ mensaje.asunto }}</h3>
+    <a class="btn btn-outline-secondary" href="{% url 'sigmalab:inbox-mensajes' %}">
+      <i class="bi bi-arrow-left"></i> Volver al Inbox
+    </a>
+  </div>
+
+  <!-- Información del mensaje -->
+  <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:.5rem; padding:1rem; margin-bottom:1.5rem;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+      <div>
+        <strong>De:</strong> {{ mensaje.remitente.get_full_name|default:mensaje.remitente.username }}
+      </div>
+      <div>
+        <strong>Para:</strong> {{ mensaje.destinatario.get_full_name|default:mensaje.destinatario.username }}
+      </div>
+      <div>
+        <strong>Fecha:</strong> {{ mensaje.fecha_envio|date:"d/m/Y H:i" }}
+      </div>
+      <div>
+        <strong>Tipo:</strong> 
+        <span class="badge" style="background:{{ mensaje.get_tipo_display_color }}; color:white;">
+          {{ mensaje.get_tipo_mensaje_display }}
+        </span>
+      </div>
+      {% if mensaje.solicitud %}
+      <div>
+        <strong>Solicitud:</strong> 
+        <a href="{% url 'sigmalab:detalle-solicitud' mensaje.solicitud.id %}" style="color:#007bff;">
+          SOL#{{ mensaje.solicitud.id }}
+        </a>
+      </div>
+      {% endif %}
+      {% if mensaje.leido %}
+      <div>
+        <strong>Leído:</strong> {{ mensaje.fecha_leido|date:"d/m/Y H:i" }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Contenido del mensaje -->
+  <div style="background:#fff; border:1px solid #dee2e6; border-radius:.5rem; padding:1.5rem; margin-bottom:1.5rem;">
+    <h4 style="margin:0 0 1rem; color:#495057;">Contenido:</h4>
+    <div style="white-space: pre-wrap; line-height:1.6; color:#343a40;">{{ mensaje.contenido }}</div>
+  </div>
+
+  <!-- Acciones -->
+  <div style="display:flex; gap:.5rem; justify-content:flex-end; padding-top:1rem; border-top:1px solid #dee2e6;">
+    <a class="btn btn-outline-secondary" href="{% url 'sigmalab:inbox-mensajes' %}">
+      <i class="bi bi-arrow-left"></i> Volver al Inbox
+    </a>
+    <a class="btn btn-outline-primary" href="{% url 'sigmalab:responder-mensaje' mensaje.id %}">
+      <i class="bi bi-reply"></i> Responder
+    </a>
+  </div>
+</div>
+
+<style>
+/* Estilos generales */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  color: #fff;
+  background-color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  background-color: transparent;
+  border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-outline-primary {
+  color: #007bff;
+  background-color: transparent;
+  border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+</style>
+{% endblock %}

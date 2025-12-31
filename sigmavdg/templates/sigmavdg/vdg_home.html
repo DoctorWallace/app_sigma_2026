@@ -1,0 +1,76 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Portal VDG (L07){% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Portal tecnico VDG{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <span>Portal VDG</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-stat-grid">
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ in_progress_count }}</div>
+    <div class="vdg-stat-label">Sesiones en curso</div>
+  </div>
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ completed_count }}</div>
+    <div class="vdg-stat-label">Sesiones completadas</div>
+  </div>
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ accepted_count }}</div>
+    <div class="vdg-stat-label">Propuestas aceptadas</div>
+  </div>
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ session_count }}</div>
+    <div class="vdg-stat-label">Sesiones registradas</div>
+  </div>
+</div>
+
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Acciones rapidas</h2>
+      <div class="vdg-card-subtitle">Crear sesiones y acceder al seguimiento del laboratorio.</div>
+    </div>
+    <a class="vdg-btn vdg-btn-primary" href="{% url 'sigmavdg:vdg_dashboard' %}">
+      <i class="bi bi-inboxes"></i>
+      Ir al dashboard
+    </a>
+  </div>
+
+  <div class="vdg-action-grid">
+    <a class="vdg-action-card" href="{% url 'sigmavdg:vdg_create_session' %}">
+      <div>
+        <div>Crear sesion VDG</div>
+        <small class="text-muted">Asignar lote a propuesta aceptada</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="vdg-action-card" href="{% url 'sigmavdg:vdg_dashboard' %}">
+      <div>
+        <div>Solicitudes de analisis</div>
+        <small class="text-muted">Ver sesiones en curso y completadas</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="vdg-action-card" href="{% url 'sigmavdg:vdg_equipment_list' %}">
+      <div>
+        <div>Fichas de equipos</div>
+        <small class="text-muted">Catalogo de equipos y documentos</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="vdg-action-card" href="{% url 'sigmavdg:vdg_item_movements' %}">
+      <div>
+        <div>Control de items</div>
+        <small class="text-muted">Entradas y salidas del laboratorio</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+</div>
+{% endblock %}

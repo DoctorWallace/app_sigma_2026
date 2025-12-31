@@ -1,0 +1,397 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Inbox de incidencias{% endblock %}
+{% block page_title %}Inbox de incidencias del laboratorio{% endblock %}
+
+{% block extra_css %}
+<style>
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  .stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  .stat-total { color: #007bff; }
+  .stat-pendientes { color: #ffc107; }
+  .stat-proceso { color: #17a2b8; }
+  .stat-resueltas { color: #28a745; }
+  .stat-criticas { color: #dc3545; }
+  
+  .filters-container {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+  }
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .filter-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .filter-select {
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background: white;
+  }
+  .filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .btn-filter {
+    padding: 0.5rem 1rem;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .btn-filter:hover {
+    background: #0056b3;
+    color: white;
+    text-decoration: none;
+  }
+  .btn-clear {
+    background: #6c757d;
+    border-color: #6c757d;
+  }
+  .btn-clear:hover {
+    background: #545b62;
+  }
+  
+  .incidents-table {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+  }
+  .table th {
+    background: #f8f9fa;
+    padding: 1rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap;
+  }
+  .table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: top;
+  }
+  .table tbody tr:hover {
+    background: #f8f9fa;
+  }
+  
+  .incident-id {
+    font-weight: 600;
+    color: #007bff;
+  }
+  .incident-title {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.25rem;
+  }
+  .incident-meta {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  
+  .priority-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .priority-baja { background: #d4edda; color: #155724; }
+  .priority-media { background: #fff3cd; color: #856404; }
+  .priority-alta { background: #f8d7da; color: #721c24; }
+  .priority-critica { background: #f8d7da; color: #721c24; font-weight: bold; }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .status-pendiente { background: #fff3cd; color: #856404; }
+  .status-en_revision { background: #cff4fc; color: #055160; }
+  .status-en_proceso { background: #cce5ff; color: #004085; }
+  .status-resuelta { background: #d4edda; color: #155724; }
+  .status-cerrada { background: #e2e3e5; color: #495057; }
+  
+  .category-badge {
+    display: inline-block;
+    padding: 0.2rem 0.4rem;
+    background: #e9ecef;
+    color: #495057;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+  .pagination a {
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.25rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #007bff;
+    text-decoration: none;
+  }
+  .pagination a:hover {
+    background: #e9ecef;
+  }
+  .pagination .current {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2 style="margin:0 0 1rem; color: #dc3545;">
+    <i class="bi bi-inbox"></i> Inbox de incidencias del laboratorio
+  </h2>
+  
+  <!-- Estadísticas -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-number stat-total">{{ stats.total }}</div>
+      <div class="stat-label">Total incidencias</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number stat-pendientes">{{ stats.pendientes }}</div>
+      <div class="stat-label">Pendientes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number stat-proceso">{{ stats.en_proceso }}</div>
+      <div class="stat-label">En proceso</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number stat-resueltas">{{ stats.resueltas }}</div>
+      <div class="stat-label">Resueltas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number stat-criticas">{{ stats.criticas }}</div>
+      <div class="stat-label">Críticas</div>
+    </div>
+  </div>
+  
+  <!-- Filtros -->
+  <div class="filters-container">
+    <form method="get" id="filters-form">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">Estado</label>
+          <select name="estado" class="filter-select">
+            <option value="">Todos los estados</option>
+            <option value="pendiente" {% if filters.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            <option value="en_revision" {% if filters.estado == 'en_revision' %}selected{% endif %}>En revisión</option>
+            <option value="en_proceso" {% if filters.estado == 'en_proceso' %}selected{% endif %}>En proceso</option>
+            <option value="resuelta" {% if filters.estado == 'resuelta' %}selected{% endif %}>Resuelta</option>
+            <option value="cerrada" {% if filters.estado == 'cerrada' %}selected{% endif %}>Cerrada</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">Prioridad</label>
+          <select name="prioridad" class="filter-select">
+            <option value="">Todas las prioridades</option>
+            <option value="baja" {% if filters.prioridad == 'baja' %}selected{% endif %}>Baja</option>
+            <option value="media" {% if filters.prioridad == 'media' %}selected{% endif %}>Media</option>
+            <option value="alta" {% if filters.prioridad == 'alta' %}selected{% endif %}>Alta</option>
+            <option value="critica" {% if filters.prioridad == 'critica' %}selected{% endif %}>Crítica</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">Categoría</label>
+          <select name="categoria" class="filter-select">
+            <option value="">Todas las categorías</option>
+            <option value="equipos" {% if filters.categoria == 'equipos' %}selected{% endif %}>Equipos</option>
+            <option value="infraestructura" {% if filters.categoria == 'infraestructura' %}selected{% endif %}>Infraestructura</option>
+            <option value="seguridad" {% if filters.categoria == 'seguridad' %}selected{% endif %}>Seguridad</option>
+            <option value="suministros" {% if filters.categoria == 'suministros' %}selected{% endif %}>Suministros</option>
+            <option value="comunicaciones" {% if filters.categoria == 'comunicaciones' %}selected{% endif %}>Comunicaciones</option>
+            <option value="otros" {% if filters.categoria == 'otros' %}selected{% endif %}>Otros</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">Asignación</label>
+          <select name="asignado" class="filter-select">
+            <option value="">Todas</option>
+            <option value="me" {% if filters.asignado == 'me' %}selected{% endif %}>Asignadas a mí</option>
+            <option value="unassigned" {% if filters.asignado == 'unassigned' %}selected{% endif %}>Sin asignar</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <div class="filter-buttons">
+            <button type="submit" class="btn-filter">
+              <i class="bi bi-funnel"></i> Filtrar
+            </button>
+            <a href="{% url 'sigmalab:inbox-incidencias' %}" class="btn-filter btn-clear">
+              <i class="bi bi-x-circle"></i> Limpiar
+            </a>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <!-- Tabla de incidencias -->
+  <div class="incidents-table">
+    {% if page_obj %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Incidencia</th>
+          <th>Categoría</th>
+          <th>Prioridad</th>
+          <th>Estado</th>
+          <th>Reportado por</th>
+          <th>Asignado a</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for incidencia in page_obj %}
+        <tr>
+          <td>
+            <span class="incident-id">INC#{{ incidencia.pk }}</span>
+          </td>
+          <td>
+            <div class="incident-title">{{ incidencia.titulo }}</div>
+            <div class="incident-meta">
+              {% if incidencia.ubicacion %}
+                <i class="bi bi-geo-alt"></i> {{ incidencia.ubicacion }}
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <span class="category-badge">{{ incidencia.get_categoria_display }}</span>
+          </td>
+          <td>
+            <span class="priority-badge priority-{{ incidencia.prioridad }}">
+              {{ incidencia.get_prioridad_display }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge status-{{ incidencia.estado }}">
+              {{ incidencia.get_estado_display }}
+            </span>
+          </td>
+          <td>
+            <div>{{ incidencia.reportado_por.first_name }} {{ incidencia.reportado_por.last_name }}</div>
+            <div class="incident-meta">{{ incidencia.reportado_por.email }}</div>
+          </td>
+          <td>
+            {% if incidencia.asignado_a %}
+              <div>{{ incidencia.asignado_a.first_name }} {{ incidencia.asignado_a.last_name }}</div>
+            {% else %}
+              <span class="text-muted">Sin asignar</span>
+            {% endif %}
+          </td>
+          <td>
+            <div>{{ incidencia.fecha_reporte|date:"d/m/Y" }}</div>
+            <div class="incident-meta">{{ incidencia.fecha_reporte|time:"H:i" }}</div>
+          </td>
+          <td>
+            <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+              <a href="{% url 'sigmalab:detalle-incidencia' incidencia.pk %}" 
+                 class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a href="{% url 'sigmalab:gestionar-incidencia' incidencia.pk %}" 
+                 class="btn btn-sm btn-outline-secondary" title="Gestionar">
+                <i class="bi bi-gear"></i>
+              </a>
+              <a href="{% url 'sigmalab:responder-incidencia' incidencia.pk %}" 
+                 class="btn btn-sm btn-outline-success" title="Responder">
+                <i class="bi bi-reply"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    <!-- Paginación -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a href="?page=1{% if filters.estado %}&estado={{ filters.estado }}{% endif %}{% if filters.prioridad %}&prioridad={{ filters.prioridad }}{% endif %}{% if filters.categoria %}&categoria={{ filters.categoria }}{% endif %}{% if filters.asignado %}&asignado={{ filters.asignado }}{% endif %}">&laquo; Primera</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if filters.estado %}&estado={{ filters.estado }}{% endif %}{% if filters.prioridad %}&prioridad={{ filters.prioridad }}{% endif %}{% if filters.categoria %}&categoria={{ filters.categoria }}{% endif %}{% if filters.asignado %}&asignado={{ filters.asignado }}{% endif %}">Anterior</a>
+      {% endif %}
+      
+      <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+      </span>
+      
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if filters.estado %}&estado={{ filters.estado }}{% endif %}{% if filters.prioridad %}&prioridad={{ filters.prioridad }}{% endif %}{% if filters.categoria %}&categoria={{ filters.categoria }}{% endif %}{% if filters.asignado %}&asignado={{ filters.asignado }}{% endif %}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if filters.estado %}&estado={{ filters.estado }}{% endif %}{% if filters.prioridad %}&prioridad={{ filters.prioridad }}{% endif %}{% if filters.categoria %}&categoria={{ filters.categoria }}{% endif %}{% if filters.asignado %}&asignado={{ filters.asignado }}{% endif %}">Última &raquo;</a>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div style="text-align: center; padding: 3rem; color: #6c757d;">
+      <i class="bi bi-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+      <h3>No hay incidencias</h3>
+      <p>No se encontraron incidencias con los filtros seleccionados.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

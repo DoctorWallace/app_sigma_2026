@@ -1,0 +1,315 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Todas las solicitudes{% endblock %}
+{% block page_title %}Todas las solicitudes{% endblock %}
+
+{% block extra_css %}
+<style>
+  .filters-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    text-decoration: none;
+    color: #495057;
+    background: white;
+    transition: all 0.2s;
+  }
+  .chip:hover {
+    background: #e9ecef;
+    text-decoration: none;
+    color: #495057;
+  }
+  .chip.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  .table-container {
+    overflow-x: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .requests-table th {
+    background: #f8f9fa;
+    padding: 1rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap;
+  }
+  .requests-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: top;
+  }
+  .requests-table tbody tr:hover {
+    background: #f8f9fa;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .status-pendiente { background: #fff3cd; color: #856404; }
+  .status-en_curso { background: #cff4fc; color: #055160; }
+  .status-aceptada { background: #d1e7dd; color: #0f5132; }
+  .status-rechazada { background: #f8d7da; color: #721c24; }
+  .status-finalizada { background: #e2e3e5; color: #495057; }
+  .status-anulada { background: #f8d7da; color: #721c24; }
+  .preparation-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .step-badge {
+    display: inline-block;
+    padding: 0.2rem 0.4rem;
+    background: #e9ecef;
+    color: #495057;
+    border-radius: 4px;
+    font-size: 0.7rem;
+  }
+  .step-badge.active {
+    background: #28a745;
+    color: white;
+  }
+  .requester-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .requester-name {
+    font-weight: 500;
+    color: #495057;
+  }
+  .requester-email {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  .sample-codes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .sample-code {
+    font-family: monospace;
+    font-size: 0.8rem;
+    background: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+  }
+  .date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .date-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+  }
+  .date-value {
+    font-weight: 500;
+    color: #495057;
+  }
+  .no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    font-style: italic;
+  }
+  .table-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .table-link:hover {
+    text-decoration: underline;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <!-- Filtros de estado -->
+  <div class="filters-container">
+    {% with se=selected_estado %}
+      <a class="chip {% if not se %}active{% endif %}" href="?">
+        <i class="bi bi-list-ul"></i> Todas
+      </a>
+      <a class="chip {% if se == 'pendiente' %}active{% endif %}" href="?estado=pendiente">
+        <i class="bi bi-clock"></i> Pendientes
+      </a>
+      <a class="chip {% if se == 'en_curso' %}active{% endif %}" href="?estado=en_curso">
+        <i class="bi bi-play-circle"></i> En curso
+      </a>
+      <a class="chip {% if se == 'aceptada' %}active{% endif %}" href="?estado=aceptada">
+        <i class="bi bi-check-circle"></i> Aceptadas
+      </a>
+      <a class="chip {% if se == 'rechazada' %}active{% endif %}" href="?estado=rechazada">
+        <i class="bi bi-x-circle"></i> Rechazadas
+      </a>
+      <a class="chip {% if se == 'finalizada' %}active{% endif %}" href="?estado=finalizada">
+        <i class="bi bi-check2-all"></i> Finalizadas
+      </a>
+      <a class="chip {% if se == 'anulada' %}active{% endif %}" href="?estado=anulada">
+        <i class="bi bi-x-circle"></i> Anuladas
+      </a>
+    {% endwith %}
+  </div>
+
+  <!-- Tabla de solicitudes -->
+  <div class="table-container">
+    {% if solicitudes %}
+    <table class="requests-table">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Muestras</th>
+          <th>Solicitante</th>
+          <th>Identificación</th>
+          <th>Fecha Envío</th>
+          <th>Preparación</th>
+          <th>Fecha Aceptación</th>
+          <th>Fecha Finalización</th>
+          <th>Muestras Completadas</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in solicitudes %}
+        <tr>
+          <!-- Código de solicitud -->
+          <td>
+            <a href="{% url 'sigmalab:detalle-solicitud' s.pk %}" class="table-link">
+              SOL#{{ s.pk }}
+            </a>
+          </td>
+          
+          <!-- Número de muestras -->
+          <td>
+            <strong>{{ s.numero_muestras|default:"1" }}</strong>
+          </td>
+          
+          <!-- Solicitante -->
+          <td>
+            <div class="requester-info">
+              <div class="requester-name">
+                {{ s.solicitante.first_name }} {{ s.solicitante.last_name }}
+              </div>
+              <div class="requester-email">
+                {{ s.solicitante.email }}
+              </div>
+            </div>
+          </td>
+          
+          <!-- Identificación de muestras -->
+          <td>
+            <div class="sample-codes">
+              {% for muestra in s.muestras.all %}
+                <div class="sample-code">{{ muestra.identificacion }}</div>
+              {% empty %}
+                <div class="sample-code">{{ s.material|default:"Sin identificar" }}</div>
+              {% endfor %}
+            </div>
+          </td>
+          
+          <!-- Fecha de envío -->
+          <td>
+            <div class="date-info">
+              <div class="date-label">Enviado</div>
+              <div class="date-value">{{ s.creado_en|date:"d/m/Y" }}</div>
+              <div class="date-value" style="font-size: 0.8rem;">{{ s.creado_en|time:"H:i" }}</div>
+            </div>
+          </td>
+          
+          <!-- Preparación solicitada -->
+          <td>
+            <div class="preparation-steps">
+              {% if s.corte %}<span class="step-badge active">Corte</span>{% endif %}
+              {% if s.empastillado %}<span class="step-badge active">Empastillado</span>{% endif %}
+              {% if s.lijado %}<span class="step-badge active">Lijado</span>{% endif %}
+              {% if s.pulido %}<span class="step-badge active">Pulido</span>{% endif %}
+              {% if s.electropulido %}<span class="step-badge active">Electropulido</span>{% endif %}
+              {% if s.trat_quimico %}<span class="step-badge active">Químico</span>{% endif %}
+              {% if s.trat_termico %}<span class="step-badge active">Térmico</span>{% endif %}
+            </div>
+          </td>
+          
+          <!-- Fecha de aceptación -->
+          <td>
+            {% if s.estado in 'aceptada,en_curso,finalizada' %}
+              <div class="date-info">
+                <div class="date-label">Aceptado</div>
+                <div class="date-value">{{ s.creado_en|date:"d/m/Y" }}</div>
+                <div class="date-value" style="font-size: 0.8rem;">{{ s.creado_en|time:"H:i" }}</div>
+              </div>
+            {% else %}
+              <span style="color: #6c757d; font-style: italic;">-</span>
+            {% endif %}
+          </td>
+          
+          <!-- Fecha de finalización -->
+          <td>
+            {% if s.estado == 'finalizada' %}
+              <div class="date-info">
+                <div class="date-label">Finalizado</div>
+                <div class="date-value">{{ s.creado_en|date:"d/m/Y" }}</div>
+                <div class="date-value" style="font-size: 0.8rem;">{{ s.creado_en|time:"H:i" }}</div>
+              </div>
+            {% else %}
+              <span style="color: #6c757d; font-style: italic;">-</span>
+            {% endif %}
+          </td>
+          
+          <!-- Muestras completadas -->
+          <td>
+            {% if s.estado == 'finalizada' %}
+              <strong style="color: #28a745;">{{ s.numero_muestras|default:"1" }}</strong>
+            {% else %}
+              <span style="color: #6c757d;">-</span>
+            {% endif %}
+          </td>
+          
+          <!-- Estado -->
+          <td>
+            <span class="status-badge status-{{ s.estado }}">
+              {{ s.get_estado_display }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="no-data">
+      <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6; margin-bottom: 1rem;"></i>
+      <h3>No hay solicitudes</h3>
+      <p>No se encontraron solicitudes con los filtros seleccionados.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

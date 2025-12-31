@@ -1,0 +1,35 @@
+RESULTADOS DEL ANÁLISIS TÉRMICO
+================================
+
+Estimado/a {{ solicitante.get_full_name|default:solicitante.username }},
+
+Nos complace informarle que el análisis térmico de su muestra "{{ solicitud.nombre_muestra }}" ha sido completado exitosamente.
+
+INFORMACIÓN DEL ENSAYO:
+- Muestra: {{ solicitud.nombre_muestra }}
+- Material: {{ solicitud.material }}
+- Temperatura máxima: {{ solicitud.temperatura_maxima }}ºC
+- Masa registrada: {{ solicitud.get_masa_registrar_display }}
+- Fecha del ensayo: {{ resultado.fecha_ensayo|date:"d/m/Y H:i" }}
+
+ARCHIVOS ADJUNTOS:
+Los resultados del análisis se encuentran en los archivos adjuntos a este email.
+
+{% if resultado.observaciones_tecnico %}
+OBSERVACIONES DEL TÉCNICO:
+{{ resultado.observaciones_tecnico }}
+{% endif %}
+
+INFORMACIÓN IMPORTANTE:
+- Los archivos están en formato compatible con software de análisis de datos
+- Conserve estos archivos para futuras referencias
+- Si tiene alguna pregunta sobre los resultados, no dude en contactarnos
+
+Gracias por utilizar nuestros servicios de análisis térmico.
+
+Saludos cordiales,
+Equipo de Laboratorio DP
+CIEMAT
+
+---
+Este es un mensaje automático del sistema SIGMA DP. Por favor, no responda a este email.

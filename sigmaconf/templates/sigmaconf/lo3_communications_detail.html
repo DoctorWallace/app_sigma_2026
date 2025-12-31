@@ -1,0 +1,122 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Conversación LO3{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Comunicaciones con el cliente{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  {% if lo3_is_tech %}
+    <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+    <span class="lo3-breadcrumbs-sep">/</span>
+  {% endif %}
+  <a href="{% url 'sigmaconf:lo3_communications_list' %}">Comunicaciones</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{{ proposal.access_code|default:"Solicitud" }}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">Solicitud {{ proposal.access_code|default:"-" }}</div>
+    <div class="lo3-page-meta">
+      <span>Propuesta: {{ proposal.title|default:"(Sin título)" }}</span>
+      <span>Solicitante: {{ proposal.applicant.get_full_name|default:proposal.applicant.username }}</span>
+    </div>
+  </div>
+  <div>
+    <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_communications_list' %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Mensajes</h2>
+      <div class="lo3-card-subtitle">Historial de comunicaciones para esta solicitud.</div>
+    </div>
+  </div>
+
+  {% if messages_list %}
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      {% for message in messages_list %}
+        <div style="border: 1px solid var(--lo3-border); border-radius: 0.85rem; padding: 1rem; background: #ffffff;">
+          <div style="display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <div>
+              {% if message.is_system %}
+                <strong>Sistema LO3</strong>
+                <span class="lo3-badge lo3-badge--info">Sistema</span>
+              {% else %}
+                {% if message.sender_id == proposal.applicant_id %}
+                  <strong>Solicitante</strong>
+                {% else %}
+                  <strong>Técnico LO3</strong>
+                {% endif %}
+                {% if message.sender %}
+                  <span class="text-muted small">
+                    ({{ message.sender.get_full_name|default:message.sender.username }})
+                  </span>
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="text-muted small">{{ message.created_at|date:"d/m/Y H:i" }}</div>
+          </div>
+          <div style="margin-top: 0.75rem;">
+            {{ message.body|urlize|linebreaksbr }}
+          </div>
+          {% if message.attachments.all %}
+            <div style="margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+              {% for attachment in message.attachments.all %}
+                <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_message_attachment_download' attachment.pk %}">
+                  <i class="bi bi-paperclip"></i>
+                  {{ attachment.filename }}
+                </a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-chat-left-text"></i>
+      <div>No hay mensajes en esta conversación.</div>
+      <small>Escribe el primer mensaje para iniciar el seguimiento.</small>
+    </div>
+  {% endif %}
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Nuevo mensaje</h2>
+      <div class="lo3-card-subtitle">Tu mensaje se enviará al solicitante o al equipo LO3.</div>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <div>
+        {{ form.body.label_tag }}
+        {{ form.body }}
+      </div>
+      <div>
+        {{ form.attachments.label_tag }}
+        {{ form.attachments }}
+        <small class="text-muted">Adjunta archivos si es necesario (opcional).</small>
+      </div>
+      <div>
+        <button type="submit" class="lo3-btn lo3-btn-primary">
+          <i class="bi bi-send"></i>
+          Enviar mensaje
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

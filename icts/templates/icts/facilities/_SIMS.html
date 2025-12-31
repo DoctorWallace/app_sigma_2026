@@ -1,0 +1,189 @@
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+<section class="container" style="margin-top:1rem;">
+  <header class="vdg-hero">
+    <img src="{{ MEDIA_URL }}facilities/SIMS.png" alt="SIMS" class="vdg-logo">
+    <div>
+      <h1 class="h4" style="margin:0;">Espectrómetro de Masas SIMS</h1>
+      <p class="vdg-sub">Hiden Analytical con cañones de O₂, Ar y Cs</p>
+    </div>
+  </header>
+
+  <!-- Imagen principal del equipo -->
+  <div class="equipment-image-container">
+    <img src="{{ MEDIA_URL }}sims_implant/sims.png" alt="Espectrómetro de Masas SIMS" class="equipment-main-image">
+  </div>
+
+  <div class="vdg-grid">
+    <article class="card card-horizontal">
+      <h2>Descripción del Equipo</h2>
+      <p>
+        Equipo de espectroscopía de masas de iones secundarios de <strong>Hiden Analytical</strong>. 
+        Se utilizan iones primarios de <strong>O₂ ó Ar</strong> con una energía de hasta 
+        <strong>5 keV</strong>.
+      </p>
+      <p>
+        Permite realizar espectros de masas (1 a 550 uma), perfiles en profundidad y 
+        <strong>SIMS estático</strong>. El sistema se puede emplear también para mapas de 
+        composición e incorpora un cañón de electrones para experimentos de SIMS en 
+        materiales aislantes.
+      </p>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Cañón de Iones de Cesio y Características Técnicas</h2>
+      <p>
+        Para la detección de iones electronegativos se utiliza un <strong>cañón de iones de Cs</strong>, 
+        con una energía máxima de <strong>5 keV</strong>. Esta configuración permite el análisis de 
+        elementos con alta afinidad electrónica, mejorando significativamente la sensibilidad para 
+        la detección de especies negativas.
+      </p>
+      <ul class="kv">
+        <li><span>Rango de masas</span><strong>1 – 550 uma</strong></li>
+        <li><span>Energía iones O₂/Ar</span><strong>hasta 5 keV</strong></li>
+        <li><span>Energía iones Cs</span><strong>hasta 5 keV</strong></li>
+        <li><span>Modos de análisis</span><strong>Estático y dinámico</strong></li>
+        <li><span>Capacidades</span><strong>Espectros, perfiles, mapas</strong></li>
+        <li><span>Materiales</span><strong>Conductores y aislantes</strong></li>
+        <li><span>Cañón electrones</span><strong>Para materiales aislantes</strong></li>
+      </ul>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Financiación</h2>
+      <p>
+        El equipo <strong>Hiden SIMS Workstation</strong> ha sido cofinanciado por el 
+        <strong>CEI Campus de Moncloa</strong> (Resolución del 23 de Marzo de 2011), 
+        fue concedido al <strong>IFN_UPM</strong>, y se encuentra en préstamo en el 
+        <strong>LNF_CIEMAT</strong>.
+      </p>
+      <div class="funding-logos">
+        <img src="{{ MEDIA_URL }}Logos/Campus_interior_ok.jpg" alt="Campus de Moncloa" class="funding-logo">
+        <img src="{{ MEDIA_URL }}Logos/Feder.png" alt="FEDER" class="funding-logo">
+      </div>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Aplicaciones Principales</h2>
+      <p>
+        Este equipo es fundamental para el análisis de composición superficial y en profundidad 
+        de materiales, permitiendo la detección de impurezas, dopantes y elementos traza con 
+        alta sensibilidad. Es especialmente útil para el estudio de semiconductores, materiales 
+        funcionales, recubrimientos y superficies modificadas.
+      </p>
+      <p>
+        La capacidad de realizar mapas de composición lo convierte en una herramienta esencial 
+        para la caracterización microestructural de materiales avanzados, proporcionando información 
+        espacial detallada sobre la distribución de elementos y la estructura de los materiales.
+      </p>
+      <a href="https://www.ciemat.es/areas-cientifico-tecnicas/-/actividades/servicio/634?_es_ciemat_publicaciones_web_ActividadesPortlet_service=634&_es_ciemat_publicaciones_web_ActividadesPortlet_filterService=68" target="_blank" rel="noopener">Coste uso</a>
+    </article>
+  </div>
+</section>
+
+<style>
+.vdg-hero{
+  display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;
+  padding:1.5rem; border:1px solid var(--border,#e5e7eb); border-radius:.75rem; background:var(--bg-card,#fff);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
+}
+.vdg-logo{ width:64px; height:64px; object-fit:contain; flex:0 0 auto; }
+.vdg-sub{ margin:.25rem 0 0 0; color:var(--muted,#4b5563); font-size:1.1rem; }
+
+.equipment-image-container{
+  margin-bottom:2rem; text-align:center;
+  border-radius:1rem; overflow:hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,.1);
+}
+.equipment-main-image{
+  width:100%; max-width:800px; height:auto; display:block; margin:0 auto;
+  border-radius:1rem;
+}
+
+.vdg-grid{
+  display:grid; gap:1.5rem;
+  grid-template-columns: 1fr;
+}
+.card{
+  border:1px solid var(--border,#e5e7eb);
+  border-radius:1rem; background:var(--bg-card,#fff);
+  padding:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,.15);
+}
+.card h2{ 
+  font-size:1.25rem; margin:0 0 1rem 0; 
+  color: var(--primary, #1e7e34);
+  border-bottom: 2px solid var(--primary, #1e7e34);
+  padding-bottom: 0.5rem;
+}
+.card p{
+  line-height: 1.7; margin-bottom: 1rem; color: #374151;
+}
+.card p:last-child{
+  margin-bottom: 0;
+}
+
+.kv{ 
+  list-style:none; padding:0; margin:0; display:grid; gap:.75rem; 
+}
+.kv li{ 
+  display:flex; justify-content:space-between; gap:1rem; 
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.kv li:last-child{
+  border-bottom: none;
+}
+.kv span{ 
+  color:var(--muted,#6b7280); font-weight: 500;
+}
+.kv strong{ 
+  font-weight:700; color: #111827;
+}
+
+.card-horizontal{
+  grid-column: 1 / -1;
+}
+
+.funding-logos{
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+}
+.funding-logo{
+  max-height: 80px;
+  max-width: 150px;
+  object-fit: contain;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+@media (max-width:768px){
+  .vdg-hero{
+    flex-direction: column; text-align: center; gap: 1rem;
+  }
+  .vdg-logo{ width:80px; height:80px; }
+  .equipment-main-image{
+    border-radius: 0.5rem;
+  }
+  .kv li{ 
+    flex-direction:column; align-items:flex-start; gap: 0.25rem;
+  }
+  .card{
+    padding: 1rem;
+  }
+  .funding-logos{
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+</style>

@@ -1,0 +1,85 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Equipos VDG{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Fichas de equipos{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_home' %}">Portal VDG</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>Fichas de equipos</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Listado de equipos</h2>
+      <div class="vdg-card-subtitle">Catalogo de equipos y patrones del laboratorio VDG.</div>
+    </div>
+    <a class="vdg-btn vdg-btn-primary" href="{% url 'sigmavdg:vdg_equipment_create' %}">
+      <i class="bi bi-plus-circle"></i>
+      Nuevo equipo
+    </a>
+  </div>
+
+  <form method="get" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+    <input class="form-control" type="text" name="q" value="{{ query }}" placeholder="Buscar por codigo o descripcion" style="max-width: 320px;">
+    <button class="vdg-btn vdg-btn-secondary" type="submit">
+      <i class="bi bi-search"></i>
+      Buscar
+    </button>
+    {% if query %}
+      <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_equipment_list' %}">Limpiar</a>
+    {% endif %}
+  </form>
+
+  {% if equipment_list %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th>Responsable</th>
+            <th>Localizacion</th>
+            <th>Patron</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for equipment in equipment_list %}
+            <tr>
+              <td><strong>{{ equipment.code }}</strong></td>
+              <td>{{ equipment.description|default:"-"|truncatechars:80 }}</td>
+              <td>{{ equipment.responsible|default:"-" }}</td>
+              <td>{{ equipment.location|default:"-" }}</td>
+              <td>
+                {% if equipment.is_reference %}
+                  <span class="vdg-badge vdg-badge--info">Patron</span>
+                {% else %}
+                  <span class="vdg-badge vdg-badge--muted">No</span>
+                {% endif %}
+              </td>
+              <td>
+                <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_equipment_detail' equipment.id %}">
+                  <i class="bi bi-eye"></i>
+                  Ver ficha
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vdg-empty">
+      <i class="bi bi-box"></i>
+      <div>No hay equipos registrados.</div>
+      <small>Importa el listado desde Excel o crea una ficha manual.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

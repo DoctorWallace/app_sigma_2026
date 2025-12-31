@@ -1,0 +1,151 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Portal LO3{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Portal técnico LO3{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <span>Inicio</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-stat-grid">
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ in_progress_count }}</div>
+    <div class="lo3-stat-label">Sesiones en curso</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ completed_count }}</div>
+    <div class="lo3-stat-label">Sesiones completadas</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ accepted_count }}</div>
+    <div class="lo3-stat-label">Propuestas aceptadas</div>
+  </div>
+  <div class="lo3-stat-card">
+    <div class="lo3-stat-number">{{ total_sessions }}</div>
+    <div class="lo3-stat-label">Sesiones totales</div>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Indicadores operativos</h2>
+      <div class="lo3-card-subtitle">Resumen de actividad LO3 reciente.</div>
+    </div>
+  </div>
+  <div class="lo3-stat-grid">
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ stats.in_progress_30 }}</div>
+      <div class="lo3-stat-label">En curso (30 días)</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ stats.completed_30 }}</div>
+      <div class="lo3-stat-label">Finalizadas (30 días)</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ stats.in_progress_90 }}</div>
+      <div class="lo3-stat-label">En curso (90 días)</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ stats.completed_90 }}</div>
+      <div class="lo3-stat-label">Finalizadas (90 días)</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">
+        {% if stats.avg_analysis_delay is not None %}
+          {{ stats.avg_analysis_delay|floatformat:1 }}
+        {% else %}
+          -
+        {% endif %}
+      </div>
+      <div class="lo3-stat-label">Días solicitud &rarr; 1er análisis</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">
+        {% if stats.final_report_rate is not None %}
+          {{ stats.final_report_rate|floatformat:1 }}%
+        {% else %}
+          -
+        {% endif %}
+      </div>
+      <div class="lo3-stat-label">Finalizadas con informe</div>
+    </div>
+  </div>
+  <div style="margin-top: 0.75rem;" class="text-muted small">
+    {% if stats.completed_total %}
+      Informes finales: {{ stats.completed_with_report }}/{{ stats.completed_total }} sesiones completadas.
+    {% endif %}
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Secciones operativas</h2>
+      <div class="lo3-card-subtitle">Acceso rápido a las áreas de trabajo LO3.</div>
+    </div>
+  </div>
+  <div class="lo3-action-grid">
+    <a class="lo3-action-card" href="{% url 'sigmaconf:mcf_dashboard' %}">
+      <div>
+        <div>Solicitudes de análisis</div>
+        <small class="text-muted">Dashboard + sesiones MCF</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_results' %}">
+      <div>
+        <div>Resultados</div>
+        <small class="text-muted">Registros + avisos PDF</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_communications_list' %}">
+      <div>
+        <div>Comunicaciones</div>
+        <small class="text-muted">Mensajes con clientes</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_equipment_list' %}">
+      <div>
+        <div>Fichas de equipos</div>
+        <small class="text-muted">Documentación LO3</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_calibration_list' 'interna' %}">
+      <div>
+        <div>Calibraciones</div>
+        <small class="text-muted">Interna y externa</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_reference_material_list' %}">
+      <div>
+        <div>Materiales de referencia</div>
+        <small class="text-muted">Catálogo MR LO3</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_incident_list' %}">
+      <div>
+        <div>Incidencias</div>
+        <small class="text-muted">Controles intermedios</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+    <a class="lo3-action-card" href="{% url 'sigmaconf:lo3_habilitation_list' %}">
+      <div>
+        <div>Habilitaciones</div>
+        <small class="text-muted">Certificados y permisos</small>
+      </div>
+      <i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,840 @@
+<div class="tech-card">
+  <h4 class="tech-title"><i class="bi bi-graph-up"></i> SIMS - Datos de muestras</h4>
+  
+  <!-- Requirements for Sample Acceptance -->
+  <div class="requirements-section">
+    <h5 class="section-title"><i class="bi bi-list-check"></i> Requirements for Sample Acceptance</h5>
+    <div class="requirements-list">
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">→ Sample must be a clean, compacted, smoothy surface solid.</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">→Minimum dimensions: 8mm in diameter (or 8x8mm2) Maximum dimensions 15 mm (15x15 mm2).</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">→Sample must be accompanied with a complete and perfectly legible identification. Sample must be wrapped with a metallic paper or cloth (plastic wrapping is not recommended).</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample Description -->
+  <div class="sample-description-section">
+    <h5 class="section-title"><i class="bi bi-card-list"></i> Sample Description</h5>
+    <div class="samples-container" id="sims-samples-container">
+      <div class="sample-card" data-sample-index="0">
+        <div class="sample-header">
+          <h6 class="sample-title">Sample 1</h6>
+          <button type="button" class="btn-remove-sample" onclick="removeSimsSample(this)" style="display: none;">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Identification</label>
+            <input type="text" name="sims_sample_0_identification" class="form-input" placeholder="Sample ID">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" name="sims_sample_0_name" class="form-input" placeholder="Sample name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Details (aproximate composition, specific characteristics ...)</label>
+          <textarea name="sims_sample_0_details" rows="3" class="form-input" placeholder="Sample details"></textarea>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-add-sample" onclick="addSimsSample(this)">
+      <i class="bi bi-plus-circle"></i> Add Sample
+    </button>
+  </div>
+
+  <!-- Sample Safe Handling -->
+  <div class="safe-handling-section">
+    <h5 class="section-title"><i class="bi bi-shield-check"></i> Sample Safe Handling</h5>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">¿Toxic?</label>
+        <input type="text" name="sims_toxic" class="form-input" value="NO" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">¿Corrosive?</label>
+        <input type="text" name="sims_corrosive" class="form-input" value="NO" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">¿Irritating?</label>
+        <input type="text" name="sims_irritating" class="form-input" value="NO" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">¿Radioactive?</label>
+        <input type="text" name="sims_radioactive" class="form-input" value="NO" readonly>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Further comments about safety</label>
+      <textarea name="sims_safety_comments" rows="3" class="form-input" placeholder="Additional safety comments"></textarea>
+    </div>
+  </div>
+
+  <!-- Important Information -->
+  <div class="important-info-section">
+    <h5 class="section-title"><i class="bi bi-info-circle"></i> Important Information</h5>
+    
+    <!-- Surface Analysis Request -->
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">Is a surface analysis requested?</label>
+        <input type="checkbox" name="sims_surface_analysis" class="info-checkbox" id="sims-surface-analysis">
+        <span class="info-label">NO</span>
+      </div>
+      <div class="form-group" style="margin-top: 1rem;">
+        <label class="form-label">Indicate the desired analysis depth (µm)</label>
+        <input type="number" name="sims_analysis_depth" class="form-input" placeholder="0" step="0.1">
+      </div>
+    </div>
+
+    <!-- Profile Analysis Request -->
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">In a profile analysis requested?</label>
+        <input type="checkbox" name="sims_profile_analysis" class="info-checkbox" id="sims-profile-analysis">
+        <span class="info-label">NO</span>
+      </div>
+    </div>
+
+    <!-- Area Size and Distance -->
+    <div class="form-row">
+      <div class="form-group area-field">
+        <label class="form-label">Area size - Width:</label>
+        <input type="number" name="sims_area_width" class="form-input" placeholder="width" step="0.1" id="sims-area-width">
+      </div>
+      <div class="form-group area-field">
+        <label class="form-label">Height:</label>
+        <input type="number" name="sims_area_height" class="form-input" placeholder="height" step="0.1" id="sims-area-height">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total Area:</label>
+        <div class="area-total-display" id="sims-area-total">0 mm²</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Distance length? (µm):</label>
+        <input type="number" name="sims_distance_length" class="form-input" placeholder="0" step="0.1">
+      </div>
+    </div>
+
+    <!-- Electrical Conducting Sample -->
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">Is an electrical conducting sample?</label>
+        <input type="checkbox" name="sims_electrical_conducting" class="info-checkbox" id="sims-electrical-conducting">
+        <span class="info-label">NO</span>
+      </div>
+    </div>
+
+    <!-- Hygroscopic Sample -->
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">It is a hygroscopic sample?</label>
+        <input type="checkbox" name="sims_hygroscopic" class="info-checkbox" id="sims-hygroscopic">
+        <span class="info-label">NO</span>
+      </div>
+    </div>
+
+    <!-- Atomic Elements of Interest -->
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">Atomic elements of interests?</label>
+        <input type="checkbox" name="sims_atomic_elements" class="info-checkbox" id="sims-atomic-elements">
+        <span class="info-label">NO</span>
+      </div>
+
+      <!-- Tabla Periódica SIMS - Solo visible si YES -->
+      <div id="sims-periodic-table-container" class="periodic-table-section" style="display: none;">
+        <h6 class="periodic-table-title"><i class="bi bi-grid-3x3-gap"></i> Select Atomic Elements of Interest</h6>
+        <div class="periodic-table sims-periodic-table">
+          <!-- La tabla periódica se generará dinámicamente -->
+        </div>
+        <div class="selected-elements">
+          <h6>Selected Elements:</h6>
+          <div id="sims-selected-elements-list" class="selected-elements-list"></div>
+          <input type="hidden" name="sims_selected_elements" id="sims-selected-elements">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Further comments about SIMS analysis</label>
+      <textarea name="sims_further_comments" rows="4" class="form-input" placeholder="Additional comments about SIMS analysis"></textarea>
+    </div>
+  </div>
+</div>
+
+<style>
+.requirements-section {
+  margin-bottom: 2rem;
+}
+
+.requirements-list {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+}
+
+.requirement-item:last-child {
+  margin-bottom: 0;
+}
+
+.requirement-icon {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.requirement-text {
+  color: #495057;
+  line-height: 1.5;
+}
+
+.sample-description-section {
+  margin-bottom: 2rem;
+}
+
+.samples-container {
+  margin-bottom: 1rem;
+}
+
+.sample-card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.sample-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sample-title {
+  color: var(--primary);
+  font-weight: 600;
+  margin: 0;
+}
+
+.btn-remove-sample {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-remove-sample:hover {
+  background: #c82333;
+}
+
+.btn-add-sample {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+.btn-add-sample:hover {
+  background: #0056b3;
+}
+
+.safe-handling-section {
+  margin-bottom: 2rem;
+}
+
+.important-info-section {
+  margin-bottom: 2rem;
+}
+
+.info-question {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+.question-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.info-question-text {
+  font-weight: 500;
+  color: #495057;
+  margin: 0;
+  flex: 1;
+}
+
+.info-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--primary);
+  min-width: 3rem;
+  text-align: center;
+  padding: 0.25rem 0.5rem;
+  background: #e9ecef;
+  border-radius: 0.25rem;
+}
+
+.area-field {
+  flex: 1;
+}
+
+.area-total-display {
+  padding: 0.75rem 1rem;
+  background: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-align: center;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.periodic-table-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+.periodic-table-title {
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.periodic-table {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 2px;
+  margin-bottom: 1rem;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.element {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.7rem;
+  min-width: 2rem;
+  min-height: 2rem;
+}
+
+.element:hover {
+  background: #e9ecef;
+  transform: scale(1.05);
+}
+
+.element.selected {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.element-number {
+  font-size: 0.6rem;
+  opacity: 0.7;
+}
+
+.element-symbol {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.element-name {
+  font-size: 0.5rem;
+  opacity: 0.8;
+  text-align: center;
+  line-height: 1;
+}
+
+.selected-elements {
+  margin-top: 1rem;
+}
+
+.selected-elements h6 {
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.selected-elements-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2rem;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+}
+
+.selected-element-tag {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.selected-element-tag .remove-element {
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 0.25rem;
+}
+
+.selected-element-tag .remove-element:hover {
+  color: #ffc107;
+}
+</style>
+
+<script>
+function resolveSimsSamplesContainer(containerElOrTrigger) {
+  const target = containerElOrTrigger || (typeof event !== 'undefined' ? event.target : null);
+  if (target instanceof HTMLElement) {
+    if (target.id === 'sims-samples-container') {
+      return target;
+    }
+    const formCard = target.closest('.technique-form-card')
+      || target.closest('.tech-card')
+      || target.closest('.sample-description-section');
+    if (formCard) {
+      const container = formCard.querySelector('#sims-samples-container');
+      if (container) {
+        return container;
+      }
+    }
+  }
+  return null;
+}
+let simsSelectedElements = [];
+
+// Tabla periódica completa
+const simsPeriodicTableData = [
+  { number: 1, symbol: 'H', name: 'Hydrogen', group: 1, period: 1 },
+  { number: 2, symbol: 'He', name: 'Helium', group: 18, period: 1 },
+  { number: 3, symbol: 'Li', name: 'Lithium', group: 1, period: 2 },
+  { number: 4, symbol: 'Be', name: 'Beryllium', group: 2, period: 2 },
+  { number: 5, symbol: 'B', name: 'Boron', group: 13, period: 2 },
+  { number: 6, symbol: 'C', name: 'Carbon', group: 14, period: 2 },
+  { number: 7, symbol: 'N', name: 'Nitrogen', group: 15, period: 2 },
+  { number: 8, symbol: 'O', name: 'Oxygen', group: 16, period: 2 },
+  { number: 9, symbol: 'F', name: 'Fluorine', group: 17, period: 2 },
+  { number: 10, symbol: 'Ne', name: 'Neon', group: 18, period: 2 },
+  { number: 11, symbol: 'Na', name: 'Sodium', group: 1, period: 3 },
+  { number: 12, symbol: 'Mg', name: 'Magnesium', group: 2, period: 3 },
+  { number: 13, symbol: 'Al', name: 'Aluminum', group: 13, period: 3 },
+  { number: 14, symbol: 'Si', name: 'Silicon', group: 14, period: 3 },
+  { number: 15, symbol: 'P', name: 'Phosphorus', group: 15, period: 3 },
+  { number: 16, symbol: 'S', name: 'Sulfur', group: 16, period: 3 },
+  { number: 17, symbol: 'Cl', name: 'Chlorine', group: 17, period: 3 },
+  { number: 18, symbol: 'Ar', name: 'Argon', group: 18, period: 3 },
+  { number: 19, symbol: 'K', name: 'Potassium', group: 1, period: 4 },
+  { number: 20, symbol: 'Ca', name: 'Calcium', group: 2, period: 4 },
+  { number: 21, symbol: 'Sc', name: 'Scandium', group: 3, period: 4 },
+  { number: 22, symbol: 'Ti', name: 'Titanium', group: 4, period: 4 },
+  { number: 23, symbol: 'V', name: 'Vanadium', group: 5, period: 4 },
+  { number: 24, symbol: 'Cr', name: 'Chromium', group: 6, period: 4 },
+  { number: 25, symbol: 'Mn', name: 'Manganese', group: 7, period: 4 },
+  { number: 26, symbol: 'Fe', name: 'Iron', group: 8, period: 4 },
+  { number: 27, symbol: 'Co', name: 'Cobalt', group: 9, period: 4 },
+  { number: 28, symbol: 'Ni', name: 'Nickel', group: 10, period: 4 },
+  { number: 29, symbol: 'Cu', name: 'Copper', group: 11, period: 4 },
+  { number: 30, symbol: 'Zn', name: 'Zinc', group: 12, period: 4 },
+  { number: 31, symbol: 'Ga', name: 'Gallium', group: 13, period: 4 },
+  { number: 32, symbol: 'Ge', name: 'Germanium', group: 14, period: 4 },
+  { number: 33, symbol: 'As', name: 'Arsenic', group: 15, period: 4 },
+  { number: 34, symbol: 'Se', name: 'Selenium', group: 16, period: 4 },
+  { number: 35, symbol: 'Br', name: 'Bromine', group: 17, period: 4 },
+  { number: 36, symbol: 'Kr', name: 'Krypton', group: 18, period: 4 },
+  { number: 37, symbol: 'Rb', name: 'Rubidium', group: 1, period: 5 },
+  { number: 38, symbol: 'Sr', name: 'Strontium', group: 2, period: 5 },
+  { number: 39, symbol: 'Y', name: 'Yttrium', group: 3, period: 5 },
+  { number: 40, symbol: 'Zr', name: 'Zirconium', group: 4, period: 5 },
+  { number: 41, symbol: 'Nb', name: 'Niobium', group: 5, period: 5 },
+  { number: 42, symbol: 'Mo', name: 'Molybdenum', group: 6, period: 5 },
+  { number: 43, symbol: 'Tc', name: 'Technetium', group: 7, period: 5 },
+  { number: 44, symbol: 'Ru', name: 'Ruthenium', group: 8, period: 5 },
+  { number: 45, symbol: 'Rh', name: 'Rhodium', group: 9, period: 5 },
+  { number: 46, symbol: 'Pd', name: 'Palladium', group: 10, period: 5 },
+  { number: 47, symbol: 'Ag', name: 'Silver', group: 11, period: 5 },
+  { number: 48, symbol: 'Cd', name: 'Cadmium', group: 12, period: 5 },
+  { number: 49, symbol: 'In', name: 'Indium', group: 13, period: 5 },
+  { number: 50, symbol: 'Sn', name: 'Tin', group: 14, period: 5 },
+  { number: 51, symbol: 'Sb', name: 'Antimony', group: 15, period: 5 },
+  { number: 52, symbol: 'Te', name: 'Tellurium', group: 16, period: 5 },
+  { number: 53, symbol: 'I', name: 'Iodine', group: 17, period: 5 },
+  { number: 54, symbol: 'Xe', name: 'Xenon', group: 18, period: 5 },
+  { number: 55, symbol: 'Cs', name: 'Cesium', group: 1, period: 6 },
+  { number: 56, symbol: 'Ba', name: 'Barium', group: 2, period: 6 },
+  { number: 57, symbol: 'La', name: 'Lanthanum', group: 3, period: 6 },
+  { number: 58, symbol: 'Ce', name: 'Cerium', group: 3, period: 6 },
+  { number: 59, symbol: 'Pr', name: 'Praseodymium', group: 3, period: 6 },
+  { number: 60, symbol: 'Nd', name: 'Neodymium', group: 3, period: 6 },
+  { number: 61, symbol: 'Pm', name: 'Promethium', group: 3, period: 6 },
+  { number: 62, symbol: 'Sm', name: 'Samarium', group: 3, period: 6 },
+  { number: 63, symbol: 'Eu', name: 'Europium', group: 3, period: 6 },
+  { number: 64, symbol: 'Gd', name: 'Gadolinium', group: 3, period: 6 },
+  { number: 65, symbol: 'Tb', name: 'Terbium', group: 3, period: 6 },
+  { number: 66, symbol: 'Dy', name: 'Dysprosium', group: 3, period: 6 },
+  { number: 67, symbol: 'Ho', name: 'Holmium', group: 3, period: 6 },
+  { number: 68, symbol: 'Er', name: 'Erbium', group: 3, period: 6 },
+  { number: 69, symbol: 'Tm', name: 'Thulium', group: 3, period: 6 },
+  { number: 70, symbol: 'Yb', name: 'Ytterbium', group: 3, period: 6 },
+  { number: 71, symbol: 'Lu', name: 'Lutetium', group: 3, period: 6 },
+  { number: 72, symbol: 'Hf', name: 'Hafnium', group: 4, period: 6 },
+  { number: 73, symbol: 'Ta', name: 'Tantalum', group: 5, period: 6 },
+  { number: 74, symbol: 'W', name: 'Tungsten', group: 6, period: 6 },
+  { number: 75, symbol: 'Re', name: 'Rhenium', group: 7, period: 6 },
+  { number: 76, symbol: 'Os', name: 'Osmium', group: 8, period: 6 },
+  { number: 77, symbol: 'Ir', name: 'Iridium', group: 9, period: 6 },
+  { number: 78, symbol: 'Pt', name: 'Platinum', group: 10, period: 6 },
+  { number: 79, symbol: 'Au', name: 'Gold', group: 11, period: 6 },
+  { number: 80, symbol: 'Hg', name: 'Mercury', group: 12, period: 6 },
+  { number: 81, symbol: 'Tl', name: 'Thallium', group: 13, period: 6 },
+  { number: 82, symbol: 'Pb', name: 'Lead', group: 14, period: 6 },
+  { number: 83, symbol: 'Bi', name: 'Bismuth', group: 15, period: 6 },
+  { number: 84, symbol: 'Po', name: 'Polonium', group: 16, period: 6 },
+  { number: 85, symbol: 'At', name: 'Astatine', group: 17, period: 6 },
+  { number: 86, symbol: 'Rn', name: 'Radon', group: 18, period: 6 },
+  { number: 87, symbol: 'Fr', name: 'Francium', group: 1, period: 7 },
+  { number: 88, symbol: 'Ra', name: 'Radium', group: 2, period: 7 },
+  { number: 89, symbol: 'Ac', name: 'Actinium', group: 3, period: 7 },
+  { number: 90, symbol: 'Th', name: 'Thorium', group: 3, period: 7 },
+  { number: 91, symbol: 'Pa', name: 'Protactinium', group: 3, period: 7 },
+  { number: 92, symbol: 'U', name: 'Uranium', group: 3, period: 7 },
+  { number: 93, symbol: 'Np', name: 'Neptunium', group: 3, period: 7 },
+  { number: 94, symbol: 'Pu', name: 'Plutonium', group: 3, period: 7 },
+  { number: 95, symbol: 'Am', name: 'Americium', group: 3, period: 7 },
+  { number: 96, symbol: 'Cm', name: 'Curium', group: 3, period: 7 },
+  { number: 97, symbol: 'Bk', name: 'Berkelium', group: 3, period: 7 },
+  { number: 98, symbol: 'Cf', name: 'Californium', group: 3, period: 7 },
+  { number: 99, symbol: 'Es', name: 'Einsteinium', group: 3, period: 7 },
+  { number: 100, symbol: 'Fm', name: 'Fermium', group: 3, period: 7 },
+  { number: 101, symbol: 'Md', name: 'Mendelevium', group: 3, period: 7 },
+  { number: 102, symbol: 'No', name: 'Nobelium', group: 3, period: 7 },
+  { number: 103, symbol: 'Lr', name: 'Lawrencium', group: 3, period: 7 },
+  { number: 104, symbol: 'Rf', name: 'Rutherfordium', group: 4, period: 7 },
+  { number: 105, symbol: 'Db', name: 'Dubnium', group: 5, period: 7 },
+  { number: 106, symbol: 'Sg', name: 'Seaborgium', group: 6, period: 7 },
+  { number: 107, symbol: 'Bh', name: 'Bohrium', group: 7, period: 7 },
+  { number: 108, symbol: 'Hs', name: 'Hassium', group: 8, period: 7 },
+  { number: 109, symbol: 'Mt', name: 'Meitnerium', group: 9, period: 7 },
+  { number: 110, symbol: 'Ds', name: 'Darmstadtium', group: 10, period: 7 },
+  { number: 111, symbol: 'Rg', name: 'Roentgenium', group: 11, period: 7 },
+  { number: 112, symbol: 'Cn', name: 'Copernicium', group: 12, period: 7 },
+  { number: 113, symbol: 'Nh', name: 'Nihonium', group: 13, period: 7 },
+  { number: 114, symbol: 'Fl', name: 'Flerovium', group: 14, period: 7 },
+  { number: 115, symbol: 'Mc', name: 'Moscovium', group: 15, period: 7 },
+  { number: 116, symbol: 'Lv', name: 'Livermorium', group: 16, period: 7 },
+  { number: 117, symbol: 'Ts', name: 'Tennessine', group: 17, period: 7 },
+  { number: 118, symbol: 'Og', name: 'Oganesson', group: 18, period: 7 }
+];
+
+function addSimsSample(containerElOrTrigger) {
+  const container = resolveSimsSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const index = container.querySelectorAll('.sample-card').length;
+  const newSampleCard = document.createElement('div');
+  newSampleCard.className = 'sample-card';
+  newSampleCard.setAttribute('data-sample-index', index);
+  
+  newSampleCard.innerHTML = `
+    <div class="sample-header">
+      <h6 class="sample-title">Sample ${index + 1}</h6>
+      <button type="button" class="btn-remove-sample" onclick="removeSimsSample(this)">
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Identification</label>
+        <input type="text" name="sims_sample_${index}_identification" class="form-input" placeholder="Sample ID">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" name="sims_sample_${index}_name" class="form-input" placeholder="Sample name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Details (aproximate composition, specific characteristics ...)</label>
+      <textarea name="sims_sample_${index}_details" rows="3" class="form-input" placeholder="Sample details"></textarea>
+    </div>
+  `;
+  
+  container.appendChild(newSampleCard);
+  
+  // Show remove buttons for all samples when we have more than one
+  updateSimsRemoveButtons(container);
+}
+
+function removeSimsSample(button) {
+  const sampleCard = button.closest('.sample-card');
+  if (!sampleCard) return;
+  const container = sampleCard.closest('.samples-container');
+  sampleCard.remove();
+  
+  // Update sample numbers and names
+  updateSimsSampleNumbers(container);
+  updateSimsRemoveButtons(container);
+}
+
+function updateSimsSampleNumbers(containerElOrTrigger) {
+  const container = resolveSimsSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const sampleCards = container.querySelectorAll('.sample-card');
+  sampleCards.forEach((card, index) => {
+    const title = card.querySelector('.sample-title');
+    title.textContent = `Sample ${index + 1}`;
+    
+    // Update input names
+    const inputs = card.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+      const name = input.getAttribute('name');
+      if (name) {
+        const newName = name.replace(/sims_sample_\d+_/, `sims_sample_${index}_`);
+        input.setAttribute('name', newName);
+      }
+    });
+    
+    card.setAttribute('data-sample-index', index);
+  });
+  
+}
+
+function updateSimsRemoveButtons(containerElOrTrigger) {
+  const container = resolveSimsSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const sampleCards = container.querySelectorAll('.sample-card');
+  const removeButtons = container.querySelectorAll('.btn-remove-sample');
+  
+  removeButtons.forEach(button => {
+    button.style.display = sampleCards.length > 1 ? 'flex' : 'none';
+  });
+}
+
+function createSimsPeriodicTable() {
+  const periodicTable = document.querySelector('.sims-periodic-table');
+  if (!periodicTable) return;
+
+  // Crear matriz de 18x10 para la tabla periódica
+  const grid = Array(10).fill().map(() => Array(18).fill(null));
+
+  // Colocar elementos en sus posiciones
+  simsPeriodicTableData.forEach(element => {
+    const row = element.period - 1;
+    const col = element.group - 1;
+    
+    if (row < 10 && col < 18) {
+      grid[row][col] = element;
+    }
+  });
+
+  // Generar HTML de la tabla
+  periodicTable.innerHTML = '';
+  
+  for (let row = 0; row < 10; row++) {
+    for (let col = 0; col < 18; col++) {
+      const element = grid[row][col];
+      const cell = document.createElement('div');
+      
+      if (element) {
+        cell.className = 'element';
+        cell.innerHTML = `
+          <div class="element-number">${element.number}</div>
+          <div class="element-symbol">${element.symbol}</div>
+          <div class="element-name">${element.name}</div>
+        `;
+        cell.onclick = () => toggleSimsElement(element);
+      } else {
+        cell.className = 'element';
+        cell.style.visibility = 'hidden';
+      }
+      
+      periodicTable.appendChild(cell);
+    }
+  }
+}
+
+function toggleSimsElement(element) {
+  const index = simsSelectedElements.findIndex(el => el.number === element.number);
+  
+  if (index === -1) {
+    simsSelectedElements.push(element);
+  } else {
+    simsSelectedElements.splice(index, 1);
+  }
+  
+  updateSimsSelectedElementsDisplay();
+  updateSimsPeriodicTableDisplay();
+}
+
+function updateSimsSelectedElementsDisplay() {
+  const selectedElementsList = document.getElementById('sims-selected-elements-list');
+  const hiddenInput = document.getElementById('sims-selected-elements');
+  
+  if (!selectedElementsList || !hiddenInput) return;
+
+  selectedElementsList.innerHTML = '';
+  
+  simsSelectedElements.forEach(element => {
+    const tag = document.createElement('div');
+    tag.className = 'selected-element-tag';
+    tag.innerHTML = `
+      ${element.symbol} (${element.name})
+      <span class="remove-element" onclick="removeSimsElement(${element.number})">×</span>
+    `;
+    selectedElementsList.appendChild(tag);
+  });
+  
+  // Actualizar input hidden
+  hiddenInput.value = JSON.stringify(simsSelectedElements.map(el => el.symbol));
+}
+
+function removeSimsElement(elementNumber) {
+  simsSelectedElements = simsSelectedElements.filter(el => el.number !== elementNumber);
+  updateSimsSelectedElementsDisplay();
+  updateSimsPeriodicTableDisplay();
+}
+
+function updateSimsPeriodicTableDisplay() {
+  const elements = document.querySelectorAll('.sims-periodic-table .element');
+  
+  elements.forEach(cell => {
+    const symbol = cell.querySelector('.element-symbol');
+    if (symbol) {
+      const elementNumber = parseInt(cell.querySelector('.element-number').textContent);
+      const isSelected = simsSelectedElements.some(el => el.number === elementNumber);
+      
+      if (isSelected) {
+        cell.classList.add('selected');
+      } else {
+        cell.classList.remove('selected');
+      }
+    }
+  });
+}
+
+// Funcionalidad para calcular área automáticamente
+const areaWidthInput = document.getElementById('sims-area-width');
+const areaHeightInput = document.getElementById('sims-area-height');
+const areaTotalDisplay = document.getElementById('sims-area-total');
+
+function calculateSimsArea() {
+  if (!areaWidthInput || !areaHeightInput || !areaTotalDisplay) return;
+
+  const width = parseFloat(areaWidthInput.value) || 0;
+  const height = parseFloat(areaHeightInput.value) || 0;
+  const totalArea = width * height;
+
+  if (totalArea > 0) {
+    areaTotalDisplay.textContent = `${totalArea.toFixed(2)} mm²`;
+  } else {
+    areaTotalDisplay.textContent = '0 mm²';
+  }
+}
+
+// Event listeners para calcular área
+if (areaWidthInput && areaHeightInput) {
+  areaWidthInput.addEventListener('input', calculateSimsArea);
+  areaHeightInput.addEventListener('input', calculateSimsArea);
+}
+
+// Funcionalidad para los checkboxes de información importante
+document.addEventListener('DOMContentLoaded', function() {
+  const atomicElementsCheckbox = document.getElementById('sims-atomic-elements');
+  const periodicTableContainer = document.getElementById('sims-periodic-table-container');
+
+  // Funcionalidad para mostrar/ocultar tabla periódica SIMS
+  if (atomicElementsCheckbox && periodicTableContainer) {
+    atomicElementsCheckbox.addEventListener('change', function() {
+      const label = this.nextElementSibling;
+      if (label && label.classList.contains('info-label')) {
+        label.textContent = this.checked ? 'YES' : 'NO';
+      }
+
+      if (this.checked) {
+        periodicTableContainer.style.display = 'block';
+        createSimsPeriodicTable();
+      } else {
+        periodicTableContainer.style.display = 'none';
+        simsSelectedElements = [];
+        updateSimsSelectedElementsDisplay();
+      }
+    });
+  }
+
+  // Funcionalidad para otros checkboxes
+  const otherCheckboxes = document.querySelectorAll('.important-info-section .info-checkbox:not(#sims-atomic-elements)');
+  
+  otherCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const label = this.nextElementSibling;
+      if (label && label.classList.contains('info-label')) {
+        label.textContent = this.checked ? 'YES' : 'NO';
+      }
+    });
+  });
+});
+</script>

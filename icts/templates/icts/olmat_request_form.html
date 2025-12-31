@@ -1,0 +1,294 @@
+﻿{% extends "base_icts.html" %}
+
+{% block title %}Solicitud OLMAT{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h4><i class="bi bi-gear"></i> {{ title }}</h4>
+    <p class="mb-0">Propuesta: <strong>{{ proposal.title }}</strong></p>
+  </div>
+  <div class="card-body">
+    <style>
+      .olmat-wide-textarea,
+      #id_activity_description,
+      #id_irradiation_requirements,
+      #id_additional_requirements { min-height: 140px; }
+      .date-rows{display:flex;flex-direction:column;gap:.5rem;}
+      .date-row{display:flex;align-items:center;gap:.5rem;}
+      .date-row input[type="date"]{flex:1;}
+      .date-sep{color:#6c757d;font-weight:600;}
+      .remove-date{border-radius:50%;width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;}
+    </style>
+    <div class="alert alert-secondary">
+      <h6 class="mb-2"><i class="bi bi-info-circle"></i> Requisitos de la solicitud OLMAT</h6>
+      <ul class="mb-2">
+        <li>Titulo del proyecto y nombre/afiliacion del proponente indicando si es entidad publica o privada.</li>
+        <li>Descripcion breve (1-2 paginas) con motivacion, objetivos y requisitos de carga termica previstos.</li>
+        <li>Recursos requeridos: diagnosticos OLMAT, preparacion de muestras y uso de haz (NBI, laser o ambos).</li>
+        <li>Fechas preferidas y grado de flexibilidad.</li>
+      </ul>
+      <p class="mb-0">El equipo OLMAT puede pedir informacion adicional (aclaraciones tecnicas, CV, referencias, etc.).</p>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.service_type.id_for_label }}" class="form-label">Tipo de servicio *</label>
+            {{ form.service_type }}
+            <div class="form-text">
+              <strong>Servicio tecnico:</strong> Operacion OLMAT y preparacion de muestras (5.000 &euro;)<br>
+              <strong>Servicio de investigacion:</strong> Incluye soporte cientifico y analisis de datos (10.305 &euro;)
+            </div>
+            {{ form.service_type.errors }}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.entity_type.id_for_label }}" class="form-label">Tipo de entidad *</label>
+            {{ form.entity_type }}
+            <div class="form-text">Indica si la entidad proponente es publica, privada o mixta.</div>
+            {{ form.entity_type.errors }}
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-3">Datos del proponente</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.proponent_name.id_for_label }}" class="form-label">Nombre del proponente *</label>
+            {{ form.proponent_name }}
+            {{ form.proponent_name.errors }}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.proponent_affiliation.id_for_label }}" class="form-label">Afiliacion *</label>
+            {{ form.proponent_affiliation }}
+            {{ form.proponent_affiliation.errors }}
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-3">Descripcion y requisitos</h5>
+      <div class="mb-3">
+        <label for="{{ form.activity_description.id_for_label }}" class="form-label">Descripcion breve (1-2 paginas) *</label>
+        {{ form.activity_description }}
+        <div class="form-text">Incluye motivacion, objetivos y alcance de la campana.</div>
+        {{ form.activity_description.errors }}
+      </div>
+      <div class="mb-3">
+        <label for="{{ form.irradiation_requirements.id_for_label }}" class="form-label">Requisitos de carga termica</label>
+        {{ form.irradiation_requirements }}
+        <div class="form-text">Especifica la carga termica prevista, duracion de pulsos y restricciones de irradiacion (si se conocen).</div>
+        {{ form.irradiation_requirements.errors }}
+      </div>
+
+      <h5 class="mt-3">Recursos solicitados</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Diagnosticos OLMAT necesarios</label>
+            {% for checkbox in form.diagnostics_needed %}
+              <div class="form-check">
+                {{ checkbox.tag }}
+                <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+              </div>
+            {% endfor %}
+            {{ form.diagnostics_needed.errors }}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Preparacion de muestras</label>
+            {% for checkbox in form.sample_preparation %}
+              <div class="form-check">
+                {{ checkbox.tag }}
+                <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+              </div>
+            {% endfor %}
+            {{ form.sample_preparation.errors }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Uso de haz</label>
+            {% for checkbox in form.beam_usage %}
+              <div class="form-check">
+                {{ checkbox.tag }}
+                <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+              </div>
+            {% endfor %}
+            {{ form.beam_usage.errors }}
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-3">Planificacion</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Fechas preferidas</label>
+            <input type="hidden" id="olmat_preferred_dates_hidden" name="{{ form.preferred_dates.html_name }}" value="{{ form.preferred_dates.value|default_if_none:'' }}">
+            <div id="olmat-date-rows-request" class="date-rows">
+              <div class="date-row" data-row="0">
+                <input type="date" class="form-control" data-role="start">
+                <span class="date-sep">a</span>
+                <input type="date" class="form-control" data-role="end">
+                <button type="button" class="btn btn-outline-danger btn-sm remove-date" aria-label="Eliminar periodo">&times;</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-olmat-date-request">
+              <i class="bi bi-plus-circle"></i> Anadir periodo
+            </button>
+            <div class="form-text">Propone uno o varios periodos no consecutivos.</div>
+            {{ form.preferred_dates.errors }}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.flexibility.id_for_label }}" class="form-label">Grado de flexibilidad</label>
+            {{ form.flexibility }}
+            {{ form.flexibility.errors }}
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.additional_requirements.id_for_label }}" class="form-label">Requisitos adicionales</label>
+        {{ form.additional_requirements }}
+        <div class="form-text">Anade aclaraciones o necesidades especificas del ensayo.</div>
+        {{ form.additional_requirements.errors }}
+      </div>
+
+      <div class="alert alert-info">
+        <h6><i class="bi bi-info-circle"></i> Informacion importante</h6>
+        <p class="mb-0">
+          Podemos solicitar informacion adicional (aclaraciones tecnicas, CV, referencias, etc.). Tras la evaluacion, el equipo OLMAT comunicara la admision o rechazo de la solicitud y el tipo de servicio asignado.
+        </p>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Volver a la propuesta
+        </a>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check"></i> Crear solicitud OLMAT
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+(function(){
+  function updatePreferredDates(root){
+    const hidden = root.querySelector('#olmat_preferred_dates_hidden');
+    const rows = root.querySelectorAll('.date-row');
+    const parts = [];
+    rows.forEach(function(row){
+      const start = row.querySelector('input[data-role=\"start\"]').value;
+      const end = row.querySelector('input[data-role=\"end\"]').value;
+      if(start || end){
+        parts.push([start || '', end || ''].join(' to '));
+      }
+    });
+    if(hidden){ hidden.value = parts.join('; '); }
+  }
+
+  function attachRow(row, root){
+    row.querySelectorAll('input[type=\"date\"]').forEach(function(inp){
+      inp.addEventListener('change', function(){ updatePreferredDates(root); });
+    });
+    const remove = row.querySelector('.remove-date');
+    if(remove){
+      remove.addEventListener('click', function(){
+        const container = root.querySelector('#olmat-date-rows-request');
+        if(container && container.querySelectorAll('.date-row').length > 1){
+          row.remove();
+          updatePreferredDates(root);
+        }
+      });
+    }
+  }
+
+  function addRow(root){
+    const container = root.querySelector('#olmat-date-rows-request');
+    if(!container) return;
+    const row = document.createElement('div');
+    row.className = 'date-row';
+    row.innerHTML = `
+      <input type=\"date\" class=\"form-control\" data-role=\"start\">
+      <span class=\"date-sep\">a</span>
+      <input type=\"date\" class=\"form-control\" data-role=\"end\">
+      <button type=\"button\" class=\"btn btn-outline-danger btn-sm remove-date\" aria-label=\"Eliminar periodo\">&times;</button>
+    `;
+    container.appendChild(row);
+    attachRow(row, root);
+    updatePreferredDates(root);
+  }
+
+  function initDateRanges(){
+    const root = document.querySelector('.card-body');
+    if(!root) return;
+    const container = root.querySelector('#olmat-date-rows-request');
+    if(!container) return;
+    container.querySelectorAll('.date-row').forEach(function(row){ attachRow(row, root); });
+    const addBtn = root.querySelector('#add-olmat-date-request');
+    if(addBtn){ addBtn.addEventListener('click', function(){ addRow(root); }); }
+
+    // Prefill from hidden value
+    const hidden = root.querySelector('#olmat_preferred_dates_hidden');
+    if(hidden && hidden.value){
+      const parts = hidden.value.split(';').map(function(s){ return s.trim(); }).filter(Boolean);
+      if(parts.length){
+        container.innerHTML = '';
+        parts.forEach(function(p){
+          const row = document.createElement('div');
+          row.className = 'date-row';
+          const seg = p.split('to').map(function(t){ return t.trim(); });
+          row.innerHTML = `
+            <input type=\"date\" class=\"form-control\" data-role=\"start\" value=\"${seg[0] || ''}\">
+            <span class=\"date-sep\">a</span>
+            <input type=\"date\" class=\"form-control\" data-role=\"end\" value=\"${seg[1] || ''}\">
+            <button type=\"button\" class=\"btn btn-outline-danger btn-sm remove-date\" aria-label=\"Eliminar periodo\">&times;</button>
+          `;
+          container.appendChild(row);
+          attachRow(row, root);
+        });
+      }
+    }
+    updatePreferredDates(root);
+  }
+
+  function initOtherPrep(){
+    const other = document.getElementById('olmat_sample_prep_other');
+    const notes = document.getElementById('olmat_sample_prep_notes');
+    if(!other || !notes) return;
+    const toggle = function(){
+      notes.style.display = other.checked ? 'block' : 'none';
+      if(!other.checked) notes.value = '';
+    };
+    other.addEventListener('change', toggle);
+    toggle();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    initDateRanges();
+    initOtherPrep();
+  });
+})();
+</script>
+{% endblock %}

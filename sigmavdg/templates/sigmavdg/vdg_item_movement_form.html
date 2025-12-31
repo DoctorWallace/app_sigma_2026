@@ -1,0 +1,71 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Registrar salida{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Control de items{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_item_movements' %}">Movimientos</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>Registrar salida</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Registrar salida</h2>
+      <div class="vdg-card-subtitle">Completa los datos de envio del item.</div>
+    </div>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+      <div>
+        {{ form.item.label_tag }}
+        {{ form.item }}
+      </div>
+      <div>
+        {{ form.fecha_salida.label_tag }}
+        {{ form.fecha_salida }}
+      </div>
+      <div style="grid-column: 1 / -1;">
+        {{ form.motivo_salida.label_tag }}
+        {{ form.motivo_salida }}
+      </div>
+      <div>
+        {{ form.forma_envio.label_tag }}
+        {{ form.forma_envio }}
+      </div>
+      <div>
+        {{ form.destino.label_tag }}
+        {{ form.destino }}
+      </div>
+      <div>
+        {{ form.responsable_destino.label_tag }}
+        {{ form.responsable_destino }}
+      </div>
+      <div>
+        {{ form.cumplimentado_por_salida.label_tag }}
+        {{ form.cumplimentado_por_salida }}
+      </div>
+      <div style="grid-column: 1 / -1;">
+        {{ form.notas.label_tag }}
+        {{ form.notas }}
+      </div>
+    </div>
+    <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+      <button type="submit" class="vdg-btn vdg-btn-primary">
+        <i class="bi bi-save"></i>
+        Guardar salida
+      </button>
+      <a class="vdg-btn vdg-btn-secondary" href="{% url 'sigmavdg:vdg_item_movements' %}">
+        <i class="bi bi-arrow-left"></i>
+        Volver
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base_icts.html" %}
+{% load i18n %}
+{% block title %}{% trans "Dashboard del Revisor" %} - SIGMA ICTS{% endblock %}
+{% block page_title %}{% trans "Mi panel revisor" %}{% endblock %}
+
+{% block content %}
+{% trans "(Sin título)" as default_title %}
+<div class="card" style="margin-bottom:1.5rem">
+  <h3 style="margin:0 0 1rem 0">{% trans "Resumen" %}</h3>
+  <div class="kpi-grid">
+    <div class="kpi kpi-pending"><div class="num">{{ pending_count }}</div><div class="lbl">{% trans "Pendientes" %}</div></div>
+    <div class="kpi kpi-completed"><div class="num">{{ completed_count }}</div><div class="lbl">{% trans "Completadas" %}</div></div>
+    <div class="kpi kpi-approved"><div class="num">{{ approved_count }}</div><div class="lbl">{% trans "Aprobadas" %}</div></div>
+    <div class="kpi kpi-rejected"><div class="num">{{ rejected_count }}</div><div class="lbl">{% trans "Rechazadas" %}</div></div>
+  </div>
+  <div class="muted" style="margin-top:.75rem">{% trans "Para ver tus evaluaciones pendientes, usa el menú Evaluaciones pendientes." %}</div>
+  <div class="muted">{% trans "Para consultar el historial completo, usa Historial de evaluaciones." %}</div>
+  <div style="margin-top:.5rem"><a class="link" href="{% url 'icts:reviewer_inbox' %}">{% trans "Ir a Evaluaciones pendientes" %}</a> - <a class="link" href="{% url 'icts:review_history' %}">{% trans "Ir al Historial" %}</a></div>
+  </div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h3 style="margin:0">{% trans "Evaluaciones recientes" %}</h3>
+  </div>
+
+  {% if recent_reviews %}
+    <div class="recent-list">
+      {% for review in recent_reviews %}
+        <div class="recent-item">
+          <div class="recent-info">
+            <div class="recent-title">{{ review.proposal.title|default:default_title }}</div>
+            <div class="recent-meta">
+              <span class="badge decision-{{ review.decision }}">
+                {% if review.decision == 'approve' %}{% trans "Aprobada" %}{% elif review.decision == 'reject' %}{% trans "Rechazada" %}{% elif review.decision == 'request_changes' %}{% trans "Cambios solicitados" %}{% else %}{% trans "Pendiente" %}{% endif %}
+              </span>
+              <span class="date">{{ review.updated_at|date:"d/m/Y H:i" }}</span>
+            </div>
+          </div>
+          <div class="recent-actions">
+            {% if review.decision == 'pending' %}
+              <a href="{% url 'icts:review_start' review.proposal.pk %}" class="btn">{% trans "Evaluar" %}</a>
+            {% endif %}
+            <a href="{% url 'icts:proposal_detail' review.proposal.pk %}" class="btn btn-secondary">{% trans "Ver" %}</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="muted">{% trans "No hay evaluaciones recientes" %}.</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem}
+.kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:.75rem;padding:1rem;text-align:center;box-shadow:var(--shadow)}
+.kpi .num{font-size:2rem;font-weight:900}
+.kpi .lbl{color:#4a5568;font-weight:700}
+.kpi-pending{border-left:4px solid #ffc107}
+.kpi-completed{border-left:4px solid #28a745}
+.kpi-approved{border-left:4px solid #17a2b8}
+.kpi-rejected{border-left:4px solid #dc3545}
+.recent-list{display:flex;flex-direction:column;gap:.75rem}
+.recent-item{display:flex;justify-content:space-between;gap:1rem;align-items:center;border:1px solid var(--border);border-radius:.5rem;padding:1rem;background:var(--bg-main)}
+.recent-title{font-weight:700}
+.recent-meta{display:flex;gap:.75rem;align-items:center;color:#4a5568}
+.badge{padding:.25rem .5rem;border-radius:.35rem;font-weight:700;font-size:.8rem}
+.decision-approve{background:#d4edda;color:#155724}
+.decision-reject{background:#f8d7da;color:#721c24}
+.decision-request_changes{background:#fff3cd;color:#856404}
+.btn{display:inline-block;background:var(--primary);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:.35rem;font-weight:700}
+.btn:hover{background:var(--primary-dark)}
+.btn-secondary{background:#6c757d;color:white;border:1px solid #6c757d}
+.btn-secondary:hover{background:#5c636a;border-color:#5c636a}
+.btn-info{background:#17a2b8;color:white;border:1px solid #17a2b8}
+.btn-info:hover{background:#138496;border-color:#138496}
+.link{color:var(--primary);text-decoration:none;font-weight:700}
+.link:hover{text-decoration:underline}
+</style>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base_icts.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Mi Panel de Usuario" %} - SIGMA ICTS{% endblock %}
+{% block page_title %}{% trans "Mi Panel de Usuario" %}{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1.25rem">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap">
+    <div>
+      <h2 style="margin:0">
+        {% blocktrans with name=request.user.get_full_name|default:request.user.username %}
+          Bienvenido/a {{ name }}
+        {% endblocktrans %}
+      </h2>
+      <div class="muted">{% trans "Desde aquí puedes gestionar tus propuestas ICTS." %}</div>
+    </div>
+    <div style="display:flex; gap:.5rem; flex-wrap:wrap">
+      <a class="chip" href="{% url 'icts:proposal_create' %}">{% trans "Nueva propuesta" %}</a>
+      <a class="chip" href="{% url 'icts:my_proposals' %}">{% trans "Mis propuestas" %}</a>
+    </div>
+  </div>
+  {% if icts_role_name %}
+    <div class="muted" style="margin-top:.5rem">
+      {% blocktrans with role=icts_role_name %}Rol: {{ role }}{% endblocktrans %}
+    </div>
+  {% endif %}
+  </div>
+
+<div class="card" style="margin-bottom:1rem">
+  <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:1rem;">
+    <div class="kpi"><div class="kpi-num">{{ drafts|length }}</div><div class="kpi-label">{% trans "Borradores" %}</div></div>
+    <div class="kpi"><div class="kpi-num">{{ submitted|length }}</div><div class="kpi-label">{% trans "Enviadas / En revisión" %}</div></div>
+    <div class="kpi"><div class="kpi-num">{{ evaluated|length }}</div><div class="kpi-label">{% trans "Evaluadas" %}</div></div>
+  </div>
+  </div>
+
+<div class="card">
+  <h3 style="margin-bottom:.75rem;">{% trans "Borradores" %}</h3>
+  {% if drafts %}
+    <ul class="list">
+      {% for p in drafts %}
+        <li class="list-item">
+          <div>
+            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
+            <div class="muted">ID #{{ p.id }}</div>
+          </div>
+          <div class="list-actions">
+            <a class="chip" href="{% url 'icts:proposal_edit' p.id %}">{% trans "Editar" %}</a>
+            <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">{% trans "Ver" %}</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">{% trans "No tienes borradores." %}</div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom:.75rem;">{% trans "Enviadas / En revisión" %}</h3>
+  {% if submitted %}
+    <ul class="list">
+      {% for p in submitted %}
+        <li class="list-item">
+          <div>
+            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
+            <div class="muted">ID #{{ p.id }}</div>
+          </div>
+          <div class="list-actions">
+            <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">{% trans "Ver" %}</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">{% trans "No tienes propuestas enviadas." %}</div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom:.75rem;">{% trans "Evaluadas" %}</h3>
+  {% if evaluated %}
+    <ul class="list">
+      {% for p in evaluated %}
+        <li class="list-item">
+          <div>
+            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
+            <div class="muted">ID #{{ p.id }}</div>
+          </div>
+          <div class="list-actions">
+            <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">{% trans "Ver informe" %}</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">{% trans "Aún no tienes propuestas evaluadas." %}</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.kpi{ background:var(--bg-card); border:1px solid var(--border); border-radius:1rem; padding:1rem; text-align:center; }
+.kpi-num{ font-size:1.8rem; font-weight:900; }
+.kpi-label{ color:#4a5568; font-weight:600; }
+.list{ list-style:none; padding:0; margin:0; }
+.list-item{ display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; border:1px solid var(--border); border-radius:.75rem; margin:.5rem 0; }
+.list-title{ font-weight:800; }
+.chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:var(--bg-card); box-shadow:var(--shadow); }
+.chip:hover{ background:#f3f4f6 }
+</style>
+{% endblock %}

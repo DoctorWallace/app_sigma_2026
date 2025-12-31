@@ -1,0 +1,373 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Solicitar modificación{% endblock %}
+{% block page_title %}Solicitar modificación{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-section h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+  }
+  .modification-fields {
+    display: none;
+  }
+  .modification-fields.show {
+    display: block;
+  }
+  .current-value {
+    background: #e9ecef;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+    color: #6c757d;
+  }
+  .preparation-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+  }
+  .step-item.current {
+    background: #d1e7dd;
+    border-color: #28a745;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px;">
+  <h2 style="margin:0 0 1rem">
+    <i class="bi bi-pencil-square"></i> Solicitar modificación
+  </h2>
+  
+  <!-- Información de la solicitud original -->
+  <div class="form-section">
+    <h3><i class="bi bi-info-circle"></i> Solicitud original</h3>
+    <p><strong>Código:</strong> SOL#{{ solicitud.pk }}</p>
+    <p><strong>Material:</strong> {{ solicitud.material }}</p>
+    <p><strong>Estado:</strong> <span class="badge" style="background: #28a745; color: white;">{{ solicitud.get_estado_display }}</span></p>
+  </div>
+
+  <form method="post" id="modification-form">
+    {% csrf_token %}
+    
+    <!-- Debug: Mostrar errores del formulario -->
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    <!-- Tipo de modificación -->
+    <div class="form-section">
+      <h3><i class="bi bi-gear"></i> Tipo de modificación</h3>
+      <div class="form-group">
+        <label for="{{ form.tipo_modificacion.id_for_label }}" class="form-label">
+          ¿Qué quieres modificar?
+        </label>
+        {{ form.tipo_modificacion|add_class:"form-control" }}
+        {% if form.tipo_modificacion.errors %}
+          <div class="text-danger">
+            {% for error in form.tipo_modificacion.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Campos dinámicos según el tipo de modificación -->
+    <div id="numero-muestras-fields" class="modification-fields">
+      <div class="form-section">
+        <h3><i class="bi bi-collection"></i> Cambiar número de muestras</h3>
+        <div class="current-value">
+          <strong>Valor actual:</strong> {{ solicitud.numero_muestras|default:"1" }} muestras
+        </div>
+        <div class="form-group">
+          <label for="{{ form.nuevo_numero_muestras.id_for_label }}" class="form-label">
+            Nuevo número de muestras
+          </label>
+          {{ form.nuevo_numero_muestras|add_class:"form-control" }}
+          {% if form.nuevo_numero_muestras.errors %}
+            <div class="text-danger">
+              {% for error in form.nuevo_numero_muestras.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div id="requisitos-fields" class="modification-fields">
+      <div class="form-section">
+        <h3><i class="bi bi-clipboard-check"></i> Modificar requisitos finales</h3>
+        <div class="current-value">
+          <strong>Valor actual:</strong><br>
+          {{ solicitud.requisitos_finales|default:"Sin requisitos especificados"|linebreaksbr }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.nuevos_requisitos_finales.id_for_label }}" class="form-label">
+            Nuevos requisitos finales
+          </label>
+          {{ form.nuevos_requisitos_finales|add_class:"form-control" }}
+          {{ form.nuevos_requisitos_finales.errors }}
+        </div>
+      </div>
+    </div>
+
+    <div id="etapas-fields" class="modification-fields">
+      <div class="form-section">
+        <h3><i class="bi bi-gear"></i> Modificar etapas de preparación</h3>
+        <div class="current-value">
+          <strong>Etapas actuales:</strong>
+          <div class="preparation-steps">
+            <div class="step-item {% if solicitud.corte %}current{% endif %}">
+              <i class="bi bi-{% if solicitud.corte %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+              <span>Corte</span>
+            </div>
+            <div class="step-item {% if solicitud.empastillado %}current{% endif %}">
+              <i class="bi bi-{% if solicitud.empastillado %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+              <span>Empastillado</span>
+            </div>
+            <div class="step-item {% if solicitud.lijado %}current{% endif %}">
+              <i class="bi bi-{% if solicitud.lijado %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+              <span>Lijado</span>
+            </div>
+            <div class="step-item {% if solicitud.pulido %}current{% endif %}">
+              <i class="bi bi-{% if solicitud.pulido %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+              <span>Pulido</span>
+            </div>
+            <div class="step-item {% if solicitud.electropulido %}current{% endif %}">
+              <i class="bi bi-{% if solicitud.electropulido %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+              <span>Electropulido</span>
+            </div>
+            <div class="step-item {% if solicitud.trat_quimico %}current{% endif %}">
+              <i class="bi bi-{% if solicitud.trat_quimico %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+              <span>Tratamiento químico</span>
+            </div>
+            <div class="step-item {% if solicitud.trat_termico %}current{% endif %}">
+              <i class="bi bi-{% if solicitud.trat_termico %}check-circle-fill text-success{% else %}circle text-muted{% endif %}"></i>
+              <span>Tratamiento térmico</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nuevas etapas de preparación:</label>
+          <div class="preparation-steps">
+            <div class="step-item">
+              {{ form.nueva_corte|add_class:"form-check-input" }}
+              <label for="{{ form.nueva_corte.id_for_label }}">Corte</label>
+            </div>
+            <div class="step-item">
+              {{ form.nueva_empastillado|add_class:"form-check-input" }}
+              <label for="{{ form.nueva_empastillado.id_for_label }}">Empastillado</label>
+            </div>
+            <div class="step-item">
+              {{ form.nueva_lijado|add_class:"form-check-input" }}
+              <label for="{{ form.nueva_lijado.id_for_label }}">Lijado</label>
+            </div>
+            <div class="step-item">
+              {{ form.nueva_pulido|add_class:"form-check-input" }}
+              <label for="{{ form.nueva_pulido.id_for_label }}">Pulido</label>
+            </div>
+            <div class="step-item">
+              {{ form.nueva_electropulido|add_class:"form-check-input" }}
+              <label for="{{ form.nueva_electropulido.id_for_label }}">Electropulido</label>
+            </div>
+            <div class="step-item">
+              {{ form.nueva_trat_quimico|add_class:"form-check-input" }}
+              <label for="{{ form.nueva_trat_quimico.id_for_label }}">Tratamiento químico</label>
+            </div>
+            <div class="step-item">
+              {{ form.nueva_trat_termico|add_class:"form-check-input" }}
+              <label for="{{ form.nueva_trat_termico.id_for_label }}">Tratamiento térmico</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="observaciones-fields" class="modification-fields">
+      <div class="form-section">
+        <h3><i class="bi bi-journal-text"></i> Modificar observaciones</h3>
+        <div class="current-value">
+          <strong>Valor actual:</strong><br>
+          {{ solicitud.observaciones|default:"Sin observaciones"|linebreaksbr }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.nuevas_observaciones.id_for_label }}" class="form-label">
+            Nuevas observaciones
+          </label>
+          {{ form.nuevas_observaciones|add_class:"form-control" }}
+          {{ form.nuevas_observaciones.errors }}
+        </div>
+      </div>
+    </div>
+
+    <div id="otro-dato-fields" class="modification-fields">
+      <div class="form-section">
+        <h3><i class="bi bi-info-square"></i> Modificar otros datos importantes</h3>
+        <div class="current-value">
+          <strong>Valor actual:</strong><br>
+          {{ solicitud.otro_dato_importante|default:"Sin datos adicionales"|linebreaksbr }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.nuevo_otro_dato_importante.id_for_label }}" class="form-label">
+            Nuevos datos importantes
+          </label>
+          {{ form.nuevo_otro_dato_importante|add_class:"form-control" }}
+          {{ form.nuevo_otro_dato_importante.errors }}
+        </div>
+      </div>
+    </div>
+
+    <div id="manejo-fields" class="modification-fields">
+      <div class="form-section">
+        <h3><i class="bi bi-shield-exclamation"></i> Modificar manejo especial</h3>
+        <div class="current-value">
+          <strong>Valor actual:</strong><br>
+          {{ solicitud.manejo_especial|default:"Sin manejo especial especificado"|linebreaksbr }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.nuevo_manejo_especial.id_for_label }}" class="form-label">
+            Nuevo manejo especial
+          </label>
+          {{ form.nuevo_manejo_especial|add_class:"form-control" }}
+          {{ form.nuevo_manejo_especial.errors }}
+        </div>
+      </div>
+    </div>
+
+    <div id="tratamiento-fields" class="modification-fields">
+      <div class="form-section">
+        <h3><i class="bi bi-flask"></i> Modificar tratamiento previo</h3>
+        <div class="current-value">
+          <strong>Valor actual:</strong><br>
+          {{ solicitud.tratamiento_previo|default:"Sin tratamiento previo especificado"|linebreaksbr }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.nuevo_tratamiento_previo.id_for_label }}" class="form-label">
+            Nuevo tratamiento previo
+          </label>
+          {{ form.nuevo_tratamiento_previo|add_class:"form-control" }}
+          {{ form.nuevo_tratamiento_previo.errors }}
+        </div>
+      </div>
+    </div>
+
+    <div id="procedencia-fields" class="modification-fields">
+      <div class="form-section">
+        <h3><i class="bi bi-geo-alt"></i> Modificar procedencia</h3>
+        <div class="current-value">
+          <strong>Valor actual:</strong> {{ solicitud.procedencia|default:"Sin procedencia especificada" }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.nueva_procedencia.id_for_label }}" class="form-label">
+            Nueva procedencia
+          </label>
+          {{ form.nueva_procedencia|add_class:"form-control" }}
+          {{ form.nueva_procedencia.errors }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción y justificación -->
+    <div class="form-section">
+      <h3><i class="bi bi-chat-text"></i> Descripción y justificación</h3>
+      <div class="form-group">
+        <label for="{{ form.descripcion_cambio.id_for_label }}" class="form-label">
+          Descripción detallada del cambio
+        </label>
+        {{ form.descripcion_cambio|add_class:"form-control" }}
+        {% if form.descripcion_cambio.errors %}
+          <div class="text-danger">
+            {% for error in form.descripcion_cambio.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.justificacion.id_for_label }}" class="form-label">
+          Justificación del cambio
+        </label>
+        {{ form.justificacion|add_class:"form-control" }}
+        {% if form.justificacion.errors %}
+          <div class="text-danger">
+            {% for error in form.justificacion.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+      <button type="submit" class="cta" style="background: #ffc107; color: #000;">
+        <i class="bi bi-send"></i> Enviar solicitud de modificación
+      </button>
+      <a href="{% url 'sigmalab:detalle-solicitud' solicitud.pk %}" class="cta" style="background: var(--accent);">
+        <i class="bi bi-arrow-left"></i> Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+function toggleModificationFields() {
+    const tipo = document.getElementById('id_tipo_modificacion').value;
+    
+    // Ocultar todos los campos
+    const allFields = document.querySelectorAll('.modification-fields');
+    allFields.forEach(field => field.classList.remove('show'));
+    
+    // Mostrar solo el campo correspondiente
+    if (tipo === 'numero_muestras') {
+        document.getElementById('numero-muestras-fields').classList.add('show');
+    } else if (tipo === 'requisitos_finales') {
+        document.getElementById('requisitos-fields').classList.add('show');
+    } else if (tipo === 'etapas_preparacion') {
+        document.getElementById('etapas-fields').classList.add('show');
+    } else if (tipo === 'observaciones') {
+        document.getElementById('observaciones-fields').classList.add('show');
+    } else if (tipo === 'otro_dato_importante') {
+        document.getElementById('otro-dato-fields').classList.add('show');
+    } else if (tipo === 'manejo_especial') {
+        document.getElementById('manejo-fields').classList.add('show');
+    } else if (tipo === 'tratamiento_previo') {
+        document.getElementById('tratamiento-fields').classList.add('show');
+    } else if (tipo === 'procedencia') {
+        document.getElementById('procedencia-fields').classList.add('show');
+    }
+}
+
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    toggleModificationFields();
+});
+</script>
+{% endblock %}

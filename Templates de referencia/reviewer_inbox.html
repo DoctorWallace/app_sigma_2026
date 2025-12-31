@@ -1,0 +1,68 @@
+{% extends "base_generic.html" %}
+{% block title %}Bandeja del revisor{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Bandeja de revisión</h1>
+
+<div class="card">
+  <h2>Pendientes</h2>
+  {% if pendientes %}
+  <table>
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Solicitante</th>
+        <th>Fecha</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in pendientes %}
+      <tr>
+        <td>{{ p.title }}</td>
+        <td>{{ p.contact_person }}</td>
+        <td>{{ p.created_at|date:"Y-m-d H:i" }}</td>
+        <td><a class="btn" href="{% url 'icts:review_start' p.pk %}">Evaluar</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">No tienes solicitudes pendientes.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Hechas por ti</h2>
+  {% if hechas %}
+  <table>
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Media (0–5)</th>
+        <th>Decisión</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in hechas %}
+      <tr>
+        <td>{{ r.proposal.title }}</td>
+        <td>
+          {% if r.average_score is not None %}
+            {{ r.average_score }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+        <td>{{ r.get_decision_display|default:"—" }}</td>
+        <td>{{ r.created_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">Aún no has enviado ninguna evaluación.</p>
+  {% endif %}
+</div>
+{% endblock %}

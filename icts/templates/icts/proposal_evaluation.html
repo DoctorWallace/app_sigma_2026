@@ -1,0 +1,133 @@
+{% extends "base_icts.html" %}
+
+{% block content %}
+<div class="container" style="margin-top:1rem;">
+
+  <header class="card pe-hero">
+    <div>
+      <h1 class="h4" style="margin:0;">Proposal evaluation procedure</h1>
+      <p class="muted">Permanent open call · Scientific committee · Selection criteria · Deadlines</p>
+    </div>
+  </header>
+
+  <section class="grid">
+    <article class="card">
+      <h2>Open call</h2>
+      <p>
+        There will be a <strong>permanent open call</strong> for submission of proposals.
+        The evaluation of the received proposals will be performed by a scientific committee formed by the following experienced scientists:
+      </p>
+      <ul class="tight">
+        <li>Dr. Nathalie Valle — LIST, Luxemburg</li>
+        <li>Dr. Arturs Zarins — University of Latvia, Latvia</li>
+        <li>Dr. Fernando Sánchez Sanz — CIEMAT, Madrid</li>
+        <li>Dra. Raquel González Arrabal — IFN, ETSI Industriales – UPM, Madrid</li>
+        <li>Dr. María González Viada — CIEMAT, Madrid</li>
+        <li>Dr. José Ygnacio Pastor Caño — ETSI Caminos – UPM, Madrid</li>
+        <li>Dr. Alejandro Moroño — CIEMAT, Madrid</li>
+      </ul>
+    </article>
+
+    <article class="card">
+      <h2>Submission email</h2>
+      <p>Each research proposal will be sent via email to:</p>
+      <p><a class="mailto" href="mailto:rtt_dtf@ciemat.es">rtt_dtf@ciemat.es</a></p>
+      <p class="muted small">Include contact details, facility requested, scope, expected outputs and any scheduling constraints.</p>
+    </article>
+
+    <article class="card">
+      <h2>Selection criteria</h2>
+      <ol class="criteria">
+        <li><strong>Feasibility of the experiment</strong> (yes/no). In the affirmative case, then…</li>
+        <li><strong>Scientific quality of the proposal</strong> (rank: weak: 0 – outstanding: 5)</li>
+        <li><strong>Need for the use of this advanced infrastructure</strong> (rank: weak: 0 – outstanding: 5)</li>
+        <li><strong>Potentiality for industrial interest</strong> (rank: weak: 0 – outstanding: 5)</li>
+      </ol>
+      <p class="muted small">Proposals with a <strong>total ranking &lt; 7</strong> will be rejected.
+      Rejection will be accompanied by a short report outlining the reasons.</p>
+    </article>
+
+    <article class="card">
+      <h2>Notifications & next steps</h2>
+      <p>
+        Accepted proposals will be notified to the submitter within <strong>10 working days</strong> of reception.
+        The leading requester is then invited to communicate details to the local contact.
+      </p>
+      <p>
+        The procedure continues with the completion of the analysis and the delivery of a report.
+        The <strong>maximum time</strong> for each stage depends on the laboratory involved and is listed below.
+      </p>
+    </article>
+  </section>
+
+  <section class="card" style="margin-top:1rem;">
+    <h2 style="margin-bottom:.5rem;">Deadlines by facility</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Facility</th>
+            <th>Proposal resolution</th>
+            <th>Analysis execution &amp; report delivery</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Scanning Electron Microscopy (SEM) related studies</td>
+            <td>&lt; 10 days</td>
+            <td>&lt; 3 months</td>
+          </tr>
+          <tr>
+            <td>Secondary Ion Mass Spectrometry (SIMS)</td>
+            <td>&lt; 10 days</td>
+            <td>&lt; 20 days</td>
+          </tr>
+          <tr>
+            <td>Confocal microscope</td>
+            <td>&lt; 10 days</td>
+            <td>&lt; 20 days</td>
+          </tr>
+          <tr>
+            <td>Van de Graaff Electron Accelerator</td>
+            <td>&lt; 10 days</td>
+            <td>&lt; 4 months</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<style>
+.pe-hero{ padding:1rem; border:1px solid var(--border,#e5e7eb); border-radius:.75rem; background:var(--bg-card,#fff); }
+.grid{
+  display:grid; gap:1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-top:1rem;
+}
+.card{
+  border:1px solid var(--border,#e5e7eb);
+  border-radius:.75rem;
+  background:var(--bg-card,#fff);
+  padding:1rem;
+  box-shadow:0 2px 10px rgba(0,0,0,.03);
+}
+.muted{ color:var(--muted,#4b5563); }
+.small{ font-size:.9rem; }
+.tight{ margin:.5rem 0 0; padding-left:1.25rem; }
+.criteria{ margin:.5rem 0 0 1rem; }
+.mailto{ font-weight:700; }
+
+.table-wrap{ overflow:auto; }
+.table{ width:100%; border-collapse:collapse; }
+.table th, .table td{ padding:.65rem .75rem; border-top:1px solid var(--border,#e5e7eb); vertical-align:top; }
+.table thead th{
+  border-top:none;
+  background:var(--bg-muted,#f8fafc);
+  text-align:left;
+  font-weight:700;
+}
+.table tbody tr:hover{ background:rgba(0,0,0,.015); }
+</style>
+{% endblock %}

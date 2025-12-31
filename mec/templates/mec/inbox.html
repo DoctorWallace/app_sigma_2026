@@ -1,0 +1,37 @@
+{% extends "base_dtf.html" %}
+{% block title %}S-MEC · Bandeja de entrada{% endblock %}
+{% block page_title %}S-MEC · Bandeja de entrada{% endblock %}
+{% block content %}
+<div class="card">
+  <h3>Enviar mensaje a técnicos responsables</h3>
+  <form method="post" class="form-row">
+    {% csrf_token %}
+    <div>
+      <label class="form-label">Asunto</label>
+      <input type="text" name="asunto" class="form-input" required>
+    </div>
+    <div class="form-row full">
+      <label class="form-label">Mensaje</label>
+      <textarea name="mensaje" rows="4" class="form-input" required></textarea>
+    </div>
+    <div><button class="btn" type="submit">Enviar</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Mensajes</h3>
+  {% if mensajes %}
+    <ul style="list-style:none;padding:0;margin:0">
+      {% for m in mensajes %}
+        <li style="padding:.5rem 0;border-bottom:1px solid var(--border)">
+          <div><strong>{{ m.asunto }}</strong> · <span class="muted">{{ m.creado_en|date:"d/m/Y H:i" }} · {{ m.autor }}</span></div>
+          <div>{{ m.mensaje|linebreaksbr }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">Sin mensajes.</div>
+  {% endif %}
+</div>
+{% endblock %}
+

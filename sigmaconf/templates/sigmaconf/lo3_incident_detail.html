@@ -1,0 +1,169 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Incidencia{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Controles intermedios / Incidencias{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_incident_list' %}">Incidencias</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{{ incident.title }}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">{{ incident.title }}</div>
+    <div class="lo3-page-meta">
+      <span>{{ incident.get_incident_type_display }}</span>
+      <span>Creada {{ incident.created_at|date:"d/m/Y H:i" }}</span>
+      {% if incident.closed_at %}
+        <span>Cerrada {{ incident.closed_at|date:"d/m/Y H:i" }}</span>
+      {% endif %}
+    </div>
+    <div style="margin-top: 0.75rem;">
+      {% if incident.severity == "high" %}
+        <span class="lo3-badge lo3-badge--danger">Alta</span>
+      {% elif incident.severity == "medium" %}
+        <span class="lo3-badge lo3-badge--warning">Media</span>
+      {% else %}
+        <span class="lo3-badge lo3-badge--muted">Baja</span>
+      {% endif %}
+      {% if incident.status == "closed" %}
+        <span class="lo3-badge lo3-badge--success">Cerrada</span>
+      {% elif incident.status == "in_progress" %}
+        <span class="lo3-badge lo3-badge--warning">En progreso</span>
+      {% else %}
+        <span class="lo3-badge lo3-badge--info">Abierta</span>
+      {% endif %}
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_incident_list' %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+    <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_incident_edit' incident.pk %}">
+      <i class="bi bi-pencil-square"></i>
+      Editar
+    </a>
+    {% if incident.status != "closed" %}
+      <form method="post" action="{% url 'sigmaconf:lo3_incident_close' incident.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="lo3-btn lo3-btn-ghost">
+          <i class="bi bi-check2-circle"></i>
+          Cerrar
+        </button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Detalle</h2>
+      <div class="lo3-card-subtitle">Información operativa de la incidencia.</div>
+    </div>
+  </div>
+  <div class="lo3-stat-grid">
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ incident.equipment.name|default:"-" }}</div>
+      <div class="lo3-stat-label">Equipo</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{% if incident.session %}{{ incident.session.lot_code }}{% else %}-{% endif %}</div>
+      <div class="lo3-stat-label">Sesión</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ incident.created_by.get_full_name|default:incident.created_by.username|default:"-" }}</div>
+      <div class="lo3-stat-label">Creada por</div>
+    </div>
+  </div>
+  <div style="margin-top: 1.5rem;">
+    <strong>Descripción</strong>
+    <p class="text-muted">{{ incident.description|linebreaksbr }}</p>
+  </div>
+  <div style="margin-top: 1rem;">
+    <strong>Acciones correctivas</strong>
+    <p class="text-muted">{{ incident.corrective_actions|default:"Sin acciones registradas."|linebreaksbr }}</p>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Adjuntos</h2>
+      <div class="lo3-card-subtitle">Evidencias y archivos asociados.</div>
+    </div>
+  </div>
+
+  {% if attachments %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Archivo</th>
+            <th>Subido por</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for attachment in attachments %}
+            <tr>
+              <td>{{ attachment.file.name|cut:"lo3/incidents/" }}</td>
+              <td>{{ attachment.uploaded_by.get_full_name|default:attachment.uploaded_by.username|default:"-" }}</td>
+              <td>{{ attachment.created_at|date:"d/m/Y H:i" }}</td>
+              <td>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                  <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_incident_attachment_download' attachment.pk %}">
+                    <i class="bi bi-download"></i>
+                    Descargar
+                  </a>
+                  <form method="post" action="{% url 'sigmaconf:lo3_incident_attachment_delete' attachment.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="lo3-btn lo3-btn-ghost">
+                      <i class="bi bi-trash"></i>
+                      Eliminar
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-paperclip"></i>
+      <div>No hay adjuntos.</div>
+      <small>Sube evidencias para documentar la incidencia.</small>
+    </div>
+  {% endif %}
+
+  <div style="margin-top: 1.5rem;">
+    <h3 class="lo3-card-title" style="font-size: 1rem;">Subir adjunto</h3>
+    <form method="post" action="{% url 'sigmaconf:lo3_incident_attachment_add' incident.pk %}" enctype="multipart/form-data" style="margin-top: 1rem;">
+      {% csrf_token %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+        <div>
+          {{ attachment_form.file.label_tag }}
+          {{ attachment_form.file }}
+        </div>
+      </div>
+      <div style="margin-top: 1rem;">
+        <button type="submit" class="lo3-btn lo3-btn-primary">
+          <i class="bi bi-upload"></i>
+          Subir adjunto
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "sigmasem/base_sigmasem.html" %}
+
+{% block page_title %}Agregar Muestra - {{ analysis.registration_number }}{% endblock %}
+{% block sem_page_title %}Agregar Muestra{% endblock %}
+
+{% block sem_content %}
+<div class="container">
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">
+        Agregar Muestra Adicional
+        <span class="sem-badge {% if analysis.analysis_type == 'sem' %}sem-badge-sem{% else %}sem-badge-fib{% endif %}">
+          {{ analysis.registration_number }}
+        </span>
+      </h2>
+      <p style="margin: 0; color: #6c757d;">
+        Agregar una muestra adicional al análisis {{ analysis.registration_number }} - {{ analysis.sample_name }}
+      </p>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div class="sem-form-group">
+          <label for="{{ form.identification.id_for_label }}" class="sem-form-label">
+            Identificación de la Muestra *
+          </label>
+          {{ form.identification }}
+          {% if form.identification.errors %}
+            <div class="text-danger">{{ form.identification.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="sem-form-group">
+          <label for="{{ form.name.id_for_label }}" class="sem-form-label">
+            Nombre de la Muestra *
+          </label>
+          {{ form.name }}
+          {% if form.name.errors %}
+            <div class="text-danger">{{ form.name.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="sem-form-group">
+          <label for="{{ form.description.id_for_label }}" class="sem-form-label">
+            Descripción de la Muestra
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <div class="text-danger">{{ form.description.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div style="margin-top: 2rem; text-align: center;">
+          <button type="submit" class="sem-btn sem-btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+            <i class="bi bi-plus-circle"></i>
+            Agregar Muestra
+          </button>
+          <a href="{% url 'icts:sigmasem:analysis_detail' analysis.pk %}" class="sem-btn" style="background: #6c757d; color: white; margin-left: 1rem;">
+            <i class="bi bi-x-circle"></i>
+            Cancelar
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Información del análisis -->
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Información del Análisis</h2>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+        <strong>Tipo:</strong> {{ analysis.get_analysis_type_display }}
+      </div>
+      <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+        <strong>Muestra Principal:</strong> {{ analysis.sample_name }}
+      </div>
+      <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+        <strong>Cliente:</strong> {{ analysis.client }}
+      </div>
+      <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+        <strong>Fecha:</strong> {{ analysis.analysis_date|date:"d/m/Y" }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,479 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Crear Analisis de Datos - Sigma DP{% endblock %}
+
+{% block extra_css %}
+<style>
+    .drag-drop-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .drag-drop-area.dragover {
+        border-color: #007bff;
+        background-color: #e3f2fd;
+        transform: scale(1.02);
+    }
+    
+    .drag-drop-area.has-file {
+        border-color: #28a745;
+        background-color: #d4edda;
+    }
+    
+    .file-preview {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #fff;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .file-icon {
+        font-size: 2rem;
+        color: #007bff;
+    }
+    
+    .file-details h6 {
+        margin: 0;
+        color: #333;
+    }
+    
+    .file-details small {
+        color: #6c757d;
+    }
+    
+    .remove-file {
+        color: #dc3545;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    
+    .remove-file:hover {
+        color: #c82333;
+    }
+    
+    .form-section {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .form-check {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .form-check-input:checked + .form-check-label {
+        color: #007bff;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="bi bi-plus-circle"></i>
+                    Crear Analisis de Datos
+                </h1>
+                <p class="page-subtitle">Sube un archivo de datos y configura el analisis</p>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="analisis-form">
+        {% csrf_token %}
+        
+        <!-- Informacion bsica -->
+        <div class="form-section">
+            <h5 class="section-title">
+                <i class="bi bi-info-circle"></i>
+                Informacion del Analisis
+            </h5>
+
+            {% if not selector_disponible %}
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                No hay solicitudes trmicas disponibles para asociar resultados. Crea o acepta una solicitud antes de continuar.
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_solicitante" class="form-label">
+                            <i class="bi bi-person-circle"></i>
+                            Usuario solicitante
+                        </label>
+                        <select name="solicitante" id="id_solicitante" class="form-select" {% if not selector_disponible %}disabled{% endif %}>
+                            <option value="">Selecciona un usuario</option>
+                            {% for usuario in solicitantes %}
+                                {% with usuario_id=usuario.id|stringformat:"s" %}
+                                <option value="{{ usuario.id }}" data-username="{{ usuario.username }}" {% if selected_solicitante == usuario_id %}selected{% endif %}>
+                                    {% if usuario.get_full_name %}
+                                        {{ usuario.get_full_name }} ({{ usuario.username }})
+                                    {% else %}
+                                        {{ usuario.username }}
+                                    {% endif %}
+                                </option>
+                                {% endwith %}
+                            {% endfor %}
+                        </select>
+                        {% if form.solicitante.errors %}
+                            <div class="invalid-feedback d-block">{{ form.solicitante.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_solicitud_termica" class="form-label">
+                            <i class="bi bi-ui-checks-grid"></i>
+                            Solicitud asociada
+                        </label>
+                        <select name="solicitud_termica" id="id_solicitud_termica" class="form-select" {% if not selector_disponible %}disabled{% endif %} required>
+                            <option value="">Selecciona una solicitud</option>
+                            {% for solicitud in solicitudes %}
+                                {% with solicitud_id=solicitud.id|stringformat:"s" %}
+                                <option value="{{ solicitud.id }}" data-solicitante="{{ solicitud.solicitante_id }}" data-estado="{{ solicitud.estado }}" {% if selected_solicitud == solicitud_id %}selected{% endif %}>
+                                    DP-T#{{ solicitud.id }} - {{ solicitud.nombre_muestra }} ({{ solicitud.get_estado_display }})  {{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}
+                                </option>
+                                {% endwith %}
+                            {% endfor %}
+                        </select>
+                        {% if form.solicitud_termica.errors %}
+                            <div class="invalid-feedback d-block">{{ form.solicitud_termica.errors|join:", " }}</div>
+                        {% endif %}
+                        <div class="form-text">Selecciona la solicitud del usuario a la que pertenece este resultado.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                            {{ form.nombre.label }}
+                        </label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="text-danger">{{ form.nombre.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                    {{ form.descripcion.label }}
+                </label>
+                {{ form.descripcion }}
+                {% if form.descripcion.errors %}
+                    <div class="text-danger">{{ form.descripcion.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+
+<!-- Subida de archivo -->
+        <div class="form-section">
+            <h5 class="section-title">
+                <i class="bi bi-cloud-upload"></i>
+                Archivo de Datos
+            </h5>
+            
+            <div class="mb-3">
+                <label for="{{ form.archivo_datos.id_for_label }}" class="form-label">
+                    {{ form.archivo_datos.label }}
+                </label>
+                {{ form.archivo_datos }}
+                <div class="form-text">
+                    <i class="bi bi-magic"></i>
+                    <strong>Deteccin automtica:</strong> Formatos soportados: .txt, .csv, .tsv, .dat o sin extensin (mx. 50MB). 
+                    La aplicacin detectar automticamente el separador, decimal y codificacin.
+                </div>
+                {% if form.archivo_datos.errors %}
+                    <div class="text-danger">{{ form.archivo_datos.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Deteccin automtica del archivo -->
+        <div class="form-section">
+            <h5 class="section-title">
+                <i class="bi bi-magic"></i>
+                Deteccin Automtica
+            </h5>
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                <strong>Deteccin automtica activada:</strong> La aplicacin detectar automticamente el separador, decimal y codificacin del archivo. 
+                No es necesario configurar estos parmetros manualmente.
+            </div>
+            
+            <!-- Campos ocultos para mantener compatibilidad con el backend -->
+            <input type="hidden" name="separador" value="">
+            <input type="hidden" name="decimal" value="">
+            <input type="hidden" name="codificacion" value="">
+            
+            <div id="detection-info" class="mt-3" style="display: none;">
+                <h6><i class="bi bi-check-circle text-success"></i> Propiedades detectadas:</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <small class="text-muted">Separador:</small>
+                        <div id="detected-separator" class="fw-bold"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Decimal:</small>
+                        <div id="detected-decimal" class="fw-bold"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Codificacin:</small>
+                        <div id="detected-encoding" class="fw-bold"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Opciones de representacin -->
+        <div class="form-section">
+            <h5 class="section-title">
+                <i class="bi bi-graph-up"></i>
+                Graficas a Generar
+            </h5>
+            <div class="checkbox-group">
+                <div class="form-check">
+                    {{ form.mostrar_temperatura }}
+                    <label class="form-check-label" for="{{ form.mostrar_temperatura.id_for_label }}">
+                        <i class="bi bi-thermometer-half"></i>
+                        {{ form.mostrar_temperatura.label }}
+                    </label>
+                </div>
+                <div class="form-check">
+                    {{ form.mostrar_leak }}
+                    <label class="form-check-label" for="{{ form.mostrar_leak.id_for_label }}">
+                        <i class="bi bi-droplet"></i>
+                        {{ form.mostrar_leak.label }}
+                    </label>
+                </div>
+                <div class="form-check">
+                    {{ form.mostrar_heater }}
+                    <label class="form-check-label" for="{{ form.mostrar_heater.id_for_label }}">
+                        <i class="bi bi-lightning"></i>
+                        {{ form.mostrar_heater.label }}
+                    </label>
+                </div>
+                <div class="form-check">
+                    {{ form.mostrar_overview }}
+                    <label class="form-check-label" for="{{ form.mostrar_overview.id_for_label }}">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        {{ form.mostrar_overview.label }}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de accion -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'sigmadp:representacion_resultados' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="submit-btn" {% if not selector_disponible %}disabled{% endif %}>
+                        <i class="bi bi-play-circle"></i>
+                        Procesar Analisis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('{{ form.archivo_datos.id_for_label }}');
+    const solicitanteSelect = document.getElementById('id_solicitante');
+    const solicitudSelect = document.getElementById('id_solicitud_termica');
+    const nombreInput = document.getElementById('{{ form.nombre.id_for_label }}');
+    const submitBtn = document.getElementById('submit-btn');
+    const selectorDisponible = {{ selector_disponible|yesno:'true,false' }};
+
+    function filterSolicitudes() {
+        if (!solicitudSelect) {
+            return;
+        }
+        const selectedUser = solicitanteSelect ? solicitanteSelect.value : '';
+        let hasVisibleOption = false;
+        Array.from(solicitudSelect.options).forEach(option => {
+            if (!option.value) {
+                option.hidden = false;
+                option.disabled = false;
+                return;
+            }
+            const matches = !selectedUser || option.dataset.solicitante === selectedUser;
+            option.hidden = !matches;
+            option.disabled = !matches;
+            if (matches) {
+                hasVisibleOption = true;
+            }
+        });
+        if (!hasVisibleOption) {
+            solicitudSelect.value = '';
+        } else if (solicitudSelect.selectedOptions.length && solicitudSelect.selectedOptions[0].hidden) {
+            solicitudSelect.value = '';
+        }
+        updateSubmitAvailability();
+    }
+
+    if (solicitanteSelect) {
+        solicitanteSelect.addEventListener('change', filterSolicitudes);
+    }
+    filterSolicitudes();
+
+    function setSuggestedName(file) {
+        if (!nombreInput || !file) {
+            return;
+        }
+        if (nombreInput.value && nombreInput.value.trim().length > 0) {
+            return;
+        }
+        const nameParts = file.name.split('.');
+        if (nameParts.length > 1) {
+            nameParts.pop();
+        }
+        const baseName = nameParts.join('.') || file.name;
+        nombreInput.value = baseName;
+    }
+
+    function updateSubmitAvailability() {
+        if (!submitBtn) {
+            return;
+        }
+        if (!selectorDisponible) {
+            submitBtn.disabled = true;
+            return;
+        }
+        const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+        const hasSolicitud = solicitudSelect && solicitudSelect.value;
+        submitBtn.disabled = !(hasFile && hasSolicitud);
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                setSuggestedName(file);
+                detectFileProperties(file);
+            }
+            updateSubmitAvailability();
+        });
+    }
+
+    if (solicitudSelect) {
+        solicitudSelect.addEventListener('change', updateSubmitAvailability);
+    }
+
+    updateSubmitAvailability();
+
+    function detectFileProperties(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            const lines = content.split('\n').slice(0, 10);
+
+            const separator = detectSeparator(lines);
+            const decimal = detectDecimal(lines);
+            const encoding = 'utf-8';
+
+            showDetectionInfo(separator, decimal, encoding);
+        };
+        reader.readAsText(file);
+    }
+
+    function detectSeparator(lines) {
+        const separators = ['\t', ';', ',', '|', ' '];
+        const counts = {};
+
+        separators.forEach(sep => {
+            counts[sep] = 0;
+            lines.forEach(line => {
+                const regex = new RegExp(sep.replace(/[.*+?^${}()|[\]\]/g, '\$&'), 'g');
+                counts[sep] += (line.match(regex) || []).length;
+            });
+        });
+
+        if (counts['\t'] > 0) return '\t (tabulador)';
+        if (counts[';'] > 0) return '; (punto y coma)';
+
+        const maxSep = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+        if (maxSep === ' ') return 'espacio';
+        return maxSep;
+    }
+
+    function detectDecimal(lines) {
+        let commaCount = 0;
+        let dotCount = 0;
+
+        lines.forEach(line => {
+            commaCount += (line.match(/\d+,\d+/g) || []).length;
+            dotCount += (line.match(/\d+\.\d+/g) || []).length;
+        });
+
+        return commaCount > dotCount ? ',' : '.';
+    }
+
+    function showDetectionInfo(separator, decimal, encoding) {
+        const detectionInfo = document.getElementById('detection-info');
+        const detectedSeparator = document.getElementById('detected-separator');
+        const detectedDecimal = document.getElementById('detected-decimal');
+        const detectedEncoding = document.getElementById('detected-encoding');
+
+        if (detectionInfo && detectedSeparator && detectedDecimal && detectedEncoding) {
+            detectedSeparator.textContent = separator;
+            detectedDecimal.textContent = decimal;
+            detectedEncoding.textContent = encoding;
+            detectionInfo.style.display = 'block';
+        }
+    }
+});</script>
+{% endblock %}
+

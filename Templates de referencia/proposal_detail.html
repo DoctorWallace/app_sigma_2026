@@ -1,0 +1,764 @@
+{% extends "base_generic.html" %}
+{% block title %}{{ proposal.title }} - Detalles{% endblock %}
+
+{% block content %}
+<div class="proposal-detail-container">
+  <!-- Header -->
+  <div class="proposal-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h1 class="proposal-title">{{ proposal.title }}</h1>
+        <div class="proposal-meta">
+          <div class="status-badge status-{{ proposal.status }}">
+            {% if proposal.status == 'draft' %}
+              📄 Borrador
+            {% elif proposal.status == 'submitted' %}
+              📝 En Revisión
+            {% elif proposal.status == 'approved' %}
+              ✅ Aprobada
+            {% elif proposal.status == 'rejected' %}
+              ❌ Rechazada
+            {% else %}
+              🔄 {{ proposal.get_status_display }}
+            {% endif %}
+          </div>
+          <span class="proposal-id">ID: {{ proposal.id }}</span>
+          {% if proposal.access_code %}
+            <span class="access-code">🔑 {{ proposal.access_code }}</span>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="header-actions">
+      {% if can_edit %}
+  <a href="{% url 'icts:proposal_edit' proposal.id %}" class="btn btn-primary">
+            ✏️ Editar
+  </a>
+{% endif %}
+        <a href="{{ back_url }}" class="btn btn-secondary">
+          ← Volver
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-card">
+    <h3 class="card-title">📅 Cronología</h3>
+    <div class="timeline">
+      <div class="timeline-item active">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-title">Propuesta Creada</div>
+          <div class="timeline-date">{{ proposal.created_at|date:"d/m/Y H:i" }}</div>
+        </div>
+      </div>
+      
+      {% if proposal.submitted_at %}
+        <div class="timeline-item active">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-title">Enviada a Revisión</div>
+            <div class="timeline-date">{{ proposal.submitted_at|date:"d/m/Y H:i" }}</div>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if proposal.final_decision %}
+        <div class="timeline-item active">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-title">Decisión Final</div>
+            <div class="timeline-date">{{ proposal.final_decision.decided_at|date:"d/m/Y H:i" }}</div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="details-grid">
+    <!-- Project Information -->
+    <div class="detail-card">
+      <h3 class="card-title">📊 Información del Proyecto</h3>
+      <div class="detail-content">
+        <div class="detail-row">
+          <span class="detail-label">Título:</span>
+          <span class="detail-value">{{ proposal.title }}</span>
+        </div>
+        
+    {% if proposal.scope %}
+          <div class="detail-row">
+            <span class="detail-label">Descripción:</span>
+            <div class="detail-value description">{{ proposal.scope|linebreaks }}</div>
+          </div>
+        {% endif %}
+        
+        <div class="detail-row">
+          <span class="detail-label">Nueva Solicitud:</span>
+          <span class="detail-value">{{ proposal.is_new_request|yesno:"Sí,No" }}</span>
+        </div>
+        
+        {% if not proposal.is_new_request and proposal.previous_access %}
+          <div class="detail-row">
+            <span class="detail-label">Solicitud Anterior:</span>
+            <span class="detail-value">{{ proposal.previous_access.title }}</span>
+          </div>
+        {% endif %}
+        
+        <div class="detail-row">
+          <span class="detail-label">Años:</span>
+          <span class="detail-value">{{ proposal.start_year|default:"—" }} - {{ proposal.end_year|default:"—" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applicant Information -->
+    <div class="detail-card">
+      <h3 class="card-title">👤 Información del Solicitante</h3>
+      <div class="detail-content">
+        <div class="detail-row">
+          <span class="detail-label">Organización:</span>
+          <span class="detail-value">{{ proposal.organization|default:"—" }}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">Persona de Contacto:</span>
+          <span class="detail-value">{{ proposal.contact_person|default:"—" }}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">Email:</span>
+          <span class="detail-value">{{ proposal.email|default:"—" }}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">Teléfono:</span>
+          <span class="detail-value">{{ proposal.phone|default:"—" }}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">Solicitante Diferente:</span>
+          <span class="detail-value">{{ proposal.applicant_is_different|yesno:"Sí,No" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Techniques Required -->
+    <div class="detail-card">
+      <h3 class="card-title">🔬 Técnicas Solicitadas</h3>
+      <div class="detail-content">
+        <div class="techniques-grid">
+          {% if proposal.facility_sem %}
+            <div class="technique-item active">
+              <span class="technique-icon">🔬</span>
+              <span class="technique-name">SEM/EDX</span>
+            </div>
+          {% else %}
+            <div class="technique-item">
+              <span class="technique-icon">🔬</span>
+              <span class="technique-name">SEM/EDX</span>
+            </div>
+          {% endif %}
+
+          {% if proposal.facility_sem_fib %}
+            <div class="technique-item active">
+              <span class="technique-icon">🔬</span>
+              <span class="technique-name">FIB</span>
+            </div>
+          {% else %}
+            <div class="technique-item">
+              <span class="technique-icon">🔬</span>
+              <span class="technique-name">FIB</span>
+            </div>
+          {% endif %}
+
+          {% if proposal.facility_sims %}
+            <div class="technique-item active">
+              <span class="technique-icon">🧪</span>
+              <span class="technique-name">SIMS</span>
+            </div>
+          {% else %}
+            <div class="technique-item">
+              <span class="technique-icon">🧪</span>
+              <span class="technique-name">SIMS</span>
+            </div>
+          {% endif %}
+
+          {% if proposal.facility_confocal %}
+            <div class="technique-item active">
+              <span class="technique-icon">🔍</span>
+              <span class="technique-name">Confocal</span>
+            </div>
+          {% else %}
+            <div class="technique-item">
+              <span class="technique-icon">🔍</span>
+              <span class="technique-name">Confocal</span>
+            </div>
+          {% endif %}
+
+          {% if proposal.facility_imp %}
+            <div class="technique-item active">
+              <span class="technique-icon">⚡</span>
+              <span class="technique-name">Ion Implanter</span>
+            </div>
+          {% else %}
+            <div class="technique-item">
+              <span class="technique-icon">⚡</span>
+              <span class="technique-name">Ion Implanter</span>
+            </div>
+          {% endif %}
+
+          {% if proposal.facility_vdg %}
+            <div class="technique-item active">
+              <span class="technique-icon">⚡</span>
+              <span class="technique-name">VdG</span>
+            </div>
+          {% else %}
+            <div class="technique-item">
+              <span class="technique-icon">⚡</span>
+              <span class="technique-name">VdG</span>
+            </div>
+          {% endif %}
+
+          {% if proposal.facility_profilometer %}
+            <div class="technique-item active">
+              <span class="technique-icon">📏</span>
+              <span class="technique-name">Profilometer</span>
+            </div>
+          {% else %}
+            <div class="technique-item">
+              <span class="technique-icon">📏</span>
+              <span class="technique-name">Profilometer</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Participants -->
+    {% if proposal.participants.exists %}
+      <div class="detail-card">
+        <h3 class="card-title">👥 Participantes</h3>
+        <div class="detail-content">
+          {% for participant in proposal.participants.all %}
+            <div class="participant-item">
+              <div class="participant-info">
+                <div class="participant-name">{{ participant.name }}</div>
+                <div class="participant-details">
+                  {% if participant.center %}
+                    <span class="participant-center">{{ participant.center }}</span>
+                  {% endif %}
+                  {% if participant.address %}
+                    <span class="participant-address">{{ participant.address }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Additional Information -->
+    {% if proposal.previous_experiments or proposal.references %}
+      <div class="detail-card full-width">
+        <h3 class="card-title">📚 Información Adicional</h3>
+        <div class="detail-content">
+          {% if proposal.previous_experiments %}
+            <div class="detail-section">
+              <h4 class="section-title">Experiencias Previas</h4>
+              <div class="section-content">{{ proposal.previous_experiments|linebreaks }}</div>
+            </div>
+          {% endif %}
+          
+          {% if proposal.references %}
+            <div class="detail-section">
+              <h4 class="section-title">Referencias</h4>
+              <div class="section-content">{{ proposal.references|linebreaks }}</div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+</div>
+
+{# ---- BLOQUE DE RESPUESTA Y CÓDIGO (solo si está aprobada) ---- #}
+{% if proposal.status == "approved" %}
+  <div class="card" style="padding:20px; border-left:4px solid #16a34a; background:#f0fdf4;">
+    <h3 style="margin:0 0 8px 0;">RESPUESTA A LA PETICIÓN …. {{ proposal.make_response_header }}</h3>
+
+    {% with fr=reviews|first %}
+      <p style="margin:6px 0;">
+        Una vez evaluada la petición recibida según los siguientes criterios:<br>
+        1.- Feasibility of the experiment: yes<br>
+        2.- Scientific quality of the proposal (rank: 0–5): {{ fr.score_scientific_quality|default:"—" }}<br>
+        3.- The need for the use of this advanced infrastructure (rank: 0–5): {{ fr.score_need_infrastructure|default:"—" }}<br>
+        4.- Potentiality for industrial interest (rank: 0–5): {{ fr.score_industrial_potential|default:"—" }}<br>
+        Este Comité resuelve aceptar la propuesta.
+      </p>
+    {% endwith %}
+
+    <p style="margin:6px 0;"><strong>El código de acceso de la petición es:</strong> {{ proposal.access_code }}</p>
+    <p class="muted" style="margin:6px 0;">El informe de resultados se entregará en menos de 6 meses.</p>
+  </div>
+{% endif %}
+
+<div class="card" style="padding:20px;">
+  <h3 style="margin:0 0 10px 0;">Valoraciones de revisores ({{ review_count }})</h3>
+
+  {% if proposal.status == "approved" or proposal.status == "rejected" %}
+    {# Mostrar evaluaciones solo cuando hay decisión final del responsable #}
+    {% if reviews %}
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Evaluación</th>
+            <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Factibilidad</th>
+            <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Calidad científica</th>
+            <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Necesidad infra.</th>
+            <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Potencial industrial</th>
+            <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Decisión</th>
+            <th style="text-align:left;padding:8px;border-top:1px solid #e5e8ef;">Comentarios</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reviews %}
+          <tr>
+            <td style="padding:8px;border-top:1px solid #e5e8ef;">
+              Evaluación #{{ forloop.counter }}
+            </td>
+            <td style="padding:8px;border-top:1px solid #e5e8ef;">{% if r.feasibility_ok %}Sí{% else %}No{% endif %}</td>
+            <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ r.score_scientific_quality|default:"—" }}</td>
+            <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ r.score_need_infrastructure|default:"—" }}</td>
+            <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ r.score_industrial_potential|default:"—" }}</td>
+            <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ r.decision|default:"—" }}</td>
+            <td style="padding:8px;border-top:1px solid #e5e8ef;">{{ r.comments|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No hay valoraciones registradas.</p>
+    {% endif %}
+  {% elif proposal.status == "submitted" or proposal.status == "under_review" %}
+    {# Durante el proceso de revisión, solo mostrar el número de evaluaciones #}
+    <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #0066cc;">
+      <p style="margin: 0; color: #495057;">
+        <strong>📋 Estado de evaluación:</strong> {{ review_count }} de 4 evaluaciones requeridas completadas.
+      </p>
+      <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #6c757d;">
+        Las evaluaciones individuales se mostrarán una vez que el responsable tome la decisión final.
+      </p>
+    </div>
+  {% else %}
+    <p class="muted">No hay valoraciones registradas.</p>
+  {% endif %}
+
+  {% if can_decide %}
+    <hr style="border:none;border-top:1px solid #e5e8ef;margin:16px 0;">
+    <h3 style="margin:0 0 10px 0;">Decisión del responsable</h3>
+    <form method="post" action="{% url 'icts:proposal_decide' proposal.id %}" class="stack" style="max-width:600px;">
+      {% csrf_token %}
+      <label><input type="radio" name="decision" value="approved" required> Aprobar</label>
+      <label><input type="radio" name="decision" value="rejected" required> Rechazar</label>
+      <label for="id_comments">Comentarios (opcional):</label>
+      <textarea id="id_comments" name="comments" rows="3" placeholder="Motivos o notas internas..."></textarea>
+      <div class="actions">
+        <button class="btn" type="submit">Guardar decisión</button>
+        <a class="btn secondary" href="{{ back_url }}">Cancelar</a>
+      </div>
+      <p class="muted" style="margin:8px 0 0 0;">
+        Requisito cumplido: ≥ 4 valoraciones (actual: {{ review_count }}).
+      </p>
+    </form>
+  {% else %}
+    <p class="muted" style="margin-top:10px;">
+      {% if proposal.status == "approved" or proposal.status == "rejected" %}
+        La propuesta ya tiene decisión final.
+      {% else %}
+        Para decidir se requieren al menos 4 valoraciones. Actualmente: {{ review_count }}.
+      {% endif %}
+    </p>
+  {% endif %}
+</div>
+
+<style>
+/* Proposal Detail Styles */
+.proposal-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.proposal-header {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.proposal-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
+}
+
+.proposal-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-badge.status-draft {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--info);
+}
+
+.status-badge.status-submitted {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.status-badge.status-approved {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+}
+
+.status-badge.status-rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.proposal-id, .access-code {
+  background: var(--bg-main);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.access-code {
+  background: var(--gradient-accent);
+  color: white;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(26, 54, 93, 0.3);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-main);
+  border-color: var(--text-light);
+}
+
+/* Timeline */
+.timeline-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem 0;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0.5;
+}
+
+.timeline-item.active {
+  opacity: 1;
+}
+
+.timeline-marker {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.timeline-item.active .timeline-marker {
+  background: var(--gradient-primary);
+  box-shadow: 0 0 0 4px rgba(26, 54, 93, 0.1);
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.timeline-date {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.detail-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.detail-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.detail-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.detail-value.description {
+  line-height: 1.6;
+}
+
+/* Techniques Grid */
+.techniques-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.technique-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--bg-main);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.technique-item.active {
+  opacity: 1;
+  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(26, 54, 93, 0.05) 0%, rgba(26, 54, 93, 0.1) 100%);
+}
+
+.technique-icon {
+  font-size: 1.5rem;
+}
+
+.technique-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Participants */
+.participant-item {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--bg-main);
+  margin-bottom: 1rem;
+}
+
+.participant-item:last-child {
+  margin-bottom: 0;
+}
+
+.participant-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.participant-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.participant-center, .participant-address {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Additional Information */
+.detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.section-content {
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .proposal-detail-container {
+    padding: 1rem;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+  
+  .header-actions {
+    justify-content: stretch;
+  }
+  
+  .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .proposal-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .timeline {
+    gap: 1rem;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .detail-label {
+    min-width: auto;
+  }
+  
+  .techniques-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+{% endblock %}

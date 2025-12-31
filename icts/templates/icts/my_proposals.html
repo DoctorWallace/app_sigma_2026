@@ -1,0 +1,251 @@
+{% extends "base_icts.html" %}
+{% load i18n %}
+{% block title %}{% trans "Mis propuestas" %}{% endblock %}
+{% block page_title %}{% trans "Mis propuestas" %}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h3 style="margin:0;">{% trans "Listado" %}</h3>
+    <a class="chip" href="{% url 'icts:proposal_create' %}"><i class="bi bi-plus-circle"></i> {% trans "Nueva propuesta" %}</a>
+  </div>
+  <hr style="margin:.75rem 0;">
+  {% if proposals %}
+    <div class="proposals-grid">
+      {% for p in proposals %}
+        <div class="proposal-card {{ p.status }}">
+          <div class="proposal-header">
+            <h4 class="proposal-title">{{ p.title|default:"(Sin t﹀ulo)" }}</h4>
+            <span class="proposal-status {{ p.status }}">
+              {% if p.status == 'draft' %}<i class="bi bi-file-text"></i> {% trans "Borrador" %}
+              {% elif p.status == 'submitted' %}<i class="bi bi-clock"></i> {% trans "En Revisi▋" %}
+              {% elif p.status == 'changes_requested' %}<i class="bi bi-arrow-clockwise"></i> {% trans "Cambios solicitados" %}
+              {% elif p.status == 'accepted' %}<i class="bi bi-check-circle"></i> {% trans "Aprobada" %}
+              {% elif p.status == 'rejected' %}<i class="bi bi-x-circle"></i> {% trans "Rechazada" %}
+              {% else %}{{ p.get_status_display }}{% endif %}
+            </span>
+          </div>
+          <div class="proposal-meta">
+            <div class="meta-item">
+              <span class="meta-label">ID:</span>
+              <span class="meta-value">#{{ p.id }}</span>
+            </div>
+            {% if p.facility_olmat and p.olmat_request_id %}
+            <div class="meta-item">
+              <span class="meta-label">OLMAT:</span>
+              <span class="meta-value">
+                <span class="badge {% if p.olmat_request.status == 'approved' %}bg-success{% elif p.olmat_request.status == 'rejected' %}bg-danger{% elif p.olmat_request.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+                  {{ p.olmat_request.get_status_display }}
+                </span>
+                {% if p.olmat_request.access_code %}
+                  <span class="access-code-small ms-1">{{ p.olmat_request.access_code }}</span>
+                {% endif %}
+              </span>
+            </div>
+            {% endif %}
+            {% if p.access_code %}
+            <div class="meta-item access-code-meta {% if p.status == 'submitted' %}access-code-temporary{% elif p.status == 'accepted' %}access-code-approved{% endif %}">
+              <span class="meta-label">C▃igo:</span>
+              <span class="meta-value access-code-small">{{ p.access_code }}</span>
+              {% if p.status == 'submitted' %}
+              <span class="access-code-status-small">(Temporal)</span>
+              {% elif p.status == 'accepted' %}
+              <span class="access-code-status-small">(Aprobado)</span>
+              {% endif %}
+            </div>
+            {% endif %}
+            <div class="meta-item">
+              <span class="meta-label">{% trans "Creada" %}:</span>
+              <span class="meta-value">{{ p.created_at|date:"d/m/Y" }}</span>
+            </div>
+          </div>
+          <div class="proposal-actions">
+            <a href="{% url 'icts:proposal_detail' p.id %}" class="btn-small view"><i class="bi bi-eye"></i> {% trans "Ver" %}</a>
+            {% if p.status == 'draft' or p.status == 'changes_requested' %}
+              <a href="{% url 'icts:proposal_edit' p.id %}" class="btn-small edit"><i class="bi bi-pencil"></i> {% trans "Editar" %}</a>
+              {% if p.status == 'draft' %}
+              <a href="{% url 'icts:proposal_delete' p.id %}" class="btn-small delete"><i class="bi bi-trash"></i> {% trans "Eliminar" %}</a>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="muted">No tienes propuestas aτ.</div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:var(--bg-card); box-shadow:var(--shadow); }
+.chip:hover{ background:#f3f4f6 }
+
+/* Estilos para las tarjetas de propuestas */
+.proposals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.proposal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.proposal-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.proposal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.proposal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.proposal-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.proposal-status.draft { background: #e9ecef; color: #6c757d; }
+.proposal-status.submitted { background: #d1ecf1; color: #0c5460; }
+.proposal-status.changes_requested { background: #fff3cd; color: #856404; }
+.proposal-status.accepted { background: #d4edda; color: #155724; }
+.proposal-status.rejected { background: #f8d7da; color: #721c24; }
+
+.proposal-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.meta-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.access-code-meta {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.access-code-temporary {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%) !important;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3) !important;
+}
+
+.access-code-approved {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+}
+
+.access-code-meta .meta-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.access-code-small {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.access-code-status-small {
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-left: 0.25rem;
+}
+
+.proposal-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-small.view {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-small.view:hover {
+  background: var(--primary-dark);
+}
+
+.btn-small.edit {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-small.edit:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn-small.delete {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-small.delete:hover {
+  background: #c82333;
+}
+</style>
+{% endblock %}

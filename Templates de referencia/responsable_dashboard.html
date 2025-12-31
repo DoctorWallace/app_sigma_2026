@@ -1,0 +1,98 @@
+{% extends "base_generic.html" %}
+{% block title %}Panel responsable{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <h2 style="margin:0 0 8px 0;">Panel del responsable</h2>
+  <p class="muted" style="margin:0;">
+    Draft: {{ stats.draft }} · Submitted: {{ stats.submitted }} ·
+    Under review: {{ stats.under_review }} · Approved: {{ stats.approved }} · Rejected: {{ stats.rejected }}
+  </p>
+</div>
+
+<style>
+.badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:600}
+.badge.red{background:#fee2e2;color:#991b1b}
+.badge.yellow{background:#fef9c3;color:#854d0e}
+.badge.green{background:#dcfce7;color:#166534}
+</style>
+
+<div class="card">
+  <h3 style="margin-top:0;">Semáforo (nº de revisiones)</h3>
+  <div class="actions">
+    <span class="badge red">0 revisiones: {{ review_buckets.rojo_0 }}</span>
+    <span class="badge yellow">1–3 revisiones: {{ review_buckets.amarillo_1_3 }}</span>
+    <span class="badge green">≥4 revisiones (puedes decidir): {{ review_buckets.verde_4mas }}</span>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Pendientes de decisión</h3>
+  {% if pendientes %}
+  <table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr>
+        <th>ID</th><th>Título</th><th>Solicitante</th>
+        <th>Revisiones</th><th>Revisores que han valorado</th><th>Creada</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in pendientes %}
+      <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.title }}</td>
+        <td>{{ p.requester }}</td>
+        <td>
+          {% if p.num_reviews >= 4 %}
+            <span class="badge green">{{ p.num_reviews }}</span>
+          {% elif p.num_reviews >= 1 %}
+            <span class="badge yellow">{{ p.num_reviews }}</span>
+          {% else %}
+            <span class="badge red">0</span>
+          {% endif %}
+        </td>
+        <td>{{ p.reviewers_done }}</td>
+        <td>{{ p.created_at|date:"Y-m-d H:i" }}</td>
+        <td><a class="btn" href="{% url 'icts:proposal_detail' p.id %}">Ver</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">No hay solicitudes pendientes ahora mismo.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Últimas decisiones</h3>
+  {% if ultimas %}
+  <table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr><th>ID</th><th>Título</th><th>Decisión</th><th>Responsable</th><th>Fecha</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for d in ultimas %}
+      <tr>
+        <td>{{ d.id }}</td>
+        <td>{{ d.title }}</td>
+        <td>
+          {% if d.decision == 'approve' %}
+            <span class="badge green">Aprobada</span>
+          {% else %}
+            <span class="badge red">Rechazada</span>
+          {% endif %}
+        </td>
+        <td>{{ d.decider }}</td>
+        <td>{{ d.decided_at|date:"Y-m-d H:i" }}</td>
+        <td><a class="btn" href="{% url 'icts:proposal_detail' d.id %}">Ver</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">Aún no hay aprobaciones/rechazos registrados.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

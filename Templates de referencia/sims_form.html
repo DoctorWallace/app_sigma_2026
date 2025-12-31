@@ -1,0 +1,150 @@
+{% extends "base_generic.html" %}
+{% block title %}SIMS details | SIGMA-Lab{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 class="page-title">SIMS — Details for: {{ proposal.title }}</h2>
+  
+  <div class="muted" style="margin-bottom:20px">
+    <strong>REQUIREMENTS FOR SAMPLE ACCEPTANCE</strong>
+    <ul>
+      <li>Sample must be a clean, compacted, smoothy surface solid.</li>
+      <li>Minimum dimensions: 8 mm in diameter (or 8×8 mm²); Maximum dimensions 15 mm (15×15 mm²).</li>
+      <li>Sample must be accompanied with a complete and perfectly legible identification. Sample must be wrapped with a metallic paper or cloth (plastic wrapping is not recommended).</li>
+    </ul>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>SAMPLE DESCRIPTION</legend>
+      {{ sample_formset.management_form }}
+      <div id="sims-samples-container">
+        {% for form in sample_formset %}
+          <div class="card sample-row" style="margin:8px 0;padding:12px" data-index="{{ forloop.counter0 }}">
+            <div class="grid">
+              <p><label>{{ form.identification.label }}</label>{{ form.identification }}{{ form.id }}</p>
+              <p><label>{{ form.name.label }}</label>{{ form.name }}</p>
+            </div>
+            <p><label>{{ form.details.label }}</label>{{ form.details }}</p>
+            {% if form.DELETE %}
+              <label style="display:none">{{ form.DELETE }}</label>
+            {% endif %}
+            <button type="button" class="btn secondary small remove-row" style="margin-top:8px">Remove Sample</button>
+          </div>
+        {% empty %}
+        {% endfor %}
+      </div>
+      
+      <button type="button" id="sims-add-row" class="btn secondary">+ Add Sample</button>
+
+      <!-- plantilla oculta para nuevas filas -->
+      <template id="sims-empty-row">
+        <div class="card sample-row" style="margin:8px 0;padding:12px" data-index="__prefix__">
+          <div class="grid">
+            <p><label>Identification</label>{{ sample_formset.empty_form.identification.as_widget|safe }}{{ sample_formset.empty_form.id }}</p>
+            <p><label>Name</label>{{ sample_formset.empty_form.name.as_widget|safe }}</p>
+          </div>
+          <p><label>Details</label>{{ sample_formset.empty_form.details.as_widget|safe }}</p>
+          <button type="button" class="btn secondary small remove-row" style="margin-top:8px">Remove Sample</button>
+        </div>
+      </template>
+    </fieldset>
+
+    <fieldset>
+      <legend>SAMPLE SAFE HANDLING</legend>
+      <div class="grid">
+        <p>{{ form.toxic }} {{ form.toxic.label }}</p>
+        <p>{{ form.corrosive }} {{ form.corrosive.label }}</p>
+        <p>{{ form.irritating }} {{ form.irritating.label }}</p>
+        <p>{{ form.radioactive }} {{ form.radioactive.label }}</p>
+      </div>
+      <p><label>{{ form.safe_handling_comments.label }}</label>{{ form.safe_handling_comments }}</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>IMPORTANT INFORMATION</legend>
+      <div class="grid">
+        <div>
+          <p>{{ form.surface_analysis }} {{ form.surface_analysis.label }}</p>
+          <p><label>{{ form.surface_mass_range.label }}</label>{{ form.surface_mass_range }}</p>
+        </div>
+        <div>
+          <p>{{ form.profile_analysis }} {{ form.profile_analysis.label }}</p>
+          <p><label>{{ form.profile_depth_um.label }}</label>{{ form.profile_depth_um }}</p>
+        </div>
+      </div>
+      <p><label>{{ form.profile_masses.label }}</label>{{ form.profile_masses }}</p>
+      <div class="grid">
+        <p>{{ form.electrical_conducting }} {{ form.electrical_conducting.label }}</p>
+        <p>{{ form.hygroscopic }} {{ form.hygroscopic.label }}</p>
+      </div>
+      <p><label>{{ form.further_comments.label }}</label>{{ form.further_comments }}</p>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" class="btn">Save SIMS details</button>
+      <a class="btn secondary" href="{% url 'icts:proposal_edit' proposal.pk %}">Back to proposal</a>
+    </div>
+  </form>
+</div>
+
+<script>
+(function(){
+  const container = document.getElementById('sims-samples-container');
+  const addBtn = document.getElementById('sims-add-row');
+  const tmpl = document.getElementById('sims-empty-row').innerHTML;
+  const totalInput = document.querySelector('input[name="ss-TOTAL_FORMS"]');
+
+  function addRow(){
+    const idx = parseInt(totalInput.value || '0', 10);
+    const html = tmpl.replaceAll('__prefix__', idx);
+    const temp = document.createElement('div');
+    temp.innerHTML = html.trim();
+    container.appendChild(temp.firstElementChild);
+    totalInput.value = idx + 1;
+  }
+
+  function removeRow(btn){
+    const row = btn.closest('.sample-row');
+    const hiddenId = row.querySelector('input[name^="ss-"][name$="-id"]');
+    const hasPk = hiddenId && hiddenId.value;
+    if(hasPk){
+      const del = document.querySelector(`input[name="${hiddenId.name.replace('-id','-DELETE')}"]`)
+                 || row.querySelector('input[name$="-DELETE"]');
+      if(del){ del.checked = true; row.style.display = 'none'; }
+      else { row.style.display = 'none'; }
+    }else{
+      row.remove();
+      // recalcular TOTAL_FORMS con filas visibles no marcadas delete
+      const rows = Array.from(container.querySelectorAll('.sample-row')).filter(r => r.style.display !== 'none');
+      totalInput.value = rows.length;
+    }
+  }
+
+  addBtn?.addEventListener('click', addRow);
+  container.addEventListener('click', e => { if(e.target.classList.contains('remove-row')) removeRow(e.target); });
+})();
+</script>
+
+    <script>
+(function(){
+  const surf = document.getElementById('id_surface_analysis');
+  const mass = document.getElementById('id_surface_mass_range');
+  const prof = document.getElementById('id_profile_analysis');
+  const depth = document.getElementById('id_profile_depth_um');
+  const masses = document.getElementById('id_profile_masses');
+
+  function toggle(){
+    if(surf && mass){ mass.disabled = !surf.checked; }
+    if(prof){
+      if(depth) depth.disabled = !prof.checked;
+      if(masses) masses.disabled = !prof.checked;
+    }
+  }
+  [surf, prof].forEach(x => x && x.addEventListener('change', toggle));
+  toggle();
+})();
+</script>
+
+{% endblock %}

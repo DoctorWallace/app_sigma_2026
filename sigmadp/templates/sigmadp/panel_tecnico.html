@@ -1,0 +1,276 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load role_filters %}
+
+{% block title %}Panel Técnico S-DP{% endblock %}
+{% block page_title %}<i class="bi bi-speedometer"></i> Panel Técnico S-DP{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0 px-lg-3">
+  <div class="row g-3">
+    <!-- Tarjetas de resumen - Solo las principales en una fila -->
+    <div class="col-12">
+      <div class="row g-3 row-cols-3 row-cols-md-4">
+        <div class="col">
+          <div class="stat-tile bg-gradient-success">
+            <div class="stat-icon"><i class="bi bi-check2-square"></i></div>
+            <div class="stat-text">Aceptadas</div>
+            <div class="stat-value">{{ stats.aceptadas }}</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="stat-tile bg-gradient-primary">
+            <div class="stat-icon"><i class="bi bi-play-circle"></i></div>
+            <div class="stat-text">En curso</div>
+            <div class="stat-value">{{ stats.en_curso }}</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="stat-tile bg-gradient-secondary">
+            <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+            <div class="stat-text">Finalizadas</div>
+            <div class="stat-value">{{ stats.finalizadas }}</div>
+          </div>
+        </div>
+        <div class="col">
+          <a href="{% url 'sigmadp:indicadores_calidad' %}" class="stat-tile bg-gradient-info text-decoration-none">
+            <div class="stat-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <div class="stat-text">Indicadores</div>
+            <div class="stat-value"><i class="bi bi-arrow-right"></i></div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-gradient-slate text-white d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Acciones rápidas</h5>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'sigmadp:info_importante' %}" class="btn btn-outline-info btn-sm">
+              <i class="bi bi-info-circle"></i> Información importante
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-2 row-cols-1 row-cols-sm-2 row-cols-lg-6">
+            <div class="col">
+              <a href="{% url 'sigmadp:bandeja_entrada_termica' %}" class="action-chip bg-warning text-dark">
+                <i class="bi bi-inbox"></i>
+                <span>Bandeja térmicas</span>
+              </a>
+            </div>
+            <div class="col">
+              <a href="#" class="action-chip bg-warning text-dark disabled" title="Disponible próximamente">
+                <i class="bi bi-droplet-half"></i>
+                <span>Bandeja permeación</span>
+                <small class="d-block text-dark-50">Disponible próximamente</small>
+              </a>
+            </div>
+            <div class="col">
+              <a href="#" class="action-chip bg-primary text-white disabled" title="Calendario disponible próximamente">
+                <i class="bi bi-calendar-event"></i>
+                <span>Calendario de campañas</span>
+              </a>
+            </div>
+            <div class="col">
+              <a href="#" class="action-chip bg-success text-white disabled">
+                <i class="bi bi-thermometer"></i>
+                <span>Histórico térmicas</span><small class="d-block text-white-50">Disponible próximamente</small>
+              </a>
+            </div>
+            <div class="col">
+              <a href="#" class="action-chip bg-success text-white disabled">
+                <i class="bi bi-graph-up-arrow"></i>
+                <span>Histórico permeación</span><small class="d-block text-white-50">Disponible próximamente</small>
+              </a>
+            </div>
+            <div class="col">
+              <a href="{% url 'sigmadp:solicitud_unificada_create' %}" class="action-chip bg-gradient-info-alt text-white">
+                <i class="bi bi-plus-circle"></i>
+                <span>Nueva solicitud</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Listas de solicitudes -->
+    <div class="col-12 col-xl-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-gradient-warning text-dark d-flex justify-content-between align-items-center">
+          <h6 class="mb-0"><i class="bi bi-clock-history"></i> Pendientes de gestionar</h6>
+          <span class="badge bg-dark text-white">{{ solicitudes_pendientes|length }}</span>
+        </div>
+        <div class="card-body">
+          {% for solicitud in solicitudes_pendientes %}
+          <div class="request-row border-start border-warning-subtle">
+            <div class="request-info">
+              <div class="request-id">DP-T#{{ solicitud.pk }}</div>
+              <div class="request-description text-muted">{{ solicitud.nombre_muestra }}</div>
+            </div>
+            <div class="request-meta text-end">
+              <div class="small text-muted"><i class="bi bi-calendar-date"></i> {{ solicitud.creado_en|date:"d/m H:i" }}</div>
+              <div class="mt-1">
+                <a href="{% url 'sigmadp:solicitud_termica_detalle' solicitud.pk %}" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-muted text-center my-3">Todo al día por ahora.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+          <h6 class="mb-0"><i class="bi bi-activity"></i> Ensayos en curso</h6>
+          <span class="badge bg-light text-primary">{{ solicitudes_en_curso|length }}</span>
+        </div>
+        <div class="card-body">
+          {% for solicitud in solicitudes_en_curso %}
+          <div class="request-row border-start border-primary-subtle">
+            <div class="request-info">
+              <div class="request-id">DP-T#{{ solicitud.pk }}</div>
+              <div class="request-description text-muted">{{ solicitud.nombre_muestra }}</div>
+            </div>
+            <div class="request-meta text-end">
+              <div class="small text-muted"><i class="bi bi-clock"></i> {{ solicitud.actualizado_en|default:solicitud.creado_en|date:"d/m H:i" }}</div>
+              <div class="mt-1">
+                <a href="{% url 'sigmadp:solicitud_termica_detalle' solicitud.pk %}" class="btn btn-sm btn-outline-light text-primary border-primary">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-muted text-center my-3">No hay ensayos activos en este momento.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.stat-tile {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  display: block;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.stat-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+  text-decoration: none;
+  color: inherit;
+}
+.stat-tile .stat-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+.stat-tile .stat-text {
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+.stat-tile .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-top: 0.25rem;
+}
+.bg-gradient-info { background: linear-gradient(135deg, #1d4ed8, #3b82f6); color: white; }
+.bg-gradient-warning { background: linear-gradient(135deg, #d97706, #f59e0b); color: white; }
+.bg-gradient-success { background: linear-gradient(135deg, #047857, #22c55e); color: white; }
+.bg-gradient-primary { background: linear-gradient(135deg, #2563eb, #60a5fa); color: white; }
+.bg-gradient-secondary { background: linear-gradient(135deg, #334155, #64748b); color: white; }
+.bg-gradient-danger { background: linear-gradient(135deg, #b91c1c, #f87171); color: white; }
+.bg-gradient-dark { background: linear-gradient(135deg, #0f172a, #1e293b); }
+.bg-gradient-info { background: linear-gradient(135deg, #0369a1, #0ea5e9); }
+
+.action-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  justify-content: center;
+}
+.action-chip i { font-size: 1.2rem; }
+.action-chip span { white-space: nowrap; }
+.action-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.15);
+}
+
+.action-chip.disabled {
+  opacity: 0.65;
+  pointer-events: none;
+  cursor: default;
+}
+
+.request-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.03);
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.request-info .request-id {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.request-info .request-description {
+  font-size: 0.9rem;
+}
+.request-meta .btn {
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .stat-tile {
+    padding: 1rem;
+    text-align: center;
+  }
+  .stat-tile .stat-text { margin-top: 0.5rem; }
+  .action-chip { width: 100%; }
+  .request-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .request-meta { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+}
+</style>
+{% endblock %}
+
+

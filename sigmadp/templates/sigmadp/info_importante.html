@@ -1,0 +1,125 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load role_filters %}
+
+{% block title %}Información Importante S-DP{% endblock %}
+{% block page_title %}Información Importante{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Esta es la información relevante del lab SIGMA DP
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-exclamation-triangle me-2"></i>Información Importante</h5>
+                        <p class="mb-0">Aquí encontrarás toda la información relevante para el laboratorio de desorción y permeación.</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-thermometer-half me-2"></i>
+                                        Técnicas Disponibles
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>Desorción Térmica (TDS)</li>
+                                        <li><i class="bi bi-clock text-warning me-2"></i>Permeación (Próximamente)</li>
+                                        <li><i class="bi bi-clock text-warning me-2"></i>Difusión (Próximamente)</li>
+                                        <li><i class="bi bi-clock text-warning me-2"></i>Adsorción (Próximamente)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        Requisitos de Muestras
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-info-circle text-info me-2"></i>Espesor: 0.1 - 10 mm</li>
+                                        <li><i class="bi bi-info-circle text-info me-2"></i>Tamaño: mínimo 0.5 cm²</li>
+                                        <li><i class="bi bi-info-circle text-info me-2"></i>Geometría: cualquier forma</li>
+                                        <li><i class="bi bi-info-circle text-info me-2"></i>Limpieza previa recomendada</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-clock me-2"></i>
+                                        Tiempos de Procesamiento
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <strong>Análisis TDS:</strong> 3-5 días laborables
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Procesamiento datos:</strong> 1-2 días adicionales
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-lightbulb me-2"></i>
+                                        Condiciones Experimentales TDS
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <strong>Temperatura máxima:</strong> < 900°C
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Tasa calentamiento:</strong> < 15°C/min
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Tasa enfriamiento:</strong> < 15°C/min
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <strong>Masas disponibles:</strong> 2, 3, 4 uma
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Nota:</strong> Solo una masa por análisis
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

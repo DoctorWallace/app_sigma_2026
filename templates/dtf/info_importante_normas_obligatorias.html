@@ -1,0 +1,226 @@
+{% extends "base_dtf.html" %}
+{% block title %}Normas Obligatorias - Información Importante{% endblock %}
+{% block page_title %}Normas Obligatorias{% endblock %}
+
+{% block extra_css %}
+<style>
+  .section-header {
+    background: linear-gradient(135deg, #198754, #157347);
+    color: white;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2rem;
+  }
+  .section-header h3 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-header i {
+    font-size: 1.5em;
+  }
+  .section-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .section-body {
+    padding: 2rem;
+  }
+  .section-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1.5rem 2rem;
+  }
+  .alert {
+    border-radius: 0.75rem;
+    border: none;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+  }
+  .alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border-left: 4px solid #ffc107;
+  }
+  .alert-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+  }
+  .btn {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+  }
+  .btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #5c636a);
+    border: none;
+  }
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="section-card">
+    <div class="section-header">
+        <h3><i class="bi bi-file-earmark-text"></i> Normas Obligatorias</h3>
+        <div class="alert alert-success" style="background: rgba(40, 167, 69, 0.2); border: 1px solid rgba(40, 167, 69, 0.3); color: #155724; margin-top: 1rem;">
+            <i class="bi bi-check-circle"></i> Esta sección ha sido marcada como revisada
+        </div>
+    </div>
+    <div class="section-body">
+        <h4>Reglamentos y Normas que Debes Conocer</h4>
+        
+        <div class="alert alert-danger">
+            <h5><i class="bi bi-exclamation-triangle-fill"></i> Cumplimiento Obligatorio</h5>
+            <p>El incumplimiento de estas normas puede resultar en la suspensión del acceso al laboratorio y la aplicación de sanciones según la normativa vigente.</p>
+        </div>
+
+        <h5>Normativa de Seguridad Laboral</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Ley 31/1995 de Prevención de Riesgos Laborales</h6>
+                <ul>
+                    <li>Derecho a la protección de la seguridad y salud</li>
+                    <li>Obligación de cumplir las medidas preventivas</li>
+                    <li>Derecho a información y formación</li>
+                    <li>Derecho a consulta y participación</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>RD 486/1997 Lugares de Trabajo</h6>
+                <ul>
+                    <li>Condiciones de seguridad en el laboratorio</li>
+                    <li>Señalización de seguridad</li>
+                    <li>Vías de evacuación</li>
+                    <li>Condiciones ambientales</li>
+                </ul>
+            </div>
+        </div>
+
+        <h5>Normativa de Gestión de Residuos</h5>
+        <div class="alert alert-warning">
+            <h6>RD 833/1988 Residuos Peligrosos</h6>
+            <ul>
+                <li><strong>Clasificación:</strong> Identificar correctamente el tipo de residuo</li>
+                <li><strong>Almacenamiento:</strong> Usar contenedores apropiados y etiquetados</li>
+                <li><strong>Transporte:</strong> Solo personal autorizado</li>
+                <li><strong>Registro:</strong> Documentar todos los movimientos</li>
+            </ul>
+        </div>
+
+        <h5>Normativa de Productos Químicos</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <h6>REACH (Reglamento CE 1907/2006)</h6>
+                <ul>
+                    <li>Registro de sustancias químicas</li>
+                    <li>Evaluación de riesgos</li>
+                    <li>Autorización de sustancias</li>
+                    <li>Restricciones de uso</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>CLP (Reglamento CE 1272/2008)</h6>
+                <ul>
+                    <li>Clasificación y etiquetado</li>
+                    <li>Pictogramas de peligro</li>
+                    <li>Frases H y P</li>
+                    <li>Fichas de datos de seguridad</li>
+                </ul>
+            </div>
+        </div>
+
+        <h5>Normas Internas del CIEMAT</h5>
+        <div class="alert alert-info">
+            <h6><i class="bi bi-building-fill"></i> Reglamento Interno</h6>
+            <ul>
+                <li><strong>Horarios:</strong> Respetar los horarios de acceso al laboratorio</li>
+                <li><strong>Acceso:</strong> Solo personal autorizado</li>
+                <li><strong>Visitas:</strong> Las visitas deben ser autorizadas previamente</li>
+                <li><strong>Confidencialidad:</strong> Mantener la confidencialidad de la información</li>
+                <li><strong>Propiedad intelectual:</strong> Respetar los derechos de propiedad intelectual</li>
+            </ul>
+        </div>
+
+        <h5>Procedimientos de Emergencia</h5>
+        <div class="alert alert-danger">
+            <h6>Plan de Emergencia del Laboratorio</h6>
+            <ol>
+                <li><strong>Identificación de riesgos:</strong> Conocer los riesgos específicos del laboratorio</li>
+                <li><strong>Procedimientos de evacuación:</strong> Seguir las rutas de evacuación señalizadas</li>
+                <li><strong>Puntos de encuentro:</strong> Conocer los puntos de encuentro en caso de evacuación</li>
+                <li><strong>Números de emergencia:</strong> 112 (emergencias), [número interno] (laboratorio)</li>
+                <li><strong>Primeros auxilios:</strong> Ubicación del botiquín y personal formado</li>
+            </ol>
+        </div>
+
+        <h5>Responsabilidades del Usuario</h5>
+        <ul>
+            <li><strong>Cumplimiento:</strong> Respetar todas las normas y procedimientos</li>
+            <li><strong>Formación:</strong> Mantenerse actualizado en formación de seguridad</li>
+            <li><strong>Comunicación:</strong> Reportar cualquier incidencia o riesgo</li>
+            <li><strong>Colaboración:</strong> Colaborar con las inspecciones y auditorías</li>
+            <li><strong>Mejora continua:</strong> Proponer mejoras en seguridad</li>
+        </ul>
+
+        <h5>Sanciones por Incumplimiento</h5>
+        <div class="alert alert-warning">
+            <h6>Escala de Sanciones</h6>
+            <ul>
+                <li><strong>Leve:</strong> Aviso verbal y formación adicional</li>
+                <li><strong>Moderada:</strong> Suspensión temporal del acceso (1-7 días)</li>
+                <li><strong>Grave:</strong> Suspensión prolongada del acceso (1-4 semanas)</li>
+                <li><strong>Muy grave:</strong> Prohibición permanente de acceso</li>
+            </ul>
+        </div>
+
+        <div class="alert alert-success">
+            <h6><i class="bi bi-check-circle-fill"></i> Declaración de Conformidad</h6>
+            <p>Al completar esta sección, confirmas que has leído, entendido y te comprometes a cumplir todas las normas y procedimientos descritos en esta información importante.</p>
+        </div>
+    </div>
+    <div class="section-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <small class="text-muted">
+                    <i class="bi bi-info-circle"></i> Progreso: {{ secciones_completadas }}/{{ total_secciones }} secciones
+                </small>
+            </div>
+            <div>
+                <a href="{% url 'dtf:info-importante' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+                {% if completado %}
+                <a href="{% url 'sigmalab:panel-usuario' %}" class="btn btn-success btn-lg">
+                    <i class="bi bi-check-circle"></i> ¡Completar Información!
+                </a>
+                {% else %}
+                <a href="{% url 'dtf:info-importante' %}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> Ver Progreso
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

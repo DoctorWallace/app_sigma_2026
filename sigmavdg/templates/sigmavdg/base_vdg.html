@@ -1,0 +1,348 @@
+{% extends "base_icts.html" %}
+{% load static %}
+
+{% block title %}{% block vdg_page_title %}Van de Graaff (L07){% endblock %} - SIGMA ICTS{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --vdg-primary: #1f4a7a;
+    --vdg-primary-dark: #0f2a4a;
+    --vdg-primary-soft: #eef4fb;
+    --vdg-accent: #3c7bb3;
+    --vdg-success: #1f7a4d;
+    --vdg-warning: #b45309;
+    --vdg-danger: #b91c1c;
+    --vdg-muted: #64748b;
+    --vdg-border: #e2e8f0;
+    --vdg-surface: #ffffff;
+    --vdg-bg: #f8fafc;
+  }
+
+  .vdg-hero {
+    background: linear-gradient(135deg, var(--vdg-primary) 20%, var(--vdg-primary-dark) 90%);
+    color: #ffffff;
+    padding: 2rem 0;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+  }
+
+  .vdg-hero-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .vdg-hero-title {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .vdg-hero-subtitle {
+    margin-top: 0.25rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .vdg-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .vdg-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--vdg-muted);
+  }
+
+  .vdg-breadcrumbs a {
+    color: var(--vdg-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .vdg-breadcrumbs-sep {
+    color: #cbd5f5;
+  }
+
+  .vdg-card {
+    background: var(--vdg-surface);
+    border: 1px solid var(--vdg-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+  }
+
+  .vdg-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--vdg-border);
+    margin-bottom: 1.5rem;
+  }
+
+  .vdg-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--vdg-primary);
+    margin: 0;
+  }
+
+  .vdg-card-subtitle {
+    color: var(--vdg-muted);
+    font-size: 0.95rem;
+    margin-top: 0.25rem;
+  }
+
+  .vdg-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .vdg-stat-card {
+    background: var(--vdg-surface);
+    border: 1px solid var(--vdg-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.05);
+  }
+
+  .vdg-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--vdg-primary), var(--vdg-accent));
+  }
+
+  .vdg-stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--vdg-primary);
+    margin-bottom: 0.35rem;
+  }
+
+  .vdg-stat-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--vdg-muted);
+  }
+
+  .vdg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: 0.65rem;
+    border: 1px solid transparent;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+
+  .vdg-btn-primary {
+    background: var(--vdg-primary);
+    color: #ffffff;
+    border-color: var(--vdg-primary);
+  }
+
+  .vdg-btn-primary:hover {
+    background: #183a61;
+    color: #ffffff;
+  }
+
+  .vdg-btn-secondary {
+    background: #f1f5f9;
+    color: #1f2937;
+    border-color: var(--vdg-border);
+  }
+
+  .vdg-btn-secondary:hover {
+    background: #e2e8f0;
+    color: #111827;
+  }
+
+  .vdg-btn-ghost {
+    background: transparent;
+    color: var(--vdg-primary);
+    border-color: rgba(31, 74, 122, 0.3);
+  }
+
+  .vdg-btn-ghost:hover {
+    background: var(--vdg-primary-soft);
+  }
+
+  .vdg-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .vdg-table th,
+  .vdg-table td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid var(--vdg-border);
+    vertical-align: middle;
+  }
+
+  .vdg-table th {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.75rem;
+    color: var(--vdg-muted);
+    font-weight: 700;
+    background: #f4f6f9;
+  }
+
+  .vdg-table tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .vdg-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .vdg-badge--success {
+    background: rgba(31, 122, 77, 0.15);
+    color: var(--vdg-success);
+  }
+
+  .vdg-badge--warning {
+    background: rgba(180, 83, 9, 0.15);
+    color: var(--vdg-warning);
+  }
+
+  .vdg-badge--danger {
+    background: rgba(185, 28, 28, 0.15);
+    color: var(--vdg-danger);
+  }
+
+  .vdg-badge--muted {
+    background: #f1f5f9;
+    color: var(--vdg-muted);
+  }
+
+  .vdg-badge--info {
+    background: rgba(31, 74, 122, 0.12);
+    color: var(--vdg-primary);
+  }
+
+  .vdg-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.65rem;
+    border-radius: 0.6rem;
+    background: #f1f5f9;
+    color: #1f2937;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .vdg-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--vdg-muted);
+  }
+
+  .vdg-empty i {
+    font-size: 2rem;
+    color: var(--vdg-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .vdg-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .vdg-page-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
+  }
+
+  .vdg-page-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    color: var(--vdg-muted);
+    font-size: 0.95rem;
+  }
+
+  .vdg-action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .vdg-action-card {
+    border: 1px solid var(--vdg-border);
+    border-radius: 0.85rem;
+    padding: 1.2rem;
+    background: #ffffff;
+    text-decoration: none;
+    color: #1f2937;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .vdg-action-card:hover {
+    border-color: var(--vdg-primary);
+    box-shadow: 0 12px 20px rgba(15, 23, 42, 0.08);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="vdg-hero">
+  <div class="container-fluid">
+    <div class="vdg-hero-inner">
+      <div>
+        <div class="vdg-hero-title">{% block vdg_title %}Van de Graaff (L07){% endblock %}</div>
+        <div class="vdg-hero-subtitle">{% block vdg_subtitle %}Portal tecnico VDG{% endblock %}</div>
+      </div>
+      {% block vdg_hero_actions %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <main class="vdg-main">
+    {% block vdg_breadcrumbs %}{% endblock %}
+    {% block vdg_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

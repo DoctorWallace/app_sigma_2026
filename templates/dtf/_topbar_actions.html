@@ -1,0 +1,20 @@
+{% load form_extras %}
+{% if request.user.is_authenticated %}
+  <style>
+    .top-actions{display:inline-flex;gap:.5rem;align-items:center;margin-left:.5rem}
+    .chip{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .65rem;border:1px solid var(--border);border-radius:999px;text-decoration:none;color:var(--text);background:var(--bg-card)}
+    .chip:hover{background:var(--bg-main)}
+  </style>
+  <nav class="top-actions">
+    {% if request.user|has_group:'tecnico_responsable_s_lab' %}
+      <a href="{% url 'sigmalab:panel-tecnico' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% elif request.user|has_group:'tecnico_responsable_s_mec' %}
+      <a href="{% url 'mec:panel_tecnico' %}" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% else %}
+      <a href="/dtf/" class="chip"><i class="bi bi-speedometer2"></i> Mi panel</a>
+    {% endif %}
+    <a href="javascript:history.back()" class="chip"><i class="bi bi-arrow-left"></i> Atrás</a>
+    <a href="{% url 'accounts:logout' %}" class="chip"><i class="bi bi-box-arrow-right"></i> Salir</a>
+  </nav>
+{% endif %}
+

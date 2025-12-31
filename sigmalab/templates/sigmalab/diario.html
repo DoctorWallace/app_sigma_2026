@@ -1,0 +1,47 @@
+{% extends "base_dtf.html" %}
+{% block title %}Diario · Solicitud {{ solicitud.id }}{% endblock %}
+{% block page_title %}Diario de la solicitud {{ solicitud.id }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:1000px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div>
+      <strong>Estado:</strong> {{ solicitud.get_estado_display }}
+      {% if solicitud.autonomo %}<span class="chip" style="margin-left:.5rem">Usuario autónomo</span>{% endif %}
+    </div>
+    <a href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}" class="chip"><i class="bi bi-arrow-left-circle"></i> Volver</a>
+  </div>
+
+  <form method="post" class="card" style="padding:1rem">
+    {% csrf_token %}
+    <div class="form-row">
+      <div>
+        <label class="form-label">Fecha</label>
+        {{ form.fecha }}
+      </div>
+      <div>
+        <label class="form-label">Etapa</label>
+        {{ form.etapa }}
+      </div>
+    </div>
+    <div>
+      <label class="form-label">Nota</label>
+      {{ form.nota }}
+    </div>
+    <div style="margin-top:1rem"><button class="btn" type="submit">Añadir entrada</button></div>
+  </form>
+
+  <div class="card" style="margin-top:1rem">
+    <h3>Entradas</h3>
+    <ul style="list-style:none;padding:0;margin:0">
+      {% for e in entradas %}
+        <li style="padding:.75rem 0;border-bottom:1px solid var(--border)">
+          <div><strong>{{ e.fecha }}</strong> · {{ e.get_etapa_display }} - {{ e.autor.get_username }}</div>
+          <div class="muted">{{ e.nota }}</div>
+        </li>
+      {% empty %}
+        <li>No hay entradas todavía.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

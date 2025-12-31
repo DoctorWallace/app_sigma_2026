@@ -1,0 +1,98 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Registro – SIGMA DTF{% endblock %}
+{% block page_title %}Registro – SIGMA DTF{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:720px; margin:auto;">
+  <!-- Información sobre el registro -->
+  <div class="alert alert-info" style="margin-bottom:1.5rem; border-left:4px solid #0dcaf0;">
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <i class="bi bi-info-circle" style="font-size:1.5rem; color:#055160;"></i>
+      <div>
+        <h4 style="margin:0 0 0.5rem; color:#055160;">
+          <i class="bi bi-person-plus"></i> Registro Σ-SIGMA DTF
+        </h4>
+        <p style="margin:0; color:#055160;">
+          Completa todos los campos para crear tu cuenta. El <strong>número de matrícula</strong> 
+          será tu nombre de usuario para iniciar sesión.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" id="register-dtf-form" novalidate>
+    {% csrf_token %}
+
+    <div class="form-row">
+      <div>
+        <label class="form-label">Número de matrícula</label>
+        {{ form.username|form_input:"autocomplete:username" }}
+        {{ form.username.errors }}
+        <small class="text-muted">Este será tu nombre de usuario para iniciar sesión</small>
+      </div>
+      <div>
+        <label class="form-label">Correo electrónico</label>
+        {{ form.email|form_input:"autocomplete:email" }}
+        {{ form.email.errors }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label class="form-label">Nombre</label>
+        {{ form.first_name|form_input:"autocomplete:given-name" }}
+        {{ form.first_name.errors }}
+      </div>
+      <div>
+        <label class="form-label">Apellidos</label>
+        {{ form.last_name|form_input:"autocomplete:family-name" }}
+        {{ form.last_name.errors }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label class="form-label">Departamento</label>
+        {{ form.departamento|form_input }}
+        {{ form.departamento.errors }}
+      </div>
+      <div>
+        <label class="form-label">División/Unidad</label>
+        {{ form.division_unidad|form_input }}
+        {{ form.division_unidad.errors }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label class="form-label">Teléfono interno</label>
+        {{ form.telefono_interno|form_input }}
+        {{ form.telefono_interno.errors }}
+      </div>
+      <div>
+        <!-- Espacio vacío para mantener el layout -->
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label class="form-label">Contraseña</label>
+        {{ form.password1|form_input:"autocomplete:new-password" }}
+        {{ form.password1.errors }}
+      </div>
+      <div>
+        <label class="form-label">Repetir contraseña</label>
+        {{ form.password2|form_input:"autocomplete:new-password" }}
+        {{ form.password2.errors }}
+      </div>
+    </div>
+
+    <div style="margin-top:1rem; display:flex; gap:.5rem;">
+      <button class="cta" type="submit">Crear cuenta</button>
+      <a class="cta" style="background:var(--accent)" href="{% url 'accounts:login_dtf' %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

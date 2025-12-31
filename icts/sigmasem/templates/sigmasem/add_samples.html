@@ -1,0 +1,92 @@
+{% extends "sigmasem/base_sigmasem.html" %}
+
+{% block page_title %}Gestionar Muestras - {{ analysis.registration_number }}{% endblock %}
+{% block sem_page_title %}Gestionar Muestras{% endblock %}
+
+{% block sem_content %}
+<div class="container">
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">
+        Gestionar Muestras - {{ analysis.registration_number }}
+        <span class="sem-badge {% if analysis.analysis_type == 'sem' %}sem-badge-sem{% else %}sem-badge-fib{% endif %}">
+          {{ analysis.get_analysis_type_display }}
+        </span>
+      </h2>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      <!-- Muestras actuales -->
+      {% if analysis.samples_data %}
+      <div class="sem-form-group">
+        <label class="sem-form-label">Muestras Actuales</label>
+        <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+          {% for sample in analysis.samples_data %}
+            <div style="margin-bottom: 0.5rem; padding: 0.5rem; background: white; border-radius: 0.25rem; border-left: 3px solid {% if sample.source == 'proposal' %}#17a2b8{% else %}#28a745{% endif %};">
+              <strong>{{ sample.identification }}</strong> - {{ sample.name }}
+              {% if sample.source == 'proposal' %}
+                <span style="font-size: 0.8rem; color: #17a2b8;">(de propuesta)</span>
+              {% else %}
+                <span style="font-size: 0.8rem; color: #28a745;">(añadida en sesión)</span>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Muestras disponibles de la propuesta -->
+      {% if available_samples %}
+      <div class="sem-form-group">
+        <label class="sem-form-label">Muestras de la Propuesta ICTS</label>
+        <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+          {% for sample in available_samples %}
+            <div class="form-check" style="margin-bottom: 0.5rem;">
+              <input class="form-check-input" type="checkbox" name="selected_samples" value="{{ sample.id }}" id="sample_{{ sample.id }}">
+              <label class="form-check-label" for="sample_{{ sample.id }}">
+                <strong>{{ sample.identification }}</strong> - {{ sample.name }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Añadir nueva muestra -->
+      <div class="sem-form-group">
+        <label class="sem-form-label">Añadir Nueva Muestra</label>
+        <div style="background: #e8f5e8; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #28a745;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label class="sem-form-label">Identificación *</label>
+              <input type="text" name="new_sample_id" class="sem-form-control" placeholder="Ej: Muestra-001">
+            </div>
+            <div>
+              <label class="sem-form-label">Nombre *</label>
+              <input type="text" name="new_sample_name" class="sem-form-control" placeholder="Ej: Muestra de prueba">
+            </div>
+          </div>
+          <div style="margin-top: 1rem;">
+            <label class="sem-form-label">Descripción</label>
+            <textarea name="new_sample_desc" class="sem-form-control" rows="2" placeholder="Descripción de la muestra..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; text-align: center;">
+        <button type="submit" class="sem-btn sem-btn-primary">
+          <i class="bi bi-save"></i>
+          Guardar Muestras
+        </button>
+        <a href="{% url 'icts:sigmasem:analysis_detail' analysis.pk %}" class="sem-btn" style="background: #6c757d; color: white; margin-left: 1rem;">
+          <i class="bi bi-arrow-left"></i>
+          Volver al Análisis
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

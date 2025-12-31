@@ -1,0 +1,135 @@
+{% extends "base_icts.html" %}
+
+{% block title %}Configuración OLMAT{% endblock %}
+{% block page_title %}Configuración OLMAT{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h4><i class="bi bi-gear"></i> Configuración de {{ tech_name }}</h4>
+  </div>
+  <div class="card-body">
+    <p>Configura los parámetros específicos para el dispositivo OLMAT.</p>
+    
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="service_type" class="form-label">Tipo de servicio</label>
+            <select class="form-select" id="service_type" name="service_type" required>
+              <option value="">Selecciona el tipo de servicio</option>
+              <option value="technical">Servicio técnico (5.000 €)</option>
+              <option value="research">Servicio de investigación (10.305 €)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="irradiation_requirements" class="form-label">Requisitos de irradiación</label>
+            <input type="text" class="form-control" id="irradiation_requirements" name="irradiation_requirements" placeholder="Especifica los requisitos de carga de calor">
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="diagnostics_needed" class="form-label">Diagnósticos necesarios</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="thermocouples" name="diagnostics" value="thermocouples">
+              <label class="form-check-label" for="thermocouples">Termopares</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="pyrometry" name="diagnostics" value="pyrometry">
+              <label class="form-check-label" for="pyrometry">Pirometría</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="thermography" name="diagnostics" value="thermography">
+              <label class="form-check-label" for="thermography">Termografía infrarroja</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="fast_camera" name="diagnostics" value="fast_camera">
+              <label class="form-check-label" for="fast_camera">Cámara rápida</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="optical_spectroscopy" name="diagnostics" value="optical_spectroscopy">
+              <label class="form-check-label" for="optical_spectroscopy">Espectroscopia óptica</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="langmuir_probes" name="diagnostics" value="langmuir_probes">
+              <label class="form-check-label" for="langmuir_probes">Sondas Langmuir</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="sample_preparation" class="form-label">Preparación de muestras</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="liquid_metal_wetting" name="sample_prep" value="liquid_metal_wetting">
+              <label class="form-check-label" for="liquid_metal_wetting">Mojado de metal líquido</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="sample_holder_design" name="sample_prep" value="sample_holder_design">
+              <label class="form-check-label" for="sample_holder_design">Diseño de portamuestras</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="beam_usage" class="form-label">Uso de haz</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="nbi_beam" name="beam_usage" value="nbi">
+              <label class="form-check-label" for="nbi_beam">Haz NBI</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="laser_beam" name="beam_usage" value="laser">
+              <label class="form-check-label" for="laser_beam">Láser</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="both_beams" name="beam_usage" value="both">
+              <label class="form-check-label" for="both_beams">Ambos</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="preferred_dates" class="form-label">Fechas preferidas</label>
+            <input type="text" class="form-control" id="preferred_dates" name="preferred_dates" placeholder="Especifica las fechas preferidas">
+          </div>
+          
+          <div class="mb-3">
+            <label for="flexibility" class="form-label">Grado de flexibilidad</label>
+            <select class="form-select" id="flexibility" name="flexibility">
+              <option value="high">Alta flexibilidad</option>
+              <option value="medium">Flexibilidad media</option>
+              <option value="low">Baja flexibilidad</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mb-3">
+        <label for="additional_requirements" class="form-label">Requisitos adicionales</label>
+        <textarea class="form-control" id="additional_requirements" name="additional_requirements" rows="4" placeholder="Describe cualquier requisito adicional específico para tu experimento"></textarea>
+      </div>
+      
+      <div class="d-flex justify-content-between">
+        <a href="{% url 'icts:dashboard' %}" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Volver
+        </a>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check"></i> Guardar configuración
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

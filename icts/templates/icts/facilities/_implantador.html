@@ -1,0 +1,164 @@
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+<section class="container" style="margin-top:1rem;">
+  <header class="vdg-hero">
+    <img src="{{ MEDIA_URL }}facilities/Implantador.png" alt="Implantador" class="vdg-logo">
+    <div>
+      <h1 class="h4" style="margin:0;">Implantador de Iones Danfysik</h1>
+      <p class="vdg-sub">60 keV para estudios de fusión con H, He y D</p>
+    </div>
+  </header>
+
+  <!-- Imagen principal del equipo -->
+  <div class="equipment-image-container">
+    <img src="{{ MEDIA_URL }}Implantador _VdG/implantador2.png" alt="Implantador de Iones Danfysik" class="equipment-main-image">
+  </div>
+
+  <div class="vdg-grid">
+    <article class="card card-horizontal">
+      <h2>Descripción del Equipo</h2>
+      <p>
+        El <strong>implantador de iones Danfysik de 60 keV</strong> permite la implantación iónica 
+        con especies gaseosas como <strong>helio, hidrógeno y deuterio</strong>, entre otras, 
+        principalmente para estudios relacionados con la investigación de fusión.
+      </p>
+      <p>
+        El equipo del implantador ha diseñado y desarrollado una variedad de cámaras de irradiación 
+        y configuraciones experimentales adaptadas a necesidades de investigación específicas. 
+        Por ejemplo, se pueden realizar mediciones simultáneas de ionoluminiscencia y conductividad 
+        eléctrica superficial, permitiendo la correlación directa entre la degradación macroscópica 
+        del material y la generación de defectos durante la implantación.
+      </p>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Aplicaciones y Experiencias</h2>
+      <p>
+        La instalación ha sido ampliamente utilizada para implantar iones de <strong>H, He y D</strong> 
+        tanto en metales como en aislantes para la evaluación de degradación microestructural superficial, 
+        ionoluminiscencia y degradación eléctrica, así como para implantar isótopos de helio e hidrógeno 
+        para experimentos de difusión y desorción.
+      </p>
+      <p>
+        Los experimentos pueden realizarse bajo temperaturas controladas que van desde temperatura 
+        ambiente hasta <strong>800 °C</strong>. Las cámaras de irradiación especializadas y los 
+        portamuestras son diseñados por el equipo del implantador y fabricados en los talleres del 
+        CIEMAT para soportar una amplia variedad de requisitos experimentales.
+      </p>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Características Técnicas</h2>
+      <ul class="kv">
+        <li><span>Energía de implantación</span><strong>60 keV</strong></li>
+        <li><span>Especies disponibles</span><strong>H, He, D, otros gases</strong></li>
+        <li><span>Rango de temperatura</span><strong>RT – 800 °C</strong></li>
+        <li><span>Materiales objetivo</span><strong>Metales y aislantes</strong></li>
+        <li><span>Mediciones simultáneas</span><strong>Ionoluminiscencia + Conductividad</strong></li>
+        <li><span>Capacidades especiales</span><strong>Difusión y desorción</strong></li>
+        <li><span>Fabricación</span><strong>Cámaras a medida en CIEMAT</strong></li>
+      </ul>
+    </article>
+
+    <article class="card card-horizontal">
+      <h2>Investigación en Fusión</h2>
+      <p>
+        Este equipo es fundamental para la investigación en materiales para fusión, permitiendo 
+        simular las condiciones de irradiación que experimentarán los materiales en reactores 
+        de fusión. La capacidad de trabajar con isótopos de hidrógeno y helio es crucial para 
+        entender el comportamiento de los materiales bajo irradiación de partículas ligeras.
+      </p>
+      <p>
+        La flexibilidad del sistema permite adaptar las condiciones experimentales a necesidades 
+        específicas de investigación, desde estudios básicos de daño por irradiación hasta 
+        evaluaciones de materiales candidatos para aplicaciones de fusión.
+      </p>
+    </article>
+  </div>
+</section>
+
+<style>
+.vdg-hero{
+  display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;
+  padding:1.5rem; border:1px solid var(--border,#e5e7eb); border-radius:.75rem; background:var(--bg-card,#fff);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
+}
+.vdg-logo{ width:64px; height:64px; object-fit:contain; flex:0 0 auto; }
+.vdg-sub{ margin:.25rem 0 0 0; color:var(--muted,#4b5563); font-size:1.1rem; }
+
+.equipment-image-container{
+  margin-bottom:2rem; text-align:center;
+  border-radius:1rem; overflow:hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,.1);
+}
+.equipment-main-image{
+  width:100%; max-width:800px; height:auto; display:block; margin:0 auto;
+  border-radius:1rem;
+}
+
+.vdg-grid{
+  display:grid; gap:1.5rem;
+  grid-template-columns: 1fr;
+}
+.card{
+  border:1px solid var(--border,#e5e7eb);
+  border-radius:1rem; background:var(--bg-card,#fff);
+  padding:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,.15);
+}
+.card h2{ 
+  font-size:1.25rem; margin:0 0 1rem 0; 
+  color: var(--primary, #1e7e34);
+  border-bottom: 2px solid var(--primary, #1e7e34);
+  padding-bottom: 0.5rem;
+}
+.card p{
+  line-height: 1.7; margin-bottom: 1rem; color: #374151;
+}
+.card p:last-child{
+  margin-bottom: 0;
+}
+
+.kv{ 
+  list-style:none; padding:0; margin:0; display:grid; gap:.75rem; 
+}
+.kv li{ 
+  display:flex; justify-content:space-between; gap:1rem; 
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.kv li:last-child{
+  border-bottom: none;
+}
+.kv span{ 
+  color:var(--muted,#6b7280); font-weight: 500;
+}
+.kv strong{ 
+  font-weight:700; color: #111827;
+}
+
+.card-horizontal{
+  grid-column: 1 / -1;
+}
+
+@media (max-width:768px){
+  .vdg-hero{
+    flex-direction: column; text-align: center; gap: 1rem;
+  }
+  .vdg-logo{ width:80px; height:80px; }
+  .equipment-main-image{
+    border-radius: 0.5rem;
+  }
+  .kv li{ 
+    flex-direction:column; align-items:flex-start; gap: 0.25rem;
+  }
+  .card{
+    padding: 1rem;
+  }
+}
+</style>
+

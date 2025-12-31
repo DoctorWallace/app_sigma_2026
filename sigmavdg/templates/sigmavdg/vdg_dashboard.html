@@ -1,0 +1,148 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Solicitudes VDG{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Panel tecnico VDG{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_home' %}">Portal VDG</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>Solicitudes de analisis</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-stat-grid">
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ in_progress_count }}</div>
+    <div class="vdg-stat-label">Sesiones en curso</div>
+  </div>
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ completed_count }}</div>
+    <div class="vdg-stat-label">Sesiones completadas</div>
+  </div>
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ accepted_proposals|length }}</div>
+    <div class="vdg-stat-label">Propuestas aceptadas</div>
+  </div>
+  <div class="vdg-stat-card">
+    <div class="vdg-stat-number">{{ sessions|length }}</div>
+    <div class="vdg-stat-label">Sesiones registradas</div>
+  </div>
+</div>
+
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Propuestas aceptadas</h2>
+      <div class="vdg-card-subtitle">Solicitudes ICTS disponibles para crear sesion VDG.</div>
+    </div>
+  </div>
+
+  {% if accepted_proposals %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Codigo acceso</th>
+            <th>Titulo</th>
+            <th>Solicitante</th>
+            <th>Fecha</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for proposal in accepted_proposals %}
+            <tr>
+              <td>#{{ proposal.id }}</td>
+              <td>{{ proposal.access_code|default:"-" }}</td>
+              <td>{{ proposal.title|default:"(Sin titulo)" }}</td>
+              <td>{{ proposal.applicant.get_full_name|default:proposal.applicant.username }}</td>
+              <td>{{ proposal.created_at|date:"d/m/Y" }}</td>
+              <td>
+                <form method="post" action="{% url 'sigmavdg:vdg_create_session_from_proposal' proposal.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="vdg-btn vdg-btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Crear sesion
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vdg-empty">
+      <i class="bi bi-inbox"></i>
+      <div>No hay propuestas aceptadas disponibles.</div>
+      <small>Cuando se aprueben solicitudes VDG apareceran aqui.</small>
+    </div>
+  {% endif %}
+</div>
+
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Sesiones VDG</h2>
+      <div class="vdg-card-subtitle">Seguimiento de lotes en curso y completados.</div>
+    </div>
+  </div>
+
+  {% if sessions %}
+    <div class="table-responsive">
+      <table class="vdg-table">
+        <thead>
+          <tr>
+            <th>Lote</th>
+            <th>Propuesta</th>
+            <th>Estado</th>
+            <th>Muestras</th>
+            <th>Creada</th>
+            <th>Finalizacion</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in sessions %}
+            <tr>
+              <td><strong>{{ session.lot_code }}</strong></td>
+              <td>{{ session.access_proposal.title|default:"-" }}</td>
+              <td>
+                {% if session.status == "completed" %}
+                  <span class="vdg-badge vdg-badge--success">Completada</span>
+                {% else %}
+                  <span class="vdg-badge vdg-badge--warning">En curso</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="vdg-chip">{{ session.sample_count }}</span>
+                {% if session.extra_samples %}
+                  <span class="vdg-badge vdg-badge--warning">+{{ session.extra_samples }} no declaradas</span>
+                {% endif %}
+              </td>
+              <td>{{ session.created_at|date:"d/m/Y H:i" }}</td>
+              <td>{{ session.completed_at|date:"d/m/Y"|default:"-" }}</td>
+              <td>
+                <a class="vdg-btn vdg-btn-ghost" href="{% url 'sigmavdg:vdg_session_detail' session.pk %}">
+                  <i class="bi bi-eye"></i>
+                  Ver sesion
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vdg-empty">
+      <i class="bi bi-clipboard-x"></i>
+      <div>No hay sesiones registradas.</div>
+      <small>Crea una sesion desde una propuesta aceptada para empezar.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base_icts.html" %}
+{% load widget_tweaks %}
+{% load form_extras %}
+
+{% block title %}Iniciar sesión · SIGMA ICTS{% endblock %}
+{% block page_title %}<span id="ictsLoginClock" class="clock" style="font-size:1.1rem"></span>{% endblock %}
+
+{% block extra_css %}
+<style>
+  .login-wrap{display:flex;justify-content:center}
+  .login-form{ width:100%; max-width:460px; background:var(--bg-card); border:1px solid var(--border); border-radius:1rem; padding:2rem; box-shadow:var(--shadow); }
+  .form-group{margin-bottom:1.1rem}
+  .form-label{display:block; font-weight:700; margin-bottom:.35rem}
+  .form-input{ width:100%; padding:.75rem 1rem; border:2px solid var(--border); border-radius:.6rem; font-size:1rem; transition:border-color .2s, box-shadow .2s; }
+  .form-input:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(26,54,93,.1)}
+  .btn-main{ width:100%; background:var(--primary); color:#fff; border:0; border-radius:.6rem; padding:.7rem 1.1rem; font-weight:800; box-shadow:var(--shadow); }
+  .alert{padding:1rem; border-radius:.6rem; margin-bottom:1rem}
+  .alert-danger{background:#fee; border:1px solid #fcc; color:#c33}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+  <div class="login-form">
+    <div class="text-center" style="margin-bottom:1rem">
+      <img src="/media/Logos/logo_sigma.png" alt="SIGMA ICTS" style="height:100px; margin-bottom:.5rem">
+      <h2 style="color:var(--primary); font-weight:800; margin:0;">Iniciar sesión</h2>
+      <p class="text-muted" style="margin:.25rem 0 0">División de Tecnologías para la Fusión</p>
+    </div>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.username.id_for_label }}">👤 Usuario</label>
+        {% render_field form.username class="form-input" placeholder="Usuario" autocomplete="username" %}
+        {% if form.username.errors %}
+          <div style="color:#c33; font-size:.875rem; margin-top:.25rem">{{ form.username.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.password.id_for_label }}">🔒 Contraseña</label>
+        {% render_field form.password class="form-input" placeholder="Contraseña" autocomplete="current-password" %}
+        {% if form.password.errors %}
+          <div style="color:#c33; font-size:.875rem; margin-top:.25rem">{{ form.password.errors }}</div>
+        {% endif %}
+      </div>
+
+      <input type="hidden" name="next" value="{{ next }}">
+      <button type="submit" class="btn-main">➡️ Iniciar sesión</button>
+
+      <div style="margin-top:.75rem; display:flex; gap:.75rem; flex-wrap:wrap;">
+        <a class="small" href="{% url 'accounts:password_reset' %}?brand=icts">¿Olvidaste la contraseña?</a>
+        <a href="/icts/register/" class="link">Registrar nuevo usuario</a>
+      </div>
+    </form>
+
+    <div class="text-center" style="margin-top:1rem">
+      <a href="/" style="text-decoration:none; font-weight:700; color:var(--text-secondary)">← Volver al Portal</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Función para actualizar el reloj de login
+  function updateLoginClock() {
+    const clockElement = document.getElementById('ictsLoginClock');
+    if (!clockElement) return;
+    
+    const now = new Date();
+    const timeString = now.toLocaleString('es-ES', { 
+      dateStyle: 'full', 
+      timeStyle: 'medium' 
+    });
+    
+    clockElement.textContent = timeString;
+  }
+  
+  // Actualizar inmediatamente y luego cada segundo
+  updateLoginClock();
+  setInterval(updateLoginClock, 1000);
+</script>
+{% endblock %}

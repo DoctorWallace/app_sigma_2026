@@ -1,0 +1,36 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}{{ section_title }}{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}{{ section_title }}{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{{ section_title }}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">{{ section_title }}</h2>
+      <div class="lo3-card-subtitle">{{ section_subtitle }}</div>
+    </div>
+    <span class="lo3-badge lo3-badge--muted">En preparación</span>
+  </div>
+  <p>{{ section_description }}</p>
+  {% if section_notes %}
+    <div class="lo3-card" style="margin-top: 1.5rem;">
+      <div class="lo3-card-title" style="font-size: 1rem;">Próximos pasos</div>
+      <ul style="margin-top: 0.75rem;">
+        {% for note in section_notes %}
+          <li>{{ note }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

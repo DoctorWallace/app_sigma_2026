@@ -1,0 +1,384 @@
+{% extends "mec/base_mec.html" %}
+{% load static %}
+
+{% block title %}Indicadores de Calidad - Sigma MEC{% endblock %}
+
+{% block content %}
+<style>
+    :root{
+        --success:#28a745; --warning:#ffc107; --danger:#dc3545;
+    }
+
+    /* Base neutra: que .btn no "imponga" blanco */
+    .btn, .cta{
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border:1px solid var(--border);
+    }
+    .btn:hover{ background:#f1f5f9; color:var(--text-primary) }
+
+    /* Variante principal utilizada en el markup */
+    .btn-primary{
+        background: var(--primary-dark);
+        border-color: var(--primary-dark);
+        color:#fff;
+    }
+    .btn-primary:hover{ background:#0f4a1f }
+
+    /* Secundaria ya definida por ti */
+    .btn-secondary{ background: var(--accent); border-color: var(--accent); color:#fff }
+    .btn-secondary:hover{ background: var(--accent-light) }
+
+    /* Variantes outline que usas en los filtros */
+    .btn-outline-primary{
+        background: transparent; color: var(--primary-dark); border:1px solid var(--primary-dark);
+    }
+    .btn-outline-primary:hover{ background: rgba(21,93,39,.08) }
+
+    .btn-outline-success{
+        background: transparent; color: var(--success); border:1px solid var(--success);
+    }
+    .btn-outline-success:hover{ background: rgba(40,167,69,.1) }
+
+    .btn-outline-warning{
+        background: transparent; color: var(--warning); border:1px solid var(--warning);
+    }
+    .btn-outline-warning:hover{ background: rgba(255,193,7,.12) }
+
+    .btn-outline-danger{
+        background: transparent; color: var(--danger); border:1px solid var(--danger);
+    }
+    .btn-outline-danger:hover{ background: rgba(220,53,69,.1) }
+
+    .btn-outline-secondary{
+        background: transparent; color: var(--text-secondary); border:1px solid var(--border);
+    }
+    .btn-outline-secondary:hover{ background: rgba(108,117,125,.1) }
+
+    /* Estados de indicadores */
+    .cumple-indicador{ color: var(--success); font-weight: 700; }
+    .no-cumple-indicador{ color: var(--danger); font-weight: 700; }
+    .sin-datos{ color: var(--text-light); font-style: italic; }
+
+    /* Cards más compactas */
+    .estadistica-card {
+        padding: 1rem;
+        text-align: center;
+        border-radius: 0.75rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+    
+    .indicador-card {
+        margin-bottom: 1rem;
+        border-radius: 0.75rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+    
+    .indicador-card .card-header {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+    
+    .indicador-card .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Tabla más compacta */
+    .table-responsive {
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+    
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table th {
+        background: var(--primary-dark);
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .table td {
+        padding: 0.75rem;
+        border-color: var(--border);
+        vertical-align: middle;
+    }
+    
+    .table tbody tr:hover {
+        background: rgba(21,93,39,.05);
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-graph-up-arrow text-primary"></i>
+                        Indicadores de Calidad
+                    </h1>
+                    <p class="text-muted mb-0">Sistema de gestión de calidad para análisis mecánicos</p>
+                </div>
+                <div>
+                    <a href="{% url 'mec:panel_tecnico' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver al Panel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Generales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card estadistica-card">
+                <div class="card-body text-center">
+                    <div class="estadistica-valor">{{ total_solicitudes }}</div>
+                    <div class="estadistica-label">Total Solicitudes</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card estadistica-card">
+                <div class="card-body text-center">
+                    <div class="estadistica-valor">{{ solicitudes_con_i1 }}</div>
+                    <div class="estadistica-label">Con I1 Calculado</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card estadistica-card">
+                <div class="card-body text-center">
+                    <div class="estadistica-valor">{{ solicitudes_con_i2 }}</div>
+                    <div class="estadistica-label">Con I2 Calculado</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card estadistica-card">
+                <div class="card-body text-center">
+                    <div class="estadistica-valor">{{ solicitudes_cumplen_i1|add:solicitudes_cumplen_i2 }}</div>
+                    <div class="estadistica-label">Cumplen Objetivos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promedios Generales -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card indicador-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock"></i>
+                        I1: Tiempo de Ejecución del Análisis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Promedio General:</strong><br>
+                            {% if promedio_i1 %}
+                                <span class="{% if promedio_i1 < 5 %}cumple-indicador{% else %}no-cumple-indicador{% endif %}">
+                                    {{ promedio_i1|floatformat:2 }} días
+                                </span>
+                            {% else %}
+                                <span class="sin-datos">Sin datos</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <strong>Valor de Referencia:</strong><br>
+                            <span class="text-muted">&lt; 5 días</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <strong>Ecuación:</strong> Fecha finalización - Fecha recepción
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card indicador-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-earmark-text"></i>
+                        I2: Tiempo de Entrega del Informe
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Promedio General:</strong><br>
+                            {% if promedio_i2 %}
+                                <span class="{% if promedio_i2 < 3 %}cumple-indicador{% else %}no-cumple-indicador{% endif %}">
+                                    {{ promedio_i2|floatformat:2 }} días
+                                </span>
+                            {% else %}
+                                <span class="sin-datos">Sin datos</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <strong>Valor de Referencia:</strong><br>
+                            <span class="text-muted">&lt; 3 días</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <strong>Ecuación:</strong> Fecha entrega informe - Fecha finalización
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Filtros</h5>
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="year" class="form-label">Año</label>
+                            <select name="year" id="year" class="form-select">
+                                <option value="">Todos los años</option>
+                                {% for year in years %}
+                                    <option value="{{ year }}" {% if year|stringformat:"s" == request.GET.year %}selected{% endif %}>
+                                        {{ year }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select name="estado" id="estado" class="form-select">
+                                <option value="">Todos los estados</option>
+                                <option value="finalizada" {% if request.GET.estado == "finalizada" %}selected{% endif %}>Finalizada</option>
+                                <option value="en_curso" {% if request.GET.estado == "en_curso" %}selected{% endif %}>En Curso</option>
+                                <option value="aceptada" {% if request.GET.estado == "aceptada" %}selected{% endif %}>Aceptada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="material" class="form-label">Material</label>
+                            <input type="text" name="material" id="material" class="form-control" 
+                                   value="{{ request.GET.material }}" placeholder="Buscar por material...">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Filtrar
+                                </button>
+                                <a href="{% url 'mec:indicadores_calidad' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> Limpiar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Solicitudes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul"></i>
+                        Solicitudes ({{ solicitudes|length }})
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Material</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Recepción</th>
+                                    <th>Fecha Finalización</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>I1 (días)</th>
+                                    <th>I2 (días)</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for solicitud in solicitudes %}
+                                <tr>
+                                    <td><strong>MEC-{{ solicitud.id }}</strong></td>
+                                    <td>{{ solicitud.material|truncatechars:30 }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if solicitud.estado == 'finalizada' %}success{% elif solicitud.estado == 'en_curso' %}warning{% elif solicitud.estado == 'aceptada' %}info{% else %}secondary{% endif %}">
+                                            {{ solicitud.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ solicitud.creado_en|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if solicitud.fecha_finalizacion %}
+                                            {{ solicitud.fecha_finalizacion|date:"d/m/Y" }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if solicitud.fecha_entrega_informe %}
+                                            {{ solicitud.fecha_entrega_informe|date:"d/m/Y" }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if solicitud.i1_tiempo_ejecucion %}
+                                            <span class="{% if solicitud.i1_tiempo_ejecucion < 5 %}cumple-indicador{% else %}no-cumple-indicador{% endif %}">
+                                                {{ solicitud.i1_tiempo_ejecucion|floatformat:1 }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if solicitud.i2_tiempo_entrega %}
+                                            <span class="{% if solicitud.i2_tiempo_entrega < 3 %}cumple-indicador{% else %}no-cumple-indicador{% endif %}">
+                                                {{ solicitud.i2_tiempo_entrega|floatformat:1 }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'mec:solicitud_detalle' solicitud.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox"></i> No hay solicitudes que coincidan con los filtros
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

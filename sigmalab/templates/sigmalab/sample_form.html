@@ -1,0 +1,16 @@
+{% extends "base_dtf.html" %}
+{% block title %}Nueva muestra{% endblock %}
+{% block page_title %}Nueva muestra{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:720px;">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="margin-top:1rem;">
+      <button class="cta" type="submit">Guardar</button>
+      <a class="cta" style="background:var(--accent)" href="{% url 'sigmalab:sample-list' %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

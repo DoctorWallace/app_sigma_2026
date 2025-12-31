@@ -1,0 +1,93 @@
+{% extends "base_dtf.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-undo me-2"></i>{{ titulo }}
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Información del préstamo -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Información del Préstamo</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Equipo:</strong> {{ prestamo.equipo.nombre }}</p>
+                                    <p><strong>Código:</strong> {{ prestamo.equipo.codigo }}</p>
+                                    <p><strong>Fecha Préstamo:</strong> {{ prestamo.fecha_prestamo|date:"d/m/Y H:i" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Días Solicitados:</strong> {{ prestamo.dias_prestamo }}</p>
+                                    <p><strong>Fecha Devolución:</strong> {{ prestamo.fecha_devolucion_estimada|date:"d/m/Y H:i" }}</p>
+                                    {% if prestamo.esta_vencido %}
+                                    <p class="text-danger">
+                                        <strong>Estado:</strong> 
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        Vencido ({{ prestamo.dias_vencido }} días de retraso)
+                                    </p>
+                                    {% else %}
+                                    <p class="text-success">
+                                        <strong>Días Restantes:</strong> {{ prestamo.dias_restantes }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if prestamo.proposito_uso %}
+                            <div class="mt-3">
+                                <strong>Propósito del Uso:</strong>
+                                <p class="mt-1">{{ prestamo.proposito_uso }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones_devolucion.id_for_label }}" class="form-label">
+                                {{ form.observaciones_devolucion.label }}
+                            </label>
+                            {{ form.observaciones_devolucion|add_class:"form-control" }}
+                            {% if form.observaciones_devolucion.errors %}
+                                <div class="text-danger">{{ form.observaciones_devolucion.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                Describe el estado del equipo al devolverlo (opcional).
+                            </div>
+                        </div>
+                        
+                        {% if prestamo.esta_vencido %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Préstamo vencido:</strong> Este préstamo está vencido. 
+                            La devolución tardía puede afectar tu capacidad de solicitar nuevos préstamos.
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'sigmalab:mis_prestamos' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-undo me-1"></i>Confirmar Devolución
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,370 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+
+{% block title %}Nueva Solicitud S-MEC{% endblock %}
+{% block page_title %}Nueva Solicitud S-MEC{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-section h3 {
+    margin: 0 0 1rem 0;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 0.5rem;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .checkbox-group input[type="checkbox"] {
+    transform: scale(1.2);
+  }
+  .conditional-fields {
+    display: none;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  .conditional-fields.show {
+    display: block;
+  }
+  .muestra-names {
+    background: #e3f2fd;
+    border: 1px solid #2196f3;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .muestra-names h4 {
+    margin: 0 0 1rem 0;
+    color: #1976d2;
+  }
+  .muestra-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .muestra-item input {
+    flex: 1;
+  }
+  .btn-add-muestra {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  .btn-add-muestra:hover {
+    background: #45a049;
+  }
+  .btn-remove {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+  .btn-remove:hover {
+    background: #da190b;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para mostrar/ocultar campos condicionales
+    function toggleConditionalFields(checkboxId, fieldsId) {
+        const checkbox = document.getElementById(checkboxId);
+        const fields = document.getElementById(fieldsId);
+        
+        if (checkbox && fields) {
+            function updateVisibility() {
+                if (checkbox.checked) {
+                    fields.classList.add('show');
+                } else {
+                    fields.classList.remove('show');
+                }
+            }
+            
+            checkbox.addEventListener('change', updateVisibility);
+            updateVisibility(); // Estado inicial
+        }
+    }
+    
+    // Activar campos condicionales
+    toggleConditionalFields('id_ensayo_dureza', 'dureza-fields');
+    toggleConditionalFields('id_ensayo_traccion', 'traccion-fields');
+    toggleConditionalFields('id_ensayo_fatiga', 'fatiga-fields');
+    toggleConditionalFields('id_ensayo_creep_fatiga', 'creep-fatiga-fields');
+    
+    // Gestión de nombres de muestras
+    let muestraCounter = 1;
+    
+    function addMuestraField() {
+        const container = document.getElementById('muestra-names-container');
+        const div = document.createElement('div');
+        div.className = 'muestra-item';
+        div.innerHTML = `
+            <input type="text" name="muestra_nombre_${muestraCounter}" class="form-input" placeholder="Nombre de la muestra ${muestraCounter}">
+            <button type="button" class="btn-remove" onclick="removeMuestraField(this)">✕</button>
+        `;
+        container.appendChild(div);
+        muestraCounter++;
+    }
+    
+    window.addMuestraField = addMuestraField;
+    window.removeMuestraField = function(button) {
+        button.parentElement.remove();
+    };
+    
+    // Añadir campo inicial si no hay ninguno
+    const container = document.getElementById('muestra-names-container');
+    if (container.children.length === 0) {
+        addMuestraField();
+    }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <form method="post" id="mec-solicitud-form">
+    {% csrf_token %}
+    
+    <!-- Datos Generales -->
+    <div class="form-section">
+      <h3>📋 Datos Generales</h3>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Material *</label>
+          {{ form.material|form_input }}
+          {{ form.material.errors }}
+        </div>
+        <div>
+          <label class="form-label">Procedencia *</label>
+          {{ form.procedencia|form_input }}
+          {{ form.procedencia.errors }}
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Número de muestras a ensayar *</label>
+          {{ form.numero_muestras|form_input }}
+          {{ form.numero_muestras.errors }}
+        </div>
+      </div>
+      <div class="form-row full">
+        <div>
+          <label class="form-label">Tratamientos</label>
+          {{ form.tratamientos|form_input }}
+          {{ form.tratamientos.errors }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Denominación de Muestras -->
+    <div class="form-section">
+      <h3>🏷️ Denominación de las Muestras</h3>
+      <div class="muestra-names">
+        <h4>Nombres de las muestras (opcional)</h4>
+        <div id="muestra-names-container">
+          <!-- Los campos se añaden dinámicamente -->
+        </div>
+        <button type="button" class="btn-add-muestra" onclick="addMuestraField()">
+          ➕ Añadir nombre de muestra
+        </button>
+      </div>
+    </div>
+
+    <!-- Ensayos -->
+    <div class="form-section">
+      <h3>🔬 Ensayos a Realizar</h3>
+      
+      <!-- Dureza -->
+      <div class="checkbox-group">
+        {{ form.ensayo_dureza }}
+        <label for="id_ensayo_dureza"><strong>Dureza</strong></label>
+      </div>
+      <div id="dureza-fields" class="conditional-fields">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Carga</label>
+            {{ form.dureza_carga|form_input }}
+            {{ form.dureza_carga.errors }}
+          </div>
+          <div>
+            <label class="form-label">Número de huellas - Filas</label>
+            {{ form.dureza_huellas_filas|form_input }}
+            {{ form.dureza_huellas_filas.errors }}
+          </div>
+          <div>
+            <label class="form-label">Número de huellas - Columnas</label>
+            {{ form.dureza_huellas_columnas|form_input }}
+            {{ form.dureza_huellas_columnas.errors }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracción -->
+      <div class="checkbox-group">
+        {{ form.ensayo_traccion }}
+        <label for="id_ensayo_traccion"><strong>Tracción</strong></label>
+      </div>
+      <div id="traccion-fields" class="conditional-fields">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Temperatura por muestra</label>
+            {{ form.traccion_temperatura|form_input }}
+            {{ form.traccion_temperatura.errors }}
+          </div>
+          <div>
+            <label class="form-label">Velocidad de deformación (s⁻¹)</label>
+            {{ form.traccion_velocidad_deformacion|form_input }}
+            {{ form.traccion_velocidad_deformacion.errors }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Diámetro</label>
+            {{ form.traccion_diametro|form_input }}
+            {{ form.traccion_diametro.errors }}
+          </div>
+          <div>
+            <label class="form-label">Longitud entre acuerdos</label>
+            {{ form.traccion_longitud_marca|form_input }}
+            {{ form.traccion_longitud_marca.errors }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Fatiga -->
+      <div class="checkbox-group">
+        {{ form.ensayo_fatiga }}
+        <label for="id_ensayo_fatiga"><strong>Fatiga</strong></label>
+      </div>
+      <div id="fatiga-fields" class="conditional-fields">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Temperatura</label>
+            {{ form.fatiga_temperatura|form_input }}
+            {{ form.fatiga_temperatura.errors }}
+          </div>
+          <div>
+            <label class="form-label">% Deformación</label>
+            {{ form.fatiga_porcentaje_deformacion|form_input }}
+            {{ form.fatiga_porcentaje_deformacion.errors }}
+          </div>
+          <div>
+            <label class="form-label">Frecuencia</label>
+            {{ form.fatiga_frecuencia|form_input }}
+            {{ form.fatiga_frecuencia.errors }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">ε máxima</label>
+            {{ form.fatiga_eps_max|form_input }}
+            {{ form.fatiga_eps_max.errors }}
+          </div>
+          <div>
+            <label class="form-label">ε mínima</label>
+            {{ form.fatiga_eps_min|form_input }}
+            {{ form.fatiga_eps_min.errors }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Creep-Fatiga -->
+      <div class="checkbox-group">
+        {{ form.ensayo_creep_fatiga }}
+        <label for="id_ensayo_creep_fatiga"><strong>Creep-Fatiga</strong></label>
+      </div>
+      <div id="creep-fatiga-fields" class="conditional-fields">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Temperatura</label>
+            {{ form.creep_temperatura|form_input }}
+            {{ form.creep_temperatura.errors }}
+          </div>
+          <div>
+            <label class="form-label">% Deformación</label>
+            {{ form.creep_porcentaje_deformacion|form_input }}
+            {{ form.creep_porcentaje_deformacion.errors }}
+          </div>
+          <div>
+            <label class="form-label">Frecuencia</label>
+            {{ form.creep_frecuencia|form_input }}
+            {{ form.creep_frecuencia.errors }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">ε máxima</label>
+            {{ form.creep_eps_max|form_input }}
+            {{ form.creep_eps_max.errors }}
+          </div>
+          <div>
+            <label class="form-label">ε mínima</label>
+            {{ form.creep_eps_min|form_input }}
+            {{ form.creep_eps_min.errors }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Tiempo de mantenimiento a carga/deformación máxima/mínima</label>
+            {{ form.creep_tiempo_mantenimiento_s|form_input }}
+            {{ form.creep_tiempo_mantenimiento_s.errors }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="form-section">
+      <h3>📝 Anotaciones</h3>
+      <div class="form-row full">
+        <div>
+          <label class="form-label">Observaciones adicionales (Preparación autónoma)</label>
+          {{ form.observaciones|form_input }}
+          {{ form.observaciones.errors }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+      <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+        📤 Enviar Solicitud
+      </button>
+      <a href="{% url 'mec:panel_usuario' %}" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+        ↩️ Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

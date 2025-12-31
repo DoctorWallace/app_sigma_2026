@@ -1,0 +1,35 @@
+{% extends "sigmavdg/base_vdg.html" %}
+
+{% block vdg_page_title %}Crear sesion VDG{% endblock %}
+{% block vdg_title %}Van de Graaff (L07){% endblock %}
+{% block vdg_subtitle %}Nueva sesion VDG{% endblock %}
+
+{% block vdg_breadcrumbs %}
+<div class="vdg-breadcrumbs">
+  <a href="{% url 'sigmavdg:vdg_dashboard' %}">Solicitudes de analisis</a>
+  <span class="vdg-breadcrumbs-sep">/</span>
+  <span>Crear sesion</span>
+</div>
+{% endblock %}
+
+{% block vdg_content %}
+<div class="vdg-card">
+  <div class="vdg-card-header">
+    <div>
+      <h2 class="vdg-card-title">Crear sesion VDG</h2>
+      <div class="vdg-card-subtitle">Selecciona una propuesta aceptada para abrir el lote.</div>
+    </div>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      {{ form.access_proposal.label_tag }}
+      {{ form.access_proposal }}
+    </div>
+    <button type="submit" class="vdg-btn vdg-btn-primary">
+      <i class="bi bi-plus-circle"></i>
+      Crear sesion
+    </button>
+  </form>
+</div>
+{% endblock %}

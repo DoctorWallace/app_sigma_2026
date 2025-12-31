@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decision de Propuesta</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #1a365d; color: white; padding: 20px; text-align: center; }
+    .content { padding: 20px; background: #f9f9f9; }
+    .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }
+    .btn { display: inline-block; padding: 10px 20px; background: #1a365d; color: white; text-decoration: none; border-radius: 5px; }
+    .note { background: #ffffff; border-left: 4px solid #1a365d; padding: 12px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>SIGMA ICTS</h1>
+      <p>Decision de Propuesta</p>
+    </div>
+
+    <div class="content">
+      <h2>Hola {{ proposal.applicant.first_name }},</h2>
+
+      <p>Tu propuesta <strong>"{{ proposal.title }}"</strong> ha recibido una decision.</p>
+
+      <p><strong>Estado:</strong> {{ proposal.get_status_display }}</p>
+
+      {% if proposal.status == 'changes_requested' and proposal.responsable_comment %}
+      <p><strong>Comentario del responsable:</strong></p>
+      <div class="note">{{ proposal.responsable_comment|linebreaksbr }}</div>
+      {% endif %}
+
+      <p style="text-align: center; margin: 30px 0;">
+        <a href="{{ site_url }}/icts/proposal/{{ proposal.pk }}/" class="btn">Ver Propuesta</a>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>Este es un mensaje automatico del sistema SIGMA ICTS.</p>
+      <p>Si tienes alguna pregunta, contacta con nosotros en sigma@ciemat.es</p>
+    </div>
+  </div>
+</body>
+</html>

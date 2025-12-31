@@ -1,0 +1,156 @@
+{% extends "base_icts.html" %}
+
+{% block title %}Panel OLMAT{% endblock %}
+{% block page_title %}Panel técnico OLMAT{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <div class="text-muted">Propuestas aceptadas</div>
+        <div class="display-6">{{ stats.accepted_proposals }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <div class="text-muted">Pendientes sin solicitud</div>
+        <div class="display-6">{{ stats.pending_proposals }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <div class="text-muted">Solicitudes OLMAT</div>
+        <div class="display-6">{{ stats.total_requests }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <div class="text-muted">Solicitudes pendientes</div>
+        <div class="display-6">{{ stats.pending_requests }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h5 class="mb-0"><i class="bi bi-bell"></i> Propuestas aceptadas con OLMAT</h5>
+    <span class="badge bg-primary">Sin solicitud</span>
+  </div>
+  <div class="card-body">
+    {% if pending_proposals %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Propuesta</th>
+              <th>Solicitante</th>
+              <th>Fecha</th>
+              <th>Accion</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in pending_proposals %}
+              <tr>
+                <td>
+                  <strong>{{ p.title|truncatechars:60 }}</strong><br>
+                  <small class="text-muted">ID {{ p.id }}</small>
+                </td>
+                <td>
+                  {{ p.applicant.get_full_name|default:p.applicant.username }}<br>
+                  <small class="text-muted">{{ p.applicant.email }}</small>
+                </td>
+                <td>{{ p.created_at|date:"d/m/Y" }}</td>
+                <td>
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'icts:proposal_detail' p.id %}">
+                    <i class="bi bi-eye"></i> Ver propuesta
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">No hay propuestas aceptadas pendientes de solicitud OLMAT.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h5 class="mb-0"><i class="bi bi-list-ul"></i> Solicitudes OLMAT recientes</h5>
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'icts:olmat_requests_list' %}"><i class="bi bi-box-arrow-up-right"></i> Ver todas</a>
+  </div>
+  <div class="card-body">
+    {% if olmat_requests %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Propuesta</th>
+              <th>Solicitante</th>
+              <th>Servicio</th>
+              <th>Estado</th>
+              <th>Código</th>
+              <th>Fecha</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in olmat_requests %}
+              <tr>
+                <td>
+                  <strong>{{ r.proposal.title|truncatechars:60 }}</strong><br>
+                  <small class="text-muted">ID {{ r.proposal.id }}</small>
+                </td>
+                <td>
+                  {{ r.proposal.applicant.get_full_name|default:r.proposal.applicant.username }}<br>
+                  <small class="text-muted">{{ r.proposal.applicant.email }}</small>
+                </td>
+                <td>
+                  <span class="badge {% if r.service_type == 'technical' %}bg-info{% else %}bg-warning{% endif %}">
+                    {{ r.get_service_type_display }}
+                  </span>
+                </td>
+              <td>
+                <span class="badge {% if r.status == 'approved' %}bg-success{% elif r.status == 'rejected' %}bg-danger{% elif r.status == 'pending' %}bg-secondary{% else %}bg-primary{% endif %}">
+                  {{ r.get_status_display }}
+                </span>
+              </td>
+              <td>
+                {% if r.access_code %}
+                  <span class="badge bg-dark">{{ r.access_code }}</span>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td>{{ r.created_at|date:"d/m/Y" }}</td>
+              <td>
+                <div class="btn-group">
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'icts:olmat_request_detail' r.id %}">
+                    <i class="bi bi-eye"></i>
+                    </a>
+                    <a class="btn btn-sm btn-outline-success" href="{% url 'icts:olmat_request_evaluate' r.id %}">
+                      <i class="bi bi-clipboard-check"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">No hay solicitudes OLMAT registradas.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Iniciar Ensayo Térmico DP-T#{{ solicitud.pk }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-play-circle"></i>
+                        Iniciar Ensayo Térmico DP-T#{{ solicitud.pk }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Resumen de la solicitud -->
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> Parámetros del Ensayo</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Muestra:</strong> {{ solicitud.nombre_muestra }}</p>
+                                <p><strong>Material:</strong> {{ solicitud.material }}</p>
+                                <p><strong>Temperatura máxima:</strong> {{ solicitud.temperatura_maxima }}ºC</p>
+                                <p><strong>Tasa de calentamiento:</strong> {{ solicitud.tasa_calentamiento }}ºC/min</p>
+                                <p><strong>Tasa de enfriamiento:</strong> {{ solicitud.tasa_enfriamiento }}ºC/min</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Tiempo de permanencia:</strong> {{ solicitud.tiempo_permanencia }} min</p>
+                                <p><strong>Masa a registrar:</strong> {{ solicitud.get_masa_registrar_display }}</p>
+                                <p><strong>Espesor:</strong> {{ solicitud.espesor_muestra }} mm</p>
+                                <p><strong>Tamaño:</strong> {{ solicitud.tamaño_muestra }} cm²</p>
+                                <p><strong>Geometría:</strong> {{ solicitud.geometria_muestra }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmación -->
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Confirmación</h5>
+                        <p>¿Estás seguro de que quieres <strong>iniciar</strong> este ensayo térmico?</p>
+                        <p>Al iniciar el ensayo:</p>
+                        <ul>
+                            <li>El estado cambiará a "En Curso"</li>
+                            <li>El solicitante será notificado</li>
+                            <li>Podrás proceder con el análisis térmico</li>
+                            <li>Una vez completado, podrás subir los resultados</li>
+                        </ul>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-play"></i>
+                                Sí, Iniciar Ensayo
+                            </button>
+                            <a href="{% url 'sigmadp:bandeja_entrada_termica' %}" class="btn btn-secondary btn-lg ml-2">
+                                <i class="fas fa-arrow-left"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Resultados LO3{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Resultados y avisos de sesiones completadas{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  {% if lo3_is_tech %}
+    <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+    <span class="lo3-breadcrumbs-sep">/</span>
+  {% endif %}
+  <span>Resultados</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Resultados LO3</h2>
+      <div class="lo3-card-subtitle">Registro de ensayos y avisos PDF disponibles.</div>
+    </div>
+  </div>
+
+  {% if sessions %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Lote</th>
+            <th>Solicitud</th>
+            <th>Propuesta</th>
+            <th>Finalización</th>
+            <th>Muestras</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in sessions %}
+            <tr>
+              <td><strong>{{ session.lot_code }}</strong></td>
+              <td>{{ session.access_proposal.access_code|default:"-" }}</td>
+              <td>{{ session.access_proposal.title|default:"(Sin título)" }}</td>
+              <td>{{ session.completion_date|date:"d/m/Y"|default:"-" }}</td>
+              <td>
+                <span class="lo3-chip">{{ session.sample_count }}</span>
+                {% if session.extra_samples %}
+                  <span class="lo3-badge lo3-badge--warning">+{{ session.extra_samples }} no declaradas</span>
+                {% endif %}
+              </td>
+              <td>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                  <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:mcf_session_detail' session.pk %}">
+                    <i class="bi bi-eye"></i>
+                    Ver sesión
+                  </a>
+                  {% if session.notice_pdf %}
+                    <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_notice_download' session.pk %}">
+                      <i class="bi bi-file-earmark-pdf"></i>
+                      Aviso PDF
+                    </a>
+                  {% endif %}
+                  {% if session.final_report_pdf %}
+                    <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_final_report_download' session.pk %}">
+                      <i class="bi bi-file-earmark-pdf"></i>
+                      Informe final PDF
+                    </a>
+                  {% else %}
+                    <span class="lo3-badge lo3-badge--muted">Informe final pendiente</span>
+                  {% endif %}
+                  <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:mcf_export_excel' session.pk %}">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    Registro Excel
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-clipboard-x"></i>
+      <div>No hay resultados LO3 disponibles.</div>
+      <small>Las sesiones completadas aparecerán aquí con sus avisos PDF.</small>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

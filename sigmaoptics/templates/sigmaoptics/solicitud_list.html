@@ -1,0 +1,159 @@
+{% extends "sigmaoptics/base_optics.html" %}
+
+{% block optics_page_title %}Solicitudes - Sigma Optics{% endblock %}
+
+{% block optics_content %}
+<div class="container">
+  <!-- Filtros -->
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Filtros</h2>
+    </div>
+    <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+      <div class="optics-form-group" style="margin-bottom: 0;">
+        <label class="optics-form-label">Estado</label>
+        <select name="estado" class="optics-form-control" style="width: 150px;">
+          <option value="">Todos</option>
+          <option value="pendiente" {% if estado_filter == 'pendiente' %}selected{% endif %}>Pendiente</option>
+          <option value="aceptada" {% if estado_filter == 'aceptada' %}selected{% endif %}>Aceptada</option>
+          <option value="rechazada" {% if estado_filter == 'rechazada' %}selected{% endif %}>Rechazada</option>
+          <option value="en_curso" {% if estado_filter == 'en_curso' %}selected{% endif %}>En Curso</option>
+          <option value="finalizada" {% if estado_filter == 'finalizada' %}selected{% endif %}>Finalizada</option>
+        </select>
+      </div>
+      <div class="optics-form-group" style="margin-bottom: 0;">
+        <label class="optics-form-label">Tipo de Medida</label>
+        <select name="medidas_realizar" class="optics-form-control" style="width: 150px;">
+          <option value="">Todos</option>
+          <option value="uv_vis" {% if tipo_filter == 'uv_vis' %}selected{% endif %}>UV – VIS</option>
+          <option value="ftir" {% if tipo_filter == 'ftir' %}selected{% endif %}>FTIR</option>
+        </select>
+      </div>
+      <div class="optics-form-group" style="margin-bottom: 0;">
+        <label class="optics-form-label">Búsqueda</label>
+        <input type="text" name="search" class="optics-form-control" style="width: 200px;" 
+               placeholder="Buscar por material..." value="{{ search }}">
+      </div>
+      <button type="submit" class="optics-btn optics-btn-primary">
+        <i class="bi bi-search"></i>
+        Filtrar
+      </button>
+      <a href="{% url 'sigmaoptics:solicitud_list' %}" class="optics-btn optics-btn-secondary">
+        <i class="bi bi-x-circle"></i>
+        Limpiar
+      </a>
+    </form>
+  </div>
+
+  <!-- Lista de solicitudes -->
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">Solicitudes de Análisis Óptico</h2>
+    </div>
+    
+    {% if page_obj %}
+    <div class="table-responsive">
+      <table class="optics-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Material</th>
+            <th>Solicitante</th>
+            <th>Medidas</th>
+            <th>Elemento</th>
+            <th>Nº Muestras</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in page_obj %}
+          <tr>
+            <td><strong>OPT-{{ solicitud.id }}</strong></td>
+            <td>{{ solicitud.material|truncatechars:30 }}</td>
+            <td>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</td>
+            <td>
+              <span class="optics-badge {% if solicitud.medidas_realizar == 'uv_vis' %}optics-badge-primary{% else %}optics-badge-info{% endif %}">
+                {{ solicitud.get_medidas_realizar_display }}
+              </span>
+            </td>
+            <td>
+              {% if solicitud.elemento %}
+                <span class="optics-badge optics-badge-secondary">{{ solicitud.get_elemento_display }}</span>
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
+            <td>{{ solicitud.numero_muestras }}</td>
+            <td>
+              <span class="optics-badge optics-badge-{{ solicitud.estado }}">
+                {{ solicitud.get_estado_display }}
+              </span>
+            </td>
+            <td>{{ solicitud.creado_en|date:"d/m/Y" }}</td>
+            <td>
+              <a href="{% url 'sigmaoptics:solicitud_detail' solicitud.pk %}" 
+                 class="optics-btn optics-btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                <i class="bi bi-eye"></i>
+                Ver
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Paginación" style="margin-top: 2rem;">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if tipo_filter %}&medidas_realizar={{ tipo_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+              <i class="bi bi-chevron-double-left"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if tipo_filter %}&medidas_realizar={{ tipo_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+        {% endif %}
+
+        <li class="page-item active">
+          <span class="page-link">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+          </span>
+        </li>
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if tipo_filter %}&medidas_realizar={{ tipo_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if estado_filter %}&estado={{ estado_filter }}{% endif %}{% if tipo_filter %}&medidas_realizar={{ tipo_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+              <i class="bi bi-chevron-double-right"></i>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div style="text-align: center; padding: 2rem; color: #6c757d;">
+      <p>No hay solicitudes que coincidan con los filtros seleccionados.</p>
+      <a href="{% url 'sigmaoptics:solicitud_create' %}" class="optics-btn optics-btn-primary">
+        <i class="bi bi-plus-circle"></i>
+        Crear Nueva Solicitud
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

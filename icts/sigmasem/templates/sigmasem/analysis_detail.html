@@ -1,0 +1,435 @@
+{% extends "sigmasem/base_sigmasem.html" %}
+
+{% block page_title %}Detalle del Análisis{% endblock %}
+{% block sem_page_title %}Detalle del Análisis{% endblock %}
+
+{% block sem_content %}
+<div class="container">
+  <!-- Información principal del análisis -->
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">
+        {{ analysis.registration_number }} - {{ analysis.sample_names }}
+        <span class="sem-badge {% if analysis.analysis_type == 'sem' %}sem-badge-sem{% else %}sem-badge-fib{% endif %}">
+          {{ analysis.get_analysis_type_display }}
+        </span>
+        <span class="sem-badge {% if analysis.session_status == 'completed' %}sem-badge-success{% else %}sem-badge-warning{% endif %}">
+          {{ analysis.get_session_status_display }}
+        </span>
+      </h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+      <!-- Columna izquierda -->
+      <div>
+        <div class="sem-form-group">
+          <label class="sem-form-label">Propuesta ICTS</label>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
+            <strong>#{{ analysis.access_proposal.id }}</strong> - {{ analysis.access_proposal.title }}
+            <br>
+            <code style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 0.25rem; margin-top: 0.5rem; display: inline-block;">
+              {{ analysis.access_proposal.access_code }}
+            </code>
+          </div>
+        </div>
+
+        <div class="sem-form-group">
+          <label class="sem-form-label">Muestras Asociadas</label>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
+            {% if analysis.samples_data %}
+              {% for sample in analysis.samples_data %}
+                <div style="margin-bottom: 0.5rem; padding: 0.5rem; background: white; border-radius: 0.25rem; border-left: 3px solid {% if sample.source == 'proposal' %}#17a2b8{% else %}#28a745{% endif %};">
+                  <strong>{{ sample.identification }}</strong> - {{ sample.name }}
+                  {% if sample.source == 'proposal' %}
+                    <span style="font-size: 0.8rem; color: #17a2b8;">(de propuesta)</span>
+                  {% else %}
+                    <span style="font-size: 0.8rem; color: #28a745;">(añadida en sesión)</span>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% else %}
+              <em style="color: #6c757d;">No hay muestras asociadas</em>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="sem-form-group">
+          <label class="sem-form-label">Fechas</label>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
+            <strong>Análisis:</strong> {{ analysis.analysis_date|date:"d/m/Y" }}<br>
+            {% if analysis.completion_date %}
+              <strong>Finalización:</strong> {{ analysis.completion_date|date:"d/m/Y" }}
+            {% else %}
+              <strong>Finalización:</strong> <span style="color: #ffc107;">En proceso</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha -->
+      <div>
+        <div class="sem-form-group">
+          <label class="sem-form-label">Personas Involucradas</label>
+          <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
+            <strong>Cliente:</strong> {{ analysis.client }}<br>
+            <strong>Técnico:</strong> {{ analysis.technician.get_full_name|default:analysis.technician.username }}
+          </div>
+        </div>
+
+        <div class="sem-form-group">
+          <label class="sem-form-label">Código del Informe</label>
+          <div style="background: #e9ecef; padding: 0.75rem; border-radius: 0.5rem;">
+            <code style="font-size: 1.1rem; font-weight: 700;">{{ analysis.report_code }}</code>
+          </div>
+        </div>
+
+        <div class="sem-form-group">
+          <label class="sem-form-label">Estado</label>
+          <div>
+            {% if analysis.completion_date %}
+              <span class="sem-badge sem-badge-success">Completado</span>
+            {% else %}
+              <span class="sem-badge sem-badge-warning">En Proceso</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Características y observaciones -->
+    {% if analysis.sample_characteristics or analysis.client_requirements or analysis.observations %}
+    <div style="margin-top: 2rem;">
+      <h3 style="color: var(--sem-primary); margin-bottom: 1rem;">Detalles del Análisis</h3>
+      
+      {% if analysis.sample_characteristics %}
+      <div class="sem-form-group">
+        <label class="sem-form-label">Características de la Muestra</label>
+        <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
+          {{ analysis.sample_characteristics }}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if analysis.client_requirements %}
+      <div class="sem-form-group">
+        <label class="sem-form-label">Requerimientos del Cliente</label>
+        <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
+          {{ analysis.client_requirements }}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if analysis.observations %}
+      <div class="sem-form-group">
+        <label class="sem-form-label">Observaciones del Técnico</label>
+        <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
+          {{ analysis.observations }}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if analysis.session_comments %}
+      <div class="sem-form-group">
+        <label class="sem-form-label">Comentarios de la Sesión</label>
+        <div style="background: #e3f2fd; padding: 0.75rem; border-radius: 0.5rem; border-left: 4px solid #2196f3;">
+          {{ analysis.session_comments }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Muestras adicionales -->
+  {% if additional_samples %}
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Muestras Adicionales</h2>
+    </div>
+    
+    <div class="table-responsive">
+      <table class="sem-table">
+        <thead>
+          <tr>
+            <th>Identificación</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha de Agregado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in additional_samples %}
+          <tr>
+            <td><strong>{{ sample.identification }}</strong></td>
+            <td>{{ sample.name }}</td>
+            <td>{{ sample.description|default:"-" }}</td>
+            <td>{{ sample.created_at|date:"d/m/Y H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Gestión de archivos -->
+  <div class="sem-card" id="files-section">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Archivos del Informe</h2>
+    </div>
+    
+    <!-- Zona de drag & drop -->
+    <div id="drop-zone" style="border: 2px dashed #ccc; border-radius: 0.5rem; padding: 2rem; text-align: center; margin-bottom: 2rem; background: #f8f9fa; transition: all 0.3s ease;">
+      <div style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;">
+        <i class="bi bi-cloud-upload"></i>
+      </div>
+      <h4 style="color: #6c757d; margin-bottom: 0.5rem;">Arrastra archivos aquí o haz clic para seleccionar</h4>
+      <p style="color: #6c757d; margin: 0; font-size: 0.9rem;">
+        Formatos permitidos: JPG, PNG, TIFF, DOC, DOCX
+      </p>
+      <input type="file" id="file-input" multiple accept=".jpg,.jpeg,.png,.tiff,.tif,.doc,.docx" style="display: none;">
+    </div>
+    
+    <!-- Lista de archivos -->
+    <div id="files-list">
+      {% if analysis.report_files %}
+        {% for file in analysis.report_files %}
+        <div class="file-item" data-file-path="{{ file.path }}" style="display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem;">
+          <div style="display: flex; align-items: center;">
+            <div style="font-size: 1.5rem; margin-right: 1rem;">
+              {% if file.type == 'image' %}
+                <i class="bi bi-image" style="color: #17a2b8;"></i>
+              {% else %}
+                <i class="bi bi-file-earmark-text" style="color: #6c757d;"></i>
+              {% endif %}
+            </div>
+            <div>
+              <div style="font-weight: 600; color: var(--sem-primary);">
+                {{ file.name }}
+              </div>
+              <div style="font-size: 0.9rem; color: #6c757d;">
+                {{ file.size }} | {{ file.modified }}
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <a href="{% url 'icts:sigmasem:download_file' analysis.pk %}?path={{ file.path }}" class="sem-btn sem-btn-info" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+              <i class="bi bi-download"></i>
+            </a>
+            <button onclick="deleteFile('{{ file.path }}')" class="sem-btn" style="background: #dc3545; color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align: center; color: #6c757d; font-style: italic; padding: 2rem;">
+          No hay archivos subidos aún
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Comentarios de sesión (solo si está en progreso) -->
+  {% if analysis.session_status == 'in_progress' %}
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Comentarios de la Sesión</h2>
+    </div>
+    <form method="post" action="{% url 'icts:sigmasem:update_session_comments' analysis.pk %}">
+      {% csrf_token %}
+      <div class="sem-form-group">
+        <label class="sem-form-label">Observaciones y comentarios durante la sesión</label>
+        <textarea name="session_comments" class="sem-form-control" rows="4" placeholder="Añade comentarios, observaciones o notas durante la sesión...">{{ analysis.session_comments }}</textarea>
+      </div>
+      <div style="text-align: center;">
+        <button type="submit" class="sem-btn sem-btn-info">
+          <i class="bi bi-save"></i>
+          Guardar Comentarios
+        </button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- Acciones -->
+  <div class="sem-card">
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      {% if analysis.session_status == 'in_progress' %}
+        <a href="{% url 'icts:sigmasem:add_samples_to_analysis' analysis.pk %}" class="sem-btn sem-btn-primary">
+          <i class="bi bi-plus-circle"></i>
+          Gestionar Muestras
+        </a>
+        <a href="{% url 'icts:sigmasem:finish_session' analysis.pk %}" class="sem-btn sem-btn-success">
+          <i class="bi bi-check-circle"></i>
+          Finalizar Sesión
+        </a>
+      {% else %}
+        <a href="{% url 'icts:sigmasem:add_samples_to_analysis' analysis.pk %}" class="sem-btn sem-btn-secondary">
+          <i class="bi bi-eye"></i>
+          Ver Muestras
+        </a>
+        <a href="{% url 'icts:sigmasem:generate_report_pdf' analysis.pk %}" class="sem-btn" style="background: #dc3545; color: white;">
+          <i class="bi bi-file-earmark-pdf"></i>
+          Generar Informe PDF
+        </a>
+      {% endif %}
+      
+      <a href="#files-section" class="sem-btn sem-btn-warning" onclick="document.getElementById('files-section').scrollIntoView({behavior: 'smooth'})">
+        <i class="bi bi-cloud-upload"></i>
+        Subir Archivos
+      </a>
+      <a href="{% url 'icts:sigmasem:analysis_list' %}" class="sem-btn" style="background: #6c757d; color: white;">
+        <i class="bi bi-list-ul"></i>
+        Volver a la Lista
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+  const filesList = document.getElementById('files-list');
+  
+  // Eventos de drag & drop
+  dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropZone.style.borderColor = '#007bff';
+    dropZone.style.backgroundColor = '#e3f2fd';
+  });
+  
+  dropZone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    dropZone.style.borderColor = '#ccc';
+    dropZone.style.backgroundColor = '#f8f9fa';
+  });
+  
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropZone.style.borderColor = '#ccc';
+    dropZone.style.backgroundColor = '#f8f9fa';
+    
+    const files = e.dataTransfer.files;
+    uploadFiles(files);
+  });
+  
+  // Click en la zona de drop
+  dropZone.addEventListener('click', function() {
+    fileInput.click();
+  });
+  
+  // Selección de archivos
+  fileInput.addEventListener('change', function() {
+    uploadFiles(this.files);
+  });
+  
+  // Función para subir archivos
+  function uploadFiles(files) {
+    if (files.length === 0) return;
+    
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append(`file_${i}`, files[i]);
+    }
+    
+    // Mostrar indicador de carga
+    dropZone.innerHTML = `
+      <div style="font-size: 2rem; color: #007bff; margin-bottom: 1rem;">
+        <i class="bi bi-hourglass-split"></i>
+      </div>
+      <h4 style="color: #007bff;">Subiendo archivos...</h4>
+    `;
+    
+    fetch(`{% url 'icts:sigmasem:upload_files' analysis.pk %}`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Recargar la página para mostrar los nuevos archivos
+        location.reload();
+      } else {
+        alert('Error al subir archivos: ' + (data.error || 'Error desconocido'));
+        // Restaurar la zona de drop
+        restoreDropZone();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al subir archivos');
+      restoreDropZone();
+    });
+  }
+  
+  // Función para restaurar la zona de drop
+  function restoreDropZone() {
+    dropZone.innerHTML = `
+      <div style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;">
+        <i class="bi bi-cloud-upload"></i>
+      </div>
+      <h4 style="color: #6c757d; margin-bottom: 0.5rem;">Arrastra archivos aquí o haz clic para seleccionar</h4>
+      <p style="color: #6c757d; margin: 0; font-size: 0.9rem;">
+        Formatos permitidos: JPG, PNG, TIFF, DOC, DOCX
+      </p>
+      <input type="file" id="file-input" multiple accept=".jpg,.jpeg,.png,.tiff,.tif,.doc,.docx" style="display: none;">
+    `;
+    
+    // Reconfigurar eventos
+    const newFileInput = document.getElementById('file-input');
+    newFileInput.addEventListener('change', function() {
+      uploadFiles(this.files);
+    });
+  }
+});
+
+// Función para eliminar archivos
+function deleteFile(filePath) {
+  if (!confirm('¿Estás seguro de que quieres eliminar este archivo?')) {
+    return;
+  }
+  
+  fetch(`{% url 'icts:sigmasem:delete_file' analysis.pk %}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+    },
+    body: JSON.stringify({
+      file_path: filePath
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Eliminar el elemento de la lista
+      const fileItem = document.querySelector(`[data-file-path="${filePath}"]`);
+      if (fileItem) {
+        fileItem.remove();
+      }
+      
+      // Si no hay más archivos, mostrar mensaje
+      const filesList = document.getElementById('files-list');
+      if (filesList.children.length === 0) {
+        filesList.innerHTML = `
+          <div style="text-align: center; color: #6c757d; font-style: italic; padding: 2rem;">
+            No hay archivos subidos aún
+          </div>
+        `;
+      }
+    } else {
+      alert('Error al eliminar archivo: ' + (data.error || 'Error desconocido'));
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error al eliminar archivo');
+  });
+}
+</script>
+{% endblock %}

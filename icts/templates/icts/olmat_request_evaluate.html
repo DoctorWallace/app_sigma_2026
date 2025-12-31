@@ -1,0 +1,88 @@
+{% extends "base_icts.html" %}
+
+{% block title %}Evaluar solicitud OLMAT{% endblock %}
+{% block page_title %}Evaluar solicitud OLMAT{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h4><i class="bi bi-clipboard-check"></i> Evaluar solicitud OLMAT</h4>
+    <p class="mb-0">Propuesta: <strong>{{ olmat_request.proposal.title }}</strong></p>
+  </div>
+  <div class="card-body">
+    <!-- Información de la solicitud -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <h6>Información de la solicitud</h6>
+        <ul class="list-unstyled">
+          <li><strong>Solicitante:</strong> {{ olmat_request.proposal.applicant.get_full_name|default:olmat_request.proposal.applicant.username }}</li>
+          <li><strong>Tipo de servicio:</strong> {{ olmat_request.get_service_type_display }}</li>
+          <li><strong>Coste base:</strong> {{ olmat_request.base_cost }} €</li>
+          <li><strong>Estado actual:</strong> {{ olmat_request.get_status_display }}</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h6>Detalles técnicos</h6>
+        {% if olmat_request.diagnostics_needed %}
+          <p><strong>Diagnósticos:</strong> {{ olmat_request.diagnostics_needed|join:", " }}</p>
+        {% endif %}
+        {% if olmat_request.beam_usage %}
+          <p><strong>Uso de haz:</strong> {{ olmat_request.beam_usage|join:", " }}</p>
+        {% endif %}
+        {% if olmat_request.preferred_dates %}
+          <p><strong>Fechas preferidas:</strong> {{ olmat_request.preferred_dates }}</p>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Formulario de evaluación -->
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.status.id_for_label }}" class="form-label">Estado de la solicitud *</label>
+            {{ form.status }}
+            <div class="form-text">Selecciona el estado final de la solicitud</div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.estimated_cost.id_for_label }}" class="form-label">Coste estimado (€)</label>
+            {{ form.estimated_cost }}
+            <div class="form-text">Deja vacío para usar el coste base ({{ olmat_request.base_cost }} €)</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mb-3">
+        <label for="{{ form.evaluation_notes.id_for_label }}" class="form-label">Notas de evaluación *</label>
+        {{ form.evaluation_notes }}
+        <div class="form-text">Proporciona comentarios detallados sobre la evaluación de la solicitud</div>
+      </div>
+      
+      <div class="alert alert-info">
+        <h6><i class="bi bi-info-circle"></i> Información sobre los estados</h6>
+        <ul class="mb-0">
+          <li><strong>Pendiente:</strong> Solicitud recibida, pendiente de evaluación</li>
+          <li><strong>En revisión:</strong> Solicitud siendo evaluada por el equipo técnico</li>
+          <li><strong>Aprobado:</strong> Solicitud aprobada para ejecución</li>
+          <li><strong>Rechazado:</strong> Solicitud rechazada por motivos técnicos o de disponibilidad</li>
+          <li><strong>Completado:</strong> Servicio ejecutado y finalizado</li>
+        </ul>
+      </div>
+      
+      <div class="d-flex justify-content-between">
+        <a href="{% url 'icts:olmat_request_detail' olmat_request.id %}" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Volver a la solicitud
+        </a>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check"></i> Guardar evaluación
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

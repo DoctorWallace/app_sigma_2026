@@ -1,0 +1,34 @@
+{% extends "base_dtf.html" %}
+{% block title %}Bandeja del técnico{% endblock %}
+{% block page_title %}Bandeja del técnico{% endblock %}
+{% block content %}
+<div class="card">
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem">
+    {% with se=selected_estado %}
+      <a class="chip" href="?" style="{% if not se %}background:#e6fffa;border-color:#b2f5ea{% endif %}">Todas</a>
+      <a class="chip" href="?estado=pendiente" style="{% if se == 'pendiente' %}background:#fff3cd;border-color:#ffe69c{% endif %}">Pendientes</a>
+      <a class="chip" href="?estado=en_curso" style="{% if se == 'en_curso' %}background:#cff4fc;border-color:#b6effb{% endif %}">En curso</a>
+      <a class="chip" href="?estado=aceptada" style="{% if se == 'aceptada' %}background:#d1e7dd;border-color:#badbcc{% endif %}">Aceptadas</a>
+      <a class="chip" href="?estado=rechazada" style="{% if se == 'rechazada' %}background:#f8d7da;border-color:#f5c2c7{% endif %}">Rechazadas</a>
+      <a class="chip" href="?estado=finalizada" style="{% if se == 'finalizada' %}background:#e2e3e5;border-color:#d3d6d8{% endif %}">Finalizadas</a>
+    {% endwith %}
+  </div>
+  <h2 style="margin:0 0 .75rem">Solicitudes en curso</h2>
+  <div class="list" style="display:flex;flex-direction:column;gap:.5rem">
+    {% for s in solicitudes %}
+      <div class="item" style="display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:.5rem;padding:.6rem 1rem;background:var(--bg-card)">
+        <div>
+          <a class="recent-title" href="{% url 'sigmalab:detalle-solicitud' s.pk %}">SOL#{{ s.pk }}</a>
+          <span class="badge" style="margin-left:.5rem">{{ s.get_estado_display }}</span>
+          <div class="muted">{{ s.creado_en|date:"Y-m-d H:i" }} · {{ s.solicitante.username }}</div>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <a class="btn" href="{% url 'sigmalab:detalle-solicitud' s.pk %}"><i class="bi bi-eye"></i> Ver</a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="muted">No hay solicitudes.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

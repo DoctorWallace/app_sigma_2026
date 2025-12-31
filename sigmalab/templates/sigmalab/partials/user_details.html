@@ -1,0 +1,238 @@
+<div class="detail-section">
+  <h4>Información personal</h4>
+  <div class="detail-grid">
+    <div class="detail-item">
+      <div class="detail-label">Nombre completo</div>
+      <div class="detail-value">{{ user.first_name }} {{ user.last_name|default:user.username }}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email</div>
+      <div class="detail-value">{{ user.email }}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Usuario</div>
+      <div class="detail-value">{{ user.username }}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Fecha de registro</div>
+      <div class="detail-value">{{ user.date_joined|date:"d/m/Y H:i" }}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Último acceso</div>
+      <div class="detail-value">{{ user.last_login|date:"d/m/Y H:i"|default:"Nunca" }}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Estado de cuenta</div>
+      <div class="detail-value">
+        {% if user.is_active %}
+          <span class="badge badge-success">Activa</span>
+        {% else %}
+          <span class="badge badge-danger">Inactiva</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if profile %}
+<div class="detail-section">
+  <h4>Perfil DTF</h4>
+  <div class="detail-grid">
+    <div class="detail-item">
+      <div class="detail-label">Tipo de usuario</div>
+      <div class="detail-value">
+        {% if profile.is_ciemat %}
+          <span class="badge badge-info">CIEMAT</span>
+        {% else %}
+          <span class="badge badge-secondary">Externo</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if profile.departamento %}
+    <div class="detail-item">
+      <div class="detail-label">Departamento</div>
+      <div class="detail-value">{{ profile.departamento }}</div>
+    </div>
+    {% endif %}
+    {% if profile.division_unidad %}
+    <div class="detail-item">
+      <div class="detail-label">División/Unidad</div>
+      <div class="detail-value">{{ profile.division_unidad }}</div>
+    </div>
+    {% endif %}
+    {% if profile.matricula %}
+    <div class="detail-item">
+      <div class="detail-label">Matrícula</div>
+      <div class="detail-value">{{ profile.matricula }}</div>
+    </div>
+    {% endif %}
+    {% if profile.telefono_interno %}
+    <div class="detail-item">
+      <div class="detail-label">Teléfono interno</div>
+      <div class="detail-value">{{ profile.telefono_interno }}</div>
+    </div>
+    {% endif %}
+    <div class="detail-item">
+      <div class="detail-label">Información importante completada</div>
+      <div class="detail-value">
+        {% if profile.info_importante_completada %}
+          <span class="badge badge-success">Sí</span>
+        {% else %}
+          <span class="badge badge-warning">No</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-section">
+  <h4>Estado de restricciones</h4>
+  <div class="detail-grid">
+    <div class="detail-item">
+      <div class="detail-label">S-LAB</div>
+      <div class="detail-value">
+        {% if profile.acceso_s_lab_restringido %}
+          <span class="badge badge-danger">Restringido</span>
+          {% if profile.motivo_restriccion %}
+            <br><small class="text-muted">{{ profile.motivo_restriccion }}</small>
+          {% endif %}
+        {% else %}
+          <span class="badge badge-success">Activo</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">S-MEC</div>
+      <div class="detail-value">
+        {% if profile.acceso_s_mec_restringido %}
+          <span class="badge badge-danger">Restringido</span>
+        {% else %}
+          <span class="badge badge-success">Activo</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if profile.restriccion_fecha %}
+    <div class="detail-item">
+      <div class="detail-label">Fecha de restricción</div>
+      <div class="detail-value">{{ profile.restriccion_fecha|date:"d/m/Y H:i" }}</div>
+    </div>
+    {% endif %}
+    {% if profile.restriccion_por %}
+    <div class="detail-item">
+      <div class="detail-label">Restringido por</div>
+      <div class="detail-value">{{ profile.restriccion_por.first_name }} {{ profile.restriccion_por.last_name }}</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<div class="detail-section">
+  <h4>Estadísticas de solicitudes</h4>
+  <div class="detail-grid">
+    <div class="detail-item">
+      <div class="detail-label">Total solicitudes</div>
+      <div class="detail-value">{{ stats_solicitudes.total }}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Pendientes</div>
+      <div class="detail-value">
+        <span class="badge badge-warning">{{ stats_solicitudes.pendientes }}</span>
+      </div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Aceptadas</div>
+      <div class="detail-value">
+        <span class="badge badge-info">{{ stats_solicitudes.aceptadas }}</span>
+      </div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">En curso</div>
+      <div class="detail-value">
+        <span class="badge badge-info">{{ stats_solicitudes.en_curso }}</span>
+      </div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Finalizadas</div>
+      <div class="detail-value">
+        <span class="badge badge-success">{{ stats_solicitudes.finalizadas }}</span>
+      </div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Rechazadas</div>
+      <div class="detail-value">
+        <span class="badge badge-danger">{{ stats_solicitudes.rechazadas }}</span>
+      </div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Anuladas</div>
+      <div class="detail-value">
+        <span class="badge badge-secondary">{{ stats_solicitudes.anuladas }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if solicitudes %}
+<div class="detail-section">
+  <h4>Solicitudes recientes</h4>
+  <div class="requests-list">
+    {% for solicitud in solicitudes %}
+    <div class="request-item">
+      <div class="request-info">
+        <div class="request-title">SOL#{{ solicitud.pk }} - {{ solicitud.material|default:"Sin material" }}</div>
+        <div class="request-meta">
+          {{ solicitud.creado_en|date:"d/m/Y H:i" }} · 
+          <span class="badge badge-{% if solicitud.estado == 'pendiente' %}warning{% elif solicitud.estado == 'aceptada' or solicitud.estado == 'en_curso' %}info{% elif solicitud.estado == 'finalizada' %}success{% elif solicitud.estado == 'rechazada' %}danger{% else %}secondary{% endif %}">
+            {{ solicitud.get_estado_display }}
+          </span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if info_importante %}
+<div class="detail-section">
+  <h4>Información importante de acceso</h4>
+  <div class="detail-grid">
+    <div class="detail-item">
+      <div class="detail-label">Estado</div>
+      <div class="detail-value">
+        {% if info_importante.completado %}
+          <span class="badge badge-success">Completado</span>
+        {% else %}
+          <span class="badge badge-warning">En progreso</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if info_importante.inicio %}
+    <div class="detail-item">
+      <div class="detail-label">Fecha de inicio</div>
+      <div class="detail-value">{{ info_importante.inicio|date:"d/m/Y H:i" }}</div>
+    </div>
+    {% endif %}
+    {% if info_importante.fin %}
+    <div class="detail-item">
+      <div class="detail-label">Fecha de finalización</div>
+      <div class="detail-value">{{ info_importante.fin|date:"d/m/Y H:i" }}</div>
+    </div>
+    {% endif %}
+  </div>
+  
+  {% if accesos %}
+  <div style="margin-top: 1rem;">
+    <h5>Secciones accedidas</h5>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      {% for acceso in accesos %}
+        <span class="badge badge-info">
+          {{ acceso.get_seccion_display }} ({{ acceso.accedido_en|date:"d/m H:i" }})
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endif %}

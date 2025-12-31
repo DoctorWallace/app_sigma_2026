@@ -1,0 +1,255 @@
+{% extends "sigmaoptics/base_optics.html" %}
+
+{% block optics_page_title %}Crear Análisis de Datos - Sigma Optics{% endblock %}
+
+{% block optics_content %}
+<div class="container">
+  <div class="optics-card">
+    <div class="optics-card-header">
+      <h2 class="optics-card-title">
+        <i class="bi bi-graph-up"></i>
+        Crear Análisis de Datos Ópticos
+      </h2>
+      <p class="optics-card-subtitle">
+        Sube un archivo de datos ópticos y genera gráficas automáticamente
+      </p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="analisis-form">
+      {% csrf_token %}
+      
+      <!-- Información básica -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="bi bi-info-circle"></i>
+          Información del Análisis
+        </h3>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label for="{{ form.nombre.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-tag"></i>
+                Nombre del análisis *
+              </label>
+              {{ form.nombre }}
+              {% if form.nombre.errors %}
+                <div class="text-danger">{{ form.nombre.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="optics-form-group">
+              <label for="{{ form.tipo_archivo.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-file-earmark"></i>
+                Tipo de archivo
+              </label>
+              {{ form.tipo_archivo }}
+              {% if form.tipo_archivo.errors %}
+                <div class="text-danger">{{ form.tipo_archivo.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="optics-form-group">
+          <label for="{{ form.descripcion.id_for_label }}" class="optics-form-label">
+            <i class="bi bi-file-text"></i>
+            Descripción
+          </label>
+          {{ form.descripcion }}
+          {% if form.descripcion.errors %}
+            <div class="text-danger">{{ form.descripcion.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Archivo de datos -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="bi bi-upload"></i>
+          Archivo de Datos
+        </h3>
+        
+        <div class="optics-form-group">
+          <label for="{{ form.archivo_datos.id_for_label }}" class="optics-form-label">
+            <i class="bi bi-cloud-upload"></i>
+            Archivo de datos *
+          </label>
+          {{ form.archivo_datos }}
+          {% if form.archivo_datos.errors %}
+            <div class="text-danger">{{ form.archivo_datos.errors.0 }}</div>
+          {% endif %}
+          <div class="form-text">
+            Formatos soportados: .txt, .csv, .tsv, .dat (máximo 50MB)
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuración del archivo -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="bi bi-gear"></i>
+          Configuración del Archivo
+        </h3>
+        
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle"></i>
+          <strong>Detección Automática:</strong> El sistema detectará automáticamente el separador de columnas, 
+          el separador decimal y la codificación del archivo. No es necesario configurar estos parámetros manualmente.
+        </div>
+        
+        <div class="row">
+          <div class="col-md-4">
+            <div class="optics-form-group">
+              <label for="{{ form.separador.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-distribute-horizontal"></i>
+                Separador de columnas
+              </label>
+              {{ form.separador }}
+              {% if form.separador.errors %}
+                <div class="text-danger">{{ form.separador.errors.0 }}</div>
+              {% endif %}
+              <div class="form-text">
+                <i class="bi bi-check-circle text-success"></i> Detección automática activada
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="optics-form-group">
+              <label for="{{ form.decimal.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-123"></i>
+                Separador decimal
+              </label>
+              {{ form.decimal }}
+              {% if form.decimal.errors %}
+                <div class="text-danger">{{ form.decimal.errors.0 }}</div>
+              {% endif %}
+              <div class="form-text">
+                <i class="bi bi-check-circle text-success"></i> Detección automática activada
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="optics-form-group">
+              <label for="{{ form.codificacion.id_for_label }}" class="optics-form-label">
+                <i class="bi bi-translate"></i>
+                Codificación
+              </label>
+              {{ form.codificacion }}
+              {% if form.codificacion.errors %}
+                <div class="text-danger">{{ form.codificacion.errors.0 }}</div>
+              {% endif %}
+              <div class="form-text">
+                <i class="bi bi-check-circle text-success"></i> Detección automática recomendada
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Opciones de gráficas -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="bi bi-graph-up"></i>
+          Gráficas a Generar
+        </h3>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-check optics-checkbox">
+              {{ form.mostrar_espectro }}
+              <label for="{{ form.mostrar_espectro.id_for_label }}" class="form-check-label">
+                <i class="bi bi-graph-up"></i>
+                Gráfica de Espectro
+              </label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check optics-checkbox">
+              {{ form.mostrar_transmitancia }}
+              <label for="{{ form.mostrar_transmitancia.id_for_label }}" class="form-check-label">
+                <i class="bi bi-graph-up"></i>
+                Gráfica de Transmitancia
+              </label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check optics-checkbox">
+              {{ form.mostrar_absorbancia }}
+              <label for="{{ form.mostrar_absorbancia.id_for_label }}" class="form-check-label">
+                <i class="bi bi-graph-up"></i>
+                Gráfica de Absorbancia
+              </label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check optics-checkbox">
+              {{ form.mostrar_overview }}
+              <label for="{{ form.mostrar_overview.id_for_label }}" class="form-check-label">
+                <i class="bi bi-graph-up"></i>
+                Gráfica de Resumen
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button type="submit" class="optics-btn optics-btn-primary">
+          <i class="bi bi-play-circle"></i>
+          Procesar Análisis
+        </button>
+        <a href="{% url 'sigmaoptics:analisis_list' %}" class="optics-btn optics-btn-secondary">
+          <i class="bi bi-arrow-left"></i>
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-detectar configuración del archivo
+    const archivoInput = document.getElementById('id_archivo_datos');
+    const separadorInput = document.getElementById('id_separador');
+    const decimalInput = document.getElementById('id_decimal');
+    const codificacionInput = document.getElementById('id_codificacion');
+    
+    archivoInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            // Detectar tipo de archivo
+            const extension = file.name.split('.').pop().toLowerCase();
+            if (extension === 'csv') {
+                separadorInput.value = ',';
+            } else if (extension === 'tsv') {
+                separadorInput.value = '\\t';
+            } else {
+                separadorInput.value = '\\t';
+            }
+        }
+    });
+    
+    // Validación del formulario
+    const form = document.getElementById('analisis-form');
+    form.addEventListener('submit', function(e) {
+        const archivo = archivoInput.files[0];
+        if (!archivo) {
+            e.preventDefault();
+            alert('Por favor, selecciona un archivo de datos.');
+            return;
+        }
+        
+        if (archivo.size > 50 * 1024 * 1024) {
+            e.preventDefault();
+            alert('El archivo es demasiado grande. Máximo 50MB.');
+            return;
+        }
+    });
+});
+</script>
+{% endblock %}
+

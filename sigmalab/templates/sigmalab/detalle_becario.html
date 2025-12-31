@@ -1,0 +1,243 @@
+{% extends "base_dtf.html" %}
+{% block title %}{{ becario.nombre_completo }} - Detalle Becario{% endblock %}
+{% block page_title %}{{ becario.nombre_completo }}{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap;">
+    <h3 style="margin:0;">Detalles del Becario</h3>
+    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+      <a class="btn" href="{% url 'sigmalab:editar-becario' becario.id %}">
+        <i class="bi bi-pencil"></i> Editar
+      </a>
+      <a class="btn btn-outline-secondary" href="{% url 'sigmalab:mis-becarios' %}">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+  <!-- Información personal -->
+  <div class="card">
+    <h4><i class="bi bi-person"></i> Información Personal</h4>
+    <div style="display:grid; gap:.75rem;">
+      <div>
+        <strong>Nombre completo:</strong><br>
+        {{ becario.nombre_completo }}
+      </div>
+      <div>
+        <strong>Email:</strong><br>
+        <a href="mailto:{{ becario.email }}">{{ becario.email }}</a>
+      </div>
+      {% if becario.telefono %}
+      <div>
+        <strong>Teléfono:</strong><br>
+        {{ becario.telefono }}
+      </div>
+      {% endif %}
+      <div>
+        <strong>Estado:</strong><br>
+        <span style="display:inline-block; padding:.25rem .5rem; border-radius:.25rem; font-size:.8rem; font-weight:600; color:white; background-color:{{ becario.get_estado_display_color }};">
+          {{ becario.get_estado_display }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información académica -->
+  <div class="card">
+    <h4><i class="bi bi-mortarboard"></i> Información Académica</h4>
+    <div style="display:grid; gap:.75rem;">
+      <div>
+        <strong>Tipo de becario:</strong><br>
+        {{ becario.get_tipo_becario_display }}
+      </div>
+      {% if becario.institucion_origen %}
+      <div>
+        <strong>Institución de origen:</strong><br>
+        {{ becario.institucion_origen }}
+      </div>
+      {% endif %}
+      <div>
+        <strong>Fecha de inicio:</strong><br>
+        {{ becario.fecha_inicio|date:"d/m/Y" }}
+      </div>
+      {% if becario.fecha_fin %}
+      <div>
+        <strong>Fecha de finalización:</strong><br>
+        {{ becario.fecha_fin|date:"d/m/Y" }}
+      </div>
+      {% endif %}
+      <div>
+        <strong>Puede solicitar autónomo:</strong><br>
+        {% if becario.puede_solicitar_autonomo %}
+          <span style="color:#28a745; font-weight:600;"><i class="bi bi-check-circle"></i> Sí</span>
+        {% else %}
+          <span style="color:#dc3545; font-weight:600;"><i class="bi bi-x-circle"></i> No</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Observaciones -->
+{% if becario.observaciones %}
+<div class="card" style="margin-bottom:1rem;">
+  <h4><i class="bi bi-chat-text"></i> Observaciones</h4>
+  <p style="margin:0; white-space:pre-wrap;">{{ becario.observaciones }}</p>
+</div>
+{% endif %}
+
+<!-- Estadísticas de solicitudes -->
+<div class="card" style="margin-bottom:1rem;">
+  <h4><i class="bi bi-graph-up"></i> Estadísticas de Solicitudes</h4>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1rem;">
+    <div style="text-align:center; padding:.5rem; background:#f8f9fa; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#007bff;">{{ stats_solicitudes.total }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Total</div>
+    </div>
+    <div style="text-align:center; padding:.5rem; background:#fff3cd; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#856404;">{{ stats_solicitudes.pendientes }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Pendientes</div>
+    </div>
+    <div style="text-align:center; padding:.5rem; background:#d4edda; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#28a745;">{{ stats_solicitudes.aceptadas }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Aceptadas</div>
+    </div>
+    <div style="text-align:center; padding:.5rem; background:#cce5ff; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#0066cc;">{{ stats_solicitudes.en_curso }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">En curso</div>
+    </div>
+    <div style="text-align:center; padding:.5rem; background:#d1ecf1; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#0c5460;">{{ stats_solicitudes.finalizadas }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Finalizadas</div>
+    </div>
+    <div style="text-align:center; padding:.5rem; background:#f8d7da; border-radius:.5rem;">
+      <div style="font-size:1.5rem; font-weight:bold; color:#dc3545;">{{ stats_solicitudes.rechazadas }}</div>
+      <div style="font-size:.9rem; color:#6c757d;">Rechazadas</div>
+    </div>
+  </div>
+</div>
+
+<!-- Solicitudes recientes -->
+<div class="card" style="margin-bottom:1rem;">
+  <h4><i class="bi bi-list-ul"></i> Solicitudes Recientes</h4>
+  
+  {% if solicitudes %}
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:#f8f9fa; border-bottom:2px solid #dee2e6;">
+            <th style="padding:.75rem; text-align:left; font-weight:600;">ID</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Material</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Estado</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Fecha</th>
+            <th style="padding:.75rem; text-align:left; font-weight:600;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in solicitudes %}
+            <tr style="border-bottom:1px solid #dee2e6;">
+              <td style="padding:.75rem;">
+                <strong>#{{ solicitud.id }}</strong>
+              </td>
+              <td style="padding:.75rem;">{{ solicitud.material|default:"Sin especificar" }}</td>
+              <td style="padding:.75rem;">
+                <span style="display:inline-block; padding:.25rem .5rem; border-radius:.25rem; font-size:.8rem; font-weight:600; color:white; background-color:{% if solicitud.estado == 'pendiente' %}#ffc107{% elif solicitud.estado == 'aceptada' %}#28a745{% elif solicitud.estado == 'rechazada' %}#dc3545{% elif solicitud.estado == 'en_curso' %}#007bff{% elif solicitud.estado == 'finalizada' %}#17a2b8{% else %}#6c757d{% endif %};">
+                  {{ solicitud.get_estado_display }}
+                </span>
+              </td>
+              <td style="padding:.75rem;">{{ solicitud.creado_en|date:"d/m/Y H:i" }}</td>
+              <td style="padding:.75rem;">
+                <a class="btn-small" href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}" style="background:#17a2b8; color:white; text-decoration:none; padding:.25rem .5rem; border-radius:.25rem; font-size:.8rem;">
+                  <i class="bi bi-eye"></i> Ver
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align:center; padding:2rem; color:#6c757d;">
+      <i class="bi bi-inbox" style="font-size:3rem; margin-bottom:1rem; display:block;"></i>
+      <h5>No hay solicitudes</h5>
+      <p>Este becario aún no ha realizado ninguna solicitud.</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Acciones de gestión -->
+<div class="card">
+  <h4><i class="bi bi-gear"></i> Acciones de Gestión</h4>
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    
+    <!-- Cambiar estado -->
+    {% if becario.estado == 'activo' %}
+      <a class="btn btn-outline-warning" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'inactivo' %}" onclick="return confirm('¿Estás seguro de que quieres desactivar este becario?')">
+        <i class="bi bi-pause-circle"></i> Desactivar
+      </a>
+      <a class="btn btn-outline-danger" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'suspendido' %}" onclick="return confirm('¿Estás seguro de que quieres suspender este becario?')">
+        <i class="bi bi-exclamation-triangle"></i> Suspender
+      </a>
+    {% elif becario.estado == 'inactivo' %}
+      <a class="btn btn-outline-success" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'activo' %}" onclick="return confirm('¿Estás seguro de que quieres reactivar este becario?')">
+        <i class="bi bi-play-circle"></i> Reactivar
+      </a>
+      <a class="btn btn-outline-danger" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'suspendido' %}" onclick="return confirm('¿Estás seguro de que quieres suspender este becario?')">
+        <i class="bi bi-exclamation-triangle"></i> Suspender
+      </a>
+    {% elif becario.estado == 'suspendido' %}
+      <a class="btn btn-outline-success" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'activo' %}" onclick="return confirm('¿Estás seguro de que quieres reactivar este becario?')">
+        <i class="bi bi-play-circle"></i> Reactivar
+      </a>
+      <a class="btn btn-outline-warning" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'inactivo' %}" onclick="return confirm('¿Estás seguro de que quieres desactivar este becario?')">
+        <i class="bi bi-pause-circle"></i> Desactivar
+      </a>
+    {% endif %}
+    
+    <!-- Eliminar -->
+    <a class="btn btn-outline-danger" href="{% url 'sigmalab:eliminar-becario' becario.id %}" onclick="return confirm('¿Estás seguro de que quieres eliminar este becario? Esta acción no se puede deshacer.')">
+      <i class="bi bi-trash"></i> Eliminar
+    </a>
+  </div>
+</div>
+
+<style>
+.btn-small {
+  display:inline-flex;
+  align-items:center;
+  gap:.25rem;
+  text-decoration:none;
+  font-size:.8rem;
+  font-weight:600;
+  border-radius:.25rem;
+  transition:all .2s ease;
+}
+
+.btn-small:hover {
+  transform:translateY(-1px);
+  box-shadow:0 2px 4px rgba(0,0,0,.1);
+}
+
+@media (max-width:768px) {
+  .card {
+    margin:0 -.5rem 1rem;
+    border-radius:0;
+  }
+  
+  div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  table {
+    font-size:.9rem;
+  }
+  
+  th, td {
+    padding:.5rem !important;
+  }
+}
+</style>
+{% endblock %}

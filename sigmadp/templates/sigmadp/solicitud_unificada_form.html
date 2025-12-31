@@ -1,0 +1,415 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% block title %}S-DP · Nueva Solicitud{% endblock %}
+{% block page_title %}S-DP · Nueva Solicitud{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <div class="form-actions">
+    <a class="btn btn-outline-secondary" href="{% url 'sigmadp:panel_usuario' %}"><i class="bi bi-arrow-left"></i> Volver al panel</a>
+    <a class="btn btn-outline-info" href="{% url 'dtf:info-importante' %}"><i class="bi bi-info-circle"></i> Información importante</a>
+  </div>
+
+  <h2 class="form-title"><i class="bi bi-plus-circle"></i> Nueva solicitud S-DP</h2>
+  <p class="form-lead">Configura las condiciones del ensayo y detalla las muestras que quieres analizar. Puedes fijar parámetros comunes y después indicar únicamente los datos específicos de cada muestra.</p>
+
+  <form method="post" id="solicitud-form" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <div>{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="form-section">
+      <h3 class="section-title"><i class="bi bi-sliders"></i> Tipo de análisis</h3>
+      <p class="help-text">Selecciona la técnica que vas a solicitar. Otras opciones aparecerán cuando estén disponibles.</p>
+      <div class="choice-grid">
+        {% with current=form.tipo_solicitud.value %}
+          {% for value, label in form.fields.tipo_solicitud.choices %}
+            <label class="choice-card{% if current == value %} selected{% endif %}{% if value == 'permeacion' %} disabled{% endif %}">
+              <input type="radio" name="{{ form.tipo_solicitud.html_name }}" value="{{ value }}" {% if current == value %}checked{% endif %}{% if value == 'permeacion' %} disabled{% endif %}>
+              <span class="choice-title">{{ label }}</span>
+              {% if value == 'permeacion' %}
+                <span class="choice-badge">Próximamente</span>
+              {% endif %}
+            </label>
+          {% endfor %}
+        {% endwith %}
+      </div>
+      {% if form.tipo_solicitud.errors %}
+        <div class="form-error">{{ form.tipo_solicitud.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-section">
+      <h3 class="section-title"><i class="bi bi-collection"></i> Configuración de muestras</h3>
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label" for="id_numero_muestras">{{ form.numero_muestras.label }}</label>
+          {{ form.numero_muestras }}
+          <p class="help-text">Máximo 10 muestras por solicitud.</p>
+          {% if form.numero_muestras.errors %}
+            <div class="form-error">{{ form.numero_muestras.errors.0 }}</div>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ form.condiciones_globales.label }}</label>
+          <label class="checkbox-pill">
+            {{ form.condiciones_globales }}
+            <span>Aplicar las condiciones definidas abajo a todas las muestras</span>
+          </label>
+          <p class="help-text">Si desmarcas esta opción podrás personalizar los parámetros del ensayo por muestra.</p>
+          {% if form.condiciones_globales.errors %}
+            <div class="form-error">{{ form.condiciones_globales.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3 class="section-title"><i class="bi bi-card-list"></i> Valores por defecto para las muestras</h3>
+      <p class="help-text">Se utilizarán cuando una muestra no proporcione su propio dato.</p>
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label">{{ form.material.label }}</label>
+          {{ form.material }}
+          {% if form.material.errors %}<div class="form-error">{{ form.material.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ form.procedencia.label }}</label>
+          {{ form.procedencia }}
+          {% if form.procedencia.errors %}<div class="form-error">{{ form.procedencia.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3 class="section-title"><i class="bi bi-thermometer-half"></i> Condiciones del ensayo</h3>
+      <p class="help-text">Si activas las condiciones globales, estos valores se aplicarán a todas las muestras. Puedes dejar comentarios específicos en el apartado de observaciones.</p>
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label">{{ form.temperatura_maxima.label }}</label>
+          {{ form.temperatura_maxima }}
+          {% if form.temperatura_maxima.help_text %}<p class="help-text">{{ form.temperatura_maxima.help_text }}</p>{% endif %}
+          {% if form.temperatura_maxima.errors %}<div class="form-error">{{ form.temperatura_maxima.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ form.masa_registrar.label }}</label>
+          {{ form.masa_registrar }}
+          {% if form.masa_registrar.errors %}<div class="form-error">{{ form.masa_registrar.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label">{{ form.tasa_calentamiento.label }}</label>
+          {{ form.tasa_calentamiento }}
+          {% if form.tasa_calentamiento.help_text %}<p class="help-text">{{ form.tasa_calentamiento.help_text }}</p>{% endif %}
+          {% if form.tasa_calentamiento.errors %}<div class="form-error">{{ form.tasa_calentamiento.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ form.tasa_enfriamiento.label }}</label>
+          {{ form.tasa_enfriamiento }}
+          {% if form.tasa_enfriamiento.help_text %}<p class="help-text">{{ form.tasa_enfriamiento.help_text }}</p>{% endif %}
+          {% if form.tasa_enfriamiento.errors %}<div class="form-error">{{ form.tasa_enfriamiento.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label">{{ form.tiempo_permanencia.label }}</label>
+          {{ form.tiempo_permanencia }}
+          {% if form.tiempo_permanencia.errors %}<div class="form-error">{{ form.tiempo_permanencia.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ form.geometria_muestra.label }}</label>
+          {{ form.geometria_muestra }}
+          {% if form.geometria_muestra.errors %}<div class="form-error">{{ form.geometria_muestra.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="two-cols">
+        <div class="form-group">
+          <label class="form-label">{{ form.espesor_muestra.label }}</label>
+          {{ form.espesor_muestra }}
+          {% if form.espesor_muestra.help_text %}<p class="help-text">{{ form.espesor_muestra.help_text }}</p>{% endif %}
+          {% if form.espesor_muestra.errors %}<div class="form-error">{{ form.espesor_muestra.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ form.tamaño_muestra.label }}</label>
+          {{ form.tamaño_muestra }}
+          {% if form.tamaño_muestra.help_text %}<p class="help-text">{{ form.tamaño_muestra.help_text }}</p>{% endif %}
+          {% if form.tamaño_muestra.errors %}<div class="form-error">{{ form.tamaño_muestra.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3 class="section-title"><i class="bi bi-chat-text"></i> Observaciones generales</h3>
+      {{ form.observaciones }}
+      {% if form.observaciones.errors %}<div class="form-error">{{ form.observaciones.errors.0 }}</div>{% endif %}
+    </div>
+
+    <div class="form-section">
+      <h3 class="section-title"><i class="bi bi-list-ol"></i> Detalle de las muestras</h3>
+      <p class="help-text">Completa la información de cada muestra. Si el número de muestras cambia, el formulario se ajustará automáticamente.</p>
+      <div id="muestras-container"></div>
+    </div>
+
+    <div class="form-buttons">
+      <a href="{% url 'sigmadp:panel_usuario' %}" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
+      <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Crear solicitudes</button>
+    </div>
+  </form>
+</div>
+
+<style>
+  .form-card { padding: 1.75rem; }
+  .form-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .form-title { margin-bottom: .75rem; color: var(--primary, #155d27); display: flex; align-items: center; gap: .5rem; }
+  .form-lead { color: var(--text-secondary, #4a5568); margin-bottom: 1.5rem; max-width: 48rem; }
+  .form-section { border: 1px solid var(--border, #e2e8f0); border-radius: .75rem; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--bg-card, #ffffff); }
+  .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
+  .help-text { font-size: .85rem; color: var(--text-secondary, #4a5568); margin-top: .35rem; }
+  .two-cols { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .form-group { display: flex; flex-direction: column; }
+  .form-label { font-weight: 600; margin-bottom: .35rem; color: var(--text-primary, #2d3748); }
+  .form-error { color: #dc3545; font-size: .85rem; margin-top: .35rem; }
+  .choice-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .choice-card { border: 1px solid var(--border, #e2e8f0); border-radius: .75rem; padding: 1rem; background: var(--bg-card, #ffffff); display: flex; flex-direction: column; gap: .25rem; cursor: pointer; transition: all .2s ease; position: relative; }
+  .choice-card input { display: none; }
+  .choice-card .choice-title { font-weight: 600; }
+  .choice-card .choice-badge { display: inline-flex; align-items: center; padding: .2rem .6rem; font-size: .75rem; border-radius: 999px; background: #f5f5f5; color: #6c757d; }
+  .choice-card.selected { border-color: var(--primary, #155d27); box-shadow: 0 0 0 2px rgba(21,93,39,.15); }
+  .choice-card.disabled { opacity: .5; cursor: not-allowed; }
+  .checkbox-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .6rem .9rem; border: 1px solid var(--border, #e2e8f0); border-radius: .75rem; background: var(--bg-card, #ffffff); }
+  .checkbox-pill input { margin-right: .35rem; }
+  .form-buttons { display: flex; justify-content: flex-end; gap: .75rem; }
+  .form-buttons .btn { padding: .65rem 1.1rem; border-radius: .65rem; font-weight: 600; display: inline-flex; align-items: center; gap: .45rem; text-decoration: none; border: 1px solid transparent; }
+  .btn.btn-primary { background: linear-gradient(135deg, #155d27 0%, #3aa34c 100%); color: #fff; }
+  .btn.btn-primary:hover { background: linear-gradient(135deg, #0f441f 0%, #318342 100%); }
+  .btn.btn-outline-secondary { border-color: var(--border, #e2e8f0); color: var(--text-primary, #2d3748); background: transparent; }
+  .btn.btn-outline-secondary:hover { background: rgba(45,55,72,.08); }
+  .btn.btn-outline-info { border-color: rgba(23,162,184,.4); color: #138496; background: transparent; }
+  .btn.btn-outline-info:hover { background: rgba(23,162,184,.08); }
+  .alert { border-radius: .75rem; padding: .85rem 1rem; margin-bottom: 1.5rem; }
+  .alert.alert-danger { background: rgba(220,53,69,.1); border: 1px solid rgba(220,53,69,.2); color: #a71d2a; }
+  .sample-card { border: 1px solid var(--border, #e2e8f0); border-radius: .75rem; padding: 1.25rem; margin-bottom: 1rem; background: #fff; box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,.08)); }
+  .sample-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .sample-title { font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: .5rem; }
+  .sample-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .sample-conditions { margin-top: 1rem; border-top: 1px solid var(--border, #e2e8f0); padding-top: 1rem; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .copy-prev { border: 1px solid var(--border, #e2e8f0); border-radius: 999px; padding: .35rem .75rem; font-size: .8rem; background: transparent; color: var(--text-secondary, #4a5568); cursor: pointer; transition: background .2s ease; }
+  .copy-prev:hover { background: rgba(45,55,72,.08); }
+  textarea.form-input { resize: vertical; }
+  #muestras-container { display: flex; flex-direction: column; gap: 1rem; }
+</style>
+
+<script>
+(function() {
+  const samplesInitial = JSON.parse('{{ samples_json|default:"[]"|escapejs }}' || '[]');
+  const numeroInput = document.getElementById('id_numero_muestras');
+  const globalCheckbox = document.getElementById('id_condiciones_globales');
+  const container = document.getElementById('muestras-container');
+
+  const fieldNames = ['nombre','material','procedencia','geometria','temperatura_maxima','tasa_calentamiento','tasa_enfriamiento','tiempo_permanencia','masa_registrar','espesor','tamaño','observaciones'];
+
+  let samplesData = Array.isArray(samplesInitial) && samplesInitial.length ? samplesInitial : [{}];
+
+  function blankSample() {
+    return {
+      nombre: '',
+      material: '',
+      procedencia: '',
+      geometria: '',
+      temperatura_maxima: '',
+      tasa_calentamiento: '',
+      tasa_enfriamiento: '',
+      tiempo_permanencia: '',
+      masa_registrar: '',
+      espesor: '',
+      tamaño: '',
+      observaciones: '',
+    };
+  }
+
+  function ensureLength(total) {
+    if (samplesData.length < total) {
+      for (let i = samplesData.length; i < total; i += 1) {
+        samplesData.push(blankSample());
+      }
+    } else if (samplesData.length > total) {
+      samplesData = samplesData.slice(0, total);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"]+/g, function(match) {
+      const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+      return entities[match] || match;
+    });
+  }
+
+  function optionSelected(current, value) {
+    return current === value ? 'selected' : '';
+  }
+
+  function createSampleCard(index, data) {
+    data = data || {};
+    const current = (field) => escapeHtml(data[field] || '');
+    const card = document.createElement('div');
+    card.innerHTML = `
+      <div class="sample-card" data-index="${index}">
+        <div class="sample-header">
+          <div class="sample-title"><i class="bi bi-beaker"></i> Muestra ${index}</div>
+          <div>
+            <button type="button" class="copy-prev" data-action="copy-prev" ${index === 1 ? 'style="display:none;"' : ''}>
+              <i class="bi bi-arrow-repeat"></i> Copiar condiciones previas
+            </button>
+          </div>
+        </div>
+        <div class="sample-grid">
+          <div class="form-group">
+            <label class="form-label">Nombre de la muestra *</label>
+            <input type="text" class="form-input" name="muestra_${index}_nombre" value="${current('nombre')}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Material</label>
+            <input type="text" class="form-input" name="muestra_${index}_material" value="${current('material')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Procedencia</label>
+            <input type="text" class="form-input" name="muestra_${index}_procedencia" value="${current('procedencia')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Geometría</label>
+            <input type="text" class="form-input" name="muestra_${index}_geometria" value="${current('geometria')}">
+          </div>
+        </div>
+        <div class="sample-conditions">
+          <div class="form-group">
+            <label class="form-label">Temperatura máxima [°C]</label>
+            <input type="number" step="any" class="form-input" name="muestra_${index}_temperatura_maxima" value="${current('temperatura_maxima')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tasa de calentamiento [°C/min]</label>
+            <input type="number" step="any" class="form-input" name="muestra_${index}_tasa_calentamiento" value="${current('tasa_calentamiento')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tasa de enfriamiento [°C/min]</label>
+            <input type="number" step="any" class="form-input" name="muestra_${index}_tasa_enfriamiento" value="${current('tasa_enfriamiento')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tiempo de permanencia [min]</label>
+            <input type="number" step="any" class="form-input" name="muestra_${index}_tiempo_permanencia" value="${current('tiempo_permanencia')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Masa a registrar [uma]</label>
+            <select class="form-input" name="muestra_${index}_masa_registrar">
+              <option value="">Seleccionar masa...</option>
+              <option value="2" ${optionSelected(data['masa_registrar'], '2')}>Masa 2 uma</option>
+              <option value="3" ${optionSelected(data['masa_registrar'], '3')}>Masa 3 uma</option>
+              <option value="4" ${optionSelected(data['masa_registrar'], '4')}>Masa 4 uma</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Espesor [mm]</label>
+            <input type="number" step="any" class="form-input" name="muestra_${index}_espesor" value="${current('espesor')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tamaño [cm²]</label>
+            <input type="number" step="any" class="form-input" name="muestra_${index}_tamaño" value="${current('tamaño')}">
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:1rem;">
+          <label class="form-label">Observaciones</label>
+          <textarea class="form-input" rows="2" name="muestra_${index}_observaciones">${escapeHtml(data['observaciones'] || '')}</textarea>
+        </div>
+      </div>
+    `;
+    return card.firstElementChild;
+  }
+
+  function snapshotSamples() {
+    const cards = container.querySelectorAll('.sample-card');
+    cards.forEach(card => {
+      const index = parseInt(card.dataset.index, 10) - 1;
+      if (index < 0) return;
+      if (!samplesData[index]) samplesData[index] = blankSample();
+      fieldNames.forEach(field => {
+        const input = card.querySelector(`[name="muestra_${index + 1}_${field}"]`);
+        if (input) {
+          samplesData[index][field] = input.value;
+        }
+      });
+    });
+  }
+
+  function renderSamples() {
+    const desired = parseInt(numeroInput && numeroInput.value ? numeroInput.value : samplesData.length, 10) || 1;
+    ensureLength(desired);
+    container.innerHTML = '';
+    samplesData.forEach((sample, idx) => {
+      container.appendChild(createSampleCard(idx + 1, sample));
+    });
+    toggleConditionFields();
+  }
+
+  function toggleConditionFields() {
+    const hide = globalCheckbox ? globalCheckbox.checked : false;
+    container.querySelectorAll('.sample-conditions').forEach(section => {
+      section.style.display = hide ? 'none' : '';
+    });
+    container.querySelectorAll('[data-action="copy-prev"]').forEach(button => {
+      button.style.display = hide ? 'none' : (parseInt(button.closest('.sample-card').dataset.index, 10) === 1 ? 'none' : '');
+    });
+  }
+
+  container.addEventListener('click', event => {
+    const trigger = event.target.closest('[data-action="copy-prev"]');
+    if (!trigger) return;
+    event.preventDefault();
+    const card = trigger.closest('.sample-card');
+    const index = parseInt(card.dataset.index, 10);
+    if (index <= 1) return;
+    const prevCard = container.querySelector(`.sample-card[data-index="${index - 1}"]`);
+    if (!prevCard) return;
+    const fieldsToCopy = ['temperatura_maxima','tasa_calentamiento','tasa_enfriamiento','tiempo_permanencia','masa_registrar','espesor','tamaño'];
+    fieldsToCopy.forEach(field => {
+      const prevInput = prevCard.querySelector(`[name="muestra_${index - 1}_${field}"]`);
+      const currentInput = card.querySelector(`[name="muestra_${index}_${field}"]`);
+      if (prevInput && currentInput) {
+        currentInput.value = prevInput.value;
+      }
+    });
+    snapshotSamples();
+  });
+
+  container.addEventListener('input', snapshotSamples);
+  container.addEventListener('change', snapshotSamples);
+
+  if (numeroInput) {
+    let initialValue = parseInt(numeroInput.value || samplesData.length || 1, 10);
+    if (!Number.isFinite(initialValue) || initialValue < 1) initialValue = samplesData.length || 1;
+    numeroInput.value = Math.max(1, Math.min(10, initialValue));
+    numeroInput.addEventListener('change', () => {
+      let value = parseInt(numeroInput.value, 10);
+      if (!Number.isFinite(value)) value = samplesData.length || 1;
+      value = Math.max(1, Math.min(10, value));
+      numeroInput.value = value;
+      snapshotSamples();
+      ensureLength(value);
+      renderSamples();
+    });
+  }
+
+  if (globalCheckbox) {
+    globalCheckbox.addEventListener('change', toggleConditionFields);
+  }
+
+  ensureLength(parseInt(numeroInput && numeroInput.value ? numeroInput.value : samplesData.length, 10) || 1);
+  renderSamples();
+})();
+</script>
+{% endblock %}
+

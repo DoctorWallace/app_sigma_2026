@@ -1,0 +1,313 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Mis Analisis - Sigma DP{% endblock %}
+
+{% block extra_css %}
+<style>
+    .analysis-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    
+    .analysis-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    .analysis-card.completado {
+        border-left-color: #28a745;
+    }
+    
+    .analysis-card.procesando {
+        border-left-color: #ffc107;
+    }
+    
+    .analysis-card.error {
+        border-left-color: #dc3545;
+    }
+    
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+    }
+    
+    .analysis-title {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .analysis-description {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .analysis-stats {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+    
+    .stat-icon {
+        color: #007bff;
+    }
+    
+    .analysis-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .filter-buttons {
+        margin-bottom: 2rem;
+    }
+    
+    .filter-btn {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .search-box {
+        max-width: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="bi bi-list-ul"></i>
+                    Mis Analisis de Datos
+                </h1>
+                <p class="page-subtitle">Gestiona y revisa todos tus analisis</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y bsqueda -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="filter-buttons">
+                <button class="btn btn-outline-primary filter-btn active" data-filter="all">
+                    <i class="bi bi-list"></i>
+                    Todos
+                </button>
+                <button class="btn btn-outline-success filter-btn" data-filter="completado">
+                    <i class="bi bi-check-circle"></i>
+                    Completados
+                </button>
+                <button class="btn btn-outline-warning filter-btn" data-filter="procesando">
+                    <i class="bi bi-hourglass-split"></i>
+                    Procesando
+                </button>
+                <button class="btn btn-outline-danger filter-btn" data-filter="error">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Con Errores
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="search-box">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="search-input" placeholder="Buscar analisis...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de analisis -->
+    {% if analisis_list %}
+    <div class="row" id="analisis-container">
+        {% for analisis in analisis_list %}
+        <div class="col-lg-6 col-xl-4" data-status="{{ analisis.estado }}" data-name="{{ analisis.nombre|lower }}">
+            <div class="analysis-card {{ analisis.estado }}">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="analysis-title">{{ analisis.nombre }}</h5>
+                    {% if analisis.solicitud_termica %}
+                    <div class="text-muted small fw-semibold">DP-T#{{ analisis.solicitud_termica_id }}  {{ analisis.solicitud_termica.nombre_muestra }}</div>
+                    {% endif %}
+                    <span class="status-badge 
+                        {% if analisis.estado == 'completado' %}bg-success
+                        {% elif analisis.estado == 'procesando' %}bg-warning
+                        {% elif analisis.estado == 'error' %}bg-danger
+                        {% endif %}">
+                        {% if analisis.estado == 'completado' %}
+                            <i class="bi bi-check-circle"></i>
+                            Completado
+                        {% elif analisis.estado == 'procesando' %}
+                            <i class="bi bi-hourglass-split"></i>
+                            Procesando
+                        {% elif analisis.estado == 'error' %}
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Error
+                        {% endif %}
+                    </span>
+                </div>
+                
+                {% if analisis.descripcion %}
+                <p class="analysis-description">{{ analisis.descripcion|truncatechars:100 }}</p>
+                {% endif %}
+                
+                <div class="analysis-stats">
+                    <div class="stat-item">
+                        <i class="bi bi-calendar-event stat-icon"></i>
+                        {{ analisis.creado_en|date:"d/m/Y" }}
+                    </div>
+                    {% if analisis.duracion_minutos %}
+                    <div class="stat-item">
+                        <i class="bi bi-clock stat-icon"></i>
+                        {{ analisis.duracion_minutos|floatformat:1 }} min
+                    </div>
+                    {% endif %}
+                    {% if analisis.num_muestras %}
+                    <div class="stat-item">
+                        <i class="bi bi-bar-chart stat-icon"></i>
+                        {{ analisis.num_muestras }} muestras
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="analysis-actions">
+                    <a href="{% url 'sigmadp:detalle_analisis' analisis.pk %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-eye"></i>
+                        Ver
+                    </a>
+                    {% if analisis.estado == 'completado' %}
+                    <a href="{% url 'sigmadp:detalle_analisis' analisis.pk %}" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-download"></i>
+                        Descargar
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="bi bi-graph-up empty-icon"></i>
+                <h4>No tienes analisis de datos</h4>
+                <p class="mb-4">Crea tu primer analisis para comenzar a visualizar datos trmicos.</p>
+                <a href="{% url 'sigmadp:crear_analisis_datos' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Crear Primer Analisis
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Botones de accion -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'sigmadp:representacion_resultados' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+                <a href="{% url 'sigmadp:crear_analisis_datos' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Nuevo Analisis
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const searchInput = document.getElementById('search-input');
+    const analysisCards = document.querySelectorAll('[data-status]');
+    
+    // Funcin para filtrar analisis
+    function filterAnalyses(filter, searchTerm = '') {
+        analysisCards.forEach(card => {
+            const status = card.getAttribute('data-status');
+            const name = card.getAttribute('data-name');
+            const matchesFilter = filter === 'all' || status === filter;
+            const matchesSearch = searchTerm === '' || name.includes(searchTerm.toLowerCase());
+            
+            if (matchesFilter && matchesSearch) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    // Event listeners para filtros
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remover clase active de todos los botones
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // Agregar clase active al botn clickeado
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            const searchTerm = searchInput.value;
+            filterAnalyses(filter, searchTerm);
+        });
+    });
+    
+    // Event listener para bsqueda
+    searchInput.addEventListener('input', function() {
+        const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+        const searchTerm = this.value;
+        filterAnalyses(activeFilter, searchTerm);
+    });
+    
+    // Auto-refresh para analisis en procesamiento
+    const processingCards = document.querySelectorAll('[data-status="procesando"]');
+    if (processingCards.length > 0) {
+        setTimeout(function() {
+            location.reload();
+        }, 10000); // Recargar cada 10 segundos si hay analisis procesando
+    }
+});
+</script>
+{% endblock %}
+

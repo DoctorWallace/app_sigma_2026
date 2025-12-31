@@ -1,0 +1,198 @@
+{% extends "sigmasem/base_sigmasem.html" %}
+
+{% block page_title %}Crear Análisis{% endblock %}
+{% block sem_page_title %}Crear Análisis{% endblock %}
+
+{% block sem_content %}
+<div class="container">
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Crear Nuevo Análisis SEM/FIB</h2>
+    </div>
+
+    <form method="post" id="analysis-form">
+      {% csrf_token %}
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <!-- Columna izquierda -->
+        <div>
+          <div class="sem-form-group">
+            <label for="{{ form.access_proposal.id_for_label }}" class="sem-form-label">
+              Propuesta ICTS *
+            </label>
+            {{ form.access_proposal }}
+            {% if form.access_proposal.errors %}
+              <div class="text-danger">{{ form.access_proposal.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="sem-form-group">
+            <label for="{{ form.analysis_type.id_for_label }}" class="sem-form-label">
+              Tipo de Análisis *
+            </label>
+            {{ form.analysis_type }}
+            {% if form.analysis_type.errors %}
+              <div class="text-danger">{{ form.analysis_type.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="sem-form-group">
+            <label class="sem-form-label">Muestras</label>
+            <div style="background: #e3f2fd; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #2196f3;">
+              <p style="margin: 0; color: #1976d2; font-weight: 600;">
+                <i class="bi bi-info-circle"></i>
+                Las muestras se gestionarán después de crear el análisis
+              </p>
+              <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #666;">
+                Podrás seleccionar muestras de la propuesta ICTS y añadir nuevas muestras durante la sesión
+              </p>
+            </div>
+          </div>
+
+          <div class="sem-form-group">
+            <label for="{{ form.analysis_date.id_for_label }}" class="sem-form-label">
+              Fecha del Análisis *
+            </label>
+            {{ form.analysis_date }}
+            {% if form.analysis_date.errors %}
+              <div class="text-danger">{{ form.analysis_date.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div>
+          <div class="sem-form-group">
+            <label class="sem-form-label">Cliente</label>
+            <input type="text" class="sem-form-control" id="client-name" readonly 
+                   placeholder="Se llenará automáticamente">
+          </div>
+
+          <div class="sem-form-group">
+            <label class="sem-form-label">Técnico Responsable</label>
+            <input type="text" class="sem-form-control" value="{{ request.user.get_full_name|default:request.user.username }}" readonly>
+          </div>
+
+          <div class="sem-form-group">
+            <label class="sem-form-label">Características de la Muestra</label>
+            <textarea class="sem-form-control" id="sample-characteristics" rows="3" readonly 
+                      placeholder="Se llenará automáticamente desde la propuesta"></textarea>
+          </div>
+
+          <div class="sem-form-group">
+            <label for="{{ form.client_requirements.id_for_label }}" class="sem-form-label">
+              Requerimientos del Cliente
+            </label>
+            {{ form.client_requirements }}
+            {% if form.client_requirements.errors %}
+              <div class="text-danger">{{ form.client_requirements.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="sem-form-group">
+            <label for="{{ form.observations.id_for_label }}" class="sem-form-label">
+              Observaciones del Técnico
+            </label>
+            {{ form.observations }}
+            {% if form.observations.errors %}
+              <div class="text-danger">{{ form.observations.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="sem-form-group">
+            <label for="{{ form.session_comments.id_for_label }}" class="sem-form-label">
+              Comentarios de la Sesión
+            </label>
+            {{ form.session_comments }}
+            {% if form.session_comments.errors %}
+              <div class="text-danger">{{ form.session_comments.errors }}</div>
+            {% endif %}
+            <small style="color: #6c757d; font-size: 0.8rem;">
+              Puedes añadir comentarios durante la sesión de análisis
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; text-align: center;">
+        <button type="submit" class="sem-btn sem-btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+          <i class="bi bi-save"></i>
+          Crear Análisis
+        </button>
+        <a href="{% url 'icts:sigmasem:dashboard' %}" class="sem-btn" style="background: #6c757d; color: white; margin-left: 1rem;">
+          <i class="bi bi-x-circle"></i>
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Información de muestras disponibles -->
+  <div class="sem-card" id="samples-info" style="display: none;">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Muestras Disponibles en la Propuesta</h2>
+    </div>
+    <div id="samples-list">
+      <!-- Se llenará dinámicamente -->
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const proposalSelect = document.getElementById('id_access_proposal');
+  const clientName = document.getElementById('client-name');
+  const sampleCharacteristics = document.getElementById('sample-characteristics');
+  const samplesInfo = document.getElementById('samples-info');
+  const samplesList = document.getElementById('samples-list');
+
+  // Cargar información cuando se selecciona una propuesta
+  proposalSelect.addEventListener('change', function() {
+    const proposalId = this.value;
+    if (proposalId) {
+      // Cargar información de la propuesta
+      fetch(`/icts/sigmasem/api/proposal/${proposalId}/samples/`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.samples && data.samples.length > 0) {
+            // Mostrar muestras disponibles
+            samplesList.innerHTML = '';
+            data.samples.forEach(sample => {
+              const sampleDiv = document.createElement('div');
+              sampleDiv.className = 'sem-form-group';
+              sampleDiv.innerHTML = `
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                  <strong>${sample.identification}</strong> - ${sample.name}
+                  <button type="button" class="sem-btn sem-btn-primary" style="float: right; padding: 0.25rem 0.75rem; font-size: 0.8rem;"
+                          onclick="selectSample('${sample.identification}', '${sample.name}')">
+                    Usar esta muestra
+                  </button>
+                </div>
+              `;
+              samplesList.appendChild(sampleDiv);
+            });
+            samplesInfo.style.display = 'block';
+          } else {
+            samplesInfo.style.display = 'none';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          samplesInfo.style.display = 'none';
+        });
+
+      // Cargar información del cliente (esto se haría con otra llamada API)
+      // Por ahora, se llenará automáticamente en el backend
+    } else {
+      samplesInfo.style.display = 'none';
+    }
+  });
+
+  // Función para seleccionar una muestra
+  window.selectSample = function(identification, name) {
+    document.getElementById('id_sample_identification').value = identification;
+    document.getElementById('id_sample_name').value = name;
+  };
+});
+</script>
+{% endblock %}

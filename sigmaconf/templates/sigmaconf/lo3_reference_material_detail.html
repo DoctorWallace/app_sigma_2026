@@ -1,0 +1,150 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Material {{ material.code }}{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Materiales de referencia{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_reference_material_list' %}">Materiales</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{{ material.code }}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">{{ material.code }}</div>
+    <div class="lo3-page-meta">
+      <span>{{ material.description }}</span>
+      <span>Estado: {{ material.get_status_display }}</span>
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_reference_material_list' %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+    <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_reference_material_edit' material.pk %}">
+      <i class="bi bi-pencil-square"></i>
+      Editar
+    </a>
+    <form method="post" action="{% url 'sigmaconf:lo3_reference_material_delete' material.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="lo3-btn lo3-btn-ghost">
+        <i class="bi bi-trash"></i>
+        Eliminar
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Ficha del material</h2>
+      <div class="lo3-card-subtitle">Datos operativos y de control.</div>
+    </div>
+  </div>
+  <div class="lo3-stat-grid">
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ material.catalog_reference|default:"-" }}</div>
+      <div class="lo3-stat-label">Referencia</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ material.responsible|default:"-" }}</div>
+      <div class="lo3-stat-label">Responsable</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ material.location|default:"-" }}</div>
+      <div class="lo3-stat-label">Ubicación</div>
+    </div>
+    <div class="lo3-stat-card">
+      <div class="lo3-stat-number">{{ material.expiry_date|date:"d/m/Y"|default:"-" }}</div>
+      <div class="lo3-stat-label">Caducidad</div>
+    </div>
+  </div>
+  <div style="margin-top: 1.5rem;">
+    <strong>Observaciones</strong>
+    <p class="text-muted">{{ material.observations|default:"Sin observaciones." }}</p>
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Documentos</h2>
+      <div class="lo3-card-subtitle">Certificados y fichas del material.</div>
+    </div>
+  </div>
+
+  {% if documents %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for document in documents %}
+            <tr>
+              <td>{{ document.title }}</td>
+              <td>{{ document.created_at|date:"d/m/Y" }}</td>
+              <td>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                  <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_reference_material_document_download' document.pk %}">
+                    <i class="bi bi-download"></i>
+                    Descargar
+                  </a>
+                  <form method="post" action="{% url 'sigmaconf:lo3_reference_material_document_delete' document.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="lo3-btn lo3-btn-ghost">
+                      <i class="bi bi-trash"></i>
+                      Eliminar
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-file-earmark-text"></i>
+      <div>No hay documentos asociados.</div>
+      <small>Sube certificados o fichas para este material.</small>
+    </div>
+  {% endif %}
+
+  <div style="margin-top: 1.5rem;">
+    <h3 class="lo3-card-title" style="font-size: 1rem;">Subir documento</h3>
+    <form method="post" action="{% url 'sigmaconf:lo3_reference_material_document_add' material.pk %}" enctype="multipart/form-data" style="margin-top: 1rem;">
+      {% csrf_token %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+        <div>
+          {{ document_form.title.label_tag }}
+          {{ document_form.title }}
+        </div>
+        <div>
+          {{ document_form.file.label_tag }}
+          {{ document_form.file }}
+        </div>
+      </div>
+      <div style="margin-top: 1rem;">
+        <button type="submit" class="lo3-btn lo3-btn-primary">
+          <i class="bi bi-upload"></i>
+          Subir documento
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

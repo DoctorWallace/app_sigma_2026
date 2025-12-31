@@ -1,0 +1,160 @@
+{% extends "sigmaconf/base_lo3.html" %}
+
+{% block lo3_page_title %}Ficha de equipo{% endblock %}
+{% block lo3_title %}Metrología de superficies ópticas 3D (LO3){% endblock %}
+{% block lo3_subtitle %}Fichas de equipos{% endblock %}
+
+{% block lo3_breadcrumbs %}
+<div class="lo3-breadcrumbs">
+  <a href="{% url 'sigmaconf:lo3_home' %}">Portal LO3</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <a href="{% url 'sigmaconf:lo3_equipment_list' %}">Equipos</a>
+  <span class="lo3-breadcrumbs-sep">/</span>
+  <span>{{ equipment.name }}</span>
+</div>
+{% endblock %}
+
+{% block lo3_content %}
+<div class="lo3-page-header">
+  <div>
+    <div class="lo3-page-title">{{ equipment.name }}</div>
+    <div class="lo3-page-meta">
+      <span>Fabricante: {{ equipment.manufacturer|default:"-" }}</span>
+      <span>Modelo: {{ equipment.model|default:"-" }}</span>
+      <span>Serie: {{ equipment.serial_number|default:"-" }}</span>
+    </div>
+    <div style="margin-top: 0.75rem;">
+      {% if equipment.status == "active" %}
+        <span class="lo3-badge lo3-badge--success">Activo</span>
+      {% elif equipment.status == "maintenance" %}
+        <span class="lo3-badge lo3-badge--warning">Mantenimiento</span>
+      {% else %}
+        <span class="lo3-badge lo3-badge--muted">Inactivo</span>
+      {% endif %}
+      {% if equipment.location %}
+        <span class="lo3-badge lo3-badge--info">{{ equipment.location }}</span>
+      {% endif %}
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a class="lo3-btn lo3-btn-secondary" href="{% url 'sigmaconf:lo3_equipment_list' %}">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </a>
+    {% if can_edit %}
+      <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_equipment_edit' equipment.pk %}">
+        <i class="bi bi-pencil-square"></i>
+        Editar ficha
+      </a>
+      <form method="post" action="{% url 'sigmaconf:lo3_equipment_delete' equipment.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="lo3-btn lo3-btn-ghost">
+          <i class="bi bi-trash"></i>
+          Eliminar
+        </button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Descripción</h2>
+      <div class="lo3-card-subtitle">Información general del equipo.</div>
+    </div>
+  </div>
+  {% if equipment.description %}
+    <p>{{ equipment.description|linebreaksbr }}</p>
+  {% else %}
+    <p class="text-muted">Sin descripción adicional.</p>
+  {% endif %}
+</div>
+
+<div class="lo3-card">
+  <div class="lo3-card-header">
+    <div>
+      <h2 class="lo3-card-title">Documentos</h2>
+      <div class="lo3-card-subtitle">Manuales, SOP o procedimientos asociados.</div>
+    </div>
+  </div>
+
+  {% if documents %}
+    <div class="table-responsive">
+      <table class="lo3-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Tipo</th>
+            <th>Subido por</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for document in documents %}
+            <tr>
+              <td>{{ document.title }}</td>
+              <td>{{ document.get_doc_type_display }}</td>
+              <td>{{ document.uploaded_by.get_full_name|default:document.uploaded_by.username|default:"-" }}</td>
+              <td>{{ document.created_at|date:"d/m/Y" }}</td>
+              <td>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                  <a class="lo3-btn lo3-btn-ghost" href="{% url 'sigmaconf:lo3_equipment_document_download' document.pk %}">
+                    <i class="bi bi-download"></i>
+                    Descargar
+                  </a>
+                  {% if can_edit %}
+                    <form method="post" action="{% url 'sigmaconf:lo3_equipment_document_delete' document.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="lo3-btn lo3-btn-ghost">
+                        <i class="bi bi-trash"></i>
+                        Eliminar
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lo3-empty">
+      <i class="bi bi-file-earmark-text"></i>
+      <div>No hay documentos cargados.</div>
+      <small>Sube manuales o procedimientos para este equipo.</small>
+    </div>
+  {% endif %}
+
+  {% if can_edit %}
+    <div style="margin-top: 1.5rem;">
+      <h3 class="lo3-card-title" style="font-size: 1rem;">Subir documento</h3>
+      <form method="post" action="{% url 'sigmaconf:lo3_equipment_document_add' equipment.pk %}" enctype="multipart/form-data" style="margin-top: 1rem;">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+          <div>
+            {{ document_form.title.label_tag }}
+            {{ document_form.title }}
+          </div>
+          <div>
+            {{ document_form.doc_type.label_tag }}
+            {{ document_form.doc_type }}
+          </div>
+          <div>
+            {{ document_form.file.label_tag }}
+            {{ document_form.file }}
+          </div>
+        </div>
+        <div style="margin-top: 1rem;">
+          <button type="submit" class="lo3-btn lo3-btn-primary">
+            <i class="bi bi-upload"></i>
+            Subir documento
+          </button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

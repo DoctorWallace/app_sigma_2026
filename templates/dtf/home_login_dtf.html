@@ -1,0 +1,177 @@
+{% extends "base_dtf.html" %}
+
+{% block title %}SIGMA DTF · Panel de Usuario{% endblock %}
+{% block page_title %}SIGMA DTF · Panel de Usuario{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* HERO de bienvenida */
+  .hero { 
+    display:grid; 
+    gap:1rem; 
+    grid-template-columns: 1.2fr .8fr; 
+    align-items:center; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+  }
+  .hero .lead { 
+    color: rgba(255,255,255,0.9); 
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  .hero h2 {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+  .hero .user-info {
+    background: rgba(255,255,255,0.1);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+  @media (max-width:900px){ 
+    .hero{ grid-template-columns:1fr; } 
+  }
+
+  /* GRID de accesos grandes (centrada) */
+  .quick-wrap{ display:flex; justify-content:center; }
+  .quick-grid{ 
+    display:grid; 
+    gap:1rem; 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    width:100%; 
+    max-width:1100px; 
+  }
+  .quick-card{ 
+    aspect-ratio: 1 / 1; 
+    background: var(--bg-card); 
+    border:1px solid var(--border); 
+    border-radius: 1.25rem; 
+    box-shadow: var(--shadow); 
+    display:flex; 
+    flex-direction:column; 
+    align-items:center; 
+    justify-content:center; 
+    padding:1.25rem; 
+    text-decoration:none; 
+    color: inherit; 
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; 
+  }
+  .quick-card:hover{ 
+    transform: translateY(-4px); 
+    box-shadow: var(--shadow-lg); 
+    border-color: var(--primary); 
+  }
+  .quick-card img{ 
+    max-width: 70%; 
+    max-height: 60%; 
+    object-fit: contain; 
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.12)); 
+    margin-bottom: .75rem; 
+  }
+  .quick-card .label{ 
+    font-weight: 800; 
+    letter-spacing:.2px; 
+    text-align:center; 
+  }
+  .quick-card .status {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+  }
+  .status.available {
+    color: #28a745;
+  }
+  .status.construction {
+    color: #ffc107;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <!-- HERO de bienvenida -->
+  <div class="hero">
+    <div>
+      <h2>¡Bienvenido/a, {{ request.user.get_full_name|default:request.user.username }}!</h2>
+      <p class="lead">
+        Has sido identificado correctamente en SIGMA DTF. Ahora puedes acceder a los sistemas de gestión de muestras y accesos de los laboratorios de la DTF del CIEMAT.
+      </p>
+    </div>
+    <div class="user-info">
+      <h4><i class="bi bi-person-badge"></i> Información de Usuario</h4>
+      <p><strong>Usuario:</strong> {{ request.user.username }}</p>
+      <p><strong>Email:</strong> {{ request.user.email }}</p>
+      <p><strong>Grupos:</strong> 
+        {% for group in request.user.groups.all %}
+          <span class="badge">{{ group.name }}</span>
+        {% empty %}
+          <span class="muted">Sin grupos asignados</span>
+        {% endfor %}
+      </p>
+    </div>
+  </div>
+
+  <!-- Accesos a laboratorios -->
+  <div class="card">
+    <h3 style="margin-bottom:.75rem;">Acceso a Laboratorios DTF</h3>
+    <div class="quick-wrap">
+      <div class="quick-grid">
+
+        <!-- S-LAB -->
+        <a class="quick-card" href="{% url 'sigmalab:dashboard' %}">
+          <img src="/media/Logos/sigma_lab.png" alt="S-LAB">
+          <div class="label">S-LAB</div>
+          <div class="status available"><i class="bi bi-patch-check-fill"></i> Disponible</div>
+        </a>
+
+        <!-- S-MEC -->
+        <a class="quick-card" href="{% url 'mec:panel_usuario' %}">
+          <img src="/media/Logos/sigma_mec.png" alt="S-MEC">
+          <div class="label">S-MEC</div>
+          <div class="status available"><i class="bi bi-patch-check-fill"></i> Disponible</div>
+        </a>
+
+        <!-- S-SIMS·Implant -->
+        <a class="quick-card" href="{% url 'dtf:lab_info' 'sims-implant' %}">
+          <img src="/media/Logos/logo_sigma_imp_sims.png" alt="S-SIMS·Implant">
+          <div class="label">S-SIMS·Implant</div>
+          <div class="status construction"><i class="bi bi-tools"></i> En desarrollo</div>
+        </a>
+
+        <!-- S-D&P (Desorción & Permeación) -->
+        <a class="quick-card" href="{% url 'dtf:lab_info' 'dp' %}">
+          <img src="/media/Logos/sigma_DP.png" alt="S-D&P">
+          <div class="label">S-D&amp;P</div>
+          <div class="status construction"><i class="bi bi-tools"></i> En desarrollo</div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Información adicional -->
+  <div class="card">
+    <h3><i class="bi bi-grid"></i> Información del Sistema</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <div>
+        <h4><i class="bi bi-flask"></i> S-LAB</h4>
+        <p>Sistema de gestión de muestras para análisis de laboratorio. Incluye solicitudes, seguimiento y gestión de muestras.</p>
+      </div>
+      <div>
+        <h4><i class="bi bi-gear-wide-connected"></i> S-MEC</h4>
+        <p>Sistema de gestión de ensayos mecánicos. Permite solicitar ensayos de dureza, tracción, fatiga y creep-fatiga.</p>
+      </div>
+      <div>
+        <h4><i class="bi bi-bullseye"></i> S-SIMS·Implant</h4>
+        <p>Sistema de gestión para análisis SIMS e implantación iónica. <em>Próximamente disponible.</em></p>
+      </div>
+      <div>
+        <h4><i class="bi bi-thermometer"></i> S-D&P</h4>
+        <p>Sistema de gestión para ensayos de desorción y permeación. <em>Próximamente disponible.</em></p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

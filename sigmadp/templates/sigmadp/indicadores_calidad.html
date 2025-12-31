@@ -1,0 +1,365 @@
+{% extends "sigmadp/base_sigmadp.html" %}
+{% load static %}
+
+{% block title %}Indicadores de Calidad - Sigma DP{% endblock %}
+
+{% block content %}
+<style>
+    :root{
+        --success:#28a745; --warning:#ffc107; --danger:#dc3545;
+    }
+
+    /* Base neutra: que .btn no "imponga" blanco */
+    .btn, .cta{
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border:1px solid var(--border);
+    }
+    .btn:hover{ background:#f1f5f9; color:var(--text-primary) }
+
+    /* Variante principal utilizada en el markup */
+    .btn-primary{
+        background: var(--primary-dark);
+        border-color: var(--primary-dark);
+        color:#fff;
+    }
+    .btn-primary:hover{ background:#0f4a1f }
+
+    /* Secundaria ya definida por ti */
+    .btn-secondary{ background: var(--accent); border-color: var(--accent); color:#fff }
+    .btn-secondary:hover{ background: var(--accent-light) }
+
+    /* Variantes outline que usas en los filtros */
+    .btn-outline-primary{
+        background: transparent; color: var(--primary-dark); border:1px solid var(--primary-dark);
+    }
+    .btn-outline-primary:hover{ background: rgba(21,93,39,.08) }
+
+    .btn-outline-success{
+        background: transparent; color: var(--success); border:1px solid var(--success);
+    }
+    .btn-outline-success:hover{ background: rgba(40,167,69,.1) }
+
+    .btn-outline-warning{
+        background: transparent; color: var(--warning); border:1px solid var(--warning);
+    }
+    .btn-outline-warning:hover{ background: rgba(255,193,7,.12) }
+
+    .btn-outline-danger{
+        background: transparent; color: var(--danger); border:1px solid var(--danger);
+    }
+    .btn-outline-danger:hover{ background: rgba(220,53,69,.12) }
+
+    /* Badges de estado usados en las tarjetas */
+    .bg-danger{ background: var(--danger)!important; color:#fff!important }
+    .bg-warning{ background: var(--warning)!important; color:#1f2937!important }
+    .bg-success{ background: var(--success)!important; color:#fff!important }
+
+    /* Estado activo del filtro para que destaque */
+    .filter-btn.active{ background: var(--primary-dark); color:#fff; border-color: var(--primary-dark) }
+
+    .indicador-card {
+        border-left: 4px solid #007bff;
+        transition: all 0.3s ease;
+    }
+    .indicador-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .cumple-indicador {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .no-cumple-indicador {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .sin-datos {
+        color: #6c757d;
+        font-style: italic;
+    }
+    .estadistica-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .estadistica-card .card-body {
+        padding: 1.5rem;
+    }
+    .estadistica-valor {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .estadistica-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-graph-up-arrow text-primary"></i>
+                        Indicadores de Calidad
+                    </h1>
+                    <p class="text-muted mb-0">Sistema de gestión de calidad para análisis de datos</p>
+                </div>
+                <div>
+                    <a href="{% url 'sigmadp:panel_tecnico' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver al Panel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Generales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card estadistica-card">
+                <div class="card-body text-center">
+                    <div class="estadistica-valor">{{ total_solicitudes }}</div>
+                    <div class="estadistica-label">Total Solicitudes</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card estadistica-card">
+                <div class="card-body text-center">
+                    <div class="estadistica-valor">{{ solicitudes_con_i1 }}</div>
+                    <div class="estadistica-label">Con I1 Calculado</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card estadistica-card">
+                <div class="card-body text-center">
+                    <div class="estadistica-valor">{{ solicitudes_con_i2 }}</div>
+                    <div class="estadistica-label">Con I2 Calculado</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card estadistica-card">
+                <div class="card-body text-center">
+                    <div class="estadistica-valor">{{ solicitudes_cumplen_i1|add:solicitudes_cumplen_i2 }}</div>
+                    <div class="estadistica-label">Cumplen Objetivos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promedios Generales -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card indicador-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock"></i>
+                        I1: Tiempo de Ejecución del Análisis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Promedio General:</strong><br>
+                            {% if promedio_i1 %}
+                                <span class="{% if promedio_i1 < 5 %}cumple-indicador{% else %}no-cumple-indicador{% endif %}">
+                                    {{ promedio_i1|floatformat:2 }} días
+                                </span>
+                            {% else %}
+                                <span class="sin-datos">Sin datos</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <strong>Valor de Referencia:</strong><br>
+                            <span class="text-muted">&lt; 5 días</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <strong>Ecuación:</strong> Fecha finalización - Fecha recepción
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card indicador-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-earmark-text"></i>
+                        I2: Tiempo de Entrega del Informe
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Promedio General:</strong><br>
+                            {% if promedio_i2 %}
+                                <span class="{% if promedio_i2 < 5 %}cumple-indicador{% else %}no-cumple-indicador{% endif %}">
+                                    {{ promedio_i2|floatformat:2 }} días
+                                </span>
+                            {% else %}
+                                <span class="sin-datos">Sin datos</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <strong>Valor de Referencia:</strong><br>
+                            <span class="text-muted">&lt; 5 días</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <strong>Ecuación:</strong> Fecha entrega - Fecha finalización
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Indicadores por Solicitud -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table"></i>
+                        Indicadores por Solicitud
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if indicadores_data %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Solicitud</th>
+                                        <th>Material</th>
+                                        <th>Estado</th>
+                                        <th>Fecha Recepción</th>
+                                        <th>I1 - Tiempo Análisis</th>
+                                        <th>I2 - Tiempo Entrega</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in indicadores_data %}
+                                    <tr>
+                                        <td>
+                                            <strong>#{{ data.solicitud.id }}</strong>
+                                        </td>
+                                        <td>{{ data.solicitud.material|truncatechars:30 }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if data.solicitud.estado == 'finalizada' %}success{% elif data.solicitud.estado == 'en_curso' %}warning{% else %}secondary{% endif %}">
+                                                {{ data.solicitud.get_estado_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ data.solicitud.creado_en|date:"d/m/Y H:i" }}</td>
+                                        <td>
+                                            {% if data.i1_dias is not None %}
+                                                <span class="{% if data.i1_cumple %}cumple-indicador{% else %}no-cumple-indicador{% endif %}">
+                                                    {{ data.i1_dias|floatformat:2 }} días
+                                                </span>
+                                            {% else %}
+                                                <span class="sin-datos">Sin datos</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if data.i2_dias is not None %}
+                                                <span class="{% if data.i2_cumple %}cumple-indicador{% else %}no-cumple-indicador{% endif %}">
+                                                    {{ data.i2_dias|floatformat:2 }} días
+                                                </span>
+                                            {% else %}
+                                                <span class="sin-datos">Sin datos</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#modalActualizar{{ data.solicitud.id }}">
+                                                <i class="bi bi-pencil"></i>
+                                                Actualizar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <h4 class="text-muted mt-3">No hay solicitudes</h4>
+                            <p class="text-muted">No se encontraron solicitudes para mostrar indicadores.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modales para actualizar fechas -->
+{% for data in indicadores_data %}
+<div class="modal fade" id="modalActualizar{{ data.solicitud.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil"></i>
+                    Actualizar Indicadores - Solicitud #{{ data.solicitud.id }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'sigmadp:actualizar_indicador' data.solicitud.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="fecha_finalizacion_analisis" class="form-label">
+                            <i class="bi bi-calendar-check"></i>
+                            Fecha de Finalización del Análisis
+                        </label>
+                        <input type="datetime-local" 
+                               class="form-control" 
+                               id="fecha_finalizacion_analisis" 
+                               name="fecha_finalizacion_analisis"
+                               value="{% if data.indicador.fecha_finalizacion_analisis %}{{ data.indicador.fecha_finalizacion_analisis|date:'Y-m-d\TH:i' }}{% endif %}">
+                        <div class="form-text">Fecha cuando se completó el análisis de la muestra</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_entrega_informe" class="form-label">
+                            <i class="bi bi-file-earmark-text"></i>
+                            Fecha de Entrega del Informe
+                        </label>
+                        <input type="datetime-local" 
+                               class="form-control" 
+                               id="fecha_entrega_informe" 
+                               name="fecha_entrega_informe"
+                               value="{% if data.indicador.fecha_entrega_informe %}{{ data.indicador.fecha_entrega_informe|date:'Y-m-d\TH:i' }}{% endif %}">
+                        <div class="form-text">Fecha cuando se entregó el informe al solicitante</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i>
+                        Actualizar Indicadores
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-actualizar la página cada 5 minutos para mantener los datos actualizados
+    setInterval(function() {
+        location.reload();
+    }, 300000); // 5 minutos
+});
+</script>
+
+{% endblock %}

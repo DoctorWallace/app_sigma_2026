@@ -1,0 +1,203 @@
+{% extends "base_dtf.html" %}
+{% load form_extras %}
+{% block title %}Bandeja de modificaciones{% endblock %}
+{% block page_title %}Bandeja de modificaciones{% endblock %}
+
+{% block extra_css %}
+<style>
+  .modifications-container {
+    display: grid;
+    gap: 1rem;
+  }
+  .modification-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s;
+  }
+  .modification-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  .modification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  .modification-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+    margin: 0;
+  }
+  .modification-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .status-pendiente { background: #fff3cd; color: #856404; }
+  .status-aprobada { background: #d1e7dd; color: #0f5132; }
+  .status-rechazada { background: #f8d7da; color: #721c24; }
+  .modification-content {
+    margin-bottom: 1rem;
+  }
+  .modification-description {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+  }
+  .modification-justification {
+    background: #e7f3ff;
+    padding: 1rem;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+  }
+  .modification-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+  .btn-review {
+    background: #007bff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+  }
+  .btn-review:hover {
+    background: #0056b3;
+    color: white;
+    text-decoration: none;
+  }
+  .btn-detail {
+    background: #6c757d;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+  }
+  .btn-detail:hover {
+    background: #545b62;
+    color: white;
+    text-decoration: none;
+  }
+  .no-modifications {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+  }
+  .no-modifications i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+  }
+  .urgency-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+  }
+  .urgency-high { background: #dc3545; }
+  .urgency-medium { background: #ffc107; }
+  .urgency-low { background: #28a745; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2 style="margin:0 0 1rem">
+    <i class="bi bi-inbox"></i> Bandeja de modificaciones
+  </h2>
+  
+  {% if modificaciones %}
+  <div class="modifications-container">
+    {% for mod in modificaciones %}
+    <div class="modification-card">
+      <div class="modification-header">
+        <h3 class="modification-title">
+          <span class="urgency-indicator urgency-{% if mod.fecha_solicitud|timesince|slice:":1"|add:0 > 7 %}high{% elif mod.fecha_solicitud|timesince|slice:":1"|add:0 > 3 %}medium{% else %}low{% endif %}"></span>
+          {{ mod.get_tipo_modificacion_display }}
+        </h3>
+        <div class="modification-meta">
+          <span class="status-badge status-{{ mod.estado }}">
+            {{ mod.get_estado_display }}
+          </span>
+          <span><i class="bi bi-calendar"></i> {{ mod.fecha_solicitud|date:"d/m/Y" }}</span>
+          <span><i class="bi bi-clock"></i> {{ mod.fecha_solicitud|time:"H:i" }}</span>
+        </div>
+      </div>
+      
+      <div class="modification-content">
+        <div class="modification-description">
+          <strong><i class="bi bi-info-circle"></i> Descripción del cambio:</strong>
+          <p style="margin: 0.5rem 0;">{{ mod.descripcion_cambio|truncatewords:30 }}</p>
+        </div>
+        
+        <div class="modification-justification">
+          <strong><i class="bi bi-chat-quote"></i> Justificación:</strong>
+          <p style="margin: 0.5rem 0;">{{ mod.justificacion|truncatewords:30 }}</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; font-size: 0.9rem; color: #6c757d;">
+          <div>
+            <strong><i class="bi bi-person"></i> Solicitante:</strong><br>
+            {{ mod.solicitante.first_name }} {{ mod.solicitante.last_name }}<br>
+            <small>{{ mod.solicitante.email }}</small>
+          </div>
+          <div>
+            <strong><i class="bi bi-file-text"></i> Solicitud original:</strong><br>
+            SOL#{{ mod.solicitud_original.pk }} - {{ mod.solicitud_original.material|truncatewords:5 }}<br>
+            <small>Estado: {{ mod.solicitud_original.get_estado_display }}</small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modification-actions">
+        <a href="{% url 'sigmalab:revisar-modificacion' mod.pk %}" class="btn-review">
+          <i class="bi bi-eye"></i> Revisar modificación
+        </a>
+        <a href="{% url 'sigmalab:detalle-solicitud' mod.solicitud_original.pk %}" class="btn-detail">
+          <i class="bi bi-file-text"></i> Ver solicitud original
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="no-modifications">
+    <i class="bi bi-inbox"></i>
+    <h3>No hay modificaciones pendientes</h3>
+    <p>No se encontraron solicitudes de modificación que requieran revisión.</p>
+    <a href="{% url 'sigmalab:bandeja-tecnico' %}" class="cta" style="margin-top: 1rem;">
+      <i class="bi bi-arrow-left"></i> Volver a la bandeja del técnico
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
