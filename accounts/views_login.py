@@ -3,6 +3,7 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
 
 from icts.auth_utils import (
@@ -37,8 +38,13 @@ class LoginICTS(LoginView):
         if not user_can_access_icts(user):
             return reverse("accounts:login_dtf")
         # respeta ?next=...; si no, redirige según el rol del usuario
-        if self.request.GET.get("next"):
-            return self.request.GET.get("next")
+        next_target = self.request.POST.get("next") or self.request.GET.get("next")
+        if next_target and url_has_allowed_host_and_scheme(
+            next_target,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure(),
+        ):
+            return next_target
 
         # Redirección automática según el rol
         groups = get_normalized_user_groups(user)

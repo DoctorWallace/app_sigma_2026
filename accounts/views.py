@@ -10,6 +10,7 @@ from django.contrib.auth import logout
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from icts.auth_utils import (
     DP_TECH_GROUPS,
@@ -58,16 +59,17 @@ class LoginDTF(LoginView):
         self.request.session["module"] = "dtf"
         return response
 
-    def get_redirect_url(self):
-        return self.get_success_url()
-
     def get_success_url(self):
         user = self.request.user
         if not user_can_access_dtf(user):
             messages.error(self.request, "Sin permisos para SIGMA DTF.")
             return reverse("accounts:login_icts")
         next_target = self.request.POST.get("next") or self.request.GET.get("next")
-        if next_target:
+        if next_target and url_has_allowed_host_and_scheme(
+            next_target,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure(),
+        ):
             return next_target
         groups = get_normalized_user_groups(user)
         # Redireccion automatica segun el rol DTF
@@ -135,7 +137,11 @@ def logout_view(request):
     request.session.clear()
     logout(request)
     
-    if next_url:
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
         return redirect(next_url)
     
     # Después del logout, siempre ir al portal principal
