@@ -151,6 +151,14 @@
               </a>
             {% endif %}
 
+            {% if request.user|is_any_technician or request.user.is_staff or request.user.is_superuser %}
+              <div class="nav-title">Perfilometro</div>
+              <a class="nav-item {% if request.resolver_match.namespace == 'sigmaprofilometer' %}active{% endif %}" href="{% url 'sigmaprofilometer:dashboard' %}">
+                <i class="bi bi-rulers"></i>
+                SIGMA Perfilometro
+              </a>
+            {% endif %}
+
             <!-- Opciones específicas de REVISOR -->
             {% if request.user|is_reviewer and not request.user|is_responsable %}
               <a class="nav-item" href="{% url 'icts:reviewer_dashboard_new' %}">

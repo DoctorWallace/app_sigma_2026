@@ -5,9 +5,9 @@
 
 {% block page_content %}
 <style>
-  tr.age-7 { background: #ffe5e5; }
-  tr.age-8 { background: #ffcccc; }
-  tr.age-9 { background: #ff9999; }
+  tr.age-7 { background: #ffecec; }
+  tr.age-8 { background: #ffd6d6; }
+  tr.age-9 { background: #ffb3b3; }
   tr.age-10 { background: #ff4d4d; color: #000; }
 </style>
 <!-- Estadísticas generales -->
@@ -18,8 +18,9 @@
   
   <div class="d-flex gap-4" style="flex-wrap: wrap; margin-bottom: 1rem;">
     <div class="badge blue">Borradores: {{ stats.draft }}</div>
-    <div class="badge yellow">Enviadas: {{ stats.submitted }}</div>
+    <div class="badge yellow">Enviadas: {{ stats.submitted_no_reviews }}</div>
     <div class="badge info">En revisión: {{ stats.under_review }}</div>
+    <div class="badge green">Pendientes de decisión: {{ stats.ready_for_decision }}</div>
     <div class="badge green">Aprobadas: {{ stats.approved }}</div>
     <div class="badge red">Rechazadas: {{ stats.rejected }}</div>
   </div>
@@ -37,10 +38,10 @@
       🔴 0 revisiones: {{ review_buckets.rojo_0 }}
     </div>
     <div class="badge yellow">
-      🟡 1–3 revisiones: {{ review_buckets.amarillo_1_3 }}
+      🟡 1+ revisiones: {{ review_buckets.amarillo_1_3 }}
     </div>
     <div class="badge green">
-      🟢 ≥4 revisiones (puedes decidir): {{ review_buckets.verde_4mas }}
+      🟢 revisiones completas: {{ review_buckets.verde_4mas }}
     </div>
   </div>
   
@@ -63,7 +64,7 @@
     <div class="table-responsive">
       <table>
         <thead>
-          <tr class="{{ p.age_class }}">
+          <tr>
             <th>ID</th>
             <th>Título</th>
             <th>Solicitante</th>
@@ -76,7 +77,7 @@
         </thead>
         <tbody>
           {% for p in pendientes %}
-          <tr>
+          <tr class="{{ p.age_class }}">
             <td><strong>#{{ p.id }}</strong></td>
             <td>
               <strong>{{ p.title }}</strong>
@@ -89,7 +90,7 @@
               <br><small class="muted">{{ p.applicant.email }}</small>
             </td>
             <td>
-              {% if p.num_reviews >= 4 %}
+              {% if p.num_reviews >= p.required_reviews %}
                 <span class="badge green">{{ p.num_reviews }}</span>
               {% elif p.num_reviews >= 1 %}
                 <span class="badge yellow">{{ p.num_reviews }}</span>
@@ -168,7 +169,7 @@
               <br><small class="muted">{{ p.applicant.email }}</small>
             </td>
             <td>
-              {% if p.num_reviews >= 4 %}
+              {% if p.num_reviews >= p.required_reviews %}
                 <span class="badge green">{{ p.num_reviews }}</span>
               {% elif p.num_reviews >= 1 %}
                 <span class="badge yellow">{{ p.num_reviews }}</span>

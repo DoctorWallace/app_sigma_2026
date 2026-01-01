@@ -17,6 +17,10 @@ urlpatterns = [
     path("sigmaconf/", include(("sigmaconf.urls", "sigmaconf"), namespace="sigmaconf")),
     path("sigmaimp/", include(("sigmaimp.urls", "sigmaimp"), namespace="sigmaimp")),
     path("sigmavdg/", include(("sigmavdg.urls", "sigmavdg"), namespace="sigmavdg")),
+    path(
+        "sigmaprofilometer/",
+        include(("sigmaprofilometer.urls", "sigmaprofilometer"), namespace="sigmaprofilometer"),
+    ),
     path("i18n/", include("django.conf.urls.i18n")),
     path('accounts/', include('accounts.urls')),    # ← AÑADIR
 ]

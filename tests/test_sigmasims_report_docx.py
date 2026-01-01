@@ -71,6 +71,7 @@ def test_sigmasims_report_export_docx(client):
     response = client.get(reverse("icts:sigmasims:report_export_docx", args=[proposal.pk]))
     assert response.status_code == 200
     assert response["Content-Type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    assert response.content
 
     doc = Document(BytesIO(response.content))
     text = "\n".join(paragraph.text for paragraph in doc.paragraphs)

@@ -968,11 +968,30 @@ def load_previous_proposal(request):
         
         try:
             # Obtener la propuesta anterior del usuario
-            previous_proposal = AccessProposal.objects.get(
-                id=proposal_id, 
-                applicant=request.user,
-                status__in=['accepted', 'submitted', 'changes_requested', 'rejected']  # Solo propuestas aprobadas o enviadas
-            )
+            status_filter = ['accepted', 'submitted', 'changes_requested', 'rejected']
+            previous_proposal = None
+            proposal_pk = None
+            try:
+                proposal_pk = int(proposal_id)
+            except (TypeError, ValueError):
+                proposal_pk = None
+
+            if proposal_pk is not None:
+                previous_proposal = AccessProposal.objects.filter(
+                    id=proposal_pk,
+                    applicant=request.user,
+                    status__in=status_filter,
+                ).first()
+
+            if previous_proposal is None:
+                previous_proposal = AccessProposal.objects.filter(
+                    access_code=proposal_id,
+                    applicant=request.user,
+                    status__in=status_filter,
+                ).first()
+
+            if previous_proposal is None:
+                raise AccessProposal.DoesNotExist
             
             # Preparar datos básicos de la propuesta
             proposal_data = {
@@ -1640,9 +1659,11 @@ def responsable_dashboard(request):
         "total": base_qs.count(),
         "draft": base_qs.filter(status="draft").count(),
         "submitted": base_qs.filter(status="submitted").count(),
+        "submitted_no_reviews": 0,
+        "under_review": 0,
+        "ready_for_decision": 0,
         "changes_requested": base_qs.filter(status="changes_requested").count(),
-        "under_review": base_qs.filter(status="submitted").count(),
-        "accepted": base_qs.filter(status="accepted").count(),
+        "approved": base_qs.filter(status="accepted").count(),
         "rejected": base_qs.filter(status="rejected").count(),
     }
     
@@ -1652,12 +1673,34 @@ def responsable_dashboard(request):
         completed_reviews=Count('reviews', filter=review_completed_filter),
     ).annotate(
         required_reviews=Case(
+            When(total_reviews__lt=1, then=Value(min_required_reviews)),
             When(total_reviews__lt=min_required_reviews, then=F("total_reviews")),
             default=Value(min_required_reviews),
             output_field=IntegerField(),
         ),
         num_reviews=F("completed_reviews"),
     ).prefetch_related("reviews__reviewer")
+
+    overdue_filter = Q(submitted_at__lte=overdue_threshold) | Q(
+        submitted_at__isnull=True, created_at__lte=overdue_threshold
+    )
+    decidable_filter = Q(completed_reviews__gte=F("required_reviews")) | overdue_filter
+    in_review_filter = (
+        Q(completed_reviews__gte=1)
+        & Q(completed_reviews__lt=F("required_reviews"))
+        & ~overdue_filter
+    )
+    submitted_no_reviews_filter = Q(completed_reviews=0) & ~overdue_filter
+    submitted_no_reviews = proposals_with_reviews.filter(submitted_no_reviews_filter).count()
+    under_review = proposals_with_reviews.filter(in_review_filter).count()
+    ready_for_decision = proposals_with_reviews.filter(decidable_filter).count()
+    stats.update(
+        {
+            "submitted_no_reviews": submitted_no_reviews,
+            "under_review": under_review,
+            "ready_for_decision": ready_for_decision,
+        }
+    )
     
     review_buckets = {
         "rojo_0": proposals_with_reviews.filter(completed_reviews=0).count(),
@@ -1670,18 +1713,12 @@ def responsable_dashboard(request):
         ).count(),
     }
     
-    # Propuestas pendientes de decisión (con al menos 4 revisiones)
-    overdue_filter = Q(submitted_at__lte=overdue_threshold) | Q(
-        submitted_at__isnull=True, created_at__lte=overdue_threshold
-    )
-    pendientes_qs = proposals_with_reviews.filter(
-        Q(completed_reviews__gte=F("required_reviews")) | overdue_filter
-    ).order_by('-created_at')[:20]
+    # Propuestas pendientes de decisión (con revisiones suficientes o SLA vencida)
+    pendientes_qs = proposals_with_reviews.filter(decidable_filter).order_by('-created_at')[:20]
     pendientes = list(pendientes_qs)
-    pendientes_ids = [proposal.pk for proposal in pendientes]
-    en_revision_qs = proposals_with_reviews.exclude(
-        pk__in=pendientes_ids
-    ).order_by("submitted_at", "created_at")
+    en_revision_qs = proposals_with_reviews.filter(in_review_filter).order_by(
+        "submitted_at", "created_at"
+    )
     en_revision = list(en_revision_qs)
 
     def _add_sla_fields(proposals):
@@ -1689,6 +1726,7 @@ def responsable_dashboard(request):
             submitted_at = proposal.submitted_at or proposal.created_at or now
             days_since = (now.date() - submitted_at.date()).days
             proposal.days_since_submitted = days_since
+            proposal.urgency_level = min(max(days_since, 0), 10)
             if days_since >= 10:
                 proposal.age_class = "age-10"
             elif days_since == 9:

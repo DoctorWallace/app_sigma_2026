@@ -5,7 +5,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.urls import reverse
 
-from icts.sigmasims.models import SIMSRecord
+from icts.models import AccessProposal
+from icts.sigmasims.models import SIMSRecord, SIMSReport
 
 
 def _create_user(username, groups):
@@ -22,9 +23,17 @@ def _create_user(username, groups):
 
 
 @pytest.mark.django_db
-def test_sigmasims_indicators_semester_avg(client):
-    user = _create_user("sims_indicators", ["tecnicos_sims"])
+def test_sigmasims_indicators_i1_i2_ok_flags(client):
+    tech = _create_user("sims_indicators", ["tecnicos_sims"])
+    applicant = _create_user("sims_applicant", ["icts_users"])
+    proposal = AccessProposal.objects.create(
+        applicant=applicant,
+        title="SIMS Indicators",
+        facility_sims=True,
+    )
+
     SIMSRecord.objects.create(
+        access_proposal=proposal,
         reception_date=date(2025, 1, 1),
         analysis_date=date(2025, 1, 11),
         sample_identification="Sample A",
@@ -33,18 +42,16 @@ def test_sigmasims_indicators_semester_avg(client):
         responsible_name="Resp",
         client_requirements="Req",
     )
-    SIMSRecord.objects.create(
-        reception_date=date(2025, 2, 1),
-        analysis_date=date(2025, 2, 21),
-        sample_identification="Sample B",
-        client_name="Client B",
-        sample_characteristics="Chars",
-        responsible_name="Resp",
-        client_requirements="Req",
+    SIMSReport.objects.create(
+        access_proposal=proposal,
+        delivery_date=date(2025, 2, 20),
     )
 
-    client.force_login(user)
+    client.force_login(tech)
     response = client.get(reverse("icts:sigmasims:indicators_dashboard"), {"year": 2025})
-    assert response.status_code == 200
+
     semester_data = response.context["semester_data"]
-    assert semester_data[0]["i1_avg"] == 15.0
+    assert semester_data[0]["i1_avg"] == 10.0
+    assert semester_data[0]["i1_ok"] is True
+    assert semester_data[0]["i2_avg"] == 40.0
+    assert semester_data[0]["i2_ok"] is False

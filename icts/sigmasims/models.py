@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models, transaction, connection
 from django.utils import timezone
 
@@ -12,15 +13,15 @@ class SIMSRecord(models.Model):
         blank=True,
         related_name="sims_records",
     )
-    sims_id = models.CharField(max_length=20, unique=True, blank=True)
-    request_code = models.CharField(max_length=64, blank=True)
-    reception_date = models.DateField()
-    sample_identification = models.CharField(max_length=255)
-    client_name = models.CharField(max_length=255)
+    sims_id = models.CharField(max_length=20, unique=True, blank=True, db_index=True)
+    request_code = models.CharField(max_length=64, blank=True, db_index=True)
+    reception_date = models.DateField(db_index=True)
+    sample_identification = models.CharField(max_length=255, db_index=True)
+    client_name = models.CharField(max_length=255, db_index=True)
     sample_characteristics = models.TextField()
     responsible_name = models.CharField(max_length=255)
     client_requirements = models.TextField()
-    analysis_date = models.DateField(null=True, blank=True)
+    analysis_date = models.DateField(null=True, blank=True, db_index=True)
     return_date = models.DateField(null=True, blank=True)
     incidents = models.TextField(blank=True)
     comments = models.TextField(blank=True)
@@ -57,11 +58,23 @@ class SIMSRecord(models.Model):
                     seq = 0
             return f"{prefix}{seq + 1:03d}"
 
+    def clean(self):
+        errors = {}
+        if self.analysis_date and self.reception_date:
+            if self.analysis_date < self.reception_date:
+                errors["analysis_date"] = "La fecha de analisis debe ser posterior a recepcion."
+        if self.return_date and self.analysis_date:
+            if self.return_date < self.analysis_date:
+                errors["return_date"] = "La fecha de devolucion debe ser posterior al analisis."
+        if errors:
+            raise ValidationError(errors)
+
     def save(self, *args, **kwargs):
         if not self.sims_id:
             self.sims_id = self._generate_sims_id()
         if not self.request_code and self.access_proposal:
             self.request_code = self.access_proposal.access_code or ""
+        self.full_clean()
         super().save(*args, **kwargs)
 
 

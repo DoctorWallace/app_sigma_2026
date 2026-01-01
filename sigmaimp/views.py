@@ -39,6 +39,10 @@ from .models import (
 
 
 def _is_imp_technician(user):
+    if not getattr(user, "is_authenticated", False):
+        return False
+    if user.is_staff or user.is_superuser:
+        return True
     groups = get_normalized_user_groups(user)
     return user_in_groups(user, IMP_TECH_GROUPS, groups)
 
@@ -184,10 +188,14 @@ def imp_dashboard(request):
     if not _ensure_imp_technician(request):
         return redirect("icts:dashboard")
 
+    is_privileged = request.user.is_staff or request.user.is_superuser
     accepted_proposals = AccessProposal.objects.filter(
         status="accepted", facility_imp=True, imp_sessions__isnull=True
     ).order_by("-created_at")
-    all_sessions = IMPSession.objects.filter(technician=request.user)
+    if is_privileged:
+        all_sessions = IMPSession.objects.all()
+    else:
+        all_sessions = IMPSession.objects.filter(technician=request.user)
     sessions = all_sessions.filter(status="in_progress").order_by("-created_at")
     context = {
         "accepted_proposals": accepted_proposals,

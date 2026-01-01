@@ -1,8 +1,10 @@
 from datetime import date
 from io import BytesIO
+from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.conf import settings
 from django.db.models import Q
 from django.http import FileResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -95,6 +97,23 @@ def _autofill_from_proposal(record):
         record.client_name = name
     if not record.request_code:
         record.request_code = record.access_proposal.access_code or ""
+
+
+def _replace_docx_placeholders(document, placeholders):
+    replaced = False
+    for paragraph in document.paragraphs:
+        for key, value in placeholders.items():
+            if key in paragraph.text:
+                paragraph.text = paragraph.text.replace(key, value)
+                replaced = True
+    for table in document.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for key, value in placeholders.items():
+                    if key in cell.text:
+                        cell.text = cell.text.replace(key, value)
+                        replaced = True
+    return replaced
 
 
 @login_required(login_url="/accounts/login/icts/")
@@ -329,25 +348,67 @@ def report_export_docx(request, proposal_id):
     if records and not request_code:
         request_code = records[0].request_code
 
-    document = Document()
-    document.add_heading("INFORME DE RESULTADOS", level=1)
-    document.add_paragraph(f"Código acceso: {request_code or ''}")
-    document.add_paragraph(f"Determinación: {report.determination}")
-    document.add_paragraph(f"Procedimiento: {report.procedure_used}")
-    document.add_paragraph(f"Técnica: {report.technique_text}")
-    document.add_paragraph("Descripción de las muestras:")
-    document.add_paragraph(report.sample_description)
-    document.add_paragraph("Condiciones de medida:")
-    document.add_paragraph(report.measurement_conditions)
-    document.add_paragraph("Resultados:")
-    document.add_paragraph(report.results_text)
-    document.add_paragraph("Conclusiones:")
-    document.add_paragraph(report.conclusions)
+    profile = getattr(proposal.applicant, "icts_profile", None)
+    client_name = (
+        proposal.contact_person
+        or proposal.applicant.get_full_name()
+        or proposal.applicant.get_username()
+    ).strip()
+    client_email = (proposal.email or proposal.applicant.email or "").strip()
+    client_phone = (proposal.phone or "").strip()
+    client_center = (getattr(profile, "center", "") or "").strip()
+    reception_date = records[0].reception_date if records else None
+    analysis_date = records[0].analysis_date if records else None
+
+    placeholders = {
+        "{{REQUEST_CODE}}": request_code or "",
+        "{{CLIENT_NAME}}": client_name,
+        "{{CLIENT_EMAIL}}": client_email,
+        "{{CLIENT_PHONE}}": client_phone,
+        "{{CLIENT_CENTER}}": client_center,
+        "{{RECEPTION_DATE}}": str(reception_date or ""),
+        "{{ANALYSIS_DATE}}": str(analysis_date or ""),
+        "{{DETERMINATION}}": report.determination or "",
+        "{{PROCEDURE}}": report.procedure_used or "",
+        "{{TECHNIQUE}}": report.technique_text or "",
+        "{{SAMPLE_DESCRIPTION}}": report.sample_description or "",
+        "{{MEASUREMENT_CONDITIONS}}": report.measurement_conditions or "",
+        "{{RESULTS_TEXT}}": report.results_text or "",
+        "{{CONCLUSIONS}}": report.conclusions or "",
+    }
+
+    template_path = (
+        Path(settings.BASE_DIR)
+        / "Templates de referencia"
+        / "PT-DTF-05-F05-Informe de resultados_v0_1.docx"
+    )
+    if template_path.exists():
+        document = Document(str(template_path))
+        placeholders_replaced = _replace_docx_placeholders(document, placeholders)
+    else:
+        document = Document()
+        placeholders_replaced = False
+
+    if not placeholders_replaced:
+        # Fallback: insert core sections if no template/placeholders are available.
+        document.add_heading("INFORME DE RESULTADOS", level=1)
+        document.add_paragraph(f"Codigo acceso: {request_code or ''}")
+        document.add_paragraph(f"Determinacion: {report.determination}")
+        document.add_paragraph(f"Procedimiento: {report.procedure_used}")
+        document.add_paragraph(f"Tecnica: {report.technique_text}")
+        document.add_paragraph("Descripcion de las muestras:")
+        document.add_paragraph(report.sample_description)
+        document.add_paragraph("Condiciones de medida:")
+        document.add_paragraph(report.measurement_conditions)
+        document.add_paragraph("Resultados:")
+        document.add_paragraph(report.results_text)
+        document.add_paragraph("Conclusiones:")
+        document.add_paragraph(report.conclusions)
 
     table = document.add_table(rows=1, cols=3)
     header_cells = table.rows[0].cells
     header_cells[0].text = "ID Lab"
-    header_cells[1].text = "Identificación cliente"
+    header_cells[1].text = "Identificacion cliente"
     header_cells[2].text = "Observaciones"
     for record in records:
         row_cells = table.add_row().cells
