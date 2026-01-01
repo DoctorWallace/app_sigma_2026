@@ -1,0 +1,40 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Indicadores SIMS</h2>
+  </div>
+
+  <form method="get" class="mb-3">
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="year">Año</label>
+      <input class="sem-form-control" type="number" id="year" name="year" value="{{ year }}">
+    </div>
+    <button class="sem-btn sem-btn-primary" type="submit">Actualizar</button>
+  </form>
+
+  <table class="sem-table">
+    <thead>
+      <tr>
+        <th>Semestre</th>
+        <th>I1 promedio (días)</th>
+        <th>Referencia</th>
+        <th>I2 promedio (días)</th>
+        <th>Referencia</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in semester_data %}
+      <tr>
+        <td>{{ item.label }}</td>
+        <td>{{ item.i1_avg|default:"-" }}</td>
+        <td>{% if item.i1_ok %}OK{% else %}NO OK{% endif %}</td>
+        <td>{{ item.i2_avg|default:"-" }}</td>
+        <td>{% if item.i2_ok %}OK{% else %}NO OK{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

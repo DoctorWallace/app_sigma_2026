@@ -1,0 +1,443 @@
+{% extends "base_icts.html" %}
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+{% block title %}{% block page_title %}SIGMA SIMS{% endblock %} - SIGMA ICTS{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Usar el esquema de colores de ICTS */
+  :root {
+    --sem-primary: #a50943;
+    --sem-primary-dark: #0f2a4a;
+    --sem-primary-light: #8b2d54;
+    --sem-accent: #b81735;
+    --sem-accent-light: #20c997;
+    --sem-success: #28a745;
+    --sem-warning: #ffc107;
+    --sem-danger: #dc3545;
+    --sem-info: #ffffff;
+    --sem-dark: #343a40;
+    --sem-light: #f8f9fa;
+    --sem-secondary: #6c757d;
+  }
+
+  /* Header principal */
+  .sem-header {
+    background: linear-gradient(135deg, var(--sem-primary) 30%, var(--sem-primary-dark) 70%);
+    color: #da1010;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 0 0 1rem 1rem;
+    box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3);
+  }
+
+  .sem-header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #071ae4;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .sem-header .subtitle {
+    margin: 0.5rem 0 0 0;
+    color: rgb(7, 129, 228);
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .sem-logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    object-fit: cover;
+    margin-right: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Navegación con estilo ICTS */
+  .sem-nav {
+    background: white;
+    padding: 0;
+    margin-bottom: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+  }
+
+  .sem-nav .nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .sem-nav .nav-item {
+    color: var(--sem-primary);
+    text-decoration: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 2px solid var(--sem-primary);
+    min-width: 140px;
+    justify-content: center;
+    text-shadow: none;
+  }
+
+  .sem-nav .nav-item:hover {
+    background: var(--sem-primary);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(26, 54, 93, 0.3);
+    border-color: var(--sem-primary-dark);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .sem-nav .nav-item.active {
+    background: #dcfce7;
+    color: #166534;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    border-color: #22c55e;
+    text-shadow: none;
+  }
+
+  .sem-nav .nav-item i {
+    font-size: 1.1rem;
+  }
+
+  /* Cards con estilo ICTS */
+  .sem-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+    margin-bottom: 2rem;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .sem-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
+  }
+
+  .sem-card-header {
+    border-bottom: 2px solid #2e5c93;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .sem-card-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--sem-primary);
+    margin: 0;
+    text-shadow: none;
+  }
+
+  /* Estadísticas */
+  .sem-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .sem-stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgb(224, 235, 241), 0 2px 4px -1px rgba(0,0,0,.06);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sem-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--sem-primary), var(--sem-accent));
+  }
+
+  .sem-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
+  }
+
+  .sem-stat-number {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--sem-primary);
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(26, 54, 93, 0.1);
+  }
+
+  .sem-stat-label {
+    color: #4b5563;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.9rem;
+  }
+
+  /* Botones con colores más oscuros */
+  .sem-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .sem-btn-primary {
+    background: #e2e8f0;
+    color: var(--sem-primary);
+    border: 2px solid var(--sem-primary);
+  }
+
+  .sem-btn-primary:hover {
+    background: var(--sem-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3);
+  }
+
+  .sem-btn-secondary {
+    background: #f7fafc;
+    color: var(--sem-dark);
+    border: 2px solid var(--sem-dark);
+  }
+
+  .sem-btn-secondary:hover {
+    background: var(--sem-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 58, 64, 0.3);
+  }
+
+  .sem-btn-success {
+    background: #dcfce7;
+    color: #166534;
+    border: 2px solid var(--sem-success);
+  }
+
+  .sem-btn-success:hover {
+    background: var(--sem-success);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+
+  .sem-btn-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border: 2px solid var(--sem-warning);
+  }
+
+  .sem-btn-warning:hover {
+    background: var(--sem-warning);
+    color: #212529;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+  }
+
+  .sem-btn-info {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 2px solid var(--sem-info);
+  }
+
+  .sem-btn-info:hover {
+    background: var(--sem-info);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+  }
+
+  /* Formularios */
+  .sem-form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .sem-form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--sem-primary);
+    font-size: 0.95rem;
+  }
+
+  .sem-form-control {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+  }
+
+  .sem-form-control:focus {
+    outline: none;
+    border-color: var(--sem-primary);
+    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+  }
+
+  /* Tablas */
+  .sem-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .sem-table th,
+  .sem-table td {
+    padding: 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .sem-table th {
+    background: var(--sem-light);
+    font-weight: 800;
+    color: var(--sem-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+  }
+
+  .sem-table tbody tr:hover {
+    background: #f7fafc;
+  }
+
+  .sem-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Badges */
+  .sem-badge {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+  }
+
+  .sem-badge-sem {
+    background: #1e40af;
+    color: white;
+    border-color: #1e3a8a;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .sem-badge-fib {
+    background: #166534;
+    color: white;
+    border-color: #14532d;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .sem-badge-success {
+    background: #166534;
+    color: white;
+    border-color: #14532d;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .sem-badge-warning {
+    background: #d97706;
+    color: white;
+    border-color: #b45309;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .sem-badge-danger {
+    background: #dc2626;
+    color: white;
+    border-color: #b91c1c;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sem-nav .nav-container {
+      flex-direction: column;
+    }
+
+    .sem-nav .nav-item {
+      width: 100%;
+      min-width: auto;
+    }
+
+    .sem-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sem-header">
+  <div style="display: flex; align-items: center;">
+    <img src="{{ MEDIA_URL }}Logos/sigma_sims.png" alt="SIGMA SIMS" class="sem-logo">
+    <div>
+      <h1>{% block sem_page_title %}SIGMA SIMS{% endblock %}</h1>
+      <p class="subtitle">Sistema de Gestión de Análisis SIMS</p>
+    </div>
+  </div>
+</div>
+
+<nav class="sem-nav">
+  <div class="nav-container">
+    <a href="{% url 'icts:sigmasims:dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <i class="bi bi-speedometer2"></i>
+      Dashboard
+    </a>
+    <a href="{% url 'icts:sigmasims:record_list' %}" class="nav-item {% if request.resolver_match.url_name == 'record_list' %}active{% endif %}">
+      <i class="bi bi-list-ul"></i>
+      Registro
+    </a>
+    <a href="{% url 'icts:sigmasims:docs_list' %}" class="nav-item {% if request.resolver_match.url_name == 'docs_list' %}active{% endif %}">
+      <i class="bi bi-folder2-open"></i>
+      Documentación
+    </a>
+    <a href="{% url 'icts:sigmasims:indicators_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'indicators_dashboard' %}active{% endif %}">
+      <i class="bi bi-graph-up"></i>
+      Indicadores
+    </a>
+  </div>
+</nav>
+
+{% block sem_content %}{% endblock %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Registro SIMS</h2>
+  </div>
+
+  <form method="get" class="mb-3">
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="date_from">Fecha desde</label>
+      <input class="sem-form-control" type="date" id="date_from" name="date_from" value="{{ date_from }}">
+    </div>
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="date_to">Fecha hasta</label>
+      <input class="sem-form-control" type="date" id="date_to" name="date_to" value="{{ date_to }}">
+    </div>
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="q">Búsqueda</label>
+      <input class="sem-form-control" type="text" id="q" name="q" value="{{ query }}" placeholder="ID, solicitud, cliente, muestra">
+    </div>
+    <button class="sem-btn sem-btn-primary" type="submit">Filtrar</button>
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:record_list' %}">Limpiar</a>
+    <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create' %}">Nuevo registro</a>
+    <a class="sem-btn sem-btn-info" href="{% url 'icts:sigmasims:record_export_xlsx' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Exportar Excel</a>
+  </form>
+
+  {% if records %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Solicitud</th>
+          <th>Fecha</th>
+          <th>Muestra</th>
+          <th>Cliente</th>
+          <th>I1 (días)</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in records %}
+        <tr>
+          <td>{{ record.sims_id }}</td>
+          <td>{{ record.request_code }}</td>
+          <td>{{ record.reception_date }}</td>
+          <td>{{ record.sample_identification }}</td>
+          <td>{{ record.client_name }}</td>
+          <td>{{ record.i1_days }}</td>
+          <td>
+            <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:record_edit' record.pk %}">Editar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay registros SIMS.</p>
+  {% endif %}
+</div>
+{% endblock %}

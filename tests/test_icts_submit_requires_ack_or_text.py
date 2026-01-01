@@ -29,8 +29,13 @@ def test_submit_requires_ack_or_text(client):
         title="Needs ack",
         facility_sem=True,
         scope="",
-        previous_experiments="",
-        references="",
+        project_name="Project A",
+        project_type="national",
+        funding_source="Grant A",
+        start_year=2024,
+        end_year=2024,
+        previous_experiments="Previous experiments",
+        references="Reference list",
     )
 
     client.force_login(user)

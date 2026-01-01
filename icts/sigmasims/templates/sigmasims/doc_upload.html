@@ -1,0 +1,16 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Subir documento SIMS</h2>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="sem-btn sem-btn-primary" type="submit">Subir</button>
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:docs_list' %}">Volver</a>
+  </form>
+</div>
+{% endblock %}

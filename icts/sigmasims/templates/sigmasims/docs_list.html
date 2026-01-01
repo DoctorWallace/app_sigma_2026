@@ -1,0 +1,40 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Documentación SIMS</h2>
+  </div>
+
+  {% if documents %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Código</th>
+          <th>Versión</th>
+          <th>Fecha</th>
+          <th>Descargar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in documents %}
+        <tr>
+          <td>{{ doc.title }}</td>
+          <td>{{ doc.code }}</td>
+          <td>{{ doc.version }}</td>
+          <td>{{ doc.date }}</td>
+          <td>
+            <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:doc_download' doc.pk %}">
+              Descargar
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay documentación activa.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -50,6 +50,8 @@ def test_responsable_dashboard_uses_completed_reviews_for_pending_list(client):
     response = client.get(reverse("icts:responsable_dashboard"))
     pendientes = list(response.context["pendientes"])
     assert proposal in pendientes
+    pending = next(p for p in pendientes if p.pk == proposal.pk)
+    assert pending.num_reviews == pending.completed_reviews
 
 
 @pytest.mark.django_db

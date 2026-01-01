@@ -4,6 +4,12 @@
 {% block page_title %}👨‍💼 Panel del Responsable{% endblock %}
 
 {% block page_content %}
+<style>
+  tr.age-7 { background: #ffe5e5; }
+  tr.age-8 { background: #ffcccc; }
+  tr.age-9 { background: #ff9999; }
+  tr.age-10 { background: #ff4d4d; color: #000; }
+</style>
 <!-- Estadísticas generales -->
 <div class="card">
   <div class="card-header">
@@ -57,12 +63,13 @@
     <div class="table-responsive">
       <table>
         <thead>
-          <tr>
+          <tr class="{{ p.age_class }}">
             <th>ID</th>
             <th>Título</th>
             <th>Solicitante</th>
             <th>Revisiones</th>
             <th>Revisores que han valorado</th>
+            <th>Días desde envío</th>
             <th>Creada</th>
             <th>Acciones</th>
           </tr>
@@ -94,6 +101,9 @@
               <small class="muted">{{ p.reviewers_done }}</small>
             </td>
             <td>
+              <small>{{ p.days_since_submitted }}</small>
+            </td>
+            <td>
               <small>{{ p.created_at|date:"Y-m-d H:i" }}</small>
             </td>
             <td>
@@ -101,7 +111,7 @@
                 <a href="{% url 'icts:proposal_detail' p.id %}" class="btn btn-primary">
                   👁️ Ver
                 </a>
-                {% if p.num_reviews >= 4 %}
+                {% if p.can_decide %}
                   <a href="{% url 'icts:proposal_decide' p.id %}" class="btn btn-success">
                     ⚖️ Decidir
                   </a>
@@ -117,6 +127,80 @@
     <div class="alert info">
       <strong>✅ No hay propuestas pendientes</strong><br>
       Todas las propuestas han sido procesadas o están en proceso de revisión.
+    </div>
+  {% endif %}
+</div>
+
+<!-- En revisión (seguimiento SLA) -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">En revisión (seguimiento SLA)</h2>
+    <p class="muted">Propuestas enviadas que aún no están listas para decidir</p>
+  </div>
+
+  {% if en_revision %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Solicitante</th>
+            <th>Revisiones</th>
+            <th>Revisores que han valorado</th>
+            <th>Días desde envío</th>
+            <th>Creada</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in en_revision %}
+          <tr class="{{ p.age_class }}">
+            <td><strong>#{{ p.id }}</strong></td>
+            <td>
+              <strong>{{ p.title }}</strong>
+              {% if p.scope %}
+                <br><small class="muted">{{ p.scope|truncatechars:100 }}</small>
+              {% endif %}
+            </td>
+            <td>
+              {{ p.applicant.get_full_name|default:p.applicant.username }}
+              <br><small class="muted">{{ p.applicant.email }}</small>
+            </td>
+            <td>
+              {% if p.num_reviews >= 4 %}
+                <span class="badge green">{{ p.num_reviews }}</span>
+              {% elif p.num_reviews >= 1 %}
+                <span class="badge yellow">{{ p.num_reviews }}</span>
+              {% else %}
+                <span class="badge red">0</span>
+              {% endif %}
+            </td>
+            <td>
+              <small class="muted">{{ p.reviewers_done }}</small>
+            </td>
+            <td>
+              <small>{{ p.days_since_submitted }}</small>
+            </td>
+            <td>
+              <small>{{ p.created_at|date:"Y-m-d H:i" }}</small>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <a href="{% url 'icts:proposal_detail' p.id %}" class="btn btn-primary">
+                  Ver
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert info">
+      <strong>Sin propuestas en revisión</strong><br>
+      No hay propuestas en curso de revisión pendientes de completar.
     </div>
   {% endif %}
 </div>

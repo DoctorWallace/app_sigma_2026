@@ -62,6 +62,15 @@ SEM_TECH_GROUPS = _clean_targets({
     "sem technicians",
     "fib technicians",
 })
+SIMS_TECH_GROUPS = _clean_targets({
+    "tecnicos_sims",
+    "tecnico_sims",
+    "tecnico_responsable_s_sims",
+    "tecnicos_responsables_s_sims",
+    "sims technicians",
+    "sims_technicians",
+    "sims-technicians",
+})
 IMP_TECH_GROUPS = _clean_targets({
     "imp_technicians",
     "implant_technicians",
@@ -102,6 +111,7 @@ OLMAT_TECH_GROUPS = _clean_targets({
 
 ICTS_TECH_GROUPS = (
     SEM_TECH_GROUPS
+    | SIMS_TECH_GROUPS
     | IMP_TECH_GROUPS
     | VDG_TECH_GROUPS
     | CONF_TECH_GROUPS
@@ -121,6 +131,7 @@ ALL_TECH_GROUPS = (
     | DP_TECH_GROUPS
     | OPTICS_TECH_GROUPS
     | SEM_TECH_GROUPS
+    | SIMS_TECH_GROUPS
     | IMP_TECH_GROUPS
     | VDG_TECH_GROUPS
     | CONF_TECH_GROUPS
@@ -214,6 +225,10 @@ def is_sem_tech(user, groups: Optional[Set[str]] = None) -> bool:
     """Verifica si el usuario es técnico de SEM/FIB."""
     return user_in_groups(user, SEM_TECH_GROUPS, groups)
 
+def is_sims_tech(user, groups: Optional[Set[str]] = None) -> bool:
+    """Verifica si el usuario es técnico de SIMS."""
+    return user_in_groups(user, SIMS_TECH_GROUPS, groups)
+
 def is_imp_tech(user, groups: Optional[Set[str]] = None) -> bool:
     """Verifica si el usuario es técnico de Implantador."""
     return user_in_groups(user, IMP_TECH_GROUPS, groups)
@@ -288,6 +303,7 @@ CANONICAL_GROUP_NAMES = {
     
     # Técnicos especializados
     "tecnicos_sem_fib",
+    "tecnicos_sims",
     "vdg_technicians",
     "tecnico_vdg",
     "imp_technicians",
@@ -309,6 +325,7 @@ __all__ = [
     "DP_TECH_GROUPS",
     "OPTICS_TECH_GROUPS",
     "SEM_TECH_GROUPS",
+    "SIMS_TECH_GROUPS",
     "IMP_TECH_GROUPS",
     "VDG_TECH_GROUPS",
     "CONF_TECH_GROUPS",
@@ -334,6 +351,7 @@ __all__ = [
     "is_dp_tech",
     "is_optics_tech",
     "is_sem_tech",
+    "is_sims_tech",
     "is_imp_tech",
     "is_vdg_tech",
     "is_confocal_tech",

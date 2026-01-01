@@ -50,6 +50,14 @@ def build_access_code(proposal, user_siglas=None, include_olmat=False):
     return f"{siglas}_{month:02d}_{year:02d}_{sequence}"
 
 
+def build_rejected_code(proposal):
+    submitted_at = proposal.submitted_at or timezone.now()
+    month = submitted_at.month
+    year = submitted_at.year
+    seq = proposal.user_sequence_number or 0
+    return f"rejected_{month:02d}_{year}_{seq}"
+
+
 def build_olmat_access_code(proposal, olmat_request=None, user_siglas=None):
     """Construye código independiente para solicitudes OLMAT (OLMAT + siglas + año + id)."""
     from django.utils import timezone

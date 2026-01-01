@@ -1,0 +1,18 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">
+      {% if is_create %}Nuevo registro SIMS{% else %}Editar registro SIMS{% endif %}
+    </h2>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="sem-btn sem-btn-primary" type="submit">Guardar</button>
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:record_list' %}">Volver</a>
+  </form>
+</div>
+{% endblock %}

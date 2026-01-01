@@ -11,6 +11,15 @@ ACK_DATA = {
     "ack_empty_previous_experiments": "on",
     "ack_empty_references": "on",
 }
+REQUIRED_SUBMIT_FIELDS = {
+    "project_name": "Project A",
+    "project_type": "national",
+    "funding_source": "Grant A",
+    "start_year": 2024,
+    "end_year": 2024,
+    "previous_experiments": "Previous experiments",
+    "references": "Reference list",
+}
 
 
 def _create_user(username, email, group_names):
@@ -29,6 +38,7 @@ def test_olmat_only_does_not_create_reviews(client):
         applicant=user,
         title="OLMAT only",
         facility_olmat=True,
+        **REQUIRED_SUBMIT_FIELDS,
     )
 
     client.force_login(user)
@@ -105,6 +115,7 @@ def test_olmat_request_created_from_facility_data(client):
         applicant=user,
         title="OLMAT data",
         facility_olmat=True,
+        **REQUIRED_SUBMIT_FIELDS,
         facility_data={
             "olmat": {
                 "olmat_service_type": "research",

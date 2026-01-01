@@ -63,4 +63,5 @@ urlpatterns = [
     
     # SIGMA SEM/FIB
     path("sigmasem/", include("icts.sigmasem.urls")),
+    path("sigmasims/", include(("icts.sigmasims.urls", "sigmasims"), namespace="sigmasims")),
 ]

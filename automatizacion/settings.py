@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     "sigmalab.apps.SigmalabConfig",
     "icts.apps.IctsConfig",
     "icts.sigmasem.apps.SigmasemConfig",
+    "icts.sigmasims.apps.SigmaSimsConfig",
     "sigmadp.apps.SigmadpConfig",
     "sigmaconf.apps.SigmaconfConfig",
     "sigmaimp.apps.SigmaimpConfig",

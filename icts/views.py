@@ -21,6 +21,7 @@ from django.db.models import Exists, OuterRef
 from .models import AccessProposal, ProposalReview, OLMATRequest, ICTSUserProfile
 from .utils import (
     build_access_code,
+    build_rejected_code,
     build_olmat_access_code,
     ensure_user_siglas,
     get_next_user_sequence,
@@ -272,12 +273,17 @@ def _fill_facility_data_from_drafts(payload, selected_techniques, request, propo
 
     updated = False
     for tech in selected_techniques:
-        existing = payload.get(tech)
-        if isinstance(existing, dict) and existing:
-            continue
         draft_data = bucket.get(tech)
-        if isinstance(draft_data, dict) and draft_data:
+        if not isinstance(draft_data, dict) or not draft_data:
+            continue
+        existing = payload.get(tech)
+        if not isinstance(existing, dict):
             payload[tech] = draft_data
+            updated = True
+            continue
+        merged = _merge_technique_payload(existing, draft_data)
+        if merged != existing:
+            payload[tech] = merged
             updated = True
 
     return payload, updated
@@ -384,6 +390,34 @@ def _validate_imp_data(proposal, facility_data):
             errors.append("Ion Implanter: diametro maximo para large area es 20 mm.")
 
     return errors
+
+
+def _validate_required_steps_for_submit(obj):
+    missing = []
+    project_type_choices = {choice[0] for choice in AccessProposal.PROJECT_TYPE_CHOICES}
+
+    if _is_blank_value(getattr(obj, "project_name", None)):
+        missing.append("Paso 4: Nombre del proyecto")
+    project_type = getattr(obj, "project_type", None)
+    if _is_blank_value(project_type) or project_type not in project_type_choices:
+        missing.append("Paso 4: Tipo de proyecto")
+    if _is_blank_value(getattr(obj, "funding_source", None)):
+        missing.append("Paso 4: Fuente de financiacion")
+    start_year = getattr(obj, "start_year", None)
+    end_year = getattr(obj, "end_year", None)
+    if start_year is None:
+        missing.append("Paso 4: Ano de inicio")
+    if end_year is None:
+        missing.append("Paso 4: Ano de fin")
+    if start_year is not None and end_year is not None and end_year < start_year:
+        missing.append("Paso 4: Ano fin debe ser >= ano inicio")
+
+    if _is_blank_value(getattr(obj, "previous_experiments", None)):
+        missing.append("Paso 6: Experimentos previos")
+    if _is_blank_value(getattr(obj, "references", None)):
+        missing.append("Paso 6: Referencias")
+
+    return missing
 
 
 def _require_text_or_ack(obj, post):
@@ -937,7 +971,7 @@ def load_previous_proposal(request):
             previous_proposal = AccessProposal.objects.get(
                 id=proposal_id, 
                 applicant=request.user,
-                status__in=['accepted', 'submitted', 'changes_requested']  # Solo propuestas aprobadas o enviadas
+                status__in=['accepted', 'submitted', 'changes_requested', 'rejected']  # Solo propuestas aprobadas o enviadas
             )
             
             # Preparar datos básicos de la propuesta
@@ -1087,12 +1121,14 @@ def proposal_detail(request, pk):
     total_reviews = obj.reviews.count()
     min_required_reviews = getattr(settings, "ICTS_MIN_REVIEWS_REQUIRED", 4)
     required_reviews = min(min_required_reviews, total_reviews)
+    submitted_at = obj.submitted_at or obj.created_at
+    days_since_submitted = (timezone.now().date() - submitted_at.date()).days
     has_icts_facilities = _has_icts_facilities(obj)
     if has_icts_facilities:
         can_decide = (
             is_responsable(request.user, groups)
             and obj.status == "submitted"
-            and decided >= required_reviews
+            and (decided >= required_reviews or days_since_submitted >= 10)
         )
     else:
         can_decide = is_responsable(request.user, groups) and obj.status == "submitted"
@@ -1183,6 +1219,7 @@ def proposal_detail(request, pk):
             "facility_data_raw": facility_data_raw,
             "review_summary": review_summary,
             "review_summary_comments": review_summary_comments,
+            "days_since_submitted": days_since_submitted,
         }
     )
 
@@ -1304,6 +1341,13 @@ def proposal_submit(request, pk):
         obj = locked_qs.get(pk=obj.pk)
         if not obj.has_icts_techniques and not obj.facility_olmat:
             messages.error(request, "Debes seleccionar al menos una tecnica antes de enviar.")
+            return redirect("icts:proposal_detail", pk=obj.pk)
+        missing_steps = _validate_required_steps_for_submit(obj)
+        if missing_steps:
+            messages.error(
+                request,
+                "Faltan campos requeridos: " + ", ".join(missing_steps),
+            )
             return redirect("icts:proposal_detail", pk=obj.pk)
         imp_errors = _validate_imp_data(obj, obj.facility_data)
         if imp_errors:
@@ -1588,6 +1632,8 @@ def responsable_dashboard(request):
     min_required_reviews = getattr(settings, "ICTS_MIN_REVIEWS_REQUIRED", 4)
     review_completed_filter = Q(reviews__decision__in=['approve', 'reject', 'request_changes'])
     proposal_filter = _icts_facilities_q(prefix="proposal__")
+    now = timezone.now()
+    overdue_threshold = now - timedelta(days=10)
     
     # Estadísticas básicas
     stats = {
@@ -1609,8 +1655,9 @@ def responsable_dashboard(request):
             When(total_reviews__lt=min_required_reviews, then=F("total_reviews")),
             default=Value(min_required_reviews),
             output_field=IntegerField(),
-        )
-    )
+        ),
+        num_reviews=F("completed_reviews"),
+    ).prefetch_related("reviews__reviewer")
     
     review_buckets = {
         "rojo_0": proposals_with_reviews.filter(completed_reviews=0).count(),
@@ -1624,9 +1671,54 @@ def responsable_dashboard(request):
     }
     
     # Propuestas pendientes de decisión (con al menos 4 revisiones)
-    pendientes = proposals_with_reviews.filter(
-        completed_reviews__gte=F("required_reviews")
+    overdue_filter = Q(submitted_at__lte=overdue_threshold) | Q(
+        submitted_at__isnull=True, created_at__lte=overdue_threshold
+    )
+    pendientes_qs = proposals_with_reviews.filter(
+        Q(completed_reviews__gte=F("required_reviews")) | overdue_filter
     ).order_by('-created_at')[:20]
+    pendientes = list(pendientes_qs)
+    pendientes_ids = [proposal.pk for proposal in pendientes]
+    en_revision_qs = proposals_with_reviews.exclude(
+        pk__in=pendientes_ids
+    ).order_by("submitted_at", "created_at")
+    en_revision = list(en_revision_qs)
+
+    def _add_sla_fields(proposals):
+        for proposal in proposals:
+            submitted_at = proposal.submitted_at or proposal.created_at or now
+            days_since = (now.date() - submitted_at.date()).days
+            proposal.days_since_submitted = days_since
+            if days_since >= 10:
+                proposal.age_class = "age-10"
+            elif days_since == 9:
+                proposal.age_class = "age-9"
+            elif days_since == 8:
+                proposal.age_class = "age-8"
+            elif days_since == 7:
+                proposal.age_class = "age-7"
+            else:
+                proposal.age_class = ""
+
+            completed = [
+                review
+                for review in proposal.reviews.all()
+                if review.decision != "pending"
+            ]
+            reviewer_names = []
+            for review in completed:
+                reviewer = review.reviewer
+                name = (reviewer.get_full_name() or reviewer.get_username()).strip()
+                if name:
+                    reviewer_names.append(name)
+            proposal.reviewers_done = ", ".join(reviewer_names)
+            proposal.can_decide = (
+                proposal.completed_reviews >= proposal.required_reviews
+                or proposal.days_since_submitted >= 10
+            )
+
+    _add_sla_fields(pendientes)
+    _add_sla_fields(en_revision)
     
     # Últimas decisiones
     ultimas = base_qs.filter(
@@ -1769,6 +1861,7 @@ def responsable_dashboard(request):
         "stats": stats,
         "review_buckets": review_buckets,
         "pendientes": pendientes,
+        "en_revision": en_revision,
         "ultimas": ultimas,
         "reviewer_stats": reviewer_stats,
         "session_issues": session_issues,
@@ -2481,6 +2574,19 @@ def proposal_decide(request, pk):
         if decision == "changes_requested" and not responsable_comment:
             messages.error(request, "Debes indicar los cambios solicitados.")
             return redirect("icts:proposal_detail", pk=obj.pk)
+        if obj.status == "submitted" and _has_icts_facilities(obj):
+            total_reviews = obj.reviews.count()
+            min_required_reviews = getattr(settings, "ICTS_MIN_REVIEWS_REQUIRED", 4)
+            required_reviews = min(min_required_reviews, total_reviews)
+            decided = obj.reviews.exclude(decision="pending").count()
+            submitted_at = obj.submitted_at or obj.created_at or timezone.now()
+            days_since_submitted = (timezone.now().date() - submitted_at.date()).days
+            if decided < required_reviews and days_since_submitted < 10:
+                messages.error(
+                    request,
+                    "No se puede decidir hasta tener suficientes revisiones o 10 dias desde el envio.",
+                )
+                return redirect("icts:proposal_detail", pk=obj.pk)
         obj.status = decision
         update_fields = ["status"]
         if decision == "changes_requested":
@@ -2489,6 +2595,9 @@ def proposal_decide(request, pk):
         elif obj.responsable_comment:
             obj.responsable_comment = ""
             update_fields.append("responsable_comment")
+        if decision == "rejected":
+            obj.access_code = build_rejected_code(obj)
+            update_fields.append("access_code")
         # Generar access_code solo al aprobar y si esta vacio
         if decision == "accepted" and not obj.access_code:
             include_olmat_in_code = not getattr(obj, "facility_olmat", False)

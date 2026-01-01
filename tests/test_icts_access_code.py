@@ -12,6 +12,15 @@ ACK_DATA = {
     "ack_empty_previous_experiments": "on",
     "ack_empty_references": "on",
 }
+REQUIRED_SUBMIT_FIELDS = {
+    "project_name": "Project A",
+    "project_type": "national",
+    "funding_source": "Grant A",
+    "start_year": 2024,
+    "end_year": 2024,
+    "previous_experiments": "Previous experiments",
+    "references": "Reference list",
+}
 
 
 def _create_icts_user(username: str, email: str):
@@ -28,8 +37,18 @@ def test_access_code_sequence_per_user(client):
     AccessProposal.objects.create(applicant=other, title="Noise")
 
     user = _create_icts_user("alice", "alice@example.com")
-    proposal1 = AccessProposal.objects.create(applicant=user, title="P1", facility_sem=True)
-    proposal2 = AccessProposal.objects.create(applicant=user, title="P2", facility_sem=True)
+    proposal1 = AccessProposal.objects.create(
+        applicant=user,
+        title="P1",
+        facility_sem=True,
+        **REQUIRED_SUBMIT_FIELDS,
+    )
+    proposal2 = AccessProposal.objects.create(
+        applicant=user,
+        title="P2",
+        facility_sem=True,
+        **REQUIRED_SUBMIT_FIELDS,
+    )
 
     client.force_login(user)
     client.post(reverse("icts:proposal_submit", args=[proposal1.pk]), ACK_DATA)
@@ -60,6 +79,7 @@ def test_access_code_excludes_olmat(client):
         title="OLMAT",
         facility_sem=True,
         facility_olmat=True,
+        **REQUIRED_SUBMIT_FIELDS,
     )
 
     client.force_login(user)

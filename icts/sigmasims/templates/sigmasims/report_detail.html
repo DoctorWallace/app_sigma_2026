@@ -1,0 +1,79 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Informe SIMS</h2>
+  </div>
+
+  <div class="mb-3">
+    <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_edit' proposal.pk %}">Editar informe</a>
+    {% if report %}
+      <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:report_export_docx' proposal.pk %}">Exportar DOCX</a>
+    {% endif %}
+  </div>
+
+  {% if report %}
+    <p><strong>Determinación:</strong> {{ report.determination }}</p>
+    <p><strong>Procedimiento:</strong> {{ report.procedure_used }}</p>
+    <p><strong>Técnica:</strong> {{ report.technique_text }}</p>
+  {% else %}
+    <p>No hay informe creado.</p>
+  {% endif %}
+
+  <h3>Muestras</h3>
+  {% if records %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Identificación</th>
+          <th>Comentarios</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in records %}
+        <tr>
+          <td>{{ record.sims_id }}</td>
+          <td>{{ record.sample_identification }}</td>
+          <td>{{ record.comments }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay muestras asociadas.</p>
+  {% endif %}
+</div>
+
+{% if report %}
+  <div class="sem-card">
+    <div class="sem-card-header">
+      <h2 class="sem-card-title">Adjuntos</h2>
+    </div>
+    <form method="post" action="{% url 'icts:sigmasims:report_add_image' proposal.pk %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="sem-form-group">
+        <label class="sem-form-label" for="image">Añadir imagen</label>
+        <input class="sem-form-control" type="file" name="image" id="image">
+      </div>
+      <div class="sem-form-group">
+        <input class="sem-form-control" type="text" name="caption" placeholder="Descripción">
+      </div>
+      <button class="sem-btn sem-btn-primary" type="submit">Subir imagen</button>
+    </form>
+
+    <form method="post" action="{% url 'icts:sigmasims:report_add_file' proposal.pk %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="sem-form-group">
+        <label class="sem-form-label" for="file">Añadir archivo</label>
+        <input class="sem-form-control" type="file" name="file" id="file">
+      </div>
+      <div class="sem-form-group">
+        <input class="sem-form-control" type="text" name="caption" placeholder="Descripción">
+      </div>
+      <button class="sem-btn sem-btn-secondary" type="submit">Subir archivo</button>
+    </form>
+  </div>
+{% endif %}
+{% endblock %}

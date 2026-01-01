@@ -11,6 +11,15 @@ ACK_DATA = {
     "ack_empty_previous_experiments": "on",
     "ack_empty_references": "on",
 }
+REQUIRED_SUBMIT_FIELDS = {
+    "project_name": "Project A",
+    "project_type": "national",
+    "funding_source": "Grant A",
+    "start_year": 2024,
+    "end_year": 2024,
+    "previous_experiments": "Previous experiments",
+    "references": "Reference list",
+}
 
 
 def _create_icts_user(username: str, email: str):
@@ -52,6 +61,7 @@ def test_submit_uses_historical_count_for_sequence(client):
         applicant=user,
         title="New Draft",
         facility_sem=True,
+        **REQUIRED_SUBMIT_FIELDS,
     )
 
     client.force_login(user)

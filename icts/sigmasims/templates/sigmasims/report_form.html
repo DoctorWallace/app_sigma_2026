@@ -1,0 +1,16 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Editar informe SIMS</h2>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="sem-btn sem-btn-primary" type="submit">Guardar</button>
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}">Volver</a>
+  </form>
+</div>
+{% endblock %}

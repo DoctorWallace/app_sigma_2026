@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.utils import timezone
 from django.db.models import Q
 from django.core.files.storage import default_storage
@@ -281,13 +281,16 @@ def update_report_files(request, pk):
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_sem_technician)
 def get_proposal_samples(request, proposal_id):
     """Obtener muestras de una propuesta específica"""
-    
     try:
-        proposal = get_object_or_404(AccessProposal, pk=proposal_id)
+        proposal = get_object_or_404(AccessProposal, pk=proposal_id, status="accepted")
+        if not (proposal.facility_sem or proposal.facility_sem_fib):
+            raise Http404
         samples = []
-        
+
         if proposal.facility_data:
             sem_data = proposal.facility_data.get('sem', {})
             for key, value in sem_data.items():
@@ -299,9 +302,11 @@ def get_proposal_samples(request, proposal_id):
                         'identification': value,
                         'name': sample_name
                     })
-        
+
         return JsonResponse({'samples': samples})
-        
+
+    except Http404:
+        raise
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
