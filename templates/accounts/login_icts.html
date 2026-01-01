@@ -1,8 +1,9 @@
 {% extends "base_icts.html" %}
+{% load i18n %}
 {% load widget_tweaks %}
 {% load form_extras %}
 
-{% block title %}Iniciar sesión · SIGMA ICTS{% endblock %}
+{% block title %}{% trans "Iniciar sesión · SIGMA ICTS" %}{% endblock %}
 {% block page_title %}<span id="ictsLoginClock" class="clock" style="font-size:1.1rem"></span>{% endblock %}
 
 {% block extra_css %}
@@ -24,8 +25,8 @@
   <div class="login-form">
     <div class="text-center" style="margin-bottom:1rem">
       <img src="/media/Logos/logo_sigma.png" alt="SIGMA ICTS" style="height:100px; margin-bottom:.5rem">
-      <h2 style="color:var(--primary); font-weight:800; margin:0;">Iniciar sesión</h2>
-      <p class="text-muted" style="margin:.25rem 0 0">División de Tecnologías para la Fusión</p>
+      <h2 style="color:var(--primary); font-weight:800; margin:0;">{% trans "Iniciar sesión" %}</h2>
+      <p class="text-muted" style="margin:.25rem 0 0">{% trans "División de Tecnologías para la Fusión" %}</p>
     </div>
 
     {% if form.non_field_errors %}
@@ -34,34 +35,37 @@
 
     <form method="post" novalidate>
       {% csrf_token %}
+{% trans "Usuario" as username_placeholder %}
+      {% trans "Contraseña" as password_placeholder %}
+
 
       <div class="form-group">
-        <label class="form-label" for="{{ form.username.id_for_label }}">👤 Usuario</label>
-        {% render_field form.username class="form-input" placeholder="Usuario" autocomplete="username" %}
+        <label class="form-label" for="{{ form.username.id_for_label }}">👤 {% trans "Usuario" %}</label>
+        {% render_field form.username class="form-input" placeholder=username_placeholder autocomplete="username" %}
         {% if form.username.errors %}
           <div style="color:#c33; font-size:.875rem; margin-top:.25rem">{{ form.username.errors }}</div>
         {% endif %}
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="{{ form.password.id_for_label }}">🔒 Contraseña</label>
-        {% render_field form.password class="form-input" placeholder="Contraseña" autocomplete="current-password" %}
+        <label class="form-label" for="{{ form.password.id_for_label }}">🔒 {% trans "Contraseña" %}</label>
+        {% render_field form.password class="form-input" placeholder=password_placeholder autocomplete="current-password" %}
         {% if form.password.errors %}
           <div style="color:#c33; font-size:.875rem; margin-top:.25rem">{{ form.password.errors }}</div>
         {% endif %}
       </div>
 
       <input type="hidden" name="next" value="{{ next }}">
-      <button type="submit" class="btn-main">➡️ Iniciar sesión</button>
+      <button type="submit" class="btn-main">➡️ {% trans "Iniciar sesión" %}</button>
 
       <div style="margin-top:.75rem; display:flex; gap:.75rem; flex-wrap:wrap;">
-        <a class="small" href="{% url 'accounts:password_reset' %}?brand=icts">¿Olvidaste la contraseña?</a>
-        <a href="/icts/register/" class="link">Registrar nuevo usuario</a>
+        <a class="small" href="{% url 'accounts:password_reset' %}?brand=icts">{% trans "¿Olvidaste la contraseña?" %}</a>
+        <a href="/icts/register/" class="link">{% trans "Registrar nuevo usuario" %}</a>
       </div>
     </form>
 
     <div class="text-center" style="margin-top:1rem">
-      <a href="/" style="text-decoration:none; font-weight:700; color:var(--text-secondary)">← Volver al Portal</a>
+      <a href="/" style="text-decoration:none; font-weight:700; color:var(--text-secondary)">← {% trans "Volver al Portal" %}</a>
     </div>
   </div>
 </div>

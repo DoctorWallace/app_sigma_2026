@@ -1,12 +1,17 @@
 {% load static %}
+{% load i18n %}
 {% get_media_prefix as MEDIA_URL %}
 
 <section class="container" style="margin-top:1rem;">
   <header class="profilometer-hero">
     <img src="{{ MEDIA_URL }}facilities/Dektak.jpg" alt="Perfilómetro" class="profilometer-logo">
     <div>
-      <h1 class="h4" style="margin:0;">Perfilómetro de Contacto</h1>
-      <p class="profilometer-sub">Bruker Dektak XT para medición de rugosidad y espesores</p>
+      <h1 class="h4" style="margin:0;">{% trans "Perfilómetro de Contacto" %}</h1>
+      <p class="profilometer-sub">
+  {% blocktrans trimmed %}
+    Bruker Dektak XT para medición de rugosidad y espesores
+  {% endblocktrans %}
+  </p>
     </div>
   </header>
 
@@ -17,88 +22,102 @@
 
   <div class="profilometer-grid">
     <article class="card card-horizontal">
-      <h2>Descripción del Equipo</h2>
+      <h2>{% trans "Descripción del Equipo" %}</h2>
       <p>
-        El perfilómetro <strong>Bruker Dektak XT</strong> es un instrumento de medición de superficie 
-        por contacto que permite caracterizar la topografía, rugosidad y espesores de capas delgadas 
-        con resolución nanométrica.
-      </p>
+        {% blocktrans trimmed %}
+          El perfilómetro <strong>Bruker Dektak XT</strong> es un instrumento de medición de superficie
+por contacto que permite caracterizar la topografía, rugosidad y espesores de capas delgadas
+con resolución nanométrica.
+        {% endblocktrans %}
+        </p>
       <p>
-        Mediante un palpador de diamante que se desplaza sobre la superficie de la muestra, el equipo 
-        registra variaciones verticales con alta precisión, proporcionando perfiles topográficos 
-        detallados y parámetros de rugosidad estandarizados.
-      </p>
+        {% blocktrans trimmed %}
+          Mediante un palpador de diamante que se desplaza sobre la superficie de la muestra, el equipo
+registra variaciones verticales con alta precisión, proporcionando perfiles topográficos
+detallados y parámetros de rugosidad estandarizados.
+        {% endblocktrans %}
+        </p>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Características Técnicas</h2>
+      <h2>{% trans "Características Técnicas" %}</h2>
       <ul class="kv">
-        <li><span>Resolución vertical</span><strong>1 Å (0.1 nm)</strong></li>
-        <li><span>Rango vertical</span><strong>hasta 1 mm</strong></li>
-        <li><span>Longitud de barrido</span><strong>hasta 55 mm</strong></li>
-        <li><span>Radio palpador</span><strong>2 µm, 5 µm, 12.5 µm</strong></li>
-        <li><span>Fuerza de medición</span><strong>1 mg a 15 mg</strong></li>
-        <li><span>Tamaño de muestra</span><strong>hasta 200 mm de diámetro</strong></li>
-        <li><span>Peso máximo muestra</span><strong>hasta 6.8 kg</strong></li>
+        <li><span>{% trans "Resolución vertical" %}</span><strong>1 Å (0.1 nm)</strong></li>
+        <li><span>{% trans "Rango vertical" %}</span><strong>hasta 1 mm</strong></li>
+        <li><span>{% trans "Longitud de barrido" %}</span><strong>hasta 55 mm</strong></li>
+        <li><span>{% trans "Radio palpador" %}</span><strong>2 µm, 5 µm, 12.5 µm</strong></li>
+        <li><span>{% trans "Fuerza de medición" %}</span><strong>1 mg a 15 mg</strong></li>
+        <li><span>{% trans "Tamaño de muestra" %}</span><strong>hasta 200 mm de diámetro</strong></li>
+        <li><span>{% trans "Peso máximo muestra" %}</span><strong>hasta 6.8 kg</strong></li>
       </ul>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Tipos de Mediciones</h2>
+      <h2>{% trans "Tipos de Mediciones" %}</h2>
       <div class="card-columns">
         <div>
-          <h3>Rugosidad Superficial</h3>
+          <h3>{% trans "Rugosidad Superficial" %}</h3>
           <p>
-            Determinación de parámetros de rugosidad como Ra, Rq, Rz, Rmax según estándares 
-            internacionales. Análisis de texturas superficiales producidas por diferentes 
-            procesos de fabricación o tratamiento.
-          </p>
+            {% blocktrans trimmed %}
+              Determinación de parámetros de rugosidad como Ra, Rq, Rz, Rmax según estándares
+internacionales. Análisis de texturas superficiales producidas por diferentes
+procesos de fabricación o tratamiento.
+            {% endblocktrans %}
+            </p>
         </div>
         <div>
-          <h3>Espesor de Capas</h3>
+          <h3>{% trans "Espesor de Capas" %}</h3>
           <p>
-            Medición precisa de espesores de recubrimientos y capas delgadas mediante la 
-            técnica de escalón (step). Ideal para control de procesos de deposición como 
-            PVD, CVD, pulverización catódica, etc.
-          </p>
+            {% blocktrans trimmed %}
+              Medición precisa de espesores de recubrimientos y capas delgadas mediante la
+técnica de escalón (step). Ideal para control de procesos de deposición como
+PVD, CVD, pulverización catódica, etc.
+            {% endblocktrans %}
+            </p>
         </div>
         <div>
-          <h3>Análisis de Formas</h3>
+          <h3>{% trans "Análisis de Formas" %}</h3>
           <p>
-            Caracterización de estructuras micro y nanométricas: surcos, canales, patrones 
-            grabados, desgaste superficial. Obtención de perfiles 2D detallados de 
-            características topográficas.
-          </p>
+            {% blocktrans trimmed %}
+              Caracterización de estructuras micro y nanométricas: surcos, canales, patrones
+grabados, desgaste superficial. Obtención de perfiles 2D detallados de
+características topográficas.
+            {% endblocktrans %}
+            </p>
         </div>
       </div>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Aplicaciones Principales</h2>
+      <h2>{% trans "Aplicaciones Principales" %}</h2>
       <p>
-        El perfilómetro es una herramienta esencial para el control de calidad en procesos de 
-        fabricación, caracterización de recubrimientos funcionales, análisis de desgaste y 
-        tribología, estudios de corrosión superficial, y verificación de procesos de micromecanizado.
-      </p>
+        {% blocktrans trimmed %}
+          El perfilómetro es una herramienta esencial para el control de calidad en procesos de
+fabricación, caracterización de recubrimientos funcionales, análisis de desgaste y
+tribología, estudios de corrosión superficial, y verificación de procesos de micromecanizado.
+        {% endblocktrans %}
+        </p>
       <p>
-        Su capacidad de medición por contacto lo hace especialmente útil para superficies que 
-        no son adecuadas para técnicas ópticas, como materiales transparentes, superficies de 
-        baja reflectividad o estructuras con altas pendientes. Es ampliamente utilizado en 
-        investigación de materiales, desarrollo de recubrimientos y caracterización de componentes 
-        para tecnología de fusión nuclear.
-      </p>
-      <a href="https://www.ciemat.es/areas-cientifico-tecnicas/-/actividades/servicio/637?_es_ciemat_publicaciones_web_ActividadesPortlet_service=637&_es_ciemat_publicaciones_web_ActividadesPortlet_filterService=68" target="_blank" rel="noopener">Coste uso</a>
+        {% blocktrans trimmed %}
+          Su capacidad de medición por contacto lo hace especialmente útil para superficies que
+no son adecuadas para técnicas ópticas, como materiales transparentes, superficies de
+baja reflectividad o estructuras con altas pendientes. Es ampliamente utilizado en
+investigación de materiales, desarrollo de recubrimientos y caracterización de componentes
+para tecnología de fusión nuclear.
+        {% endblocktrans %}
+        </p>
+      <a href="https://www.ciemat.es/areas-cientifico-tecnicas/-/actividades/servicio/637?_es_ciemat_publicaciones_web_ActividadesPortlet_service=637&_es_ciemat_publicaciones_web_ActividadesPortlet_filterService=68" target="_blank" rel="noopener">{% trans "Coste uso" %}</a>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Ventajas de la Perfilometría de Contacto</h2>
+      <h2>{% trans "Ventajas de la Perfilometría de Contacto" %}</h2>
       <ul class="checklist">
-        <li><span>Medición directa de altura sin necesidad de calibración de reflectividad</span></li>
-        <li><span>Aplicable a todo tipo de materiales: conductores, aislantes, transparentes</span></li>
-        <li><span>Alta precisión en medición de escalones y espesores de capa</span></li>
-        <li><span>No afectado por variaciones de color o propiedades ópticas de la muestra</span></li>
-        <li><span>Medición de estructuras con altas pendientes y cambios abruptos</span></li>
-        <li><span>Trazabilidad a estándares metrológicos internacionales</span></li>
+        <li><span>{% trans "Medición directa de altura sin necesidad de calibración de reflectividad" %}</span></li>
+        <li><span>{% trans "Aplicable a todo tipo de materiales: conductores, aislantes, transparentes" %}</span></li>
+        <li><span>{% trans "Alta precisión en medición de escalones y espesores de capa" %}</span></li>
+        <li><span>{% trans "No afectado por variaciones de color o propiedades ópticas de la muestra" %}</span></li>
+        <li><span>{% trans "Medición de estructuras con altas pendientes y cambios abruptos" %}</span></li>
+        <li><span>{% trans "Trazabilidad a estándares metrológicos internacionales" %}</span></li>
       </ul>
     </article>
   </div>

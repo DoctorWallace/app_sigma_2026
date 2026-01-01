@@ -1,12 +1,17 @@
 {% load static %}
+{% load i18n %}
 {% get_media_prefix as MEDIA_URL %}
 
 <section class="container" style="margin-top:1rem;">
   <header class="vdg-hero">
     <img src="{{ MEDIA_URL }}facilities/SEM1.png" alt="SEM-FIB" class="vdg-logo">
     <div>
-      <h1 class="h4" style="margin:0;">Microscopio Electrónico SEM-FIB</h1>
-      <p class="vdg-sub">Carl Zeiss Auriga Compact con detector EDS y EBSD</p>
+      <h1 class="h4" style="margin:0;">{% trans "Microscopio Electrónico SEM-FIB" %}</h1>
+      <p class="vdg-sub">
+  {% blocktrans trimmed %}
+    Carl Zeiss Auriga Compact con detector EDS y EBSD
+  {% endblocktrans %}
+  </p>
     </div>
   </header>
 
@@ -17,63 +22,75 @@
 
   <div class="vdg-grid">
     <article class="card card-horizontal">
-      <h2>Descripción del Equipo</h2>
+      <h2>{% trans "Descripción del Equipo" %}</h2>
       <p>
-        Microscopio electrónico de barrido de <strong>Carl Zeiss</strong>, modelo <em>Auriga Compact</em> 
-        con un voltaje de aceleración de electrones de <strong>0.5 a 30 kV</strong> y tres detectores 
-        diferentes de electrones secundarios y retrodispersados.
-      </p>
+        {% blocktrans trimmed %}
+          Microscopio electrónico de barrido de <strong>Carl Zeiss</strong>, modelo <em>Auriga Compact</em>
+con un voltaje de aceleración de electrones de <strong>0.5 a 30 kV</strong> y tres detectores
+diferentes de electrones secundarios y retrodispersados.
+        {% endblocktrans %}
+        </p>
       <p>
-        El sistema incluye también un detector de EDS <strong>XFlash de Bruker</strong>, con una 
-        resolución de hasta <strong>127 eV</strong> en energía para estudios de composición y se pueden 
-        realizar análisis en un punto local, lineales y mapas de un área.
-      </p>
+        {% blocktrans trimmed %}
+          El sistema incluye también un detector de EDS <strong>XFlash de Bruker</strong>, con una
+resolución de hasta <strong>127 eV</strong> en energía para estudios de composición y se pueden
+realizar análisis en un punto local, lineales y mapas de un área.
+        {% endblocktrans %}
+        </p>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Detector EBSD y Cañón FIB</h2>
+      <h2>{% trans "Detector EBSD y Cañón FIB" %}</h2>
       <p>
-        El microscopio está equipado con un detector de difracción de electrones retrodispersados 
-        (<strong>EBSD</strong>) para la determinación de fases y orientaciones cristalinas con una 
-        inclinación de la muestra de <strong>70°</strong>. Esta tecnología permite el análisis de 
-        microestructuras cristalinas, texturas y orientaciones preferenciales en materiales policristalinos.
-      </p>
+        {% blocktrans trimmed %}
+          El microscopio está equipado con un detector de difracción de electrones retrodispersados
+(<strong>EBSD</strong>) para la determinación de fases y orientaciones cristalinas con una
+inclinación de la muestra de <strong>70°</strong>. Esta tecnología permite el análisis de
+microestructuras cristalinas, texturas y orientaciones preferenciales en materiales policristalinos.
+        {% endblocktrans %}
+        </p>
       <p>
-        Además, cuenta con un <strong>cañón FIB de iones de galio</strong> con un voltaje de aceleración 
-        de <strong>1 a 30 kV</strong> para inspección en cortes en sección y la fabricación de muestras 
-        para TEM. Esta capacidad permite trabajar tanto con materiales conductores como aislantes, 
-        facilitando la preparación de muestras delgadas para microscopía electrónica de transmisión.
-      </p>
+        {% blocktrans trimmed %}
+          Además, cuenta con un <strong>cañón FIB de iones de galio</strong> con un voltaje de aceleración
+de <strong>1 a 30 kV</strong> para inspección en cortes en sección y la fabricación de muestras
+para TEM. Esta capacidad permite trabajar tanto con materiales conductores como aislantes,
+facilitando la preparación de muestras delgadas para microscopía electrónica de transmisión.
+        {% endblocktrans %}
+        </p>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Características Técnicas</h2>
+      <h2>{% trans "Características Técnicas" %}</h2>
       <ul class="kv">
-        <li><span>Voltaje SEM</span><strong>0.5 – 30 kV</strong></li>
-        <li><span>Voltaje FIB</span><strong>1 – 30 kV</strong></li>
-        <li><span>Resolución EDS</span><strong>127 eV</strong></li>
-        <li><span>Inclinación EBSD</span><strong>70°</strong></li>
-        <li><span>Iones FIB</span><strong>Galio (Ga)</strong></li>
-        <li><span>Análisis EDS</span><strong>Punto, línea y área</strong></li>
-        <li><span>Capacidad TEM</span><strong>Preparación de muestras</strong></li>
+        <li><span>{% trans "Voltaje SEM" %}</span><strong>0.5 – 30 kV</strong></li>
+        <li><span>{% trans "Voltaje FIB" %}</span><strong>1 – 30 kV</strong></li>
+        <li><span>{% trans "Resolución EDS" %}</span><strong>127 eV</strong></li>
+        <li><span>{% trans "Inclinación EBSD" %}</span><strong>70°</strong></li>
+        <li><span>{% trans "Iones FIB" %}</span><strong>Galio (Ga)</strong></li>
+        <li><span>{% trans "Análisis EDS" %}</span><strong>Punto, línea y área</strong></li>
+        <li><span>{% trans "Capacidad TEM" %}</span><strong>Preparación de muestras</strong></li>
       </ul>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Aplicaciones Principales</h2>
+      <h2>{% trans "Aplicaciones Principales" %}</h2>
       <p>
-        Este equipo permite realizar análisis morfológicos de alta resolución, caracterización 
-        elemental mediante EDS, análisis cristalográfico mediante EBSD, y preparación de muestras 
-        delgadas para TEM mediante FIB. Es especialmente útil para el estudio de materiales 
-        avanzados, semiconductores, metales y cerámicas, tanto en investigación básica como 
-        aplicada en el desarrollo de nuevos materiales.
-      </p>
+        {% blocktrans trimmed %}
+          Este equipo permite realizar análisis morfológicos de alta resolución, caracterización
+elemental mediante EDS, análisis cristalográfico mediante EBSD, y preparación de muestras
+delgadas para TEM mediante FIB. Es especialmente útil para el estudio de materiales
+avanzados, semiconductores, metales y cerámicas, tanto en investigación básica como
+aplicada en el desarrollo de nuevos materiales.
+        {% endblocktrans %}
+        </p>
       <p>
-        La combinación de capacidades SEM, EDS, EBSD y FIB en un solo sistema proporciona una 
-        plataforma completa para la caracterización integral de materiales, desde el análisis 
-        morfológico hasta la preparación de muestras para técnicas complementarias.
-      </p>
-      <a href="https://www.ciemat.es/areas-cientifico-tecnicas/-/actividades/servicio/631?_es_ciemat_publicaciones_web_ActividadesPortlet_service=631&_es_ciemat_publicaciones_web_ActividadesPortlet_filterService=68" target="_blank" rel="noopener">Coste uso</a>
+        {% blocktrans trimmed %}
+          La combinación de capacidades SEM, EDS, EBSD y FIB en un solo sistema proporciona una
+plataforma completa para la caracterización integral de materiales, desde el análisis
+morfológico hasta la preparación de muestras para técnicas complementarias.
+        {% endblocktrans %}
+        </p>
+      <a href="https://www.ciemat.es/areas-cientifico-tecnicas/-/actividades/servicio/631?_es_ciemat_publicaciones_web_ActividadesPortlet_service=631&_es_ciemat_publicaciones_web_ActividadesPortlet_filterService=68" target="_blank" rel="noopener">{% trans "Coste uso" %}</a>
     </article>
   </div>
 </section>

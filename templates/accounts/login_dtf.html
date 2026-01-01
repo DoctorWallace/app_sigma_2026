@@ -1,9 +1,10 @@
 {% extends "base_dtf.html" %}
+{% load i18n %}
 {% load form_extras %}
 {% load widget_tweaks %}
 
-{% block title %}Iniciar sesión – SIGMA DTF{% endblock %}
-{% block page_title %}Iniciar sesión – SIGMA DTF{% endblock %}
+{% block title %}{% trans "Iniciar sesión – SIGMA DTF" %}{% endblock %}
+{% block page_title %}{% trans "Iniciar sesión – SIGMA DTF" %}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -33,7 +34,7 @@
     <div class="login-header">
       <img src="/media/Logos/logo_sigma_dtf.png" alt="SIGMA DTF">
       <h2>SIGMA DTF</h2>
-      <p>División de Tecnologías para la Fusión</p>
+      <p>{% trans "División de Tecnologías para la Fusión" %}</p>
     </div>
 
     {% if form.non_field_errors %}
@@ -42,33 +43,35 @@
 
     <form method="post" novalidate>
       {% csrf_token %}
+{% trans "Usuario" as username_placeholder %}
+      {% trans "Contraseña" as password_placeholder %}
+
 
       <div class="form-group">
-        <label class="form-label" for="{{ form.username.id_for_label }}">👤 Usuario</label>
-        {% render_field form.username class="form-input" placeholder="Usuario" autocomplete="username" %}
+        <label class="form-label" for="{{ form.username.id_for_label }}">👤 {% trans "Usuario" %}</label>
+        {% render_field form.username class="form-input" placeholder=username_placeholder autocomplete="username" %}
         {% if form.username.errors %}
             <div style="color:#c33; font-size:.875rem; margin-top:.25rem">{{ form.username.errors }}</div>
         {% endif %}
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="{{ form.password.id_for_label }}">🔒 Contraseña</label>
-        {% render_field form.password class="form-input" placeholder="Contraseña" autocomplete="current-password" %}
+        <label class="form-label" for="{{ form.password.id_for_label }}">🔒 {% trans "Contraseña" %}</label>
+        {% render_field form.password class="form-input" placeholder=password_placeholder autocomplete="current-password" %}
         {% if form.password.errors %}
           <div style="color:#c33; font-size:.875rem; margin-top:.25rem">{{ form.password.errors }}</div>
         {% endif %}
       </div>
 
-      <button type="submit" class="btn-main">➡️ Iniciar sesión</button>
+      <button type="submit" class="btn-main">➡️ {% trans "Iniciar sesión" %}</button>
     </form>
 
     <div class="login-footer">
-      <a href="{% url 'accounts:password_reset' %}?brand=dtf">¿Olvidaste la contraseña?</a>
-      <a href="{% url 'accounts:register_dtf' %}">Registrar nuevo usuario</a>
+      <a href="{% url 'accounts:password_reset' %}?brand=dtf">{% trans "¿Olvidaste la contraseña?" %}</a>
+      <a href="{% url 'accounts:register_dtf' %}">{% trans "Registrar nuevo usuario" %}</a>
       <br>
-      <a href="/">← Volver al Portal</a>
+      <a href="/">← {% trans "Volver al Portal" %}</a>
     </div>
   </div>
 </div>
 {% endblock %}
-

@@ -1,12 +1,17 @@
 {% load static %}
+{% load i18n %}
 {% get_media_prefix as MEDIA_URL %}
 
 <section class="container" style="margin-top:1rem;">
   <header class="confocal-hero">
     <img src="{{ MEDIA_URL }}facilities/confocal.png" alt="Confocal" class="confocal-logo">
     <div>
-      <h1 class="h4" style="margin:0;">Microscopio Confocal/Interferométrico</h1>
-      <p class="confocal-sub">Sensofar S Neox con microscopía confocal e interferometría</p>
+      <h1 class="h4" style="margin:0;">{% trans "Microscopio Confocal/Interferométrico" %}</h1>
+      <p class="confocal-sub">
+  {% blocktrans trimmed %}
+    Sensofar S Neox con microscopía confocal e interferometría
+  {% endblocktrans %}
+  </p>
     </div>
   </header>
 
@@ -17,66 +22,78 @@
 
   <div class="confocal-grid">
     <article class="card card-horizontal">
-      <h2>Descripción del Equipo</h2>
+      <h2>{% trans "Descripción del Equipo" %}</h2>
       <p>
-        El microscopio confocal <strong>Sensofar S Neox</strong> es un sistema óptico de alta precisión que 
-        combina tres tecnologías complementarias: <strong>microscopía confocal</strong>, 
-        <strong>interferometría de luz blanca</strong> y <strong>perfilometría óptica</strong>.
-      </p>
+        {% blocktrans trimmed %}
+          El microscopio confocal <strong>Sensofar S Neox</strong> es un sistema óptico de alta precisión que
+combina tres tecnologías complementarias: <strong>microscopía confocal</strong>,
+<strong>interferometría de luz blanca</strong> y <strong>perfilometría óptica</strong>.
+        {% endblocktrans %}
+        </p>
       <p>
-        Este equipo permite realizar mediciones topográficas de superficies con resolución nanométrica, 
-        análisis de rugosidad, caracterización de texturas y evaluación dimensional de microestructuras 
-        de manera no destructiva.
-      </p>
+        {% blocktrans trimmed %}
+          Este equipo permite realizar mediciones topográficas de superficies con resolución nanométrica,
+análisis de rugosidad, caracterización de texturas y evaluación dimensional de microestructuras
+de manera no destructiva.
+        {% endblocktrans %}
+        </p>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Capacidades Principales</h2>
+      <h2>{% trans "Capacidades Principales" %}</h2>
       <ul class="kv">
-        <li><span>Resolución vertical</span><strong>hasta 0.01 nm (interferometría)</strong></li>
-        <li><span>Resolución lateral</span><strong>hasta 140 nm (confocal)</strong></li>
-        <li><span>Objetivos</span><strong>2.5x, 5x, 10x, 20x, 50x, 100x, 150x</strong></li>
-        <li><span>Campo de medición</span><strong>hasta 18 x 18 mm</strong></li>
-        <li><span>Rango de medición Z</span><strong>hasta 10 mm</strong></li>
-        <li><span>Modos de medición</span><strong>Confocal, Interferometría, Perfilometría</strong></li>
-        <li><span>Tipo de análisis</span><strong>Rugosidad, topografía, dimensiones</strong></li>
+        <li><span>{% trans "Resolución vertical" %}</span><strong>hasta 0.01 nm (interferometría)</strong></li>
+        <li><span>{% trans "Resolución lateral" %}</span><strong>hasta 140 nm (confocal)</strong></li>
+        <li><span>{% trans "Objetivos" %}</span><strong>2.5x, 5x, 10x, 20x, 50x, 100x, 150x</strong></li>
+        <li><span>{% trans "Campo de medición" %}</span><strong>hasta 18 x 18 mm</strong></li>
+        <li><span>{% trans "Rango de medición Z" %}</span><strong>hasta 10 mm</strong></li>
+        <li><span>{% trans "Modos de medición" %}</span><strong>Confocal, Interferometría, Perfilometría</strong></li>
+        <li><span>{% trans "Tipo de análisis" %}</span><strong>Rugosidad, topografía, dimensiones</strong></li>
       </ul>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Técnicas de Medición</h2>
+      <h2>{% trans "Técnicas de Medición" %}</h2>
       <div class="card-columns">
         <div>
-          <h3>Microscopía Confocal</h3>
+          <h3>{% trans "Microscopía Confocal" %}</h3>
           <p>
-            Ideal para superficies rugosas, proporcionando imágenes topográficas 3D con alta resolución 
-            lateral. Permite caracterizar texturas y patrones con escalas de rugosidad desde nanómetros 
-            hasta milímetros.
-          </p>
+            {% blocktrans trimmed %}
+              Ideal para superficies rugosas, proporcionando imágenes topográficas 3D con alta resolución
+lateral. Permite caracterizar texturas y patrones con escalas de rugosidad desde nanómetros
+hasta milímetros.
+            {% endblocktrans %}
+            </p>
         </div>
         <div>
-          <h3>Interferometría</h3>
+          <h3>{% trans "Interferometría" %}</h3>
           <p>
-            Técnica de máxima precisión para superficies lisas y reflectantes. Proporciona resolución 
-            vertical subnanométrica, ideal para la caracterización de superficies pulidas y capas delgadas.
-          </p>
+            {% blocktrans trimmed %}
+              Técnica de máxima precisión para superficies lisas y reflectantes. Proporciona resolución
+vertical subnanométrica, ideal para la caracterización de superficies pulidas y capas delgadas.
+            {% endblocktrans %}
+            </p>
         </div>
       </div>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Aplicaciones Principales</h2>
+      <h2>{% trans "Aplicaciones Principales" %}</h2>
       <p>
-        Este equipo es fundamental para la caracterización superficial de materiales en diversas áreas: 
-        materiales para fusión nuclear, recubrimientos funcionales, componentes micromecánicos, 
-        dispositivos ópticos y semiconductores.
-      </p>
+        {% blocktrans trimmed %}
+          Este equipo es fundamental para la caracterización superficial de materiales en diversas áreas:
+materiales para fusión nuclear, recubrimientos funcionales, componentes micromecánicos,
+dispositivos ópticos y semiconductores.
+        {% endblocktrans %}
+        </p>
       <p>
-        Permite el análisis de parámetros de rugosidad (Ra, Rq, Rz, etc.), medición de espesores de 
-        capas, caracterización de defectos superficiales, análisis de desgaste y evaluación de procesos 
-        de fabricación. La capacidad de realizar mediciones sin contacto evita daños en muestras delicadas.
-      </p>
-      <a href="https://www.ciemat.es/areas-cientifico-tecnicas/-/actividades/servicio/632?_es_ciemat_publicaciones_web_ActividadesPortlet_service=632&_es_ciemat_publicaciones_web_ActividadesPortlet_filterService=68" target="_blank" rel="noopener">Coste uso</a>
+        {% blocktrans trimmed %}
+          Permite el análisis de parámetros de rugosidad (Ra, Rq, Rz, etc.), medición de espesores de
+capas, caracterización de defectos superficiales, análisis de desgaste y evaluación de procesos
+de fabricación. La capacidad de realizar mediciones sin contacto evita daños en muestras delicadas.
+        {% endblocktrans %}
+        </p>
+      <a href="https://www.ciemat.es/areas-cientifico-tecnicas/-/actividades/servicio/632?_es_ciemat_publicaciones_web_ActividadesPortlet_service=632&_es_ciemat_publicaciones_web_ActividadesPortlet_filterService=68" target="_blank" rel="noopener">{% trans "Coste uso" %}</a>
     </article>
   </div>
 </section>

@@ -162,17 +162,17 @@
         <!-- Main Cards Section -->
         <div class="row g-4">
             
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-6 position-relative">
                 <a href="/icts/" class="text-decoration-none">
                     <div class="sigma-card card-gradient-primary h-100 p-4 fade-in" style="animation-delay: 100ms;">
                         <div class="row align-items-center h-100">
                             <div class="col-3 text-center">
-                                <img src="/media/portal/logo_sigma_icts2.png" alt="Σ-SIGMA ICTS" class="img-fluid" style="max-height: 120px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                                <img src="/media/portal/logo_sigma_icts2.png" alt="S-SIGMA ICTS" class="img-fluid" style="max-height: 120px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
                             </div>
                             <div class="col-9">
-                                <h3 class="h4 mb-2 fw-bold">Σ-SIGMA ICTS</h3>
-                                <p class="mb-2 opacity-80">Solicitudes vía ICTS-LNF</p>
-                                <p class="small mb-3 opacity-75">Sistema de gestión de evaluaciones de solicitudes de acceso a equipos científicos pertenecientes a la ICTS-LNF</p>
+                                <h3 class="h4 mb-2 fw-bold">Solicitudes vía ICTS-LNF</h3>
+                                <p class="mb-2 opacity-80">Sistema de gestión de evaluaciones de solicitudes de acceso a equipos científicos pertenecientes a la ICTS-LNF - Σ-SIGMA ICTS</p>
+                                <p class="small mb-3 opacity-75">Acceso competitivo a equipos científico-técnico singulares pertenecientes a la ICTS-LNF</p>
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="large fw-medium">Acceder</span>
                                     <i class="bi bi-arrow-right"></i>
@@ -180,6 +180,9 @@
                             </div>
                         </div>
                     </div>
+                </a>
+                <a href="{% url 'portal:icts_access' %}#competitivo" class="position-absolute top-0 end-0 m-3 text-white" aria-label="Más información sobre acceso competitivo">
+                    <i class="bi bi-info-circle fs-4"></i>
                 </a>
             </div>
             
@@ -219,6 +222,14 @@
                         </div>
                         <div class="col-md-6 text-md-end mt-3 mt-md-0">
                             <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                                <a href="{% url 'portal:icts_access' %}#competitivo" class="btn btn-outline-sigma">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Protocolo acceso ICTS
+                                </a>
+                                <a href="{% url 'portal:icts_access' %}#directo" class="btn btn-outline-sigma">
+                                    <i class="bi bi-cash-coin me-2"></i>
+                                    Solicitud directa (tarifas)
+                                </a>
                                 <a href="/faq/" class="btn btn-outline-sigma">
                                     <i class="bi bi-question-circle me-2"></i>
                                     FAQ

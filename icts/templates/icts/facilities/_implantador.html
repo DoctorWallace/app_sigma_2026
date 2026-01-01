@@ -1,12 +1,17 @@
 {% load static %}
+{% load i18n %}
 {% get_media_prefix as MEDIA_URL %}
 
 <section class="container" style="margin-top:1rem;">
   <header class="vdg-hero">
     <img src="{{ MEDIA_URL }}facilities/Implantador.png" alt="Implantador" class="vdg-logo">
     <div>
-      <h1 class="h4" style="margin:0;">Implantador de Iones Danfysik</h1>
-      <p class="vdg-sub">60 keV para estudios de fusión con H, He y D</p>
+      <h1 class="h4" style="margin:0;">{% trans "Implantador de Iones Danfysik" %}</h1>
+      <p class="vdg-sub">
+  {% blocktrans trimmed %}
+    60 keV para estudios de fusión con H, He y D
+  {% endblocktrans %}
+  </p>
     </div>
   </header>
 
@@ -17,63 +22,75 @@
 
   <div class="vdg-grid">
     <article class="card card-horizontal">
-      <h2>Descripción del Equipo</h2>
+      <h2>{% trans "Descripción del Equipo" %}</h2>
       <p>
-        El <strong>implantador de iones Danfysik de 60 keV</strong> permite la implantación iónica 
-        con especies gaseosas como <strong>helio, hidrógeno y deuterio</strong>, entre otras, 
-        principalmente para estudios relacionados con la investigación de fusión.
-      </p>
+        {% blocktrans trimmed %}
+          El <strong>implantador de iones Danfysik de 60 keV</strong> permite la implantación iónica
+con especies gaseosas como <strong>helio, hidrógeno y deuterio</strong>, entre otras,
+principalmente para estudios relacionados con la investigación de fusión.
+        {% endblocktrans %}
+        </p>
       <p>
-        El equipo del implantador ha diseñado y desarrollado una variedad de cámaras de irradiación 
-        y configuraciones experimentales adaptadas a necesidades de investigación específicas. 
-        Por ejemplo, se pueden realizar mediciones simultáneas de ionoluminiscencia y conductividad 
-        eléctrica superficial, permitiendo la correlación directa entre la degradación macroscópica 
-        del material y la generación de defectos durante la implantación.
-      </p>
+        {% blocktrans trimmed %}
+          El equipo del implantador ha diseñado y desarrollado una variedad de cámaras de irradiación
+y configuraciones experimentales adaptadas a necesidades de investigación específicas.
+Por ejemplo, se pueden realizar mediciones simultáneas de ionoluminiscencia y conductividad
+eléctrica superficial, permitiendo la correlación directa entre la degradación macroscópica
+del material y la generación de defectos durante la implantación.
+        {% endblocktrans %}
+        </p>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Aplicaciones y Experiencias</h2>
+      <h2>{% trans "Aplicaciones y Experiencias" %}</h2>
       <p>
-        La instalación ha sido ampliamente utilizada para implantar iones de <strong>H, He y D</strong> 
-        tanto en metales como en aislantes para la evaluación de degradación microestructural superficial, 
-        ionoluminiscencia y degradación eléctrica, así como para implantar isótopos de helio e hidrógeno 
-        para experimentos de difusión y desorción.
-      </p>
+        {% blocktrans trimmed %}
+          La instalación ha sido ampliamente utilizada para implantar iones de <strong>H, He y D</strong>
+tanto en metales como en aislantes para la evaluación de degradación microestructural superficial,
+ionoluminiscencia y degradación eléctrica, así como para implantar isótopos de helio e hidrógeno
+para experimentos de difusión y desorción.
+        {% endblocktrans %}
+        </p>
       <p>
-        Los experimentos pueden realizarse bajo temperaturas controladas que van desde temperatura 
-        ambiente hasta <strong>800 °C</strong>. Las cámaras de irradiación especializadas y los 
-        portamuestras son diseñados por el equipo del implantador y fabricados en los talleres del 
-        CIEMAT para soportar una amplia variedad de requisitos experimentales.
-      </p>
+        {% blocktrans trimmed %}
+          Los experimentos pueden realizarse bajo temperaturas controladas que van desde temperatura
+ambiente hasta <strong>800 °C</strong>. Las cámaras de irradiación especializadas y los
+portamuestras son diseñados por el equipo del implantador y fabricados en los talleres del
+CIEMAT para soportar una amplia variedad de requisitos experimentales.
+        {% endblocktrans %}
+        </p>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Características Técnicas</h2>
+      <h2>{% trans "Características Técnicas" %}</h2>
       <ul class="kv">
-        <li><span>Energía de implantación</span><strong>60 keV</strong></li>
-        <li><span>Especies disponibles</span><strong>H, He, D, otros gases</strong></li>
-        <li><span>Rango de temperatura</span><strong>RT – 800 °C</strong></li>
-        <li><span>Materiales objetivo</span><strong>Metales y aislantes</strong></li>
-        <li><span>Mediciones simultáneas</span><strong>Ionoluminiscencia + Conductividad</strong></li>
-        <li><span>Capacidades especiales</span><strong>Difusión y desorción</strong></li>
-        <li><span>Fabricación</span><strong>Cámaras a medida en CIEMAT</strong></li>
+        <li><span>{% trans "Energía de implantación" %}</span><strong>60 keV</strong></li>
+        <li><span>{% trans "Especies disponibles" %}</span><strong>H, He, D, otros gases</strong></li>
+        <li><span>{% trans "Rango de temperatura" %}</span><strong>RT – 800 °C</strong></li>
+        <li><span>{% trans "Materiales objetivo" %}</span><strong>Metales y aislantes</strong></li>
+        <li><span>{% trans "Mediciones simultáneas" %}</span><strong>Ionoluminiscencia + Conductividad</strong></li>
+        <li><span>{% trans "Capacidades especiales" %}</span><strong>Difusión y desorción</strong></li>
+        <li><span>{% trans "Fabricación" %}</span><strong>Cámaras a medida en CIEMAT</strong></li>
       </ul>
     </article>
 
     <article class="card card-horizontal">
-      <h2>Investigación en Fusión</h2>
+      <h2>{% trans "Investigación en Fusión" %}</h2>
       <p>
-        Este equipo es fundamental para la investigación en materiales para fusión, permitiendo 
-        simular las condiciones de irradiación que experimentarán los materiales en reactores 
-        de fusión. La capacidad de trabajar con isótopos de hidrógeno y helio es crucial para 
-        entender el comportamiento de los materiales bajo irradiación de partículas ligeras.
-      </p>
+        {% blocktrans trimmed %}
+          Este equipo es fundamental para la investigación en materiales para fusión, permitiendo
+simular las condiciones de irradiación que experimentarán los materiales en reactores
+de fusión. La capacidad de trabajar con isótopos de hidrógeno y helio es crucial para
+entender el comportamiento de los materiales bajo irradiación de partículas ligeras.
+        {% endblocktrans %}
+        </p>
       <p>
-        La flexibilidad del sistema permite adaptar las condiciones experimentales a necesidades 
-        específicas de investigación, desde estudios básicos de daño por irradiación hasta 
-        evaluaciones de materiales candidatos para aplicaciones de fusión.
-      </p>
+        {% blocktrans trimmed %}
+          La flexibilidad del sistema permite adaptar las condiciones experimentales a necesidades
+específicas de investigación, desde estudios básicos de daño por irradiación hasta
+evaluaciones de materiales candidatos para aplicaciones de fusión.
+        {% endblocktrans %}
+        </p>
     </article>
   </div>
 </section>

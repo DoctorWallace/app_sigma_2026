@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SIGMA ICTS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 00:00+0000\n"
+"POT-Creation-Date: 2026-01-01 16:13+0100\n"
 "PO-Revision-Date: 2025-12-29 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -12,41 +12,2129 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-msgid "Idioma"
-msgstr "Langue"
+#: .\icts\templates\icts\facilities\_OLMAT.html:9
+msgid "Dispositivo HHF OLMAT"
+msgstr "Dispositif HHF OLMAT"
 
-msgid "Mi Panel"
-msgstr "Mon tableau de bord"
+#: .\icts\templates\icts\facilities\_OLMAT.html:11
+msgid ""
+"Optimización de blancos avanzados de metal líquido para ensayos de alta "
+"carga térmica"
+msgstr ""
+"Optimisation de cibles avancées en métal liquide pour des essais à forte "
+"charge thermique"
 
-msgid "Mi Panel de Usuario"
-msgstr "Tableau de bord utilisateur"
+#: .\icts\templates\icts\facilities\_OLMAT.html:24
+msgid "Visión general"
+msgstr "Vue d'ensemble"
 
+#: .\icts\templates\icts\facilities\_OLMAT.html:26
+msgid ""
+"OLMAT es el banco de ensayos de referencia del CIEMAT para la calificación "
+"de materiales sometidos a flujos térmicos extremos mediante haces NBI y "
+"láser. La instalación está abierta a colaboraciones de centros públicos y "
+"privados en ámbitos de física, ingeniería mecánica y ciencia de materiales."
+msgstr ""
+"OLMAT est la plateforme d'essais de référence du CIEMAT pour la "
+"qualification de matériaux soumis à des flux thermiques extrêmes par "
+"faisceaux NBI et laser. L'installation est ouverte aux collaborations avec "
+"des centres publics et privés dans les domaines de la physique, de "
+"l'ingénierie mécanique et de la science des matériaux."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:33
+msgid ""
+"El banco permite combinar calentamiento convectivo con cargas radiativas "
+"controladas, registrar los fenómenos transitorios con instrumentación de "
+"alta velocidad y realizar ajustes personalizados en la preparación de "
+"muestras para cada campaña experimental."
+msgstr ""
+"Le banc permet de combiner un chauffage convectif avec des charges "
+"radiatives contrôlées, d'enregistrer les phénomènes transitoires avec une "
+"instrumentation à haute vitesse et d'effectuer des ajustements personnalisés "
+"dans la préparation des échantillons pour chaque campagne expérimentale."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:42
+msgid "Capacidades principales"
+msgstr "Capacités principales"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:44
+msgid "Modos de haz"
+msgstr "Modes de faisceau"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:45
+msgid "Escala temporal"
+msgstr "Échelle temporelle"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:46
+msgid "Supervisión"
+msgstr "Supervision"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:47
+msgid "Entorno de ensayo"
+msgstr "Environnement d'essai"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:48
+msgid "Muestreo"
+msgstr "Échantillonnage"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:53
+msgid "Diagnósticos disponibles"
+msgstr "Diagnostics disponibles"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:56
+msgid "Termopares embebidos"
+msgstr "Thermocouples intégrés"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:57
+msgid "Pirometría infrarroja"
+msgstr "Pyrométrie infrarouge"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:58
+msgid "Termografía IR (1&nbsp;ms)"
+msgstr "Thermographie IR (1&nbsp;ms)"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:61
+msgid "Cámara rápida de alta velocidad"
+msgstr "Caméra rapide à haute vitesse"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:62
+msgid "Espectroscopia óptica"
+msgstr "Spectroscopie optique"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:63
+msgid "Sondas Langmuir"
+msgstr "Sondes de Langmuir"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:67
+msgid ""
+"El laboratorio OLMAT ofrece soporte para recubrimientos de metales líquidos, "
+"diseño de portamuestras y servicios de preparación previos a la campaña "
+"experimental."
+msgstr ""
+"Le laboratoire OLMAT offre un support pour les revêtements de métaux "
+"liquides, la conception de porte-échantillons et des services de préparation "
+"avant la campagne expérimentale."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:75
+msgid "Servicios y tarifas (2024)"
+msgstr "Services et tarifs (2024)"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:78
+msgid "Servicio técnico"
+msgstr "Service technique"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:80
+msgid "Operación del dispositivo y preparación de muestras."
+msgstr "Exploitation de l'installation et préparation des échantillons."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:87
+msgid "Servicio de investigación"
+msgstr "Service de recherche"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:89
+msgid "Incluye soporte científico, análisis e interpretación de datos."
+msgstr ""
+"Inclut un soutien scientifique, l'analyse et l'interprétation des données."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:97
+msgid "Una descripción detallada de las tarifas está disponible bajo demanda."
+msgstr "Une description détaillée des tarifs est disponible sur demande."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:104
+msgid "Cómo preparar tu propuesta"
+msgstr "Comment préparer votre proposition"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:106
+msgid ""
+"Las propuestas pueden remitirse en formato libre siguiendo estas pautas. Ten "
+"en cuenta que el equipo técnico puede solicitar información adicional "
+"durante la evaluación."
+msgstr ""
+"Les propositions peuvent être soumises en format libre en suivant ces lignes "
+"directrices. Notez que l'équipe technique peut demander des informations "
+"supplémentaires lors de l'évaluation."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:112
+msgid ""
+"Para contexto adicional consulta la <a href=\\\"https://www.fusion.ciemat.es/"
+"inicio/acceso-instalaciones-competitivas/olmat/\\\" target=\\\"_blank\\\" "
+"rel=\\\"noopener\\\">página oficial de OLMAT</a> del CIEMAT."
+msgstr ""
+"Pour plus de contexte, consultez la <a href=\"https://www.fusion.ciemat.es/"
+"inicio/acceso-instalaciones-competitivas/olmat/\" target=\"_blank\" "
+"rel=\"noopener\">page officielle d'OLMAT</a> du CIEMAT."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:117
+msgid "Título del proyecto."
+msgstr "Titre du projet."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:118
+msgid "Nombre, afiliación y naturaleza (pública/privada) del solicitante."
+msgstr "Nom, affiliation et nature (public/privé) du demandeur."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:119
+msgid ""
+"Descripción (1-2 páginas) con motivación, objetivos y requisitos de carga "
+"térmica conocidos."
+msgstr ""
+"Description (1 à 2 pages) avec motivation, objectifs et exigences connues de "
+"charge thermique."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:120
+msgid "Recursos requeridos:"
+msgstr "Ressources requises :"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:122
+msgid ""
+"Diagnósticos necesarios (termopares, pirometría, termografía, cámara rápida, "
+"espectroscopia, sondas Langmuir)."
+msgstr ""
+"Diagnostics requis (thermocouples, pyrométrie, thermographie, caméra rapide, "
+"spectroscopie, sondes de Langmuir)."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:123
+msgid ""
+"Servicios de laboratorio (mojado de metal líquido, diseño de portamuestras, "
+"etc.)."
+msgstr ""
+"Services de laboratoire (mouillage de métal liquide, conception de porte-"
+"échantillons, etc.)."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:124
+msgid "Uso previsto de haz NBI, láser o ambos."
+msgstr "Utilisation prévue du faisceau NBI, du laser ou des deux."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:127
+msgid "Fechas preferidas y grado de flexibilidad."
+msgstr "Dates souhaitées et degré de flexibilité."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:130
+msgid ""
+"Tras la evaluación se comunicará la admisión o rechazo de la solicitud y el "
+"tipo de servicio asignado."
+msgstr ""
+"Après l'évaluation, l'acceptation ou le rejet de la demande et le type de "
+"service attribué seront communiqués."
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:137
+msgid "Contacto y recursos"
+msgstr "Contact et ressources"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:140
+msgid "Responsable técnico:"
+msgstr "Responsable technique :"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:142
+msgid "Técnico OLMAT"
+msgstr "Technicien OLMAT"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:148
+msgid "Email:"
+msgstr "Email :"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:150
+msgid "<a href=\"mailto:olmat@ciemat.es\">olmat@ciemat.es</a>"
+msgstr "<a href=\"mailto:olmat@ciemat.es\">olmat@ciemat.es</a>"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:156
+msgid "Teléfono:"
+msgstr "Téléphone :"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:158
+msgid "+34&nbsp;91&nbsp;346&nbsp;6000"
+msgstr "+34&nbsp;91&nbsp;346&nbsp;6000"
+
+#: .\icts\templates\icts\facilities\_OLMAT.html:165
+msgid ""
+"Solicita la ficha técnica detallada para obtener limitaciones de muestra y "
+"diagramas de montaje."
+msgstr ""
+"Demandez la fiche technique détaillée pour connaître les limitations "
+"d'échantillons et les schémas de montage."
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:9
+msgid "Microscopio Electrónico SEM-FIB"
+msgstr "Microscope électronique SEM-FIB"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:11
+msgid "Carl Zeiss Auriga Compact con detector EDS y EBSD"
+msgstr "Carl Zeiss Auriga Compact avec détecteurs EDS et EBSD"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:25
+#: .\icts\templates\icts\facilities\_SIMS.html:25
+#: .\icts\templates\icts\facilities\_confocal.html:25
+#: .\icts\templates\icts\facilities\_implantador.html:25
+#: .\icts\templates\icts\facilities\_profilometer.html:25
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:21
+msgid "Descripción del Equipo"
+msgstr "Description de l'équipement"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:27
+msgid ""
+"Microscopio electrónico de barrido de <strong>Carl Zeiss</strong>, modelo "
+"<em>Auriga Compact</em> con un voltaje de aceleración de electrones de "
+"<strong>0.5 a 30 kV</strong> y tres detectores diferentes de electrones "
+"secundarios y retrodispersados."
+msgstr ""
+"Microscope électronique à balayage de <strong>Carl Zeiss</strong>, modèle "
+"<em>Auriga Compact</em>, avec une tension d'accélération des électrons de "
+"<strong>0,5 à 30 kV</strong> et trois détecteurs différents d'électrons "
+"secondaires et rétrodiffusés."
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:34
+msgid ""
+"El sistema incluye también un detector de EDS <strong>XFlash de Bruker</"
+"strong>, con una resolución de hasta <strong>127 eV</strong> en energía para "
+"estudios de composición y se pueden realizar análisis en un punto local, "
+"lineales y mapas de un área."
+msgstr ""
+"Le système comprend également un détecteur EDS <strong>XFlash de Bruker</"
+"strong> avec une résolution énergétique jusqu'à <strong>127 eV</strong> pour "
+"les études de composition, et permet des analyses ponctuelles, linéaires et "
+"des cartographies de zone."
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:43
+msgid "Detector EBSD y Cañón FIB"
+msgstr "Détecteur EBSD et canon FIB"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:45
+msgid ""
+"El microscopio está equipado con un detector de difracción de electrones "
+"retrodispersados (<strong>EBSD</strong>) para la determinación de fases y "
+"orientaciones cristalinas con una inclinación de la muestra de <strong>70°</"
+"strong>. Esta tecnología permite el análisis de microestructuras "
+"cristalinas, texturas y orientaciones preferenciales en materiales "
+"policristalinos."
+msgstr ""
+"Le microscope est équipé d'un détecteur de diffraction d'électrons "
+"rétrodiffusés (<strong>EBSD</strong>) pour la détermination des phases et "
+"des orientations cristallines, avec une inclinaison de l'échantillon de "
+"<strong>70°</strong>. Cette technologie permet l'analyse des microstructures "
+"cristallines, des textures et des orientations préférentielles dans les "
+"matériaux polycristallins."
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:53
+msgid ""
+"Además, cuenta con un <strong>cañón FIB de iones de galio</strong> con un "
+"voltaje de aceleración de <strong>1 a 30 kV</strong> para inspección en "
+"cortes en sección y la fabricación de muestras para TEM. Esta capacidad "
+"permite trabajar tanto con materiales conductores como aislantes, "
+"facilitando la preparación de muestras delgadas para microscopía electrónica "
+"de transmisión."
+msgstr ""
+"De plus, il dispose d'un <strong>canon FIB à ions de gallium</strong> avec "
+"une tension d'accélération de <strong>1 à 30 kV</strong> pour l'inspection "
+"en coupe et la fabrication d'échantillons pour le MET. Cette capacité permet "
+"de travailler aussi bien avec des matériaux conducteurs qu'isolants, "
+"facilitant la préparation d'échantillons minces pour la microscopie "
+"électronique en transmission."
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:63
+#: .\icts\templates\icts\facilities\_implantador.html:65
+#: .\icts\templates\icts\facilities\_profilometer.html:43
+msgid "Características Técnicas"
+msgstr "Caractéristiques techniques"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:65
+msgid "Voltaje SEM"
+msgstr "Tension SEM"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:66
+msgid "Voltaje FIB"
+msgstr "Tension FIB"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:67
+msgid "Resolución EDS"
+msgstr "Résolution EDS"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:68
+msgid "Inclinación EBSD"
+msgstr "Inclinaison EBSD"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:69
+msgid "Iones FIB"
+msgstr "Ions FIB"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:70
+#, fuzzy
+#| msgid "Análisis"
+msgid "Análisis EDS"
+msgstr "Analyse EDS"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:71
+msgid "Capacidad TEM"
+msgstr "Capacité TEM"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:76
+#: .\icts\templates\icts\facilities\_SIMS.html:81
+#: .\icts\templates\icts\facilities\_confocal.html:81
+#: .\icts\templates\icts\facilities\_profilometer.html:92
+msgid "Aplicaciones Principales"
+msgstr "Applications principales"
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:78
+msgid ""
+"Este equipo permite realizar análisis morfológicos de alta resolución, "
+"caracterización elemental mediante EDS, análisis cristalográfico mediante "
+"EBSD, y preparación de muestras delgadas para TEM mediante FIB. Es "
+"especialmente útil para el estudio de materiales avanzados, semiconductores, "
+"metales y cerámicas, tanto en investigación básica como aplicada en el "
+"desarrollo de nuevos materiales."
+msgstr ""
+"Cet équipement permet des analyses morphologiques à haute résolution, la "
+"caractérisation élémentaire par EDS, l'analyse cristallographique par EBSD "
+"et la préparation d'échantillons minces pour le MET par FIB. Il est "
+"particulièrement utile pour l'étude des matériaux avancés, des semi-"
+"conducteurs, des métaux et des céramiques, tant en recherche fondamentale "
+"qu'appliquée pour le développement de nouveaux matériaux."
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:87
+msgid ""
+"La combinación de capacidades SEM, EDS, EBSD y FIB en un solo sistema "
+"proporciona una plataforma completa para la caracterización integral de "
+"materiales, desde el análisis morfológico hasta la preparación de muestras "
+"para técnicas complementarias."
+msgstr ""
+"La combinaison des capacités SEM, EDS, EBSD et FIB dans un seul système "
+"fournit une plateforme complète pour la caractérisation intégrale des "
+"matériaux, de l'analyse morphologique à la préparation d'échantillons pour "
+"des techniques complémentaires."
+
+#: .\icts\templates\icts\facilities\_SEM_FIB.html:93
+#: .\icts\templates\icts\facilities\_SIMS.html:97
+#: .\icts\templates\icts\facilities\_confocal.html:96
+#: .\icts\templates\icts\facilities\_profilometer.html:109
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:87
+msgid "Coste uso"
+msgstr "Coût d'utilisation"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:9
+msgid "Espectrómetro de Masas SIMS"
+msgstr "Spectromètre de masse SIMS"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:11
+msgid "Hiden Analytical con cañones de O₂, Ar y Cs"
+msgstr "Hiden Analytical avec canons O₂, Ar et Cs"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:27
+msgid ""
+"Equipo de espectroscopía de masas de iones secundarios de <strong>Hiden "
+"Analytical</strong>. Se utilizan iones primarios de <strong>O₂ ó Ar</strong> "
+"con una energía de hasta <strong>5 keV</strong>."
+msgstr ""
+"Spectromètre de masse d'ions secondaires de <strong>Hiden Analytical</"
+"strong>. Des ions primaires de <strong>O₂ ou Ar</strong> sont utilisés avec "
+"une énergie jusqu'à <strong>5 keV</strong>."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:34
+msgid ""
+"Permite realizar espectros de masas (1 a 550 uma), perfiles en profundidad y "
+"<strong>SIMS estático</strong>. El sistema se puede emplear también para "
+"mapas de composición e incorpora un cañón de electrones para experimentos de "
+"SIMS en materiales aislantes."
+msgstr ""
+"Il permet des spectres de masse (1 à 550 uma), des profils en profondeur et "
+"la <strong>SIMS statique</strong>. Le système peut également être utilisé "
+"pour des cartographies de composition et intègre un canon d'électrons pour "
+"des expériences SIMS sur des matériaux isolants."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:44
+msgid "Cañón de Iones de Cesio y Características Técnicas"
+msgstr "Canon d'ions césium et caractéristiques techniques"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:46
+msgid ""
+"Para la detección de iones electronegativos se utiliza un <strong>cañón de "
+"iones de Cs</strong>, con una energía máxima de <strong>5 keV</strong>. Esta "
+"configuración permite el análisis de elementos con alta afinidad "
+"electrónica, mejorando significativamente la sensibilidad para la detección "
+"de especies negativas."
+msgstr ""
+"Pour la détection d'ions électronégatifs, un <strong>canon d'ions Cs</"
+"strong> est utilisé, avec une énergie maximale de <strong>5 keV</strong>. "
+"Cette configuration permet l'analyse d'éléments à forte affinité "
+"électronique, améliorant significativement la sensibilité pour la détection "
+"d'espèces négatives."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:54
+msgid "Rango de masas"
+msgstr "Plage de masses"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:55
+msgid "Energía iones O₂/Ar"
+msgstr "Énergie des ions O₂/Ar"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:56
+msgid "Energía iones Cs"
+msgstr "Énergie des ions Cs"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:57
+msgid "Modos de análisis"
+msgstr "Modes d'analyse"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:58
+msgid "Capacidades"
+msgstr "Capacités"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:59
+msgid "Materiales"
+msgstr "Matériaux"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:60
+msgid "Cañón electrones"
+msgstr "Canon d'électrons"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:65
+msgid "Financiación"
+msgstr "Financement"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:67
+msgid ""
+"El equipo <strong>Hiden SIMS Workstation</strong> ha sido cofinanciado por "
+"el <strong>CEI Campus de Moncloa</strong> (Resolución del 23 de Marzo de "
+"2011), fue concedido al <strong>IFN_UPM</strong>, y se encuentra en préstamo "
+"en el <strong>LNF_CIEMAT</strong>."
+msgstr ""
+"Le <strong>Hiden SIMS Workstation</strong> a été cofinancé par le "
+"<strong>CEI Campus de Moncloa</strong> (Résolution du 23 mars 2011), "
+"attribué à l'<strong>IFN_UPM</strong>, et est en prêt au <strong>LNF_CIEMAT</"
+"strong>."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:83
+msgid ""
+"Este equipo es fundamental para el análisis de composición superficial y en "
+"profundidad de materiales, permitiendo la detección de impurezas, dopantes y "
+"elementos traza con alta sensibilidad. Es especialmente útil para el estudio "
+"de semiconductores, materiales funcionales, recubrimientos y superficies "
+"modificadas."
+msgstr ""
+"Cet équipement est essentiel pour l'analyse de la composition de surface et "
+"en profondeur des matériaux, permettant la détection d'impuretés, de dopants "
+"et d'éléments traces avec une grande sensibilité. Il est particulièrement "
+"utile pour l'étude des semi-conducteurs, des matériaux fonctionnels, des "
+"revêtements et des surfaces modifiées."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:91
+msgid ""
+"La capacidad de realizar mapas de composición lo convierte en una "
+"herramienta esencial para la caracterización microestructural de materiales "
+"avanzados, proporcionando información espacial detallada sobre la "
+"distribución de elementos y la estructura de los materiales."
+msgstr ""
+"La capacité de réaliser des cartographies de composition en fait un outil "
+"essentiel pour la caractérisation microstructurale des matériaux avancés, "
+"fournissant des informations spatiales détaillées sur la distribution des "
+"éléments et la structure des matériaux."
+
+#: .\icts\templates\icts\facilities\_confocal.html:9
+#: .\icts\templates\icts\home.html:241
+msgid "Microscopio Confocal/Interferométrico"
+msgstr "Microscope confocal/interférométrique"
+
+#: .\icts\templates\icts\facilities\_confocal.html:11
+msgid "Sensofar S Neox con microscopía confocal e interferometría"
+msgstr "Sensofar S Neox avec microscopie confocale et interférométrie"
+
+#: .\icts\templates\icts\facilities\_confocal.html:27
+msgid ""
+"El microscopio confocal <strong>Sensofar S Neox</strong> es un sistema "
+"óptico de alta precisión que combina tres tecnologías complementarias: "
+"<strong>microscopía confocal</strong>, <strong>interferometría de luz "
+"blanca</strong> y <strong>perfilometría óptica</strong>."
+msgstr ""
+"Le microscope confocal <strong>Sensofar S Neox</strong> est un système "
+"optique de haute précision qui combine trois technologies complémentaires : "
+"<strong>microscopie confocale</strong>, <strong>interférométrie à lumière "
+"blanche</strong> et <strong>profilométrie optique</strong>."
+
+#: .\icts\templates\icts\facilities\_confocal.html:34
+msgid ""
+"Este equipo permite realizar mediciones topográficas de superficies con "
+"resolución nanométrica, análisis de rugosidad, caracterización de texturas y "
+"evaluación dimensional de microestructuras de manera no destructiva."
+msgstr ""
+"Cet équipement permet de réaliser des mesures topographiques de surfaces "
+"avec une résolution nanométrique, des analyses de rugosité, la "
+"caractérisation de textures et l'évaluation dimensionnelle de "
+"microstructures de manière non destructive."
+
+#: .\icts\templates\icts\facilities\_confocal.html:43
+msgid "Capacidades Principales"
+msgstr "Capacités principales"
+
+#: .\icts\templates\icts\facilities\_confocal.html:45
+#: .\icts\templates\icts\facilities\_profilometer.html:45
+msgid "Resolución vertical"
+msgstr "Résolution verticale"
+
+#: .\icts\templates\icts\facilities\_confocal.html:46
+msgid "Resolución lateral"
+msgstr "Résolution latérale"
+
+#: .\icts\templates\icts\facilities\_confocal.html:47
+msgid "Objetivos"
+msgstr "Objectifs"
+
+#: .\icts\templates\icts\facilities\_confocal.html:48
+msgid "Campo de medición"
+msgstr "Champ de mesure"
+
+#: .\icts\templates\icts\facilities\_confocal.html:49
+msgid "Rango de medición Z"
+msgstr "Plage de mesure Z"
+
+#: .\icts\templates\icts\facilities\_confocal.html:50
+msgid "Modos de medición"
+msgstr "Modes de mesure"
+
+#: .\icts\templates\icts\facilities\_confocal.html:51
+#, fuzzy
+#| msgid "Análisis"
+msgid "Tipo de análisis"
+msgstr "Type d'analyse"
+
+#: .\icts\templates\icts\facilities\_confocal.html:56
+msgid "Técnicas de Medición"
+msgstr "Techniques de mesure"
+
+#: .\icts\templates\icts\facilities\_confocal.html:59
+msgid "Microscopía Confocal"
+msgstr "Microscopie confocale"
+
+#: .\icts\templates\icts\facilities\_confocal.html:61
+msgid ""
+"Ideal para superficies rugosas, proporcionando imágenes topográficas 3D con "
+"alta resolución lateral. Permite caracterizar texturas y patrones con "
+"escalas de rugosidad desde nanómetros hasta milímetros."
+msgstr ""
+"Idéal pour les surfaces rugueuses, offrant des images topographiques 3D à "
+"haute résolution latérale. Permet de caractériser des textures et des motifs "
+"avec des échelles de rugosité allant du nanomètre au millimètre."
+
+#: .\icts\templates\icts\facilities\_confocal.html:69
+msgid "Interferometría"
+msgstr "Interférométrie"
+
+#: .\icts\templates\icts\facilities\_confocal.html:71
+msgid ""
+"Técnica de máxima precisión para superficies lisas y reflectantes. "
+"Proporciona resolución vertical subnanométrica, ideal para la "
+"caracterización de superficies pulidas y capas delgadas."
+msgstr ""
+"Technique de très haute précision pour les surfaces lisses et "
+"réfléchissantes. Offre une résolution verticale sub-nanométrique, idéale "
+"pour la caractérisation de surfaces polies et de couches minces."
+
+#: .\icts\templates\icts\facilities\_confocal.html:83
+msgid ""
+"Este equipo es fundamental para la caracterización superficial de materiales "
+"en diversas áreas: materiales para fusión nuclear, recubrimientos "
+"funcionales, componentes micromecánicos, dispositivos ópticos y "
+"semiconductores."
+msgstr ""
+"Cet équipement est essentiel pour la caractérisation de surface des "
+"matériaux dans divers domaines : matériaux pour la fusion nucléaire, "
+"revêtements fonctionnels, composants micromécaniques, dispositifs optiques "
+"et semi-conducteurs."
+
+#: .\icts\templates\icts\facilities\_confocal.html:90
+msgid ""
+"Permite el análisis de parámetros de rugosidad (Ra, Rq, Rz, etc.), medición "
+"de espesores de capas, caracterización de defectos superficiales, análisis "
+"de desgaste y evaluación de procesos de fabricación. La capacidad de "
+"realizar mediciones sin contacto evita daños en muestras delicadas."
+msgstr ""
+"Il permet l'analyse des paramètres de rugosité (Ra, Rq, Rz, etc.), la mesure "
+"d'épaisseurs de couches, la caractérisation des défauts de surface, "
+"l'analyse de l'usure et l'évaluation des procédés de fabrication. La "
+"capacité à réaliser des mesures sans contact évite d'endommager les "
+"échantillons délicats."
+
+#: .\icts\templates\icts\facilities\_implantador.html:9
+msgid "Implantador de Iones Danfysik"
+msgstr "Implanteur d'ions Danfysik"
+
+#: .\icts\templates\icts\facilities\_implantador.html:11
+msgid "60 keV para estudios de fusión con H, He y D"
+msgstr "60 keV pour des études de fusion avec H, He et D"
+
+#: .\icts\templates\icts\facilities\_implantador.html:27
+msgid ""
+"El <strong>implantador de iones Danfysik de 60 keV</strong> permite la "
+"implantación iónica con especies gaseosas como <strong>helio, hidrógeno y "
+"deuterio</strong>, entre otras, principalmente para estudios relacionados "
+"con la investigación de fusión."
+msgstr ""
+"L'<strong>implanteur d'ions Danfysik de 60 keV</strong> permet "
+"l'implantation ionique avec des espèces gazeuses telles que <strong>hélium, "
+"hydrogène et deutérium</strong>, entre autres, principalement pour des "
+"études liées à la recherche sur la fusion."
+
+#: .\icts\templates\icts\facilities\_implantador.html:34
+msgid ""
+"El equipo del implantador ha diseñado y desarrollado una variedad de cámaras "
+"de irradiación y configuraciones experimentales adaptadas a necesidades de "
+"investigación específicas. Por ejemplo, se pueden realizar mediciones "
+"simultáneas de ionoluminiscencia y conductividad eléctrica superficial, "
+"permitiendo la correlación directa entre la degradación macroscópica del "
+"material y la generación de defectos durante la implantación."
+msgstr ""
+"L'équipe de l'implanteur a conçu et développé une variété de chambres "
+"d'irradiation et de configurations expérimentales adaptées à des besoins de "
+"recherche spécifiques. Par exemple, des mesures simultanées "
+"d'ionoluminescence et de conductivité électrique de surface peuvent être "
+"réalisées, permettant une corrélation directe entre la dégradation "
+"macroscopique du matériau et la génération de défauts pendant l'implantation."
+
+#: .\icts\templates\icts\facilities\_implantador.html:45
+msgid "Aplicaciones y Experiencias"
+msgstr "Applications et expériences"
+
+#: .\icts\templates\icts\facilities\_implantador.html:47
+msgid ""
+"La instalación ha sido ampliamente utilizada para implantar iones de "
+"<strong>H, He y D</strong> tanto en metales como en aislantes para la "
+"evaluación de degradación microestructural superficial, ionoluminiscencia y "
+"degradación eléctrica, así como para implantar isótopos de helio e hidrógeno "
+"para experimentos de difusión y desorción."
+msgstr ""
+"L'installation a été largement utilisée pour implanter des ions <strong>H, "
+"He et D</strong> dans des métaux comme dans des isolants pour l'évaluation "
+"de la dégradation microstructurale de surface, de l'ionoluminescence et de "
+"la dégradation électrique, ainsi que pour implanter des isotopes d'hélium et "
+"d'hydrogène pour des expériences de diffusion et de désorption."
+
+#: .\icts\templates\icts\facilities\_implantador.html:55
+msgid ""
+"Los experimentos pueden realizarse bajo temperaturas controladas que van "
+"desde temperatura ambiente hasta <strong>800 °C</strong>. Las cámaras de "
+"irradiación especializadas y los portamuestras son diseñados por el equipo "
+"del implantador y fabricados en los talleres del CIEMAT para soportar una "
+"amplia variedad de requisitos experimentales."
+msgstr ""
+"Les expériences peuvent être réalisées à des températures contrôlées allant "
+"de la température ambiante jusqu'à <strong>800 °C</strong>. Les chambres "
+"d'irradiation spécialisées et les porte-échantillons sont conçus par "
+"l'équipe de l'implanteur et fabriqués dans les ateliers du CIEMAT pour "
+"répondre à une large variété d'exigences expérimentales."
+
+#: .\icts\templates\icts\facilities\_implantador.html:67
+msgid "Energía de implantación"
+msgstr "Énergie d'implantation"
+
+#: .\icts\templates\icts\facilities\_implantador.html:68
+msgid "Especies disponibles"
+msgstr "Espèces disponibles"
+
+#: .\icts\templates\icts\facilities\_implantador.html:69
+msgid "Rango de temperatura"
+msgstr "Plage de température"
+
+#: .\icts\templates\icts\facilities\_implantador.html:70
+msgid "Materiales objetivo"
+msgstr "Matériaux cibles"
+
+#: .\icts\templates\icts\facilities\_implantador.html:71
+msgid "Mediciones simultáneas"
+msgstr "Mesures simultanées"
+
+#: .\icts\templates\icts\facilities\_implantador.html:72
+msgid "Capacidades especiales"
+msgstr "Capacités spéciales"
+
+#: .\icts\templates\icts\facilities\_implantador.html:73
+msgid "Fabricación"
+msgstr "Fabrication"
+
+#: .\icts\templates\icts\facilities\_implantador.html:78
+msgid "Investigación en Fusión"
+msgstr "Recherche sur la fusion"
+
+#: .\icts\templates\icts\facilities\_implantador.html:80
+msgid ""
+"Este equipo es fundamental para la investigación en materiales para fusión, "
+"permitiendo simular las condiciones de irradiación que experimentarán los "
+"materiales en reactores de fusión. La capacidad de trabajar con isótopos de "
+"hidrógeno y helio es crucial para entender el comportamiento de los "
+"materiales bajo irradiación de partículas ligeras."
+msgstr ""
+"Cet équipement est essentiel pour la recherche sur les matériaux de fusion, "
+"permettant de simuler les conditions d'irradiation que les matériaux "
+"subiront dans les réacteurs de fusion. La capacité de travailler avec des "
+"isotopes d'hydrogène et d'hélium est cruciale pour comprendre le "
+"comportement des matériaux sous irradiation de particules légères."
+
+#: .\icts\templates\icts\facilities\_implantador.html:88
+msgid ""
+"La flexibilidad del sistema permite adaptar las condiciones experimentales a "
+"necesidades específicas de investigación, desde estudios básicos de daño por "
+"irradiación hasta evaluaciones de materiales candidatos para aplicaciones de "
+"fusión."
+msgstr ""
+"La flexibilité du système permet d'adapter les conditions expérimentales à "
+"des besoins de recherche spécifiques, depuis des études de dommages par "
+"irradiation jusqu'à l'évaluation de matériaux candidats pour des "
+"applications de fusion."
+
+#: .\icts\templates\icts\facilities\_profilometer.html:9
+msgid "Perfilómetro de Contacto"
+msgstr "Profilomètre à contact"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:11
+msgid "Bruker Dektak XT para medición de rugosidad y espesores"
+msgstr "Bruker Dektak XT pour la mesure de la rugosité et des épaisseurs"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:27
+msgid ""
+"El perfilómetro <strong>Bruker Dektak XT</strong> es un instrumento de "
+"medición de superficie por contacto que permite caracterizar la topografía, "
+"rugosidad y espesores de capas delgadas con resolución nanométrica."
+msgstr ""
+"Le profilomètre <strong>Bruker Dektak XT</strong> est un instrument de "
+"mesure de surface par contact qui permet de caractériser la topographie, la "
+"rugosité et l'épaisseur de couches minces avec une résolution nanométrique."
+
+#: .\icts\templates\icts\facilities\_profilometer.html:34
+msgid ""
+"Mediante un palpador de diamante que se desplaza sobre la superficie de la "
+"muestra, el equipo registra variaciones verticales con alta precisión, "
+"proporcionando perfiles topográficos detallados y parámetros de rugosidad "
+"estandarizados."
+msgstr ""
+"Au moyen d'un stylet en diamant qui se déplace sur la surface de "
+"l'échantillon, l'équipement enregistre les variations verticales avec une "
+"grande précision, fournissant des profils topographiques détaillés et des "
+"paramètres de rugosité standardisés."
+
+#: .\icts\templates\icts\facilities\_profilometer.html:46
+msgid "Rango vertical"
+msgstr "Plage verticale"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:47
+msgid "Longitud de barrido"
+msgstr "Longueur de balayage"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:48
+msgid "Radio palpador"
+msgstr "Rayon du stylet"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:49
+msgid "Fuerza de medición"
+msgstr "Force de mesure"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:50
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:61
+msgid "Tamaño de muestra"
+msgstr "Taille d'échantillon"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:51
+msgid "Peso máximo muestra"
+msgstr "Poids maximal de l'échantillon"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:56
+msgid "Tipos de Mediciones"
+msgstr "Types de mesures"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:59
+msgid "Rugosidad Superficial"
+msgstr "Rugosité de surface"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:61
+msgid ""
+"Determinación de parámetros de rugosidad como Ra, Rq, Rz, Rmax según "
+"estándares internacionales. Análisis de texturas superficiales producidas "
+"por diferentes procesos de fabricación o tratamiento."
+msgstr ""
+"Détermination des paramètres de rugosité tels que Ra, Rq, Rz, Rmax selon les "
+"normes internationales. Analyse des textures de surface produites par "
+"différents procédés de fabrication ou de traitement."
+
+#: .\icts\templates\icts\facilities\_profilometer.html:69
+msgid "Espesor de Capas"
+msgstr "Épaisseur des couches"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:71
+msgid ""
+"Medición precisa de espesores de recubrimientos y capas delgadas mediante la "
+"técnica de escalón (step). Ideal para control de procesos de deposición como "
+"PVD, CVD, pulverización catódica, etc."
+msgstr ""
+"Mesure précise des épaisseurs de revêtements et de couches minces par la "
+"technique de l'escalier (step). Idéal pour le contrôle des procédés de dépôt "
+"tels que PVD, CVD, pulvérisation cathodique, etc."
+
+#: .\icts\templates\icts\facilities\_profilometer.html:79
+#, fuzzy
+#| msgid "Análisis"
+msgid "Análisis de Formas"
+msgstr "Analyse des formes"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:81
+msgid ""
+"Caracterización de estructuras micro y nanométricas: surcos, canales, "
+"patrones grabados, desgaste superficial. Obtención de perfiles 2D detallados "
+"de características topográficas."
+msgstr ""
+"Caractérisation de structures micro- et nanométriques : rainures, canaux, "
+"motifs gravés, usure de surface. Obtention de profils 2D détaillés des "
+"caractéristiques topographiques."
+
+#: .\icts\templates\icts\facilities\_profilometer.html:94
+msgid ""
+"El perfilómetro es una herramienta esencial para el control de calidad en "
+"procesos de fabricación, caracterización de recubrimientos funcionales, "
+"análisis de desgaste y tribología, estudios de corrosión superficial, y "
+"verificación de procesos de micromecanizado."
+msgstr ""
+"Le profilomètre est un outil essentiel pour le contrôle qualité des procédés "
+"de fabrication, la caractérisation de revêtements fonctionnels, l'analyse de "
+"l'usure et de la tribologie, les études de corrosion de surface et la "
+"vérification des processus de micro-usinage."
+
+#: .\icts\templates\icts\facilities\_profilometer.html:101
+msgid ""
+"Su capacidad de medición por contacto lo hace especialmente útil para "
+"superficies que no son adecuadas para técnicas ópticas, como materiales "
+"transparentes, superficies de baja reflectividad o estructuras con altas "
+"pendientes. Es ampliamente utilizado en investigación de materiales, "
+"desarrollo de recubrimientos y caracterización de componentes para "
+"tecnología de fusión nuclear."
+msgstr ""
+"Sa capacité de mesure par contact le rend particulièrement utile pour les "
+"surfaces qui ne sont pas adaptées aux techniques optiques, telles que les "
+"matériaux transparents, les surfaces à faible réflectivité ou les structures "
+"à fortes pentes. Il est largement utilisé en recherche sur les matériaux, "
+"développement de revêtements et caractérisation de composants pour la "
+"technologie de fusion nucléaire."
+
+#: .\icts\templates\icts\facilities\_profilometer.html:113
+msgid "Ventajas de la Perfilometría de Contacto"
+msgstr "Avantages de la profilométrie de contact"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:115
+msgid ""
+"Medición directa de altura sin necesidad de calibración de reflectividad"
+msgstr "Mesure directe de la hauteur sans calibration de la réflectivité"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:116
+msgid ""
+"Aplicable a todo tipo de materiales: conductores, aislantes, transparentes"
+msgstr ""
+"Applicable à tous types de matériaux : conducteurs, isolants, transparents"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:117
+msgid "Alta precisión en medición de escalones y espesores de capa"
+msgstr ""
+"Haute précision dans la mesure des marches et de l'épaisseur des couches"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:118
+msgid ""
+"No afectado por variaciones de color o propiedades ópticas de la muestra"
+msgstr ""
+"Non affecté par les variations de couleur ou les propriétés optiques de "
+"l'échantillon"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:119
+msgid "Medición de estructuras con altas pendientes y cambios abruptos"
+msgstr "Mesure de structures avec fortes pentes et changements abrupts"
+
+#: .\icts\templates\icts\facilities\_profilometer.html:120
+msgid "Trazabilidad a estándares metrológicos internacionales"
+msgstr "Traçabilité aux normes métrologiques internationales"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:9
+#: .\icts\templates\icts\home.html:191
+msgid "Acelerador Van de Graaff"
+msgstr "Accélérateur Van de Graaff"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:10
+msgid ""
+"Irradiación con electrones de hasta 2&nbsp;MeV y radiación Bremsstrahlung"
+msgstr ""
+"Irradiation par électrons jusqu'à 2&nbsp;MeV et rayonnement Bremsstrahlung"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:23
+msgid ""
+"El acelerador de electrones, tipo <em>Van de Graaff</em>, permite la "
+"irradiación de materiales con electrones de hasta <strong>2&nbsp;MeV</"
+"strong> de energía, así como con la radiación Bremsstrahlung producida por "
+"el frenado del haz, con corrientes de hasta <strong>150&nbsp;&micro;A</"
+"strong>."
+msgstr ""
+"L'accélérateur d'électrons de type <em>Van de Graaff</em> permet "
+"l'irradiation de matériaux avec des électrons jusqu'à <strong>2&nbsp;MeV</"
+"strong> d'énergie, ainsi qu'avec le rayonnement Bremsstrahlung produit par "
+"le freinage du faisceau, avec des courants jusqu'à "
+"<strong>150&nbsp;&micro;A</strong>."
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:30
+msgid ""
+"De esta manera se simula la radiación de fuentes de Co-60, con la ventaja de "
+"posibilitar irradiaciones rápidas (tasas de dosis más altas y mejor "
+"controladas) y realizar medidas durante irradiación <em>in-situ</em>."
+msgstr ""
+"Cela simule le rayonnement de sources de Co-60, avec l'avantage de permettre "
+"des irradiations rapides (taux de dose plus élevés et mieux contrôlés) et "
+"des mesures pendant l'irradiation <em>in-situ</em>."
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:39
+msgid "Parámetros Controlados y Flexibilidad"
+msgstr "Paramètres contrôlés et flexibilité"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:41
+msgid ""
+"Temperatura, vacío, gas de trabajo, tasa de dosis y energía del haz están "
+"estrictamente controlados. Es posible irradiar componentes relativamente "
+"grandes. El personal responsable puede diseñar y desarrollar cámaras "
+"experimentales adaptadas a cada ensayo."
+msgstr ""
+"La température, le vide, le gaz de travail, le taux de dose et l'énergie du "
+"faisceau sont strictement contrôlés. Il est possible d'irradier des "
+"composants relativement grands. Le personnel responsable peut concevoir et "
+"développer des chambres expérimentales adaptées à chaque essai."
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:48
+msgid ""
+"Instalación altamente flexible con sistemas <em>in-beam</em> únicos para "
+"medir conductividad eléctrica, pérdidas dieléctricas, permitividad (Hz→GHz) "
+"y propiedades ópticas durante la irradiación. Las irradiaciones pueden "
+"realizarse en alto vacío, aire o atmósfera controlada (N<sub>2</sub>, He)."
+msgstr ""
+"Installation très flexible avec des systèmes <em>in-beam</em> uniques pour "
+"mesurer la conductivité électrique, les pertes diélectriques, la "
+"permittivité (Hz→GHz) et les propriétés optiques pendant l'irradiation. Les "
+"irradiations peuvent être réalisées en haut vide, à l'air ou en atmosphère "
+"contrôlée (N<sub>2</sub>, He)."
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:57
+msgid "Características del Haz"
+msgstr "Caractéristiques du faisceau"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:59
+msgid "Energía"
+msgstr "Énergie"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:60
+msgid "Corriente"
+msgstr "Courant"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:62
+msgid "Área haz desfocalizado"
+msgstr "Zone de faisceau défocalisé"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:63
+msgid "Focalización"
+msgstr "Focalisation"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:64
+msgid "Desfocalización"
+msgstr "Défocalisation"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:65
+msgid "Barrido"
+msgstr "Balayage"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:66
+msgid "Tasa de dosis máxima"
+msgstr "Taux de dose maximal"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:71
+msgid "Capacidad de Medidas In-Situ"
+msgstr "Capacité de mesures in situ"
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:73
+msgid ""
+"Se han realizado numerosos estudios en aislantes candidatos para fusión, "
+"donde se requieren pocos dpa (típicamente entre 10<sup>-12</sup> y "
+"10<sup>-8</sup>&nbsp;dpa/s) y tasas de radiación (Bremsstrahlung o directa) "
+"de hasta 10<sup>4</sup>&nbsp;Gy/s. Durante la irradiación se han medido "
+"propiedades ópticas y eléctricas, además de difusión de He y H."
+msgstr ""
+"De nombreuses études ont été menées sur des isolants candidats pour la "
+"fusion, où de faibles dpa sont requis (typiquement entre 10<sup>-12</sup> et "
+"10<sup>-8</sup>&nbsp;dpa/s) et des taux de dose de rayonnement "
+"(Bremsstrahlung ou directe) jusqu'à 10<sup>4</sup>&nbsp;Gy/s. Pendant "
+"l'irradiation, des propriétés optiques et électriques ont été mesurées, "
+"ainsi que la diffusion de He et H."
+
+#: .\icts\templates\icts\facilities\_van_der_graaff.html:81
+msgid ""
+"Estos sistemas permiten medidas simultáneas de propiedades ópticas, "
+"eléctricas y dieléctricas desde Hz hasta GHz. También hay sistemas en línea "
+"para medir absorción óptica y radioluminiscencia durante la irradiación. "
+"Para estos estudios se diseñan y fabrican cámaras y portamuestras a medida "
+"en los talleros del CIEMAT."
+msgstr ""
+"Ces systèmes permettent des mesures simultanées de propriétés optiques, "
+"électriques et diélectriques de Hz à GHz. Il existe également des systèmes "
+"en ligne pour mesurer l'absorption optique et la radioluminescence pendant "
+"l'irradiation. Pour ces études, des chambres et porte-échantillons sur "
+"mesure sont conçus et fabriqués dans les ateliers du CIEMAT."
+
+#: .\icts\templates\icts\facility_info.html:3
+msgid "Información"
+msgstr "Information"
+
+#: .\icts\templates\icts\facility_info.html:11
+#: .\icts\templates\icts\facility_info.html:21
+#: .\icts\templates\icts\facility_info.html:29
+msgid "Volver"
+msgstr "Retour"
+
+#: .\icts\templates\icts\facility_info.html:35
+msgid ""
+"Esta página ofrece información básica de la técnica seleccionada. "
+"Próximamente añadiremos detalles de equipos, capacidades y condiciones de "
+"acceso."
+msgstr ""
+"Cette page fournit des informations de base sur la technique sélectionnée. "
+"Nous ajouterons prochainement des détails sur les équipements, les capacités "
+"et les conditions d'accès."
+
+#: .\icts\templates\icts\facility_info.html:41
+msgid "Equipo/Configuración 1 (genérico)"
+msgstr "Équipement/Configuration 1 (générique)"
+
+#: .\icts\templates\icts\facility_info.html:42
+msgid "Equipo/Configuración 2 (genérico)"
+msgstr "Équipement/Configuration 2 (générique)"
+
+#: .\icts\templates\icts\facility_info.html:43
+msgid "Equipo/Configuración 3 (genérico)"
+msgstr "Équipement/Configuration 3 (générique)"
+
+#: .\icts\templates\icts\facility_info.html:48
+msgid "Entrar en SIGMA ICTS"
+msgstr "Entrer dans SIGMA ICTS"
+
+#: .\icts\templates\icts\home.html:4
+msgid "SIGMA ICTS · Home"
+msgstr "SIGMA ICTS · Accueil"
+
+#: .\icts\templates\icts\home.html:164
+msgid "¡Bienvenido/a a SIGMA ICTS!"
+msgstr "Bienvenue sur SIGMA ICTS !"
+
+#: .\icts\templates\icts\home.html:165
+msgid ""
+"Sistema de Gestión de Accesos y Muestras a la ICTS del Laboratorio Nacional "
+"de Fusión (CIEMAT)"
+msgstr ""
+"Système de gestion des accès et des échantillons à l'ICTS du Laboratoire "
+"National de Fusion (CIEMAT)"
+
+#: .\icts\templates\icts\home.html:169
+msgid "Entrar"
+msgstr "Se connecter"
+
+#: .\icts\templates\icts\home.html:173
+msgid "Crear Cuenta"
+msgstr "Créer un compte"
+
+#: .\icts\templates\icts\home.html:177
+msgid "Salir al Portal"
+msgstr "Retour au portail"
+
+#: .\icts\templates\icts\home.html:186
+msgid "Equipos ICTS Disponibles"
+msgstr "Équipements ICTS disponibles"
+
+#: .\icts\templates\icts\home.html:193
+msgid ""
+"Acelerador de electrones para irradiación y ensayos con haces controlados "
+"hasta 2 MeV."
+msgstr ""
+"Accélérateur d'électrons pour l'irradiation et des essais avec des faisceaux "
+"contrôlés jusqu'à 2 MeV."
+
+#: .\icts\templates\icts\home.html:201
+msgid "FEG-SEM EDX/EBSD"
+msgstr "FEG-SEM EDX/EBSD"
+
+#: .\icts\templates\icts\home.html:203
+msgid ""
+"Microscopía electrónica de barrido con análisis elemental por espectroscopía "
+"de rayos X dispersiva."
+msgstr ""
+"Microscopie électronique à balayage avec analyse élémentaire par "
+"spectroscopie de rayons X à dispersion d'énergie."
+
+#: .\icts\templates\icts\home.html:211
+msgid "FIB"
+msgstr "FIB"
+
+#: .\icts\templates\icts\home.html:213
+msgid ""
+"Haz de iones focalizado para micromecanizado de precisión y cortes de "
+"muestra localizados."
+msgstr ""
+"Faisceau d'ions focalisé pour le microusinage de précision et des coupes "
+"d'échantillon localisées."
+
+#: .\icts\templates\icts\home.html:221
+msgid "SIMS"
+msgstr "SIMS"
+
+#: .\icts\templates\icts\home.html:223
+msgid ""
+"Espectrometría de masas de iones secundarios para perfiles de composición en "
+"profundidad."
+msgstr ""
+"Spectrométrie de masse d'ions secondaires pour des profils de composition en "
+"profondeur."
+
+#: .\icts\templates\icts\home.html:231
+#, fuzzy
+#| msgid "Implantador de iones "
+msgid "Implantador de iones"
+msgstr "Implanteur d'ions"
+
+#: .\icts\templates\icts\home.html:233
+msgid ""
+"Sistema de implantación iónica para modificación superficial de materiales."
+msgstr ""
+"Système d'implantation ionique pour la modification de surface des matériaux."
+
+#: .\icts\templates\icts\home.html:243
+msgid ""
+"Microscopía confocal láser para caracterización óptica confocal e "
+"interferometría."
+msgstr ""
+"Microscopie confocale laser pour la caractérisation optique confocale et "
+"l'interférométrie."
+
+#: .\icts\templates\icts\home.html:251
+msgid "Perfilómetro"
+msgstr "Profilomètre"
+
+#: .\icts\templates\icts\home.html:253
+msgid ""
+"Medición de rugosidad y espesores con resolución nanométrica mediante "
+"perfilometría de contacto."
+msgstr ""
+"Mesure de la rugosité et des épaisseurs avec une résolution nanométrique "
+"grâce à la profilométrie de contact."
+
+#: .\icts\templates\icts\home.html:261
+msgid "Impedancia eléctrica a alta temperatura"
+msgstr "Impédance électrique à haute température"
+
+#: .\icts\templates\icts\home.html:263
+msgid ""
+"Plataforma para caracterización eléctrica e impedanciometría de materiales y "
+"componentes."
+msgstr ""
+"Plateforme pour la caractérisation électrique et l'impédancemétrie des "
+"matériaux et composants."
+
+#: .\icts\templates\icts\home.html:271
+msgid "Lithium combustion"
+msgstr "Combustion du lithium"
+
+#: .\icts\templates\icts\home.html:273
+msgid "Laboratorio especializado en el estudio de litio"
+msgstr "Laboratoire spécialisé dans l'étude du lithium"
+
+#: .\icts\templates\icts\home.html:281
+msgid "PbLi corrosion"
+msgstr "Corrosion PbLi"
+
+#: .\icts\templates\icts\home.html:283
+msgid ""
+"Canal de corrosión PbLi para evaluación de materiales en condiciones de "
+"metal líquido."
+msgstr ""
+"Canal de corrosion PbLi pour l'évaluation des matériaux en conditions de "
+"métal liquide."
+
+#: .\icts\templates\icts\home.html:291
+msgid "OLMAT"
+msgstr "OLMAT"
+
+#: .\icts\templates\icts\home.html:293
+msgid ""
+"Optimización de blancos avanzados de metal líquido para ensayos HHF con haz "
+"NBI y láser."
+msgstr ""
+"Optimisation de cibles avancées en métal liquide pour des essais HHF avec "
+"faisceau NBI et laser."
+
+#: .\icts\templates\icts\home.html:306
+msgid "¿Necesitas ayuda?"
+msgstr "Besoin d'aide ?"
+
+#: .\icts\templates\icts\home.html:309
+msgid ""
+"Consulta nuestra documentación o contacta con el equipo técnico para "
+"resolver tus dudas."
+msgstr ""
+"Consultez notre documentation ou contactez l'équipe technique pour résoudre "
+"vos questions."
+
+#: .\icts\templates\icts\home.html:314
+msgid "Procedimiento de Evaluación"
+msgstr "Procédure d'évaluation"
+
+#: .\icts\templates\icts\home.html:318
+msgid "FAQ"
+msgstr "FAQ"
+
+#: .\icts\templates\icts\my_proposals.html:3
+#: .\icts\templates\icts\my_proposals.html:4
+#: .\templates\icts\user_dashboard.html:20
 msgid "Mis propuestas"
 msgstr "Mes propositions"
 
+#: .\icts\templates\icts\my_proposals.html:9
+msgid "Listado"
+msgstr ""
+
+#: .\icts\templates\icts\my_proposals.html:10
+#: .\icts\templates\icts\proposal_form.html:3
+#: .\icts\templates\icts\proposal_form.html:851
+#: .\templates\icts\user_dashboard.html:19
 msgid "Nueva propuesta"
 msgstr "Nouvelle proposition"
 
-msgid "Borradores"
+#: .\icts\templates\icts\my_proposals.html:20
+#, fuzzy
+#| msgid "Borradores"
+msgid "Borrador"
 msgstr "Brouillons"
 
-msgid "Enviadas"
-msgstr "Soumises"
+#: .\icts\templates\icts\my_proposals.html:21
+msgid "En Revisi▋"
+msgstr ""
 
-msgid "Evaluadas"
-msgstr "Évaluées"
+#: .\icts\templates\icts\my_proposals.html:22
+#: .\icts\templates\icts\reviewer_dashboard_new.html:34
+msgid "Cambios solicitados"
+msgstr ""
 
-msgid "Análisis"
-msgstr "Analyses"
+#: .\icts\templates\icts\my_proposals.html:23
+#: .\icts\templates\icts\reviewer_dashboard_new.html:34
+msgid "Aprobada"
+msgstr ""
 
+#: .\icts\templates\icts\my_proposals.html:24
+#: .\icts\templates\icts\reviewer_dashboard_new.html:34
+msgid "Rechazada"
+msgstr ""
+
+#: .\icts\templates\icts\my_proposals.html:58
+msgid "Creada"
+msgstr ""
+
+#: .\icts\templates\icts\my_proposals.html:63
+#: .\icts\templates\icts\reviewer_dashboard_new.html:43
+#: .\icts\templates\icts\reviewer_inbox.html:23
+#: .\icts\templates\icts\reviewer_inbox.html:47
+#: .\templates\icts\user_dashboard.html:50
+#: .\templates\icts\user_dashboard.html:71
 msgid "Ver"
 msgstr "Voir"
 
+#: .\icts\templates\icts\my_proposals.html:65
+#: .\templates\icts\user_dashboard.html:49
 msgid "Editar"
 msgstr "Modifier"
 
+#: .\icts\templates\icts\my_proposals.html:67
 msgid "Eliminar"
 msgstr "Supprimer"
 
+#: .\icts\templates\icts\proposal_form.html:3
+#, fuzzy
+#| msgid "Mis propuestas"
+msgid "Editar propuesta"
+msgstr "Mes propositions"
+
+#: .\icts\templates\icts\proposal_form.html:1235
+#: .\icts\templates\icts\review_form.html:128
+#, fuzzy
+#| msgid "Borradores"
+msgid "Guardar Borrador"
+msgstr "Brouillons"
+
+#: .\icts\templates\icts\proposal_form.html:1237
+#: .\icts\templates\icts\proposal_form.html:1239
+#: .\icts\templates\icts\proposal_form.html:1266
+#: .\icts\templates\icts\proposal_form.html:1289
+#: .\icts\templates\icts\proposal_form.html:1312
+#: .\icts\templates\icts\proposal_form.html:1335
+#: .\icts\templates\icts\proposal_form.html:1358
+#: .\icts\templates\icts\proposal_form.html:1381
+#: .\icts\templates\icts\proposal_form.html:1404
+#: .\icts\templates\icts\proposal_form.html:1427
+msgid "Cancelar"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1269
+#: .\icts\templates\icts\proposal_form.html:1292
+#: .\icts\templates\icts\proposal_form.html:1315
+#: .\icts\templates\icts\proposal_form.html:1338
+#: .\icts\templates\icts\proposal_form.html:1361
+#: .\icts\templates\icts\proposal_form.html:1384
+#: .\icts\templates\icts\proposal_form.html:1407
+#: .\icts\templates\icts\proposal_form.html:1430
+msgid "Guardar"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:3
+#: .\icts\templates\icts\review_form.html:4
+#, fuzzy
+#| msgid "Nueva propuesta"
+msgid "Revisar propuesta"
+msgstr "Nouvelle proposition"
+
+#: .\icts\templates\icts\review_form.html:7
+#: .\icts\templates\icts\reviewer_dashboard_new.html:7
+#: .\icts\templates\icts\reviewer_inbox.html:7
+msgid "(Sin título)"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:11
+msgid "Evaluación de Propuesta"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:19
+msgid "Solicitante"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:22
+msgid "ID"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:27
+msgid "Fecha"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:30
+msgid "Estado"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:41
+msgid "¿Es viable técnicamente esta propuesta?"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:45
+msgid "Sí, es viable"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:51
+msgid "No es viable"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:60
+msgid "Calidad Científica (1-5)"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:62
+#: .\icts\templates\icts\review_form.html:75
+#: .\icts\templates\icts\review_form.html:88
+msgid "Selecciona una puntuación"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:63
+msgid "Muy baja"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:64
+msgid "Baja"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:65
+msgid "Media"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:66
+msgid "Alta"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:67
+msgid "Excelente"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:73
+msgid "Necesidad de Infraestructura (1-5)"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:76
+msgid "No necesita"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:77
+msgid "Necesidad baja"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:78
+msgid "Necesidad media"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:79
+msgid "Necesidad alta"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:80
+msgid "Crítica"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:86
+msgid "Potencial Industrial (1-5)"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:89
+msgid "Sin interés"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:90
+msgid "Bajo interés"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:91
+msgid "Interés medio"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:92
+msgid "Alto interés"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:93
+msgid "Muy alto interés"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:101
+msgid "Recomendación Final"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:103
+msgid "Selecciona tu recomendación"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:105
+msgid "Aprobar - La propuesta cumple con los criterios"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:108
+msgid "Solicitar cambios - Necesita modificaciones menores"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:111
+msgid "Rechazar - No cumple con los criterios"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:118
+msgid "Comentarios Detallados"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:119
+msgid ""
+"Proporciona comentarios detallados sobre tu evaluación, incluyendo "
+"fortalezas, debilidades y recomendaciones..."
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:125
+msgid "Enviar Evaluación"
+msgstr ""
+
+#: .\icts\templates\icts\review_form.html:131
+msgid "Volver a la bandeja"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:3
+msgid "Dashboard del Revisor"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:4
+#, fuzzy
+#| msgid "Mi Panel de Usuario"
+msgid "Mi panel revisor"
+msgstr "Tableau de bord utilisateur"
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:9
+msgid "Resumen"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:11
+msgid "Pendientes"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:12
+msgid "Completadas"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:13
+msgid "Aprobadas"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:14
+msgid "Rechazadas"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:16
+msgid ""
+"Para ver tus evaluaciones pendientes, usa el menú Evaluaciones pendientes."
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:17
+msgid "Para consultar el historial completo, usa Historial de evaluaciones."
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:18
+msgid "Ir a Evaluaciones pendientes"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:18
+msgid "Ir al Historial"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:23
+msgid "Evaluaciones recientes"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:34
+msgid "Pendiente"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:41
+#: .\icts\templates\icts\reviewer_inbox.html:22
+#: .\icts\templates\icts\reviewer_inbox.html:46
+#, fuzzy
+#| msgid "Evaluadas"
+msgid "Evaluar"
+msgstr "Évaluées"
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:49
+msgid "No hay evaluaciones recientes"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:3
+#: .\icts\templates\icts\reviewer_inbox.html:4
+msgid "Evaluaciones pendientes"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:9
+msgid "Propuestas enviadas"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:16
+#, python-format
+msgid ""
+"\\n"
+"              ID #%(proposal_id)s - %(created_at)s\\n"
+"            "
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:27
+msgid "No hay propuestas pendientes."
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:33
+msgid "Mis revisiones"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:40
+#, python-format
+msgid ""
+"\\n"
+"              Estado: %(decision)s - ID #%(proposal_id)s\\n"
+"            "
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:51
+msgid "Aún no has emitido revisiones."
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_mailbox.html:3
+#, fuzzy
+#| msgid "Bandeja de entrada"
+msgid "Bandeja de entrada - Revisor"
+msgstr "Bo&icirc;te de réception"
+
+#: .\icts\templates\icts\reviewer_mailbox.html:4
 msgid "Bandeja de entrada"
 msgstr "Bo&icirc;te de réception"
+
+#: .\icts\templates\icts\reviewer_mailbox.html:9
+msgid ""
+"Esta funcionalidad está en desarrollo. Aquí podrás enviar mensajes al "
+"Responsable o al Usuario."
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_mailbox.html:13
+msgid "Escribe tu mensaje..."
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_mailbox.html:15
+msgid "Destinatario"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_mailbox.html:17
+msgid "Responsable"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_mailbox.html:18
+#: .\templates\accounts\login_dtf.html:46
+#: .\templates\accounts\login_dtf.html:51
+#: .\templates\accounts\login_icts.html:38
+#: .\templates\accounts\login_icts.html:43
+msgid "Usuario"
+msgstr "Nom d'utilisateur"
+
+#: .\icts\templates\icts\reviewer_mailbox.html:20
+#, fuzzy
+#| msgid "Enviadas"
+msgid "Enviar"
+msgstr "Soumises"
+
+#: .\icts\templates\icts\user_dashboard.html:3
+msgid "Mi Panel"
+msgstr "Mon tableau de bord"
+
+#: .\icts\templates\icts\user_dashboard.html:4
+#: .\templates\icts\user_dashboard.html:4
+#: .\templates\icts\user_dashboard.html:5
+msgid "Mi Panel de Usuario"
+msgstr "Tableau de bord utilisateur"
+
+#: .\icts\templates\icts\user_dashboard.html:15
+#: .\templates\icts\user_dashboard.html:32
+#: .\templates\icts\user_dashboard.html:39
+msgid "Borradores"
+msgstr "Brouillons"
+
+#: .\icts\templates\icts\user_dashboard.html:31
+msgid "Enviadas"
+msgstr "Soumises"
+
+#: .\icts\templates\icts\user_dashboard.html:39
+#: .\templates\icts\user_dashboard.html:34
+#: .\templates\icts\user_dashboard.html:82
+msgid "Evaluadas"
+msgstr "Évaluées"
+
+#: .\icts\templates\icts\user_dashboard.html:47
+msgid "Análisis"
+msgstr "Analyses"
+
+#: .\icts\templates\icts\user_dashboard.html:55
+msgid "Total"
+msgstr ""
+
+#: .\icts\templates\icts\user_dashboard.html:64
+#, fuzzy
+#| msgid "Nueva propuesta"
+msgid "Nueva Propuesta"
+msgstr "Nouvelle proposition"
+
+#: .\icts\templates\icts\user_dashboard.html:68
+msgid "Ver Todas"
+msgstr ""
+
+#: .\icts\templates\icts\user_dashboard.html:76
+msgid "Actividad por Mes"
+msgstr ""
+
+#: .\templates\accounts\login_dtf.html:6 .\templates\accounts\login_dtf.html:7
+msgid "Iniciar sesión – SIGMA DTF"
+msgstr "Connexion – SIGMA DTF"
+
+#: .\templates\accounts\login_dtf.html:37
+#: .\templates\accounts\login_icts.html:29
+msgid "División de Tecnologías para la Fusión"
+msgstr "Division des technologies de fusion"
+
+#: .\templates\accounts\login_dtf.html:47
+#: .\templates\accounts\login_dtf.html:59
+#: .\templates\accounts\login_icts.html:39
+#: .\templates\accounts\login_icts.html:51
+msgid "Contraseña"
+msgstr "Mot de passe"
+
+#: .\templates\accounts\login_dtf.html:66
+#: .\templates\accounts\login_icts.html:28
+#: .\templates\accounts\login_icts.html:59
+#, fuzzy
+#| msgid "Investigación en Fusión"
+msgid "Iniciar sesión"
+msgstr "Connexion"
+
+#: .\templates\accounts\login_dtf.html:70
+#: .\templates\accounts\login_icts.html:62
+msgid "¿Olvidaste la contraseña?"
+msgstr "Mot de passe oublié ?"
+
+#: .\templates\accounts\login_dtf.html:71
+#: .\templates\accounts\login_icts.html:63
+msgid "Registrar nuevo usuario"
+msgstr "Créer un nouvel utilisateur"
+
+#: .\templates\accounts\login_dtf.html:73
+#: .\templates\accounts\login_icts.html:68
+#, fuzzy
+#| msgid "Salir al Portal"
+msgid "Volver al Portal"
+msgstr "Retour au portail"
+
+#: .\templates\accounts\login_icts.html:6
+#, fuzzy
+#| msgid "Entrar en SIGMA ICTS"
+msgid "Iniciar sesión · SIGMA ICTS"
+msgstr "Connexion · SIGMA ICTS"
+
+#: .\templates\base_icts.html:341
+msgid "Idioma"
+msgstr "Langue"
+
+#: .\templates\icts\user_dashboard.html:12
+#, python-format
+msgid ""
+"\\n"
+"          Bienvenido/a %(name)s\\n"
+"        "
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:16
+msgid "Desde aquí puedes gestionar tus propuestas ICTS."
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:25
+#, python-format
+msgid "Rol: %(role)s"
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:33
+#: .\templates\icts\user_dashboard.html:61
+msgid "Enviadas / En revisión"
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:56
+msgid "No tienes borradores."
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:77
+msgid "No tienes propuestas enviadas."
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:92
+msgid "Ver informe"
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:98
+msgid "Aún no tienes propuestas evaluadas."
+msgstr ""
+
+#: .\templates\portal\icts_access.html:9
+msgid "Acceso ICTS-LNF · SIGMA Portal"
+msgstr "Accès ICTS-LNF · SIGMA Portal"
+
+#: .\templates\portal\icts_access.html:59
+msgid "Acceso a ICTS-LNF"
+msgstr "Accès à l'ICTS-LNF"
+
+#: .\templates\portal\icts_access.html:61
+msgid ""
+"Información pública sobre el acceso competitivo y la solicitud directa "
+"(pago)."
+msgstr "Information publique sur l'accès compétitif et la demande directe (payante)."
+
+#: .\templates\portal\icts_access.html:67
+msgid "Acceso competitivo"
+msgstr "Accès compétitif"
+
+#: .\templates\portal\icts_access.html:70
+msgid "Solicitud directa (pago)"
+msgstr "Demande directe (payante)"
+
+#: .\templates\portal\icts_access.html:75
+msgid "Acceso competitivo (Σ‑SIGMA ICTS)"
+msgstr "Accès compétitif (Σ‑SIGMA ICTS)"
+
+#: .\templates\portal\icts_access.html:77
+#: .\templates\portal\icts_access.html:143
+#, fuzzy
+#| msgid "Objetivos"
+msgid "Objetivo"
+msgstr "Objectif"
+
+#: .\templates\portal\icts_access.html:79
+msgid ""
+"Gestionar propuestas de acceso a equipos científico‑técnicos singulares "
+"mediante:"
+msgstr "Gérer les propositions d'accès à des équipements scientifiques et techniques singuliers par :"
+
+#: .\templates\portal\icts_access.html:84
+msgid "registro"
+msgstr "inscription"
+
+#: .\templates\portal\icts_access.html:85
+#, fuzzy
+#| msgid "Mis propuestas"
+msgid "propuesta"
+msgstr "proposition"
+
+#: .\templates\portal\icts_access.html:86
+msgid "evaluación por revisores"
+msgstr "évaluation par des relecteurs"
+
+#: .\templates\portal\icts_access.html:87
+msgid "decisión final por Responsable"
+msgstr "décision finale par le Responsable"
+
+#: .\templates\portal\icts_access.html:88
+msgid "asignación de código de acceso en caso de aceptación"
+msgstr "attribution d'un code d'accès en cas d'acceptation"
+
+#: .\templates\portal\icts_access.html:91
+#: .\templates\portal\icts_access.html:150
+msgid "Pasos"
+msgstr "Étapes"
+
+#: .\templates\portal\icts_access.html:93
+msgid "Registro y acceso"
+msgstr "Inscription et accès"
+
+#: .\templates\portal\icts_access.html:94
+msgid "El solicitante crea una cuenta y entra en el portal ICTS."
+msgstr "Le demandeur crée un compte et se connecte au portail ICTS."
+
+#: .\templates\portal\icts_access.html:96
+#, fuzzy
+#| msgid "Nueva propuesta"
+msgid "Creación de propuesta"
+msgstr "Création de la proposition"
+
+#: .\templates\portal\icts_access.html:97
+#, fuzzy
+#| msgid "Título del proyecto."
+msgid "Define título, alcance y datos del proyecto."
+msgstr "Définit le titre, le périmètre et les données du projet."
+
+#: .\templates\portal\icts_access.html:98
+msgid ""
+"Selecciona las técnicas/equipos requeridos (p. ej. SEM/EDX, Confocal, SIMS, "
+"VDG, etc.)."
+msgstr "Sélectionne les techniques/équipements requis (p. ex. SEM/EDX, Confocal, SIMS, VDG, etc.)."
+
+#: .\templates\portal\icts_access.html:100
+msgid "Solicitud de muestras y configuración por técnica"
+msgstr "Demande d'échantillons et configuration par technique"
+
+#: .\templates\portal\icts_access.html:101
+msgid "Para cada técnica seleccionada, se registran:"
+msgstr "Pour chaque technique sélectionnée, sont enregistrés :"
+
+#: .\templates\portal\icts_access.html:103
+msgid "identificación de muestras (Sample ID)"
+msgstr "identification des échantillons (Sample ID)"
+
+#: .\templates\portal\icts_access.html:104
+#, fuzzy
+#| msgid "Análisis"
+msgid "tipo de análisis solicitado"
+msgstr "type d'analyse demandé"
+
+#: .\templates\portal\icts_access.html:105
+msgid "condiciones/requisitos (y cualquier dato específico del equipo)"
+msgstr "conditions/exigences (et toute donnée spécifique à l'équipement)"
+
+#: .\templates\portal\icts_access.html:108
+#, fuzzy
+#| msgid "Borradores"
+msgid "Guardar borrador"
+msgstr "Enregistrer le brouillon"
+
+#: .\templates\portal\icts_access.html:109
+msgid ""
+"La propuesta puede guardarse como borrador para completarla más adelante sin "
+"perder información."
+msgstr "La proposition peut être enregistrée comme brouillon pour être complétée ultérieurement sans perdre d'informations."
+
+#: .\templates\portal\icts_access.html:111
+#, fuzzy
+#| msgid "Energía de implantación"
+msgid "Envío a evaluación"
+msgstr "Soumission à l'évaluation"
+
+#: .\templates\portal\icts_access.html:112
+msgid "Cuando está completa, se envía para revisión."
+msgstr "Lorsqu'elle est complète, elle est soumise à l'examen."
+
+#: .\templates\portal\icts_access.html:114
+#, fuzzy
+#| msgid "Evaluadas"
+msgid "Evaluación"
+msgstr "Évaluation"
+
+#: .\templates\portal\icts_access.html:115
+msgid "Revisores asignados emiten evaluación (aprobación / cambios / rechazo)."
+msgstr "Les relecteurs assignés émettent une évaluation (acceptation / modifications / rejet)."
+
+#: .\templates\portal\icts_access.html:117
+#, fuzzy
+#| msgid "Supervisión"
+msgid "Decisión"
+msgstr "Décision"
+
+#: .\templates\portal\icts_access.html:118
+msgid "El Responsable toma la decisión final:"
+msgstr "Le Responsable prend la décision finale :"
+
+#: .\templates\portal\icts_access.html:120
+msgid ""
+"Aceptada → se asigna un código de acceso y se continúa a ejecución del "
+"servicio."
+msgstr "Acceptée → un code d'accès est attribué et l'exécution du service se poursuit."
+
+#: .\templates\portal\icts_access.html:121
+msgid "Cambios solicitados → el solicitante actualiza y reenvía."
+msgstr "Modifications demandées → le demandeur met à jour et renvoie."
+
+#: .\templates\portal\icts_access.html:122
+msgid ""
+"Rechazada → queda registrada como rechazada y puede servir como base para "
+"una nueva solicitud."
+msgstr "Rejetée → elle est enregistrée comme rejetée et peut servir de base à une nouvelle demande."
+
+#: .\templates\portal\icts_access.html:126
+#, fuzzy
+#| msgid "Entrar en SIGMA ICTS"
+msgid "Ir a Σ‑SIGMA ICTS"
+msgstr "Aller à Σ‑SIGMA ICTS"
+
+#: .\templates\portal\icts_access.html:131
+#: .\templates\portal\icts_access.html:133
+msgid "Diagrama de flujo de acceso competitivo"
+msgstr "Schéma du flux d'accès compétitif"
+
+#: .\templates\portal\icts_access.html:135
+msgid "Figura 2 — Flujo de acceso competitivo"
+msgstr "Figure 2 — Flux d'accès compétitif"
+
+#: .\templates\portal\icts_access.html:136
+#: .\templates\portal\icts_access.html:240
+msgid "Diagrama provisional; se sustituirá por un gráfico."
+msgstr "Schéma provisoire ; il sera remplacé par un graphique."
+
+#: .\templates\portal\icts_access.html:141
+msgid "Solicitud directa (pago / no competitiva)"
+msgstr "Demande directe (payante / non compétitive)"
+
+#: .\templates\portal\icts_access.html:145
+msgid ""
+"Permitir que un usuario solicite un servicio técnico‑científico sin "
+"evaluación competitiva, conforme a tarifas vigentes y procedimiento "
+"administrativo."
+msgstr "Permettre à un utilisateur de demander un service technico-scientifique sans évaluation compétitive, conformément aux tarifs en vigueur et à la procédure administrative."
+
+#: .\templates\portal\icts_access.html:152
+msgid "Consultar alcance y tarifas"
+msgstr "Consulter le périmètre et les tarifs"
+
+#: .\templates\portal\icts_access.html:153
+msgid ""
+"El usuario revisa si el servicio está tarifado y el alcance del trabajo."
+msgstr "L'utilisateur vérifie si le service est tarifé et le périmètre du travail."
+
+#: .\templates\portal\icts_access.html:155
+msgid "Rellenar formulario oficial"
+msgstr "Remplir le formulaire officiel"
+
+#: .\templates\portal\icts_access.html:157
+msgid "Se completa el documento “Solicitud de servicios técnicos al CIEMAT”."
+msgstr "Le document « Demande de services techniques au CIEMAT » est complété."
+
+#: .\templates\portal\icts_access.html:163
+msgid ""
+"El propio formulario indica que debe enviarse por e-mail a <a "
+"href=\\\"mailto:serviciostecnicos@ciemat.es\\\">serviciostecnicos@ciemat.es</a>."
+msgstr ""
+
+#: .\templates\portal\icts_access.html:167
+#: .\templates\portal\icts_access.html:175
+msgid "PT-CIEMAT-30-03-F01 ed. 10"
+msgstr "PT-CIEMAT-30-03-F01 ed. 10"
+
+#: .\templates\portal\icts_access.html:169
+msgid "Certificados (si aplica)"
+msgstr "Certificats (le cas échéant)"
+
+#: .\templates\portal\icts_access.html:171
+msgid ""
+"Si se solicita emisión de certificado, el formulario exige email (indica que "
+"es imprescindible) y contempla la firma con certificado electrónico (RD "
+"203/2021)."
+msgstr "Si l'émission d'un certificat est demandée, le formulaire exige un e-mail (il indique qu'il est indispensable) et prévoit la signature avec un certificat électronique (RD 203/2021)."
+
+#: .\templates\portal\icts_access.html:177
+msgid "Gestión CIEMAT"
+msgstr "Gestion CIEMAT"
+
+#: .\templates\portal\icts_access.html:178
+msgid ""
+"CIEMAT revisa la solicitud, confirma condiciones, y gestiona el pedido/"
+"contrato."
+msgstr "Le CIEMAT examine la demande, confirme les conditions et gère la commande/le contrat."
+
+#: .\templates\portal\icts_access.html:180
+msgid "Ejecución y entrega"
+msgstr "Exécution et livraison"
+
+#: .\templates\portal\icts_access.html:181
+msgid "Recepción de muestras → análisis → informe/entrega de resultados."
+msgstr "Réception des échantillons → analyse → rapport/livraison des résultats."
+
+#: .\templates\portal\icts_access.html:184
+msgid "Formulario PT-CIEMAT-30-03-F01:"
+msgstr "Formulaire PT-CIEMAT-30-03-F01 :"
+
+#: .\templates\portal\icts_access.html:185
+msgid "descargar y enviar a"
+msgstr "télécharger et envoyer à"
+
+#: .\templates\portal\icts_access.html:189
+msgid "Descargar PDF PT-CIEMAT-30-03-F01"
+msgstr "Télécharger le PDF PT-CIEMAT-30-03-F01"
+
+#: .\templates\portal\icts_access.html:195
+msgid "Enviar solicitud directa (subir PDF)"
+msgstr "Envoyer une demande directe (téléverser le PDF)"
+
+#: .\templates\portal\icts_access.html:203
+#, fuzzy
+#| msgid "Servicio técnico"
+msgid "Servicio"
+msgstr "Service"
+
+#: .\templates\portal\icts_access.html:204
+msgid "Código"
+msgstr "Code"
+
+#: .\templates\portal\icts_access.html:205
+msgid "Precio"
+msgstr "Prix"
+
+#: .\templates\portal\icts_access.html:206
+msgid "Unidad"
+msgstr "Unité"
+
+#: .\templates\portal\icts_access.html:207
+msgid "Notas"
+msgstr "Notes"
+
+#: .\templates\portal\icts_access.html:219
+msgid "Por definir"
+msgstr "À définir"
+
+#: .\templates\portal\icts_access.html:230
+msgid "Tarifas pueden actualizarse; confirmar vigencia."
+msgstr "Les tarifs peuvent être mis à jour ; veuillez confirmer leur validité."
+
+#: .\templates\portal\icts_access.html:235
+#: .\templates\portal\icts_access.html:237
+msgid "Diagrama de flujo de solicitud directa"
+msgstr "Schéma du flux de demande directe"
+
+#: .\templates\portal\icts_access.html:239
+msgid "Figura 3 — Flujo de solicitud directa"
+msgstr "Figure 3 — Flux de demande directe"
