@@ -216,7 +216,7 @@
             <a href="{% url 'icts:sigmasem:download_file' analysis.pk %}?path={{ file.path }}" class="sem-btn sem-btn-info" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
               <i class="bi bi-download"></i>
             </a>
-            <button onclick="deleteFile('{{ file.path }}')" class="sem-btn" style="background: #dc3545; color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+            <button onclick="deleteFile('{{ file.path }}')" class="sem-btn sem-btn-warning" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -269,7 +269,7 @@
           <i class="bi bi-eye"></i>
           Ver Muestras
         </a>
-        <a href="{% url 'icts:sigmasem:generate_report_pdf' analysis.pk %}" class="sem-btn" style="background: #dc3545; color: white;">
+        <a href="{% url 'icts:sigmasem:generate_report_pdf' analysis.pk %}" class="sem-btn sem-btn-primary">
           <i class="bi bi-file-earmark-pdf"></i>
           Generar Informe PDF
         </a>
@@ -279,7 +279,7 @@
         <i class="bi bi-cloud-upload"></i>
         Subir Archivos
       </a>
-      <a href="{% url 'icts:sigmasem:analysis_list' %}" class="sem-btn" style="background: #6c757d; color: white;">
+      <a href="{% url 'icts:sigmasem:analysis_list' %}" class="sem-btn sem-btn-secondary">
         <i class="bi bi-list-ul"></i>
         Volver a la Lista
       </a>

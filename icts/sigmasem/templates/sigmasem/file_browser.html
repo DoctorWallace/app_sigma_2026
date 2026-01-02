@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       if (data.error) {
-        filesContainer.innerHTML = `<div style="text-align: center; padding: 2rem; color: #dc3545;">Error: ${data.error}</div>`;
+        filesContainer.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--sem-warning);">Error: ${data.error}</div>`;
         folderInfo.style.display = 'none';
         return;
       }
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(error => {
       console.error('Error:', error);
-      filesContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #dc3545;">Error al cargar los archivos.</div>';
+      filesContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--sem-warning);">Error al cargar los archivos.</div>';
       folderInfo.style.display = 'none';
     });
   });

@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse, HttpResponse, Http404
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -47,6 +48,50 @@ def _resolve_browse_path(raw_path: str) -> tuple[Path, Path]:
             return resolved_candidate, root_resolved
 
     raise ValueError("Ruta fuera de los directorios permitidos.")
+
+
+def _normalize_analysis_file_path(analysis, raw_path):
+    if not isinstance(raw_path, str):
+        raise ValueError("Ruta de archivo invalida.")
+    raw_path = raw_path.strip()
+    if not raw_path:
+        raise ValueError("Ruta de archivo invalida.")
+    if "\\" in raw_path:
+        raise ValueError("Ruta de archivo invalida.")
+
+    normalized = raw_path.replace("\\", "/")
+    if normalized.startswith("/") or ":" in normalized:
+        raise ValueError("Ruta de archivo invalida.")
+
+    parts = [part for part in normalized.split("/") if part]
+    if any(part == ".." for part in parts):
+        raise ValueError("Ruta de archivo invalida.")
+
+    if normalized.startswith("sem_files/"):
+        candidate = normalized
+    else:
+        candidate = f"sem_files/{normalized}"
+
+    expected_prefix = f"sem_files/{analysis.registration_number}/"
+    if not candidate.startswith(expected_prefix):
+        raise Http404
+
+    return candidate
+
+
+def _allowed_report_paths(analysis):
+    allowed = set()
+    for entry in analysis.report_files or []:
+        if not isinstance(entry, dict):
+            continue
+        raw_path = entry.get("path")
+        try:
+            allowed.add(_normalize_analysis_file_path(analysis, raw_path))
+        except (ValueError, Http404):
+            continue
+    return allowed
+
+
 from .forms import SEMAnalysisForm, SEMSampleForm, SampleSelectionForm, AddSampleForm
 
 
@@ -260,25 +305,52 @@ def browse_files(request):
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_sem_technician)
+@require_POST
 def update_report_files(request, pk):
     """Actualizar archivos del informe"""
     
     analysis = get_object_or_404(SEMAnalysis, pk=pk)
     
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            files = data.get('files', [])
-            
-            analysis.report_files = files
-            analysis.save()
-            
-            return JsonResponse({'success': True})
-            
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+    try:
+        data = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Formato JSON invalido"}, status=400)
     
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    files = data.get("files")
+    if not isinstance(files, list):
+        return JsonResponse({"error": "Formato invalido"}, status=400)
+    
+    sanitized_files = []
+    for entry in files:
+        if not isinstance(entry, dict):
+            return JsonResponse({"error": "Formato invalido"}, status=400)
+        raw_path = entry.get("path")
+        name = entry.get("name")
+        if not raw_path or not name:
+            return JsonResponse({"error": "Formato invalido"}, status=400)
+        try:
+            normalized_path = _normalize_analysis_file_path(analysis, raw_path)
+        except ValueError:
+            return JsonResponse({"error": "Ruta de archivo invalida"}, status=400)
+        except Http404:
+            return JsonResponse({"error": "Archivo no encontrado"}, status=404)
+        
+        if not default_storage.exists(normalized_path):
+            return JsonResponse({"error": "Archivo no encontrado"}, status=400)
+        
+        sanitized = {
+            "name": name,
+            "path": normalized_path,
+        }
+        for key in ("size", "modified", "type"):
+            if key in entry:
+                sanitized[key] = entry[key]
+        sanitized_files.append(sanitized)
+    
+    analysis.report_files = sanitized_files
+    analysis.save(update_fields=["report_files"])
+    
+    return JsonResponse({"success": True})
 
 
 @login_required(login_url="/accounts/login/icts/")
@@ -491,58 +563,83 @@ def upload_files(request, pk):
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_sem_technician)
+@require_POST
 def delete_file(request, pk):
-    """Eliminar archivo del análisis"""
+    """Eliminar archivo del analisis"""
     
     analysis = get_object_or_404(SEMAnalysis, pk=pk)
     
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            file_path = data.get('file_path')
-            
-            if not file_path:
-                return JsonResponse({'error': 'Ruta de archivo no proporcionada'}, status=400)
-            
-            # Eliminar archivo del almacenamiento
-            if default_storage.exists(file_path):
-                default_storage.delete(file_path)
-            
-            # Eliminar archivo de la lista
-            if analysis.report_files:
-                analysis.report_files = [f for f in analysis.report_files if f.get('path') != file_path]
-                analysis.save()
-            
-            return JsonResponse({'success': True, 'message': 'Archivo eliminado exitosamente'})
-            
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+    try:
+        data = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Formato JSON invalido"}, status=400)
     
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    file_path = data.get("file_path")
+    if not file_path:
+        return JsonResponse({"error": "Ruta de archivo no proporcionada"}, status=400)
+    
+    try:
+        normalized_path = _normalize_analysis_file_path(analysis, file_path)
+    except ValueError:
+        return JsonResponse({"error": "Ruta de archivo invalida"}, status=400)
+    except Http404:
+        return JsonResponse({"error": "Archivo no encontrado"}, status=404)
+    
+    if normalized_path not in _allowed_report_paths(analysis):
+        return JsonResponse({"error": "Archivo no encontrado"}, status=404)
+    
+    if default_storage.exists(normalized_path):
+        default_storage.delete(normalized_path)
+    
+    if analysis.report_files:
+        retained = []
+        for entry in analysis.report_files:
+            if not isinstance(entry, dict):
+                retained.append(entry)
+                continue
+            try:
+                entry_path = _normalize_analysis_file_path(analysis, entry.get("path"))
+            except (ValueError, Http404):
+                retained.append(entry)
+                continue
+            if entry_path != normalized_path:
+                retained.append(entry)
+        analysis.report_files = retained
+        analysis.save(update_fields=["report_files"])
+    
+    return JsonResponse({"success": True})
 
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_sem_technician)
 def download_file(request, pk):
-    """Descargar archivo del análisis"""
+    """Descargar archivo del analisis"""
     
     analysis = get_object_or_404(SEMAnalysis, pk=pk)
     
-    file_path = request.GET.get('path')
-    if not file_path:
-        return JsonResponse({'error': 'Ruta de archivo no proporcionada'}, status=400)
+    raw_path = request.GET.get("path")
+    if not raw_path:
+        return JsonResponse({"error": "Ruta de archivo no proporcionada"}, status=400)
     
     try:
-        if default_storage.exists(file_path):
-            file = default_storage.open(file_path)
-            response = HttpResponse(file.read(), content_type='application/octet-stream')
-            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
-            return response
-        else:
-            return JsonResponse({'error': 'Archivo no encontrado'}, status=404)
-            
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        normalized_path = _normalize_analysis_file_path(analysis, raw_path)
+    except ValueError:
+        return JsonResponse({"error": "Ruta de archivo invalida"}, status=400)
+    except Http404:
+        return JsonResponse({"error": "Archivo no encontrado"}, status=404)
+    
+    if normalized_path not in _allowed_report_paths(analysis):
+        return JsonResponse({"error": "Archivo no encontrado"}, status=404)
+    
+    try:
+        if not default_storage.exists(normalized_path):
+            return JsonResponse({"error": "Archivo no encontrado"}, status=404)
+        file = default_storage.open(normalized_path)
+        response = HttpResponse(file.read(), content_type="application/octet-stream")
+        response["Content-Disposition"] = f"attachment; filename=\"{os.path.basename(normalized_path)}\""
+        return response
+    except Exception:
+        return JsonResponse({"error": "Error interno"}, status=500)
 
 
 @login_required(login_url="/accounts/login/icts/")
@@ -781,3 +878,4 @@ def generate_report_pdf(request, pk):
     doc.build(story)
     
     return response
+
