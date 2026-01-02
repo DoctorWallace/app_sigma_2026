@@ -934,6 +934,13 @@ def save_technique_draft(request):
 @user_passes_test(is_plain_icts_user, raise_exception=True)
 def load_technique_draft(request):
     """Vista para cargar borradores de tecnicas individuales"""
+    groups = get_normalized_user_groups(request.user)
+    if (
+        is_reviewer(request.user, groups)
+        or is_responsable(request.user, groups)
+        or is_manager(request.user, groups)
+    ):
+        return HttpResponseForbidden()
     if request.method == 'GET':
         technique = request.GET.get('technique')
         proposal_id = request.GET.get('proposal_id') or "legacy"
