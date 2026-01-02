@@ -12,7 +12,7 @@
       <a class="btn btn-secondary" href="{% url 'icts:pending_users' %}">
         <i class="bi bi-clock"></i> Ver pendientes
       </a>
-      <a class="btn btn-primary" href="{% url 'icts:manager_dashboard' %}">
+      <a class="btn btn-primary" href="{% url 'icts:responsable_dashboard' %}">
         <i class="bi bi-graph-up"></i> Volver al dashboard
       </a>
     </div>
@@ -122,12 +122,18 @@
           <td>
             {% if not user.is_active %}
               <div class="action-stack">
-                <a href="{% url 'icts:approve_user' user.id %}" class="btn-action btn-approve">
-                  <i class="bi bi-check-circle"></i> Activar
-                </a>
-                <a href="{% url 'icts:reject_user' user.id %}" class="btn-action btn-reject" onclick="return confirm('¿Estas seguro de que quieres eliminar a este usuario?')">
-                  <i class="bi bi-x-circle"></i> Eliminar
-                </a>
+                <form method="post" action="{% url 'icts:approve_user' user.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-action btn-approve">
+                    <i class="bi bi-check-circle"></i> Activar
+                  </button>
+                </form>
+                <form method="post" action="{% url 'icts:reject_user' user.id %}" onsubmit="return confirm('¿Estas seguro de que quieres eliminar a este usuario?')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-action btn-reject">
+                    <i class="bi bi-x-circle"></i> Eliminar
+                  </button>
+                </form>
               </div>
             {% else %}
               <span class="muted">Usuario activo</span>
@@ -436,3 +442,4 @@
 })();
 </script>
 {% endblock %}
+

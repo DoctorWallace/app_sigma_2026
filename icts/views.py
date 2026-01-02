@@ -1,7 +1,7 @@
 # icts/views.py
 from django.contrib import messages
 from django.conf import settings
-from django.http import HttpResponseForbidden  # <-- añade esto
+from django.http import Http404, HttpResponseForbidden  # <-- añade esto
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.exceptions import PermissionDenied
 from django.views.generic import FormView
@@ -14,6 +14,7 @@ import logging
 import json
 import re
 from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
 from .forms import AccessProposalForm, ParticipantFormSet, AttachmentFormSet, ProposalReviewForm, RegistrationICTSForm, OLMATRequestForm, OLMATEvaluationForm
 from django.shortcuts import render
 from django.db.models import Exists, OuterRef
@@ -2659,7 +2660,7 @@ def proposal_decide(request, pk):
 # ========= GESTIÓN DE USUARIOS =========
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(lambda u: is_responsable(u) or is_manager(u), raise_exception=True)
+@user_passes_test(is_responsable, raise_exception=True)
 @never_cache
 def pending_users(request):
     """Vista para mostrar usuarios pendientes de validación"""
@@ -2691,7 +2692,7 @@ def pending_users(request):
 
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(lambda u: is_manager(u) or is_responsable(u), raise_exception=True)
+@user_passes_test(is_responsable, raise_exception=True)
 @never_cache
 def users_admin(request):
     """Vista para administración completa de usuarios"""
@@ -2749,7 +2750,8 @@ def users_admin(request):
 
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(lambda u: is_responsable(u) or is_manager(u), raise_exception=True)
+@user_passes_test(is_responsable, raise_exception=True)
+@require_POST
 @never_cache
 def approve_user(request, user_id):
     """Aprobar un usuario pendiente"""
@@ -2757,12 +2759,16 @@ def approve_user(request, user_id):
     
     User = get_user_model()
     user = get_object_or_404(User, id=user_id)
+    if not hasattr(user, "icts_profile"):
+        raise Http404
     
     if user.is_active:
         messages.warning(request, "Este usuario ya está activo.")
     else:
         user.is_active = True
         user.save()
+        user.icts_profile.validated = True
+        user.icts_profile.save(update_fields=["validated"])
         # Enviar notificación de aprobación
         send_user_approval_notification(user)
         messages.success(request, f"Usuario {user.username} ha sido aprobado y activado.")
@@ -2771,7 +2777,8 @@ def approve_user(request, user_id):
 
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(lambda u: is_responsable(u) or is_manager(u), raise_exception=True)
+@user_passes_test(is_responsable, raise_exception=True)
+@require_POST
 @never_cache
 def reject_user(request, user_id):
     """Rechazar un usuario pendiente"""
@@ -2779,6 +2786,8 @@ def reject_user(request, user_id):
     
     User = get_user_model()
     user = get_object_or_404(User, id=user_id)
+    if not hasattr(user, "icts_profile"):
+        raise Http404
     
     username = user.username
     user.delete()

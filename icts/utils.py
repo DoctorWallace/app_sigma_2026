@@ -259,7 +259,7 @@ def send_proposal_notification(proposal, action, recipient=None):
 
 def send_user_approval_notification(user):
     """Envía notificación cuando un usuario es aprobado"""
-    if not settings.EMAIL_HOST_USER or not user.email:
+    if not getattr(settings, "EMAIL_HOST_USER", "") or not user.email:
         return
         
     context = {
@@ -290,7 +290,7 @@ def send_new_user_registration_notification(user):
     from core.roles import MANAGER_GROUPS, RESPONSABLE_GROUPS, normalize_group_name
 
     logger = logging.getLogger(__name__)
-    if not settings.EMAIL_HOST_USER:
+    if not getattr(settings, "EMAIL_HOST_USER", ""):
         logger.info("EMAIL_HOST_USER no configurado; se omite aviso de nuevo usuario.")
         return
     if user is None:

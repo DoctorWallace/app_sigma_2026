@@ -77,17 +77,15 @@
             </td>
             <td>
               <div class="action-stack">
-                <form method="post">
+                <form method="post" action="{% url 'icts:approve_user' user.id %}">
                   {% csrf_token %}
-                  <input type="hidden" name="user_id" value="{{ user.id }}">
-                  <button type="submit" name="action" value="approve" class="btn-action btn-approve">
+                  <button type="submit" class="btn-action btn-approve">
                     <i class="bi bi-check-circle"></i> Aprobar
                   </button>
                 </form>
-                <form method="post" onsubmit="return confirm('¿Estas seguro de que quieres rechazar a este usuario?');">
+                <form method="post" action="{% url 'icts:reject_user' user.id %}" onsubmit="return confirm('¿Estas seguro de que quieres rechazar a este usuario?');">
                   {% csrf_token %}
-                  <input type="hidden" name="user_id" value="{{ user.id }}">
-                  <button type="submit" name="action" value="reject" class="btn-action btn-reject">
+                  <button type="submit" class="btn-action btn-reject">
                     <i class="bi bi-x-circle"></i> Rechazar
                   </button>
                 </form>
@@ -367,3 +365,4 @@
 })();
 </script>
 {% endblock %}
+
