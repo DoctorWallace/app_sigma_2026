@@ -31,9 +31,10 @@
                                     <strong>Préstamo:</strong> {{ notificacion.prestamo.equipo.nombre }} - {{ notificacion.prestamo.usuario.get_full_name }}
                                 </small>
                                 {% if not notificacion.enviada %}
-                                <a href="{% url 'sigmalab:notificacion_marcar_leida' notificacion.id %}" class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-check me-1"></i>Marcar como Leída
-                                </a>
+                                <form method="post" action="{% url 'sigmalab:notificacion_marcar_leida' notificacion.id %}" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-outline-primary btn-sm" type="submit"><i class="fas fa-check me-1"></i>Marcar como Leída</button>
+</form>
                                 {% else %}
                                 <span class="badge bg-success">
                                     <i class="fas fa-check me-1"></i>Leída

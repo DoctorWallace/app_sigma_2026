@@ -175,26 +175,32 @@
     
     <!-- Cambiar estado -->
     {% if becario.estado == 'activo' %}
-      <a class="btn btn-outline-warning" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'inactivo' %}" onclick="return confirm('¿Estás seguro de que quieres desactivar este becario?')">
-        <i class="bi bi-pause-circle"></i> Desactivar
-      </a>
-      <a class="btn btn-outline-danger" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'suspendido' %}" onclick="return confirm('¿Estás seguro de que quieres suspender este becario?')">
-        <i class="bi bi-exclamation-triangle"></i> Suspender
-      </a>
+      <form method="post" action="{% url 'sigmalab:cambiar-estado-becario' becario.id 'inactivo' %}" onsubmit="return confirm('¿Estás seguro de que quieres desactivar este becario?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-outline-warning" type="submit"><i class="bi bi-pause-circle"></i> Desactivar</button>
+</form>
+      <form method="post" action="{% url 'sigmalab:cambiar-estado-becario' becario.id 'suspendido' %}" onsubmit="return confirm('¿Estás seguro de que quieres suspender este becario?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-outline-danger" type="submit"><i class="bi bi-exclamation-triangle"></i> Suspender</button>
+</form>
     {% elif becario.estado == 'inactivo' %}
-      <a class="btn btn-outline-success" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'activo' %}" onclick="return confirm('¿Estás seguro de que quieres reactivar este becario?')">
-        <i class="bi bi-play-circle"></i> Reactivar
-      </a>
-      <a class="btn btn-outline-danger" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'suspendido' %}" onclick="return confirm('¿Estás seguro de que quieres suspender este becario?')">
-        <i class="bi bi-exclamation-triangle"></i> Suspender
-      </a>
+      <form method="post" action="{% url 'sigmalab:cambiar-estado-becario' becario.id 'activo' %}" onsubmit="return confirm('¿Estás seguro de que quieres reactivar este becario?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-outline-success" type="submit"><i class="bi bi-play-circle"></i> Reactivar</button>
+</form>
+      <form method="post" action="{% url 'sigmalab:cambiar-estado-becario' becario.id 'suspendido' %}" onsubmit="return confirm('¿Estás seguro de que quieres suspender este becario?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-outline-danger" type="submit"><i class="bi bi-exclamation-triangle"></i> Suspender</button>
+</form>
     {% elif becario.estado == 'suspendido' %}
-      <a class="btn btn-outline-success" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'activo' %}" onclick="return confirm('¿Estás seguro de que quieres reactivar este becario?')">
-        <i class="bi bi-play-circle"></i> Reactivar
-      </a>
-      <a class="btn btn-outline-warning" href="{% url 'sigmalab:cambiar-estado-becario' becario.id 'inactivo' %}" onclick="return confirm('¿Estás seguro de que quieres desactivar este becario?')">
-        <i class="bi bi-pause-circle"></i> Desactivar
-      </a>
+      <form method="post" action="{% url 'sigmalab:cambiar-estado-becario' becario.id 'activo' %}" onsubmit="return confirm('¿Estás seguro de que quieres reactivar este becario?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-outline-success" type="submit"><i class="bi bi-play-circle"></i> Reactivar</button>
+</form>
+      <form method="post" action="{% url 'sigmalab:cambiar-estado-becario' becario.id 'inactivo' %}" onsubmit="return confirm('¿Estás seguro de que quieres desactivar este becario?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-outline-warning" type="submit"><i class="bi bi-pause-circle"></i> Desactivar</button>
+</form>
     {% endif %}
     
     <!-- Eliminar -->

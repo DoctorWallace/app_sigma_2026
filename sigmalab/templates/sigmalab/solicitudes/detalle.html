@@ -376,10 +376,13 @@
         </a>
       {% endif %}
       <a class="cta" href="{% url 'sigmalab:cambiar-estado' solicitud.pk %}" style="background:var(--accent)"><i class="bi bi-gear"></i> Cambiar estado</a>
-      <a class="cta" href="{% url 'sigmalab:toggle-autonomia' solicitud.pk %}" style="background:{% if solicitud.autonomo %}#dc3545{% else %}#28a745{% endif %}; color: white;">
-        <i class="bi bi-{% if solicitud.autonomo %}person-x{% else %}person-check{% endif %}"></i> 
-        {% if solicitud.autonomo %}Desactivar{% else %}Activar{% endif %} autonomía
-      </a>
+      <form method="post" action="{% url 'sigmalab:toggle-autonomia' solicitud.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <button class="cta" type="submit" style="background:{% if solicitud.autonomo %}#dc3545{% else %}#28a745{% endif %}; color: white;">
+          <i class="bi bi-{% if solicitud.autonomo %}person-x{% else %}person-check{% endif %}"></i>
+          {% if solicitud.autonomo %}Desactivar{% else %}Activar{% endif %} autonomia
+        </button>
+      </form>
     {% endif %}
     {% if solicitud.autonomo and request.user == solicitud.solicitante or request.user|has_group:"tecnico_responsable_s_lab" %}
       <a class="cta" href="{% url 'sigmalab:diario-solicitud' solicitud.pk %}"><i class="bi bi-journal-text"></i> Registro diario</a>

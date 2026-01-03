@@ -123,31 +123,27 @@
         <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
           {% if info.profile %}
             {% if info.profile.acceso_s_lab_restringido %}
-              <a href="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_lab' 'quitar' %}" 
-                 class="btn btn-sm btn-success" 
-                 onclick="return confirm('¿Quitar restricción de S-LAB para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')">
-                <i class="bi bi-unlock"></i> Quitar restricción S-LAB
-              </a>
+              <form method="post" action="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_lab' 'quitar' %}" onsubmit="return confirm('¿Quitar restricción de S-LAB para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-sm btn-success" type="submit"><i class="bi bi-unlock"></i> Quitar restricción S-LAB</button>
+</form>
             {% else %}
-              <a href="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_lab' 'aplicar' %}" 
-                 class="btn btn-sm btn-warning" 
-                 onclick="return confirm('¿Aplicar restricción de S-LAB para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')">
-                <i class="bi bi-lock"></i> Restringir S-LAB
-              </a>
+              <form method="post" action="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_lab' 'aplicar' %}" onsubmit="return confirm('¿Aplicar restricción de S-LAB para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-sm btn-warning" type="submit"><i class="bi bi-lock"></i> Restringir S-LAB</button>
+</form>
             {% endif %}
             
             {% if info.profile.acceso_s_mec_restringido %}
-              <a href="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_mec' 'quitar' %}" 
-                 class="btn btn-sm btn-success" 
-                 onclick="return confirm('¿Quitar restricción de S-MEC para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')">
-                <i class="bi bi-unlock"></i> Quitar restricción S-MEC
-              </a>
+              <form method="post" action="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_mec' 'quitar' %}" onsubmit="return confirm('¿Quitar restricción de S-MEC para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-sm btn-success" type="submit"><i class="bi bi-unlock"></i> Quitar restricción S-MEC</button>
+</form>
             {% else %}
-              <a href="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_mec' 'aplicar' %}" 
-                 class="btn btn-sm btn-warning" 
-                 onclick="return confirm('¿Aplicar restricción de S-MEC para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')">
-                <i class="bi bi-lock"></i> Restringir S-MEC
-              </a>
+              <form method="post" action="{% url 'sigmalab:restriccion-usuario' info.usuario.id 's_mec' 'aplicar' %}" onsubmit="return confirm('¿Aplicar restricción de S-MEC para {{ info.usuario.first_name }} {{ info.usuario.last_name|default:info.usuario.username }}?')" style="display:inline;">
+  {% csrf_token %}
+  <button class="btn btn-sm btn-warning" type="submit"><i class="bi bi-lock"></i> Restringir S-MEC</button>
+</form>
             {% endif %}
           {% endif %}
           

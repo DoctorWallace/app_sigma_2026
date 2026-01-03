@@ -8,7 +8,9 @@ Unifica autenticación DTF y rol de técnico según nuevos grupos canónicos:
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
@@ -186,16 +188,18 @@ def diario_solicitud(request, pk):
     entradas = sol.diario.select_related("autor").all()
     return render(request, "sigmalab/diario.html", {"solicitud": sol, "form": form, "entradas": entradas})
 
-@login_required_dtf
-@user_passes_test_dtf(is_technician)
+@require_POST
+@dtf_lab_gate("s_lab")
 def toggle_autonomia(request, pk):
+    if not is_technician_sl(request.user):
+        raise PermissionDenied
     sol = Solicitud.objects.filter(pk=pk).first()
     if not sol:
         return redirect("sigmalab:todas-solicitudes")
     sol.autonomo = not sol.autonomo
     sol.save(update_fields=["autonomo"])
     messages.success(
-        request, f"Autonomía {'activada' if sol.autonomo else 'desactivada'} para la solicitud {sol.pk}."
+        request, f"Autonomia {'activada' if sol.autonomo else 'desactivada'} para la solicitud {sol.pk}."
     )
     return redirect("sigmalab:detalle-solicitud", pk=pk)
 
@@ -268,14 +272,17 @@ def usuarios_overview(request):
     )
 
 
-@login_required_dtf
-@user_passes_test_dtf(is_technician_sl)
+@require_POST
+@dtf_lab_gate("s_lab")
 def gestionar_restriccion(request, user_id, modulo, accion):
     """Gestionar restricciones de acceso para usuarios"""
     from dtf.models import DTFUserProfile
-    
+
+    if not is_technician_sl(request.user):
+        raise PermissionDenied
+
     user = get_object_or_404(get_user_model(), id=user_id)
-    profile, created = DTFUserProfile.objects.get_or_create(user=user)
+    profile = get_object_or_404(DTFUserProfile, user=user)
     
     if accion == 'aplicar':
         if modulo == 's_lab':
@@ -529,25 +536,27 @@ def detalle_becario(request, becario_id):
     })
 
 
-@login_required_dtf
-@user_passes_test_dtf(is_technician)
+@require_POST
+@dtf_lab_gate("s_lab")
 def cambiar_estado_becario(request, becario_id, nuevo_estado):
-    """Vista para que los técnicos cambien el estado de un becario"""
+    """Vista para que los tecnicos cambien el estado de un becario"""
+    if not is_technician_sl(request.user):
+        raise PermissionDenied
     becario = get_object_or_404(UsuarioAsociado, id=becario_id)
-    
-    if nuevo_estado in ['activo', 'inactivo', 'suspendido']:
-        estado_anterior = becario.estado
-        becario.estado = nuevo_estado
-        becario.save()
-        
-        messages.success(
-            request, 
-            f'Estado de {becario.nombre_completo} cambiado de {estado_anterior} a {nuevo_estado}.'
-        )
-    else:
-        messages.error(request, 'Estado no válido.')
-    
-    return redirect('sigmalab:detalle-becario', becario_id=becario_id)
+
+    allowed_states = {"activo", "inactivo", "suspendido"}
+    if nuevo_estado not in allowed_states:
+        return HttpResponseBadRequest("Estado no valido.")
+
+    estado_anterior = becario.estado
+    becario.estado = nuevo_estado
+    becario.save()
+
+    messages.success(
+        request,
+        f"Estado de {becario.nombre_completo} cambiado de {estado_anterior} a {nuevo_estado}.",
+    )
+    return redirect("sigmalab:detalle-becario", becario_id=becario_id)
 
 
 @login_required_dtf
@@ -1183,8 +1192,8 @@ def notificaciones_prestamos(request):
     return render(request, 'sigmalab/equipos/notificaciones.html', context)
 
 
-@login_required_dtf
-@user_passes_test_dtf(is_technician_sl)
+@require_POST
+@dtf_lab_gate("s_lab")
 def notificacion_marcar_leida(request, notificacion_id):
     """Marcar notificación como leída"""
     notificacion = get_object_or_404(NotificacionPrestamo, id=notificacion_id, destinatario=request.user)
