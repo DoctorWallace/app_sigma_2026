@@ -6,11 +6,12 @@ from .models import Solicitud, MuestraIndividual, SolicitudModificacion, Solicit
 from .forms import SolicitudForm, AvanceForm, EstadoForm, MuestraIndividualFormSet, SolicitudModificacionForm, AprobarModificacionForm, SolicitudAnulacionForm, TiempoEstimacionForm, SolicitudConBecarioForm
 from .utils import is_tecnico, assign_sample_code, get_sample_code_display, get_solicitud_for_user_or_404
 from .views import login_required_dtf, user_passes_test_dtf
+from dtf.decorators import dtf_lab_gate
 
 
 # --- Usuario: crear y ver sus solicitudes
 
-@login_required_dtf
+@dtf_lab_gate("s_lab")
 def nueva_solicitud(request):
     if request.method == "POST":
         form = SolicitudConBecarioForm(request.POST, request.FILES, solicitante=request.user)
@@ -47,13 +48,13 @@ def nueva_solicitud(request):
     return render(request, "sigmalab/solicitudes/crear.html", {"form": form})
 
 
-@login_required_dtf
+@dtf_lab_gate("s_lab")
 def mis_solicitudes(request):
     qs = Solicitud.objects.filter(solicitante=request.user).order_by("-creado_en")
     return render(request, "sigmalab/solicitudes/mis_solicitudes.html", {"solicitudes": qs})
 
 
-@login_required_dtf
+@dtf_lab_gate("s_lab")
 def detalle_solicitud(request, pk):
     base_qs = Solicitud.objects.prefetch_related("avances__autor", "modificaciones", "anulaciones")
     sol = get_solicitud_for_user_or_404(request.user, pk, queryset=base_qs)
@@ -66,7 +67,7 @@ def detalle_solicitud(request, pk):
         {"solicitud": sol, "avances": avances, "modificaciones": modificaciones, "anulaciones": anulaciones},
     )
 
-@login_required_dtf
+@dtf_lab_gate("s_lab")
 def nuevo_avance(request, pk):
     sol = get_solicitud_for_user_or_404(request.user, pk)
 
@@ -154,7 +155,7 @@ def cambiar_estado(request, pk):
 
 # --- Solicitudes de ModificaciÃ³n
 
-@login_required_dtf
+@dtf_lab_gate("s_lab")
 def solicitar_modificacion(request, pk):
     """Vista para que el usuario solicite modificaciones a una solicitud aceptada"""
     solicitud = get_solicitud_for_user_or_404(request.user, pk, allow_tecnico=False)
@@ -228,7 +229,7 @@ def bandeja_modificaciones(request):
 
 # --- AnulaciÃ³n de Solicitudes
 
-@login_required_dtf
+@dtf_lab_gate("s_lab")
 def anular_solicitud(request, pk):
     """Vista para que el usuario anule una solicitud con justificación"""
     solicitud = get_solicitud_for_user_or_404(request.user, pk, allow_tecnico=False)

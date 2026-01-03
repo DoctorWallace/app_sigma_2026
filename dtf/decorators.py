@@ -36,8 +36,12 @@ def dtf_required(view):
 def dtf_lab_gate(lab_code: str, allow_user_group: bool = True, allow_tech_group: bool = True):
     """Require DTF access and enforce lab-scoped ACL + profile gating."""
     default_user_group = {normalize_group_name("usuarios_dtf")}
+    slab_user_groups = {
+        normalize_group_name("usuarios_dtf"),
+        normalize_group_name("usuarios_autonomo_s_lab"),
+    }
     user_groups_by_lab = {
-        "s_lab": DTF_USER_GROUPS,
+        "s_lab": slab_user_groups,
         "s_mec": default_user_group,
         "s_dp": default_user_group,
         "s_optics": default_user_group,

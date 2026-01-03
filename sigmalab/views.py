@@ -18,7 +18,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.utils import timezone
 from core.roles import is_slab_tech
-from dtf.decorators import dtf_required
+from dtf.decorators import dtf_required, dtf_lab_gate
 
 from .models import Sample, Solicitud, UsuarioAsociado, LabIndicadorCalidad, EquipoLaboratorio, PrestamoEquipo, NotificacionPrestamo
 from .forms import SampleForm, DiarioEntradaForm, UsuarioAsociadoForm, SolicitudConBecarioForm, EquipoLaboratorioForm, PrestamoEquipoForm, DevolucionEquipoForm, BuscarEquipoForm, FiltroPrestamosForm
@@ -200,13 +200,16 @@ def toggle_autonomia(request, pk):
     return redirect("sigmalab:detalle-solicitud", pk=pk)
 
 
-@login_required_dtf
+@dtf_lab_gate("s_lab")
 def sample_list(request):
-    samples = Sample.objects.all()
+    if is_technician_sl(request.user):
+        samples = Sample.objects.all().order_by("-created_at")
+    else:
+        samples = Sample.objects.filter(owner=request.user).order_by("-created_at")
     return render(request, "sigmalab/sample_list.html", {"samples": samples})
 
 
-@login_required_dtf
+@dtf_lab_gate("s_lab")
 def sample_create(request):
     if request.method == "POST":
         form = SampleForm(request.POST)
