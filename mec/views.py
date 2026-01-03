@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from .models import MecSample, MecSolicitud, MecMuestraNombre, MecEvento, MecNecesidad, MecMensaje, MecIndicadorCalidad
 from .forms import MecSampleForm, MecSolicitudForm, MecSolicitudDurezaForm, MecUsuarioAsociadoForm
 from core.roles import is_mec_tech
-from dtf.decorators import dtf_required
+from dtf.decorators import dtf_required, dtf_lab_gate
 
 
 def login_required_dtf(view):
@@ -194,7 +194,7 @@ def ficha_equipo(request):
     return render(request, "mec/ficha_equipo.html", {})
 
 
-@login_required_dtf
+@dtf_lab_gate("s_mec")
 def necesidades(request):
     if request.method == "POST":
         titulo = (request.POST.get("titulo") or "").strip()
@@ -210,11 +210,14 @@ def necesidades(request):
                 messages.error(request, "Fecha inválida (use aaaa-mm-dd).")
         else:
             messages.error(request, "Título y fecha son obligatorios.")
-    items = MecNecesidad.objects.all()
+    if is_tecnico_responsable(request.user):
+        items = MecNecesidad.objects.all()
+    else:
+        items = MecNecesidad.objects.filter(creado_por=request.user)
     return render(request, "mec/necesidades.html", {"items": items})
 
 
-@login_required_dtf
+@dtf_lab_gate("s_mec")
 def inbox(request):
     if request.method == "POST":
         asunto = (request.POST.get("asunto") or "").strip()
@@ -224,7 +227,10 @@ def inbox(request):
             messages.success(request, "Mensaje enviado a los técnicos responsables.")
         else:
             messages.error(request, "Asunto y mensaje son obligatorios.")
-    mensajes = MecMensaje.objects.all().select_related("autor")
+    if is_tecnico_responsable(request.user):
+        mensajes = MecMensaje.objects.all().select_related("autor")
+    else:
+        mensajes = MecMensaje.objects.filter(autor=request.user).select_related("autor")
     return render(request, "mec/inbox.html", {"mensajes": mensajes})
 
 

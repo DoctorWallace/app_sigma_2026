@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test as _user_passes_test
 from django.contrib.auth import get_user_model
 from core.roles import is_dp_tech
-from dtf.decorators import dtf_required
+from dtf.decorators import dtf_required, dtf_lab_gate
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -225,7 +225,7 @@ def ficha_equipo(request):
     return render(request, "sigmadp/ficha_equipo.html", {})
 
 
-@login_required_dtf
+@dtf_lab_gate("s_dp")
 def necesidades(request):
     if request.method == "POST":
         titulo = (request.POST.get("titulo") or "").strip()
@@ -241,11 +241,14 @@ def necesidades(request):
                 messages.error(request, "Fecha invalida (use aaaa-mm-dd).")
         else:
             messages.error(request, "Titulo y fecha son obligatorios.")
-    items = DpNecesidad.objects.all()
+    if is_tecnico_responsable(request.user):
+        items = DpNecesidad.objects.all()
+    else:
+        items = DpNecesidad.objects.filter(creado_por=request.user)
     return render(request, "sigmadp/necesidades.html", {"items": items})
 
 
-@login_required_dtf
+@dtf_lab_gate("s_dp")
 def inbox(request):
     if request.method == "POST":
         asunto = (request.POST.get("asunto") or "").strip()
@@ -255,7 +258,10 @@ def inbox(request):
             messages.success(request, "Mensaje enviado a los tecnicos responsables.")
         else:
             messages.error(request, "Asunto y mensaje son obligatorios.")
-    mensajes = DpMensaje.objects.all().select_related("autor")
+    if is_tecnico_responsable(request.user):
+        mensajes = DpMensaje.objects.all().select_related("autor")
+    else:
+        mensajes = DpMensaje.objects.filter(autor=request.user).select_related("autor")
     return render(request, "sigmadp/inbox.html", {"mensajes": mensajes})
 
 
