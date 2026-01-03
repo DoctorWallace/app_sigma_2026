@@ -33,6 +33,23 @@ def dtf_required(view):
     return _wrapped
 
 
+def dtf_admin_required(view):
+    """Require DTF access and admin privileges for any DTF lab tech."""
+    @wraps(view)
+    @dtf_required
+    def _wrapped(request, *args, **kwargs):
+        user = request.user
+        if user.is_superuser:
+            return view(request, *args, **kwargs)
+        groups = get_normalized_user_groups(user)
+        tech_groups = SLAB_TECH_GROUPS | MEC_TECH_GROUPS | DP_TECH_GROUPS | OPTICS_TECH_GROUPS
+        if groups & tech_groups:
+            return view(request, *args, **kwargs)
+        raise PermissionDenied
+
+    return _wrapped
+
+
 def dtf_lab_gate(lab_code: str, allow_user_group: bool = True, allow_tech_group: bool = True):
     """Require DTF access and enforce lab-scoped ACL + profile gating."""
     default_user_group = {normalize_group_name("usuarios_dtf")}

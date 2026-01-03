@@ -1,0 +1,48 @@
+{% extends "base_dtf.html" %}
+
+{% block title %}Usuarios pendientes{% endblock %}
+{% block page_title %}Usuarios pendientes{% endblock %}
+
+{% block content %}
+<div class="card">
+  {% if pending_users %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Matricula</th>
+            <th>Email</th>
+            <th>Nombre</th>
+            <th>Departamento</th>
+            <th>Division/Unidad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in pending_users %}
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ user.dtf_profile.departamento }}</td>
+            <td>{{ user.dtf_profile.division_unidad }}</td>
+            <td>
+              <form method="post" action="{% url 'dtf:approve_user' user.id %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary btn-small">Aprobar</button>
+              </form>
+              <form method="post" action="{% url 'dtf:reject_user' user.id %}" style="display:inline" onsubmit="return confirm('Rechazar usuario?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-ghost btn-small">Rechazar</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">No hay usuarios pendientes.</p>
+  {% endif %}
+</div>
+{% endblock %}

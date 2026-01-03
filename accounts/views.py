@@ -3,7 +3,6 @@ from urllib.parse import quote as urlquote
 
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
@@ -93,18 +92,12 @@ def register_dtf(request):
             user.email = form.cleaned_data.get("email").lower().strip()
             user.first_name = form.cleaned_data.get("first_name").strip()
             user.last_name = form.cleaned_data.get("last_name").strip()
+            user.is_active = False
             user.save()
-
-            # Grupo base DTF
-            try:
-                g = Group.objects.get(name="usuarios_dtf")
-                user.groups.add(g)
-            except Group.DoesNotExist:
-                pass
 
             # Perfil DTF
             email = user.email
-            is_ciemat = email.endswith("@ciemat.es")
+            is_ciemat = True
             DTFUserProfile.objects.update_or_create(
                 user=user,
                 defaults={
@@ -116,7 +109,10 @@ def register_dtf(request):
                 },
             )
 
-            messages.success(request, "El registro se ha llevado a cabo satisfactoriamente. Puede acceder a SIGMA DTF con su número de matrícula como usuario.")
+            messages.success(
+                request,
+                "Registro recibido. Tu cuenta esta pendiente de aprobacion por un tecnico responsable.",
+            )
             return redirect("accounts:login_dtf")
         else:
             # Si el formulario no es válido, mostrar errores
