@@ -23,7 +23,7 @@ def _create_user(username, groups):
 
 
 @pytest.mark.django_db
-def test_export_manager_excludes_olmat_only_by_default(client):
+def test_export_manager_summary_excludes_olmat_only_by_default(client):
     manager = _create_user("manager_export", ["managers"])
     applicant = _create_user("export_applicant", ["icts_users"])
     AccessProposal.objects.create(
@@ -38,16 +38,33 @@ def test_export_manager_excludes_olmat_only_by_default(client):
     )
 
     client.force_login(manager)
-    response = client.get(f"{reverse('icts:export_manager_data')}?type=proposals")
+    response = client.get(reverse("icts:export_manager_data"))
 
     assert response.status_code == 200
     workbook = openpyxl.load_workbook(BytesIO(response.content))
     worksheet = workbook.active
-    titles = [
-        row[1]
+    metrics = {
+        row[0]: row[1]
         for row in worksheet.iter_rows(min_row=2, values_only=True)
-        if row and row[1]
-    ]
+        if row and row[0]
+    }
+    assert metrics.get("Total propuestas") == 1
 
-    assert "ICTS export" in titles
-    assert "OLMAT only export" not in titles
+    all_text = [
+        cell
+        for row in worksheet.iter_rows(values_only=True)
+        for cell in row
+        if isinstance(cell, str)
+    ]
+    assert "ICTS export" not in all_text
+    assert "OLMAT only export" not in all_text
+
+
+@pytest.mark.django_db
+def test_export_manager_rejects_proposals_export_type(client):
+    manager = _create_user("manager_export_reject", ["managers"])
+    client.force_login(manager)
+
+    response = client.get(f"{reverse('icts:export_manager_data')}?type=proposals")
+
+    assert response.status_code == 400

@@ -157,7 +157,7 @@
         <div class="card-body text-center">
           <h3 class="mb-1">{{ system_efficiency }}%</h3>
           <p class="mb-0">Eficiencia Sistema</p>
-          <small class="opacity-75">Revisiones completadas</small>
+          <small class="opacity-75">Decisiones completadas</small>
         </div>
       </div>
     </div>
@@ -195,7 +195,7 @@
           <div>
             <h6 class="card-title text-muted mb-1">Enviadas</h6>
             <h3 class="mb-0">{{ submitted_proposals }}</h3>
-            <small class="text-info">{{ pending_reviews }} pendientes</small>
+            <small class="text-info">{{ decided_proposals }} decididas</small>
           </div>
           <div class="text-muted">
             <i class="bi bi-send fs-1"></i>
@@ -233,22 +233,6 @@
         </div>
       </div>
     </div>
-
-    <div class="card stat-card reviews">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="card-title text-muted mb-1">Revisiones</h6>
-            <h3 class="mb-0">{{ total_reviews }}</h3>
-            <small class="text-warning">{{ avg_reviews_per_proposal }} promedio</small>
-          </div>
-          <div class="text-muted">
-            <i class="bi bi-clipboard-check fs-1"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="card stat-card users">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
@@ -263,22 +247,6 @@
         </div>
       </div>
     </div>
-
-    <div class="card stat-card efficiency">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="card-title text-muted mb-1">Tiempo Promedio</h6>
-            <h3 class="mb-0">{{ avg_review_time_days }}d</h3>
-            <small class="text-info">Revisión promedio</small>
-          </div>
-          <div class="text-muted">
-            <i class="bi bi-clock fs-1"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="card stat-card growth">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
@@ -414,46 +382,6 @@
     </div>
   </div>
 
-  <!-- Análisis de Calidad -->
-  <div class="analytics-section">
-    <h4 class="section-title">
-      <i class="bi bi-award text-warning"></i>
-      Análisis de Calidad y Rendimiento
-    </h4>
-    
-    <div class="row">
-      <div class="col-md-4 mb-3">
-        <div class="card border-success">
-          <div class="card-body text-center">
-            <h4 class="text-success">{{ high_quality_proposals }}</h4>
-            <p class="mb-0">Propuestas de Alta Calidad</p>
-            <small class="text-muted">Puntuación ≥ 4</small>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-md-4 mb-3">
-        <div class="card border-warning">
-          <div class="card-body text-center">
-            <h4 class="text-warning">{{ avg_scores.avg_scientific|floatformat:1|default:"N/A" }}</h4>
-            <p class="mb-0">Calidad Científica Promedio</p>
-            <small class="text-muted">Escala 1-5</small>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-md-4 mb-3">
-        <div class="card border-info">
-          <div class="card-body text-center">
-            <h4 class="text-info">{{ avg_scores.avg_industrial|floatformat:1|default:"N/A" }}</h4>
-            <p class="mb-0">Potencial Industrial Promedio</p>
-            <small class="text-muted">Escala 1-5</small>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Análisis de Centros -->
   {% if center_stats %}
   <div class="analytics-section">
@@ -490,41 +418,6 @@
     </div>
   </div>
   {% endif %}
-
-  <!-- Usuarios Más Activos -->
-  <div class="analytics-section">
-    <h4 class="section-title">
-      <i class="bi bi-trophy text-warning"></i>
-      Usuarios Más Activos
-    </h4>
-    
-    <div class="row">
-      <div class="col-12">
-    <div class="table-responsive">
-          <table class="table table-striped data-table">
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Nombre</th>
-                <th>Propuestas</th>
-                <th>Centro</th>
-              </tr>
-            </thead>
-        <tbody>
-              {% for user in most_active_users %}
-              <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.get_full_name|default:"-" }}</td>
-                <td>{{ user.proposal_count }}</td>
-                <td>{{ user.icts_profile.center|default:"-" }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Tendencias Mensuales -->
   <div class="analytics-section">
@@ -915,3 +808,5 @@
   }
 </script>
 {% endblock %}
+
+

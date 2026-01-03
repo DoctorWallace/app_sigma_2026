@@ -1,7 +1,7 @@
 # icts/views.py
 from django.contrib import messages
 from django.conf import settings
-from django.http import Http404, HttpResponseForbidden  # <-- añade esto
+from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest  # <-- añade esto
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.exceptions import PermissionDenied
 from django.views.generic import FormView
@@ -1128,10 +1128,15 @@ def proposal_create(request):
 @never_cache
 def proposal_detail(request, pk):
     groups = get_normalized_user_groups(request.user)
+    if is_manager(request.user, groups) and not (
+        is_responsable(request.user, groups)
+        or is_reviewer(request.user, groups)
+        or request.user.is_superuser
+    ):
+        raise PermissionDenied
     privileged = (
         is_reviewer(request.user, groups)
         or is_responsable(request.user, groups)
-        or is_manager(request.user, groups)
         or request.user.is_superuser
     )
 
@@ -1470,7 +1475,9 @@ def reviewer_inbox(request):
     groups = get_normalized_user_groups(request.user)
     if is_responsable(request.user, groups):
         return redirect("icts:responsable_dashboard")
-    if not (is_reviewer(request.user, groups) or is_manager(request.user, groups)):
+    if is_manager(request.user, groups):
+        return redirect("icts:manager_dashboard")
+    if not is_reviewer(request.user, groups):
         raise PermissionDenied
     proposal_filter = _icts_facilities_q(prefix="proposal__")
     pending = (
@@ -1479,12 +1486,7 @@ def reviewer_inbox(request):
         .order_by("-created_at")
     )
     # Para revisores: mostrar solo sus evaluaciones
-    # Para responsables/managers: mostrar todas las evaluaciones
-    if is_reviewer(request.user, groups):
-        mine = ProposalReview.objects.filter(reviewer=request.user).filter(proposal_filter).select_related("proposal")
-    else:
-        # Responsables y managers ven todas las evaluaciones
-        mine = ProposalReview.objects.filter(proposal_filter).select_related("proposal", "reviewer")
+    mine = ProposalReview.objects.filter(reviewer=request.user).filter(proposal_filter).select_related("proposal")
     return render(request, "icts/reviewer_inbox.html", {"pending": pending, "mine": mine})
 
 @login_required(login_url="/accounts/login/icts/")
@@ -1494,7 +1496,9 @@ def reviewer_dashboard_new(request):
     groups = get_normalized_user_groups(request.user)
     if is_responsable(request.user, groups):
         return redirect("icts:responsable_dashboard")
-    if not (is_reviewer(request.user, groups) or is_manager(request.user, groups)):
+    if is_manager(request.user, groups):
+        return redirect("icts:manager_dashboard")
+    if not is_reviewer(request.user, groups):
         raise PermissionDenied
     from datetime import datetime, timedelta
     proposal_filter = _icts_facilities_q(prefix="proposal__")
@@ -1503,33 +1507,19 @@ def reviewer_dashboard_new(request):
     # Estadísticas básicas
     # Para revisores: mostrar solo sus evaluaciones
     # Para responsables/managers: mostrar todas las evaluaciones
-    if is_reviewer(request.user, groups):
-        pending_reviews = ProposalReview.objects.filter(
-            reviewer=request.user,
-            decision='pending'
-        ).filter(
-            proposal_filter
-        ).select_related('proposal')
-        
-        completed_reviews = ProposalReview.objects.filter(
-            reviewer=request.user,
-            decision__in=['approve', 'reject', 'request_changes']
-        ).filter(
-            proposal_filter
-        )
-    else:
-        # Responsables y managers ven todas las evaluaciones
-        pending_reviews = ProposalReview.objects.filter(
-            decision='pending'
-        ).filter(
-            proposal_filter
-        ).select_related('proposal', 'reviewer')
-        
-        completed_reviews = ProposalReview.objects.filter(
-            decision__in=['approve', 'reject', 'request_changes']
-        ).filter(
-            proposal_filter
-        ).select_related('proposal', 'reviewer')
+    pending_reviews = ProposalReview.objects.filter(
+        reviewer=request.user,
+        decision='pending'
+    ).filter(
+        proposal_filter
+    ).select_related('proposal')
+
+    completed_reviews = ProposalReview.objects.filter(
+        reviewer=request.user,
+        decision__in=['approve', 'reject', 'request_changes']
+    ).filter(
+        proposal_filter
+    )
     
     # Contadores
     pending_count = pending_reviews.count()
@@ -1575,7 +1565,9 @@ def review_history(request):
     groups = get_normalized_user_groups(request.user)
     if is_responsable(request.user, groups):
         return redirect("icts:responsable_dashboard")
-    if not (is_reviewer(request.user, groups) or is_manager(request.user, groups)):
+    if is_manager(request.user, groups):
+        return redirect("icts:manager_dashboard")
+    if not is_reviewer(request.user, groups):
         raise PermissionDenied
     
     # Obtener todas las evaluaciones del revisor
@@ -1628,7 +1620,9 @@ def reviewer_mailbox(request):
     groups = get_normalized_user_groups(request.user)
     if is_responsable(request.user, groups):
         return redirect("icts:responsable_dashboard")
-    if not (is_reviewer(request.user, groups) or is_manager(request.user, groups)):
+    if is_manager(request.user, groups):
+        return redirect("icts:manager_dashboard")
+    if not is_reviewer(request.user, groups):
         raise PermissionDenied
     return render(request, "icts/reviewer_mailbox.html", {})
 
@@ -1639,7 +1633,9 @@ def reviewer_faq(request):
     groups = get_normalized_user_groups(request.user)
     if is_responsable(request.user, groups):
         return redirect("icts:responsable_dashboard")
-    if not (is_reviewer(request.user, groups) or is_manager(request.user, groups)):
+    if is_manager(request.user, groups):
+        return redirect("icts:manager_dashboard")
+    if not is_reviewer(request.user, groups):
         raise PermissionDenied
     return render(request, "icts/faq_reviewer.html")
 
@@ -1918,610 +1914,315 @@ def responsable_dashboard(request):
 @user_passes_test(is_manager, raise_exception=True)
 @never_cache
 def manager_dashboard(request):
-    """Dashboard avanzado para managers con estadísticas detalladas y análisis completos"""
+    """Dashboard para managers con metricas agregadas."""
     from django.contrib.auth import get_user_model
-    from django.db.models import Count, Avg, Q, F, Max, Min, Sum
-    from django.db.models.functions import ExtractYear, ExtractMonth, ExtractWeek, ExtractDay
-    from collections import defaultdict
-    import statistics
-    
+    from django.db.models import Count, Q
+    from django.db.models.functions import ExtractYear
+
     User = get_user_model()
     base_qs = AccessProposal.objects.filter(_icts_facilities_q())
-    review_filter = _icts_facilities_q(prefix="proposal__")
-    
-    # ============ ESTADÍSTICAS BÁSICAS ============
+
     total_proposals = base_qs.count()
     draft_proposals = base_qs.filter(status="draft").count()
     submitted_proposals = base_qs.filter(status="submitted").count()
     approved_proposals = base_qs.filter(status="accepted").count()
     rejected_proposals = base_qs.filter(status="rejected").count()
-    
-    # Cálculo de tasas
-    total_decided = approved_proposals + rejected_proposals
-    approval_rate = round((approved_proposals / total_decided * 100) if total_decided > 0 else 0, 1)
-    rejection_rate = round((rejected_proposals / total_decided * 100) if total_decided > 0 else 0, 1)
-    
-    # ============ ESTADÍSTICAS DE REVISIÓN AVANZADAS ============
-    total_reviews = ProposalReview.objects.filter(review_filter).count()
-    pending_reviews = ProposalReview.objects.filter(decision="pending").filter(review_filter).count()
-    completed_reviews = ProposalReview.objects.exclude(decision="pending").filter(review_filter).count()
-    
-    # Promedio de revisiones por propuesta
-    proposals_with_reviews = base_qs.annotate(
-        review_count=Count('reviews')
-    ).filter(review_count__gt=0)
-    avg_reviews_per_proposal = round(
-        proposals_with_reviews.aggregate(avg=Avg('review_count'))['avg'] or 0, 1
-    )
-    
-    # Distribución de decisiones de revisión
-    review_decisions = ProposalReview.objects.filter(review_filter).values('decision').annotate(
-        count=Count('id')
-    ).order_by('-count')
-    
-    # Puntuaciones promedio por criterio
-    avg_scores = ProposalReview.objects.filter(review_filter).aggregate(
-        avg_scientific=Avg('score_scientific_quality'),
-        avg_infrastructure=Avg('score_need_infrastructure'),
-        avg_industrial=Avg('score_industrial_potential')
-    )
-    
-    # ============ ESTADÍSTICAS DE USUARIOS DETALLADAS ============
-    total_users = User.objects.count()
-    active_researchers = User.objects.filter(is_active=True, groups__name="icts_users").count()
-    reviewers_count = User.objects.filter(groups__name="revisores").count()
-    responsables_count = User.objects.filter(groups__name="responsables").count()
-    managers_count = User.objects.filter(groups__name="managers").count()
-    
-    # Usuarios más activos (por número de propuestas)
-    most_active_users = User.objects.annotate(
-        proposal_count=Count('icts_proposals', filter=_icts_facilities_q(prefix="icts_proposals__"))
-    ).filter(proposal_count__gt=0).order_by('-proposal_count')[:10]
-    
-    # Estadísticas detalladas de usuarios (ictsdemo_u)
-    demo_users = User.objects.filter(username__startswith='ictsdemo_u')
-    demo_users_stats = []
-    for user in demo_users:
-        user_proposals = base_qs.filter(applicant=user)
-        user_stats = {
-            'username': user.username,
-            'full_name': user.get_full_name() or user.username,
-            'total_proposals': user_proposals.count(),
-            'draft_proposals': user_proposals.filter(status='draft').count(),
-            'submitted_proposals': user_proposals.filter(status='submitted').count(),
-            'accepted_proposals': user_proposals.filter(status='accepted').count(),
-            'rejected_proposals': user_proposals.filter(status='rejected').count(),
-            'approval_rate': 0
-        }
-        # Calcular tasa de aprobación
-        total_decided = user_stats['accepted_proposals'] + user_stats['rejected_proposals']
-        if total_decided > 0:
-            user_stats['approval_rate'] = round((user_stats['accepted_proposals'] / total_decided * 100), 1)
-        demo_users_stats.append(user_stats)
-    
-    # Estadísticas detalladas de revisores (ictsdemo_r)
-    demo_reviewers = User.objects.filter(username__startswith='ictsdemo_r')
-    demo_reviewers_stats = []
-    for reviewer in demo_reviewers:
-        reviewer_reviews = ProposalReview.objects.filter(reviewer=reviewer).filter(review_filter)
-        reviewer_stats = {
-            'username': reviewer.username,
-            'full_name': reviewer.get_full_name() or reviewer.username,
-            'total_reviews': reviewer_reviews.count(),
-            'pending_reviews': reviewer_reviews.filter(decision='pending').count(),
-            'completed_reviews': reviewer_reviews.exclude(decision='pending').count(),
-            'approved_reviews': reviewer_reviews.filter(decision='approve').count(),
-            'rejected_reviews': reviewer_reviews.filter(decision='reject').count(),
-            'avg_scientific_score': 0,
-            'avg_infrastructure_score': 0,
-            'avg_industrial_score': 0
-        }
-        # Calcular puntuaciones promedio
-        completed_reviews_for_reviewer = reviewer_reviews.exclude(decision='pending')
-        if completed_reviews_for_reviewer.exists():
-            avg_scores = completed_reviews_for_reviewer.aggregate(
-                avg_scientific=Avg('score_scientific_quality'),
-                avg_infrastructure=Avg('score_need_infrastructure'),
-                avg_industrial=Avg('score_industrial_potential')
-            )
-            reviewer_stats['avg_scientific_score'] = round(avg_scores['avg_scientific'] or 0, 1)
-            reviewer_stats['avg_infrastructure_score'] = round(avg_scores['avg_infrastructure'] or 0, 1)
-            reviewer_stats['avg_industrial_score'] = round(avg_scores['avg_industrial'] or 0, 1)
-        demo_reviewers_stats.append(reviewer_stats)
-    
-    # ============ ANÁLISIS TEMPORAL AVANZADO ============
-    # Actividad por períodos
+
+    decided_proposals = approved_proposals + rejected_proposals
+    approval_rate = round((approved_proposals / decided_proposals * 100) if decided_proposals > 0 else 0, 1)
+    rejection_rate = round((rejected_proposals / decided_proposals * 100) if decided_proposals > 0 else 0, 1)
+
+    conversion_rate = round((submitted_proposals / total_proposals * 100) if total_proposals > 0 else 0, 1)
+    system_efficiency = round((decided_proposals / submitted_proposals * 100) if submitted_proposals > 0 else 0, 1)
+
     thirty_days_ago = timezone.now() - timedelta(days=30)
     seven_days_ago = timezone.now() - timedelta(days=7)
     one_day_ago = timezone.now() - timedelta(days=1)
-    
+
     recent_proposals = base_qs.filter(created_at__gte=thirty_days_ago).count()
     weekly_proposals = base_qs.filter(created_at__gte=seven_days_ago).count()
     daily_proposals = base_qs.filter(created_at__gte=one_day_ago).count()
-    
-    # Tendencias mensuales (últimos 12 meses)
+
     monthly_trends = []
     for i in range(12):
-        month_start = timezone.now() - timedelta(days=30*i)
+        month_start = timezone.now() - timedelta(days=30 * i)
         month_end = month_start + timedelta(days=30)
         count = base_qs.filter(
             created_at__gte=month_start,
             created_at__lt=month_end
-    ).count()
+        ).count()
         monthly_trends.append({
-            'month': month_start.strftime('%Y-%m'),
-            'count': count
+            "month": month_start.strftime("%Y-%m"),
+            "count": count,
         })
     monthly_trends.reverse()
-    
-    # ============ ESTADÍSTICAS POR TÉCNICA DETALLADAS ============
+
     technique_stats = []
     technique_approval_rates = []
     techniques = [
-        ('SEM/EDX', 'facility_sem'),
-        ('FIB', 'facility_sem_fib'),
-        ('SIMS', 'facility_sims'),
-        ('Metrolog\u00eda de superficies \u00f3pticas 3D', 'facility_confocal'),
-        ('Ion Implanter', 'facility_imp'),
-        ('VDG', 'facility_vdg'),
-        ('Profilometer', 'facility_profilometer'),
+        ("SEM/EDX", "facility_sem"),
+        ("FIB", "facility_sem_fib"),
+        ("SIMS", "facility_sims"),
+        ("Metrologia de superficies opticas 3D", "facility_confocal"),
+        ("Ion Implanter", "facility_imp"),
+        ("VDG", "facility_vdg"),
+        ("Profilometer", "facility_profilometer"),
     ]
-    
+
     for name, field in techniques:
         count = base_qs.filter(**{field: True}).count()
         if count > 0:
-            # Calcular tasa de aprobación por técnica
-            approved_count = base_qs.filter(
-                **{field: True}, status='accepted'
-            ).count()
+            approved_count = base_qs.filter(**{field: True}, status="accepted").count()
             technique_approval_rate = round((approved_count / count * 100) if count > 0 else 0, 1)
-            
             percentage = round((count / total_proposals * 100) if total_proposals > 0 else 0, 1)
             technique_stats.append({
                 "name": name,
                 "count": count,
                 "percentage": percentage,
-                "approval_rate": technique_approval_rate
+                "approval_rate": technique_approval_rate,
             })
-            
             technique_approval_rates.append({
                 "name": name,
-                "approval_rate": technique_approval_rate
+                "approval_rate": technique_approval_rate,
             })
-    
-    # ============ ANÁLISIS POR AÑO Y MES ============
-    # Estadísticas por año
+
     yearly_data = base_qs.annotate(
-        year=ExtractYear('created_at')
-    ).values('year').annotate(
-        count=Count('id'),
-        approved=Count('id', filter=Q(status='accepted')),
-        rejected=Count('id', filter=Q(status='rejected'))
-    ).order_by('year')
-    
+        year=ExtractYear("created_at"),
+    ).values("year").annotate(
+        count=Count("id"),
+        approved=Count("id", filter=Q(status="accepted")),
+        rejected=Count("id", filter=Q(status="rejected")),
+    ).order_by("year")
+
     yearly_stats = []
     for item in yearly_data:
-        total_year = item['count']
-        approved_year = item['approved']
-        rejected_year = item['rejected']
-        year_approval_rate = round((approved_year / (approved_year + rejected_year) * 100) if (approved_year + rejected_year) > 0 else 0, 1)
-        
+        total_year = item["count"]
+        approved_year = item["approved"]
+        rejected_year = item["rejected"]
+        total_decided = approved_year + rejected_year
+        year_approval_rate = round((approved_year / total_decided * 100) if total_decided > 0 else 0, 1)
         yearly_stats.append({
-            "year": str(item['year']),
+            "year": str(item["year"]),
             "count": total_year,
             "approved": approved_year,
             "rejected": rejected_year,
             "approval_rate": year_approval_rate,
-            "percentage": round((total_year / total_proposals * 100) if total_proposals > 0 else 0, 1)
+            "percentage": round((total_year / total_proposals * 100) if total_proposals > 0 else 0, 1),
         })
-    
-    # Estadísticas por mes (último año)
-    monthly_data = base_qs.annotate(
-        year=ExtractYear('created_at'),
-        month=ExtractMonth('created_at')
-    ).values('year', 'month').annotate(
-        count=Count('id')
-    ).filter(
-        created_at__gte=timezone.now() - timedelta(days=365)
-    ).order_by('year', 'month')
-    
-    # ============ KPIs Y MÉTRICAS DE RENDIMIENTO ============
-    # Tiempo promedio de revisión
-    completed_reviews_with_time = ProposalReview.objects.filter(
-        decision__in=['approve', 'reject', 'request_changes']
-    ).filter(
-        review_filter
-    ).exclude(updated_at__isnull=True)
-    
-    avg_review_time_days = 7  # Placeholder para cálculo real
-    
-    # Eficiencia del sistema
-    system_efficiency = round((completed_reviews / total_reviews * 100) if total_reviews > 0 else 0, 1)
-    
-    # Tasa de conversión (borradores a enviados)
-    conversion_rate = round((submitted_proposals / total_proposals * 100) if total_proposals > 0 else 0, 1)
-    
-    # ============ ANÁLISIS DE CENTROS/INSTITUCIONES ============
+
     center_stats = []
-    if hasattr(User, 'icts_profile'):
+    if hasattr(User, "icts_profile"):
         center_data = User.objects.filter(
             icts_profile__center__isnull=False,
-            icts_profile__center__gt=''
-        ).values('icts_profile__center').annotate(
-            user_count=Count('id'),
-            proposal_count=Count('icts_proposals', filter=_icts_facilities_q(prefix="icts_proposals__"))
-        ).order_by('-proposal_count')[:10]
-        
+            icts_profile__center__gt="",
+        ).values("icts_profile__center").annotate(
+            user_count=Count("id"),
+            proposal_count=Count("icts_proposals", filter=_icts_facilities_q(prefix="icts_proposals__")),
+        ).order_by("-proposal_count")[:10]
+
         for center in center_data:
-            avg_per_user = round(center['proposal_count'] / center['user_count'], 1) if center['user_count'] > 0 else 0
+            avg_per_user = round(center["proposal_count"] / center["user_count"], 1) if center["user_count"] > 0 else 0
             center_stats.append({
-                'name': center['icts_profile__center'],
-                'users': center['user_count'],
-                'proposals': center['proposal_count'],
-                'avg_per_user': avg_per_user
+                "name": center["icts_profile__center"],
+                "users": center["user_count"],
+                "proposals": center["proposal_count"],
+                "avg_per_user": avg_per_user,
             })
-    
-    # ============ ANÁLISIS DE CALIDAD ============
-    # Propuestas con alta puntuación
-    high_quality_proposals = ProposalReview.objects.filter(
-        score_scientific_quality__gte=4
-    ).filter(review_filter).count()
-    
-    # Propuestas con bajo rendimiento
-    low_quality_proposals = ProposalReview.objects.filter(
-        score_scientific_quality__lte=2
-    ).filter(review_filter).count()
-    
-    # ============ TENDENCIAS Y PREDICCIONES ============
-    # Crecimiento mensual
+
+    active_researchers = User.objects.filter(is_active=True, groups__name="icts_users").count()
+    reviewers_count = User.objects.filter(groups__name="revisores").count()
+    responsables_count = User.objects.filter(groups__name="responsables").count()
+    managers_count = User.objects.filter(groups__name="managers").count()
+
     if len(monthly_trends) >= 2:
         growth_rate = round(
-            ((monthly_trends[-1]['count'] - monthly_trends[-2]['count']) / monthly_trends[-2]['count'] * 100) 
-            if monthly_trends[-2]['count'] > 0 else 0, 1
+            ((monthly_trends[-1]["count"] - monthly_trends[-2]["count"]) / monthly_trends[-2]["count"] * 100)
+            if monthly_trends[-2]["count"] > 0 else 0,
+            1,
         )
     else:
         growth_rate = 0
-    
+
     return render(request, "icts/manager_dashboard.html", {
-        # Estadísticas básicas
         "total_proposals": total_proposals,
         "draft_proposals": draft_proposals,
         "submitted_proposals": submitted_proposals,
         "approved_proposals": approved_proposals,
         "rejected_proposals": rejected_proposals,
+        "decided_proposals": decided_proposals,
         "approval_rate": approval_rate,
         "rejection_rate": rejection_rate,
-        
-        # Estadísticas de revisión
-        "total_reviews": total_reviews,
-        "pending_reviews": pending_reviews,
-        "completed_reviews": completed_reviews,
-        "avg_reviews_per_proposal": avg_reviews_per_proposal,
-        "review_decisions": list(review_decisions),
-        "avg_scores": avg_scores,
-        
-        # Estadísticas de usuarios
-        "total_users": total_users,
+        "conversion_rate": conversion_rate,
+        "system_efficiency": system_efficiency,
+        "growth_rate": growth_rate,
+        "daily_proposals": daily_proposals,
+        "monthly_trends": monthly_trends,
+        "technique_stats": technique_stats,
+        "technique_approval_rates": technique_approval_rates,
+        "yearly_stats": yearly_stats,
+        "center_stats": center_stats,
         "active_researchers": active_researchers,
         "reviewers_count": reviewers_count,
         "responsables_count": responsables_count,
         "managers_count": managers_count,
-        "most_active_users": most_active_users,
-        
-        # Estadísticas detalladas de usuarios y revisores
-        "demo_users_stats": demo_users_stats,
-        "demo_reviewers_stats": demo_reviewers_stats,
-        
-        # Análisis temporal
-        "recent_proposals": recent_proposals,
-        "weekly_proposals": weekly_proposals,
-        "daily_proposals": daily_proposals,
-        "monthly_trends": monthly_trends,
-        
-        # Técnicas
-        "technique_stats": technique_stats,
-        "technique_approval_rates": technique_approval_rates,
-        
-        # Análisis por año
-        "yearly_stats": yearly_stats,
-        "monthly_data": list(monthly_data),
-        
-        # KPIs
-        "avg_review_time_days": avg_review_time_days,
-        "system_efficiency": system_efficiency,
-        "conversion_rate": conversion_rate,
-        "growth_rate": growth_rate,
-        
-        # Análisis de centros
-        "center_stats": center_stats,
-        
-        # Análisis de calidad
-        "high_quality_proposals": high_quality_proposals,
-        "low_quality_proposals": low_quality_proposals,
     })
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_manager, raise_exception=True)
 def export_manager_data(request):
-    """Exportar datos del manager a Excel con análisis completos"""
+    """Exportar datos agregados del manager a Excel."""
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
     from openpyxl.utils import get_column_letter
     from django.http import HttpResponse
-    from django.contrib.auth import get_user_model
-    from django.db.models import Count, Avg, Q
+    from django.db.models import Count, Q
     from django.db.models.functions import ExtractYear, ExtractMonth
-    
-    User = get_user_model()
-    export_type = request.GET.get('type', 'proposals')
+
+    export_type = request.GET.get("type", "summary")
     include_olmat = request.GET.get("include_olmat") == "1"
-    
-    # Crear workbook
+    safe_types = {"summary", "temporal", "techniques"}
+    if export_type not in safe_types:
+        return HttpResponseBadRequest("Tipo de exportacion no permitido.")
+
     wb = openpyxl.Workbook()
-    
-    # Estilos
+
     header_font = Font(bold=True, color="FFFFFF")
     header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
     header_alignment = Alignment(horizontal="center", vertical="center")
     border = Border(
-        left=Side(style='thin'),
-        right=Side(style='thin'),
-        top=Side(style='thin'),
-        bottom=Side(style='thin')
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin"),
     )
-    
-    if export_type == 'proposals':
-        # Hoja de propuestas con análisis detallado
-        ws = wb.active
-        ws.title = "Propuestas ICTS"
-        
-        # Headers expandidos
-        headers = [
-            'ID', 'Título', 'Estado', 'Solicitante', 'Email', 'Centro',
-            'Fecha Creación', 'Fecha Última Actualización', 'Técnicas',
-            'Número Revisiones', 'Tasa Aprobación', 'Puntuación Promedio',
-            'Proyecto', 'Fuente Financiación', 'Año Inicio', 'Año Fin'
-        ]
-        
+
+    def _apply_headers(sheet, headers):
         for col, header in enumerate(headers, 1):
-            cell = ws.cell(row=1, column=col, value=header)
+            cell = sheet.cell(row=1, column=col, value=header)
             cell.font = header_font
             cell.fill = header_fill
             cell.alignment = header_alignment
             cell.border = border
-        
-        # Datos de propuestas con información completa
-        proposals = AccessProposal.objects.select_related('applicant').prefetch_related('reviews')
-        if not include_olmat:
-            proposals = proposals.filter(_icts_facilities_q())
-        for row, proposal in enumerate(proposals, 2):
-            # Técnicas seleccionadas
-            techniques = []
-            if proposal.facility_sem: techniques.append('SEM/EDX')
-            if proposal.facility_sem_fib: techniques.append('FIB')
-            if proposal.facility_sims: techniques.append('SIMS')
-            if proposal.facility_confocal: techniques.append('Metrolog\u00eda de superficies \u00f3pticas 3D')
-            if proposal.facility_imp: techniques.append('Ion Implanter')
-            if proposal.facility_vdg: techniques.append('VDG')
-            if proposal.facility_profilometer: techniques.append('Profilometer')
-            if proposal.facility_olmat: techniques.append('OLMAT')
-            
-            # Calcular métricas
-            reviews_count = proposal.reviews.count()
-            approved_reviews = proposal.reviews.filter(decision='approve').count()
-            approval_rate = round((approved_reviews / reviews_count * 100) if reviews_count > 0 else 0, 1)
-            
-            # Puntuación promedio
-            avg_score = proposal.reviews.aggregate(
-                avg=Avg('score_scientific_quality')
-            )['avg'] or 0
-            
-            # Información del centro
-            center = ''
-            if hasattr(proposal.applicant, 'icts_profile') and proposal.applicant.icts_profile:
-                center = proposal.applicant.icts_profile.center or ''
-            
-            # Datos de la fila
-            updated_at = getattr(proposal, "updated_at", None)
-            row_data = [
-                proposal.id,
-                proposal.title,
-                proposal.get_status_display(),
-                proposal.applicant.get_full_name() or proposal.applicant.username,
-                proposal.applicant.email,
-                center,
-                proposal.created_at.strftime('%Y-%m-%d %H:%M'),
-                updated_at.strftime('%Y-%m-%d %H:%M') if updated_at else '',
-                ', '.join(techniques),
-                reviews_count,
-                f"{approval_rate}%",
-                round(avg_score, 1),
-                proposal.project_name or '',
-                proposal.funding_source or '',
-                proposal.start_year or '',
-                proposal.end_year or ''
-            ]
-            
-            for col, value in enumerate(row_data, 1):
+
+    base_qs = AccessProposal.objects.all()
+    if not include_olmat:
+        base_qs = base_qs.filter(_icts_facilities_q())
+
+    if export_type == "summary":
+        ws = wb.active
+        ws.title = "Resumen"
+        _apply_headers(ws, ["Metrica", "Valor"])
+
+        total_proposals = base_qs.count()
+        draft_proposals = base_qs.filter(status="draft").count()
+        submitted_proposals = base_qs.filter(status="submitted").count()
+        accepted_proposals = base_qs.filter(status="accepted").count()
+        rejected_proposals = base_qs.filter(status="rejected").count()
+
+        decided_proposals = accepted_proposals + rejected_proposals
+        approval_rate = round((accepted_proposals / decided_proposals * 100) if decided_proposals > 0 else 0, 1)
+        rejection_rate = round((rejected_proposals / decided_proposals * 100) if decided_proposals > 0 else 0, 1)
+        conversion_rate = round((submitted_proposals / total_proposals * 100) if total_proposals > 0 else 0, 1)
+
+        monthly_trends = []
+        for i in range(12):
+            month_start = timezone.now() - timedelta(days=30 * i)
+            month_end = month_start + timedelta(days=30)
+            count = base_qs.filter(created_at__gte=month_start, created_at__lt=month_end).count()
+            monthly_trends.append({"month": month_start.strftime("%Y-%m"), "count": count})
+        monthly_trends.reverse()
+
+        if len(monthly_trends) >= 2:
+            growth_rate = round(
+                ((monthly_trends[-1]["count"] - monthly_trends[-2]["count"]) / monthly_trends[-2]["count"] * 100)
+                if monthly_trends[-2]["count"] > 0 else 0,
+                1,
+            )
+        else:
+            growth_rate = 0
+
+        metrics = [
+            ("Total propuestas", total_proposals),
+            ("Borradores", draft_proposals),
+            ("Enviadas", submitted_proposals),
+            ("Aprobadas", accepted_proposals),
+            ("Rechazadas", rejected_proposals),
+            ("Tasa aprobacion (%)", approval_rate),
+            ("Tasa rechazo (%)", rejection_rate),
+            ("Conversion (%)", conversion_rate),
+            ("Crecimiento mensual (%)", growth_rate),
+        ]
+
+        for row, (label, value) in enumerate(metrics, 2):
+            label_cell = ws.cell(row=row, column=1, value=label)
+            label_cell.border = border
+            value_cell = ws.cell(row=row, column=2, value=value)
+            value_cell.border = border
+
+    elif export_type == "techniques":
+        ws = wb.active
+        ws.title = "Tecnicas"
+        _apply_headers(ws, ["Tecnica", "Solicitudes", "Aprobadas", "Tasa aprobacion (%)"])
+
+        techniques = [
+            ("SEM/EDX", "facility_sem"),
+            ("FIB", "facility_sem_fib"),
+            ("SIMS", "facility_sims"),
+            ("Metrologia de superficies opticas 3D", "facility_confocal"),
+            ("Ion Implanter", "facility_imp"),
+            ("VDG", "facility_vdg"),
+            ("Profilometer", "facility_profilometer"),
+        ]
+
+        row = 2
+        for name, field in techniques:
+            count = base_qs.filter(**{field: True}).count()
+            approved = base_qs.filter(**{field: True}, status="accepted").count()
+            approval_rate = round((approved / count * 100) if count > 0 else 0, 1)
+            for col, value in enumerate([name, count, approved, approval_rate], 1):
                 cell = ws.cell(row=row, column=col, value=value)
                 cell.border = border
-    
-    elif export_type == 'reviews':
-        # Hoja de revisiones con análisis completo
-        ws = wb.active
-        ws.title = "Análisis de Revisiones"
-        
-        headers = [
-            'ID Propuesta', 'Título Propuesta', 'Revisor', 'Email Revisor',
-            'Decisión', 'Fecha Revisión', 'Calidad Científica', 'Necesidad Infraestructura',
-            'Potencial Industrial', 'Comentarios', 'Tiempo Revisión (días)',
-            'Centro Revisor', 'Experiencia Revisor'
-        ]
-        
-        for col, header in enumerate(headers, 1):
-            cell = ws.cell(row=1, column=col, value=header)
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = header_alignment
-            cell.border = border
-        
-        # Datos de revisiones con información completa
-        reviews = ProposalReview.objects.select_related('proposal', 'reviewer')
-        if not include_olmat:
-            reviews = reviews.filter(_icts_facilities_q(prefix="proposal__"))
-        for row, review in enumerate(reviews, 2):
-            # Tiempo de revisión
-            review_time = 0
-            if review.updated_at and review.proposal.created_at:
-                review_time = (review.updated_at - review.proposal.created_at).days
-            
-            # Centro del revisor
-            reviewer_center = ''
-            if hasattr(review.reviewer, 'icts_profile') and review.reviewer.icts_profile:
-                reviewer_center = review.reviewer.icts_profile.center or ''
-            
-            row_data = [
-                review.proposal.id,
-                review.proposal.title,
-                review.reviewer.get_full_name() or review.reviewer.username,
-                review.reviewer.email,
-                review.get_decision_display(),
-                review.updated_at.strftime('%Y-%m-%d %H:%M') if review.updated_at else '',
-                review.score_scientific_quality or '',
-                review.score_need_infrastructure or '',
-                review.score_industrial_potential or '',
-                review.comments or '',
-                review_time,
-                reviewer_center,
-                'Experto' if review.score_scientific_quality and review.score_scientific_quality >= 4 else 'Intermedio'
-            ]
-            
-            for col, value in enumerate(row_data, 1):
+            row += 1
+
+        if include_olmat:
+            count = base_qs.filter(facility_olmat=True).count()
+            approved = base_qs.filter(facility_olmat=True, status="accepted").count()
+            approval_rate = round((approved / count * 100) if count > 0 else 0, 1)
+            for col, value in enumerate(["OLMAT", count, approved, approval_rate], 1):
                 cell = ws.cell(row=row, column=col, value=value)
                 cell.border = border
-    
-    elif export_type == 'users':
-        # Hoja de usuarios con análisis de actividad
+
+    elif export_type == "temporal":
         ws = wb.active
-        ws.title = "Análisis de Usuarios"
-        
-        headers = [
-            'Usuario', 'Nombre Completo', 'Email', 'Centro', 'Grupos',
-            'Activo', 'Fecha Registro', 'Último Acceso', 'Propuestas Creadas',
-            'Propuestas Aprobadas', 'Propuestas Rechazadas', 'Revisiones Realizadas',
-            'Tasa Éxito', 'Actividad Reciente'
-        ]
-        
-        for col, header in enumerate(headers, 1):
-            cell = ws.cell(row=1, column=col, value=header)
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = header_alignment
-            cell.border = border
-        
-        # Datos de usuarios con análisis completo
-        users = User.objects.prefetch_related('groups', 'icts_proposals', 'icts_reviews')
-        for row, user in enumerate(users, 2):
-            groups = ', '.join([g.name for g in user.groups.all()])
-            center = user.icts_profile.center if hasattr(user, 'icts_profile') else ''
-            
-            # Análisis de propuestas del usuario
-            user_proposals = user.icts_proposals.all()
-            total_proposals = user_proposals.count()
-            approved_proposals = user_proposals.filter(status='accepted').count()
-            rejected_proposals = user_proposals.filter(status='rejected').count()
-            success_rate = round((approved_proposals / total_proposals * 100) if total_proposals > 0 else 0, 1)
-            
-            # Revisiones realizadas
-            reviews_count = user.icts_reviews.count()
-            
-            # Actividad reciente
-            recent_activity = 'Activo' if user.last_login and (timezone.now() - user.last_login).days < 30 else 'Inactivo'
-            
-            row_data = [
-                user.username,
-                user.get_full_name() or '',
-                user.email,
-                center,
-                groups,
-                'Sí' if user.is_active else 'No',
-                user.date_joined.strftime('%Y-%m-%d'),
-                user.last_login.strftime('%Y-%m-%d') if user.last_login else 'Nunca',
-                total_proposals,
-                approved_proposals,
-                rejected_proposals,
-                reviews_count,
-                f"{success_rate}%",
-                recent_activity
-            ]
-            
-            for col, value in enumerate(row_data, 1):
-                cell = ws.cell(row=row, column=col, value=value)
-                cell.border = border
-    
-    elif export_type == 'temporal':
-        # Hoja de análisis temporal completo
-        ws = wb.active
-        ws.title = "Análisis Temporal Completo"
-        
-        headers = [
-            'Año', 'Mes', 'Propuestas Creadas', 'Propuestas Aprobadas',
-            'Propuestas Rechazadas', 'Tasa Aprobación', 'Tiempo Promedio Revisión',
-            'Usuarios Activos', 'Técnica Más Usada', 'Centro Más Activo'
-        ]
-        
-        for col, header in enumerate(headers, 1):
-            cell = ws.cell(row=1, column=col, value=header)
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = header_alignment
-            cell.border = border
-        
-        # Datos temporales con análisis avanzado
-        temporal_data = AccessProposal.objects.annotate(
-            year=ExtractYear('created_at'),
-            month=ExtractMonth('created_at')
-        ).values('year', 'month').annotate(
-            total=Count('id'),
-            approved=Count('id', filter=Q(status='accepted')),
-            rejected=Count('id', filter=Q(status='rejected'))
-        ).order_by('year', 'month')
-        
+        ws.title = "Temporal"
+        _apply_headers(ws, ["Ano", "Mes", "Propuestas", "Aprobadas", "Rechazadas", "Tasa aprobacion (%)"])
+
+        temporal_data = base_qs.annotate(
+            year=ExtractYear("created_at"),
+            month=ExtractMonth("created_at"),
+        ).values("year", "month").annotate(
+            total=Count("id"),
+            approved=Count("id", filter=Q(status="accepted")),
+            rejected=Count("id", filter=Q(status="rejected")),
+        ).order_by("year", "month")
+
         for row, data in enumerate(temporal_data, 2):
-            total = data['total']
-            approved = data['approved']
-            rejected = data['rejected']
+            total = data["total"]
+            approved = data["approved"]
+            rejected = data["rejected"]
             approval_rate = round((approved / (approved + rejected) * 100) if (approved + rejected) > 0 else 0, 1)
-            
-            # Análisis adicional por período
-            month_start = timezone.datetime(data['year'], data['month'], 1)
-            month_end = month_start + timedelta(days=32)
-            month_end = month_end.replace(day=1) - timedelta(days=1)
-            
-            # Usuarios activos en el mes
-            active_users = User.objects.filter(
-                icts_proposals__created_at__gte=month_start,
-                icts_proposals__created_at__lte=month_end
-            ).distinct().count()
-            
             row_data = [
-                data['year'],
-                data['month'],
+                data["year"],
+                data["month"],
                 total,
                 approved,
                 rejected,
-                f"{approval_rate}%",
-                "7 días",  # Placeholder
-                active_users,
-                "SEM/EDX",  # Placeholder
-                "CIEMAT"  # Placeholder
+                approval_rate,
             ]
-            
             for col, value in enumerate(row_data, 1):
                 cell = ws.cell(row=row, column=col, value=value)
                 cell.border = border
-    
-    # Ajustar ancho de columnas automáticamente
+
     for column in ws.columns:
         max_length = 0
         column_letter = get_column_letter(column[0].column)
@@ -2529,23 +2230,23 @@ def export_manager_data(request):
             try:
                 if len(str(cell.value)) > max_length:
                     max_length = len(str(cell.value))
-            except:
+            except Exception:
                 pass
         adjusted_width = min(max_length + 2, 50)
         ws.column_dimensions[column_letter].width = adjusted_width
-    
-    # Aplicar bordes a todas las celdas
+
     for row in ws.iter_rows():
         for cell in row:
             if not cell.border:
                 cell.border = border
-    
-    # Crear respuesta
+
     response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response['Content-Disposition'] = f'attachment; filename="icts_analytics_{export_type}_{timezone.now().strftime("%Y%m%d_%H%M")}.xlsx"'
-    
+    response["Content-Disposition"] = (
+        f'attachment; filename="icts_analytics_{export_type}_{timezone.now().strftime("%Y%m%d_%H%M")}.xlsx"'
+    )
+
     wb.save(response)
     return response
 
@@ -2899,7 +2600,7 @@ def tech_olmat_config(request):
     })
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(lambda u: user_in_groups(u, OLMAT_TECH_GROUPS) or is_responsable(u) or is_manager(u), raise_exception=True)
+@user_passes_test(lambda u: user_in_groups(u, OLMAT_TECH_GROUPS) or is_responsable(u), raise_exception=True)
 def olmat_dashboard(request):
     """Panel para técnicos OLMAT: propuestas aceptadas y solicitudes."""
     proposals = (
@@ -2948,7 +2649,7 @@ def tech_vdg_config(request):
 def olmat_request_create(request, proposal_id):
     """Crear solicitud específica de OLMAT para una propuesta"""
     groups = get_normalized_user_groups(request.user)
-    can_manage = user_in_groups(request.user, OLMAT_TECH_GROUPS, groups) or is_responsable(request.user, groups) or is_manager(request.user, groups)
+    can_manage = user_in_groups(request.user, OLMAT_TECH_GROUPS, groups) or is_responsable(request.user, groups)
 
     if can_manage:
         proposal = get_object_or_404(AccessProposal, pk=proposal_id)
@@ -3003,7 +2704,7 @@ def olmat_request_detail(request, request_id):
     # Verificar permisos
     if not (request.user == olmat_request.proposal.applicant or 
             user_in_groups(request.user, OLMAT_TECH_GROUPS) or
-            is_responsable(request.user) or is_manager(request.user)):
+            is_responsable(request.user)):
         return HttpResponseForbidden()
     
     return render(request, "icts/olmat_request_detail.html", {
@@ -3012,7 +2713,7 @@ def olmat_request_detail(request, request_id):
 
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(lambda u: user_in_groups(u, OLMAT_TECH_GROUPS) or is_responsable(u) or is_manager(u), raise_exception=True)
+@user_passes_test(lambda u: user_in_groups(u, OLMAT_TECH_GROUPS) or is_responsable(u), raise_exception=True)
 def olmat_requests_list(request):
     """Lista de solicitudes OLMAT para técnicos"""
     requests = OLMATRequest.objects.select_related('proposal__applicant').order_by('-created_at')
@@ -3035,7 +2736,7 @@ def olmat_request_evaluate(request, request_id):
     olmat_request = get_object_or_404(OLMATRequest, pk=request_id)
 
     groups = get_normalized_user_groups(request.user)
-    if not (user_in_groups(request.user, OLMAT_TECH_GROUPS, groups) or is_responsable(request.user, groups) or is_manager(request.user, groups)):
+    if not (user_in_groups(request.user, OLMAT_TECH_GROUPS, groups) or is_responsable(request.user, groups)):
         return HttpResponseForbidden()
 
     if not olmat_request.access_code:

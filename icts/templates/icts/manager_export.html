@@ -13,9 +13,8 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
-  .export-card.proposals { border-left-color: #0d6efd; }
-  .export-card.reviews { border-left-color: #198754; }
-  .export-card.users { border-left-color: #6f42c1; }
+  .export-card.summary { border-left-color: #0d6efd; }
+  .export-card.techniques { border-left-color: #198754; }
   .export-card.temporal { border-left-color: #fd7e14; }
   
   .export-preview {
@@ -72,34 +71,33 @@
 
   <!-- Opciones de exportación -->
   <div class="row">
-    <!-- Exportación de Propuestas -->
+    <!-- Resumen agregado -->
     <div class="col-lg-6 mb-4">
-      <div class="card export-card proposals h-100">
+      <div class="card export-card summary h-100">
         <div class="card-body">
           <div class="d-flex align-items-center mb-3">
             <div class="me-3">
               <i class="bi bi-file-earmark-spreadsheet text-primary fs-1"></i>
             </div>
             <div>
-              <h5 class="card-title mb-1">Propuestas Completas</h5>
-              <p class="text-muted mb-0">Datos completos de todas las propuestas</p>
+              <h5 class="card-title mb-1">Resumen agregado</h5>
+              <p class="text-muted mb-0">Metricas generales sin datos identificables</p>
             </div>
           </div>
-          
+
           <div class="export-preview">
             <h6 class="mb-2">Incluye:</h6>
             <ul class="list-unstyled mb-0">
-              <li><i class="bi bi-check-circle text-success me-2"></i>Información básica de propuestas</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Estado y fechas</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Técnicas seleccionadas</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Datos de revisión</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Información del solicitante</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Totales por estado</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Tasas agregadas</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Conversion y crecimiento</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Resumen sin PII</li>
             </ul>
           </div>
-          
-          <button class="btn btn-primary download-btn w-100" onclick="exportData('proposals')">
+
+          <button class="btn btn-primary download-btn w-100" onclick="exportData('summary')">
             <span class="btn-text">
-              <i class="bi bi-download me-2"></i>Exportar Propuestas
+              <i class="bi bi-download me-2"></i>Exportar Resumen
             </span>
             <div class="spinner">
               <div class="spinner-border spinner-border-sm" role="status">
@@ -111,34 +109,32 @@
       </div>
     </div>
 
-    <!-- Exportación de Revisiones -->
+    <!-- Exportacion por tecnicas -->
     <div class="col-lg-6 mb-4">
-      <div class="card export-card reviews h-100">
+      <div class="card export-card techniques h-100">
         <div class="card-body">
           <div class="d-flex align-items-center mb-3">
             <div class="me-3">
-              <i class="bi bi-clipboard-data text-success fs-1"></i>
+              <i class="bi bi-bar-chart text-success fs-1"></i>
             </div>
             <div>
-              <h5 class="card-title mb-1">Datos de Revisiones</h5>
-              <p class="text-muted mb-0">Evaluaciones y puntuaciones de revisores</p>
+              <h5 class="card-title mb-1">Tecnicas</h5>
+              <p class="text-muted mb-0">Solicitudes y tasas por tecnica</p>
             </div>
           </div>
-          
+
           <div class="export-preview">
             <h6 class="mb-2">Incluye:</h6>
             <ul class="list-unstyled mb-0">
-              <li><i class="bi bi-check-circle text-success me-2"></i>Decisiones de revisores</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Puntuaciones de calidad</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Evaluación de infraestructura</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Potencial industrial</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Comentarios y fechas</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Solicitudes por tecnica</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Aprobadas por tecnica</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Tasa de aprobacion</li>
             </ul>
           </div>
-          
-          <button class="btn btn-success download-btn w-100" onclick="exportData('reviews')">
+
+          <button class="btn btn-success download-btn w-100" onclick="exportData('techniques')">
             <span class="btn-text">
-              <i class="bi bi-download me-2"></i>Exportar Revisiones
+              <i class="bi bi-download me-2"></i>Exportar Tecnicas
             </span>
             <div class="spinner">
               <div class="spinner-border spinner-border-sm" role="status">
@@ -150,46 +146,7 @@
       </div>
     </div>
 
-    <!-- Exportación de Usuarios -->
-    <div class="col-lg-6 mb-4">
-      <div class="card export-card users h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-3">
-            <div class="me-3">
-              <i class="bi bi-people text-info fs-1"></i>
-            </div>
-            <div>
-              <h5 class="card-title mb-1">Usuarios y Actividad</h5>
-              <p class="text-muted mb-0">Datos de usuarios y su actividad en el sistema</p>
-            </div>
-          </div>
-          
-          <div class="export-preview">
-            <h6 class="mb-2">Incluye:</h6>
-            <ul class="list-unstyled mb-0">
-              <li><i class="bi bi-check-circle text-success me-2"></i>Información de usuarios</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Centros e instituciones</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Grupos y permisos</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Actividad y propuestas</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Fechas de registro</li>
-            </ul>
-          </div>
-          
-          <button class="btn btn-info download-btn w-100" onclick="exportData('users')">
-            <span class="btn-text">
-              <i class="bi bi-download me-2"></i>Exportar Usuarios
-            </span>
-            <div class="spinner">
-              <div class="spinner-border spinner-border-sm" role="status">
-                <span class="visually-hidden">Exportando...</span>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Exportación Temporal -->
+    <!-- Exportacion temporal -->
     <div class="col-lg-6 mb-4">
       <div class="card export-card temporal h-100">
         <div class="card-body">
@@ -198,25 +155,23 @@
               <i class="bi bi-graph-up text-warning fs-1"></i>
             </div>
             <div>
-              <h5 class="card-title mb-1">Análisis Temporal</h5>
-              <p class="text-muted mb-0">Datos temporales y tendencias del sistema</p>
+              <h5 class="card-title mb-1">Analisis Temporal</h5>
+              <p class="text-muted mb-0">Tendencias por mes y estado</p>
             </div>
           </div>
-          
+
           <div class="export-preview">
             <h6 class="mb-2">Incluye:</h6>
             <ul class="list-unstyled mb-0">
-              <li><i class="bi bi-check-circle text-success me-2"></i>Propuestas por año/mes</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Tasas de aprobación</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Tendencias temporales</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Análisis estacional</li>
-              <li><i class="bi bi-check-circle text-success me-2"></i>Métricas de rendimiento</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Propuestas por mes</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Aprobadas y rechazadas</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Tasas agregadas</li>
             </ul>
           </div>
-          
+
           <button class="btn btn-warning download-btn w-100" onclick="exportData('temporal')">
             <span class="btn-text">
-              <i class="bi bi-download me-2"></i>Exportar Análisis
+              <i class="bi bi-download me-2"></i>Exportar Temporal
             </span>
             <div class="spinner">
               <div class="spinner-border spinner-border-sm" role="status">
@@ -224,40 +179,6 @@
               </div>
             </div>
           </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Exportación Masiva -->
-  <div class="row mt-4">
-    <div class="col-12">
-      <div class="card border-success">
-        <div class="card-header bg-success text-white">
-          <h5 class="mb-0">
-            <i class="bi bi-download"></i>
-            Exportación Completa
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-md-8">
-              <h6 class="mb-1">Archivo Excel Completo</h6>
-              <p class="text-muted mb-0">Descarga todos los datos del sistema en un solo archivo Excel con múltiples hojas</p>
-            </div>
-            <div class="col-md-4 text-end">
-              <button class="btn btn-success btn-lg download-btn" onclick="exportAllData()">
-                <span class="btn-text">
-                  <i class="bi bi-file-earmark-excel me-2"></i>Exportar Todo
-                </span>
-                <div class="spinner">
-                  <div class="spinner-border spinner-border-sm" role="status">
-                    <span class="visually-hidden">Exportando...</span>
-                  </div>
-                </div>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -287,66 +208,30 @@
   function exportData(type) {
     const button = event.target.closest('.download-btn');
     const originalText = button.querySelector('.btn-text').innerHTML;
-    
-    // Mostrar loading
+
     button.classList.add('loading');
     button.disabled = true;
-    
-    // Crear enlace de descarga
+
     const exportUrl = `{% url "icts:export_manager_data" %}?type=${type}`;
-    
-    // Crear elemento temporal para descarga
+
     const link = document.createElement('a');
     link.href = exportUrl;
     link.download = `icts_data_${type}_${new Date().toISOString().split('T')[0]}.xlsx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
-    // Restaurar botón después de un tiempo
+
     setTimeout(() => {
       button.classList.remove('loading');
       button.disabled = false;
-      
-      // Mostrar mensaje de éxito
-      const successText = '<i class="bi bi-check-circle me-2"></i>¡Exportado!';
+
+      const successText = '<i class="bi bi-check-circle me-2"></i>Exportado';
       button.querySelector('.btn-text').innerHTML = successText;
-      
+
       setTimeout(() => {
         button.querySelector('.btn-text').innerHTML = originalText;
       }, 3000);
     }, 2000);
-  }
-
-  function exportAllData() {
-    const button = event.target.closest('.download-btn');
-    const originalText = button.querySelector('.btn-text').innerHTML;
-    
-    // Mostrar loading
-    button.classList.add('loading');
-    button.disabled = true;
-    
-    // Exportar datos completos
-    const exportUrl = `{% url "icts:export_manager_data" %}?type=proposals`;
-    const link = document.createElement('a');
-    link.href = exportUrl;
-    link.download = `icts_complete_data_${new Date().toISOString().split('T')[0]}.xlsx`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Restaurar botón
-    setTimeout(() => {
-      button.classList.remove('loading');
-      button.disabled = false;
-      
-      const successText = '<i class="bi bi-check-circle me-2"></i>¡Completo!';
-      button.querySelector('.btn-text').innerHTML = successText;
-      
-      setTimeout(() => {
-        button.querySelector('.btn-text').innerHTML = originalText;
-      }, 3000);
-    }, 3000);
   }
 </script>
 {% endblock %}
