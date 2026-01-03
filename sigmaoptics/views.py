@@ -12,8 +12,8 @@ from .forms import (
     OpticsSolicitudForm, OpticsMuestraFormSet, 
     OpticsResultadoForm, OpticsSolicitudTecnicoForm, OpticsAnalisisDatosForm
 )
-from core.roles import is_optics_tech, user_can_access_dtf
-from dtf.decorators import dtf_required
+from core.roles import is_optics_tech
+from dtf.decorators import dtf_lab_gate
 
 
 def is_optics_technician(user):
@@ -21,12 +21,9 @@ def is_optics_technician(user):
     return user.is_authenticated and (user.is_superuser or is_optics_tech(user))
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 def solicitud_create(request):
     """Crear nueva solicitud de análisis óptico"""
-    if not user_can_access_dtf(request.user):
-        messages.error(request, "No tienes permisos para crear solicitudes.")
-        return redirect("dtf:dashboard")
     
     if request.method == 'POST':
         form = OpticsSolicitudForm(request.POST)
@@ -68,15 +65,14 @@ def solicitud_create(request):
     })
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 def solicitud_detail(request, pk):
-    """Detalle de solicitud óptica"""
-    solicitud = get_object_or_404(OpticsSolicitud, pk=pk)
-    
-    # Verificar permisos
-    if not (solicitud.solicitante == request.user or is_optics_technician(request.user) or request.user.is_staff):
-        messages.error(request, "No tienes permisos para ver esta solicitud.")
-        return redirect("sigmaoptics:solicitud_list")
+    """Detalle de solicitud optica"""
+    if is_optics_technician(request.user) or request.user.is_superuser:
+        qs = OpticsSolicitud.objects.all()
+    else:
+        qs = OpticsSolicitud.objects.filter(solicitante=request.user)
+    solicitud = get_object_or_404(qs, pk=pk)
     
     muestras = solicitud.muestras.all()
     resultados = solicitud.resultados.all()
@@ -93,12 +89,9 @@ def solicitud_detail(request, pk):
     return render(request, 'sigmaoptics/solicitud_detail.html', context)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 def solicitud_list(request):
     """Lista de solicitudes ópticas"""
-    if not user_can_access_dtf(request.user):
-        messages.error(request, "No tienes permisos para ver las solicitudes.")
-        return redirect("dtf:dashboard")
     
     # Filtrar solicitudes según el usuario
     if is_optics_technician(request.user) or request.user.is_staff:
@@ -142,7 +135,7 @@ def solicitud_list(request):
     return render(request, 'sigmaoptics/solicitud_list.html', context)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 @require_POST
 def solicitud_accept(request, pk):
     """Aceptar solicitud óptica"""
@@ -165,7 +158,7 @@ def solicitud_accept(request, pk):
     return redirect("sigmaoptics:solicitud_detail", pk=pk)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 @require_POST
 def solicitud_reject(request, pk):
     """Rechazar solicitud óptica"""
@@ -187,7 +180,7 @@ def solicitud_reject(request, pk):
     return redirect("sigmaoptics:solicitud_detail", pk=pk)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 @require_POST
 def solicitud_start(request, pk):
     """Iniciar trabajo en solicitud óptica"""
@@ -208,7 +201,7 @@ def solicitud_start(request, pk):
     return redirect("sigmaoptics:solicitud_detail", pk=pk)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 @require_POST
 def solicitud_finish(request, pk):
     """Finalizar solicitud óptica"""
@@ -230,7 +223,7 @@ def solicitud_finish(request, pk):
     return redirect("sigmaoptics:solicitud_detail", pk=pk)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 def resultado_upload(request, pk):
     """Subir resultado de análisis óptico"""
     if not is_optics_technician(request.user):
@@ -258,7 +251,7 @@ def resultado_upload(request, pk):
     })
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 def panel_tecnico(request):
     """Panel del técnico de óptica"""
     if not is_optics_technician(request.user):
@@ -285,7 +278,7 @@ def panel_tecnico(request):
     return render(request, 'sigmaoptics/panel_tecnico.html', context)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 def get_muestras_form(request):
     """AJAX: Obtener formulario de muestras dinámicamente"""
     if request.method == 'POST':
@@ -306,7 +299,7 @@ def get_muestras_form(request):
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 @user_passes_test(is_optics_technician)
 def crear_analisis_datos(request):
     """Crear nuevo análisis de datos ópticos"""
@@ -411,7 +404,7 @@ def crear_analisis_datos(request):
     return render(request, 'sigmaoptics/crear_analisis_datos.html', context)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 @user_passes_test(is_optics_technician)
 def analisis_list(request):
     """Lista de análisis de datos ópticos"""
@@ -435,7 +428,7 @@ def analisis_list(request):
     return render(request, 'sigmaoptics/analisis_list.html', context)
 
 
-@dtf_required
+@dtf_lab_gate("s_optics")
 @user_passes_test(is_optics_technician)
 def analisis_detail(request, pk):
     """Detalle de análisis de datos ópticos"""

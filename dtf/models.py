@@ -19,6 +19,7 @@ class DTFUserProfile(models.Model):
     acceso_s_lab_restringido = models.BooleanField(default=False, help_text="Acceso a S-LAB restringido por técnico")
     acceso_s_mec_restringido = models.BooleanField(default=False, help_text="Acceso a S-MEC restringido por técnico")
     acceso_s_dp_restringido = models.BooleanField(default=False, help_text="Acceso a S-DP restringido por técnico")
+    acceso_s_optics_restringido = models.BooleanField(default=False, help_text="Acceso a S-OPTICS restringido por tecnico")
     motivo_restriccion = models.TextField(blank=True, help_text="Motivo de la restricción de acceso")
     restriccion_fecha = models.DateTimeField(null=True, blank=True, help_text="Fecha de aplicación de la restricción")
     restriccion_por = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="restricciones_aplicadas", help_text="Técnico que aplicó la restricción")
