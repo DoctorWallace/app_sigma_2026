@@ -36,6 +36,7 @@
 
       {% if request.user|has_group:"responsables" %}
         <li><a href="{% url 'icts:responsable_dashboard' %}"><i class="bi bi-gear"></i> Panel responsable</a></li>
+        <li><a href="{% url 'icts:responsable_review_messages' %}"><i class="bi bi-envelope"></i> Mensajes revisores</a></li>
         <li><a href="{% url 'icts:pending_users' %}"><i class="bi bi-people"></i> Gestión de usuarios</a></li>
         <li><a href="{% url 'icts:users_admin' %}"><i class="bi bi-person-gear"></i> Administración usuarios</a></li>
       {% endif %}

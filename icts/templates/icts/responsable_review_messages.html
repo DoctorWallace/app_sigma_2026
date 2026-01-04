@@ -1,0 +1,57 @@
+{% extends "base_icts.html" %}
+{% load i18n %}
+{% block title %}{% trans "Mensajes revisores" %}{% endblock %}
+{% block page_title %}{% trans "Mensajes revisores" %}{% endblock %}
+
+{% block content %}
+{% trans "(Sin título)" as default_title %}
+<div class="card">
+  <h3 style="margin-bottom: .75rem;">{% trans "Solicitudes de modificación" %}</h3>
+  <ul class="list">
+    {% for req in pending_requests %}
+      <li class="list-item">
+        <div>
+          <div class="list-title">{{ req.review.proposal.title|default:default_title }}</div>
+          <div class="muted">
+            {% blocktrans with reviewer=req.requester.get_username proposal_id=req.review.proposal.id created_at=req.created_at|date:"d/m/Y H:i" %}
+              ID #{{ proposal_id }} - {{ reviewer }} - {{ created_at }}
+            {% endblocktrans %}
+          </div>
+          <div class="message">{{ req.message }}</div>
+        </div>
+        <div class="list-actions">
+          <a class="chip" href="{% url 'icts:proposal_detail' req.review.proposal.pk %}">{% trans "Ver propuesta" %}</a>
+          <form method="post" action="{% url 'icts:approve_review_mod_request' req.pk %}" class="inline-form">
+            {% csrf_token %}
+            <button class="chip chip-primary" type="submit">{% trans "Approve" %}</button>
+          </form>
+          <form method="post" action="{% url 'icts:deny_review_mod_request' req.pk %}" class="inline-form">
+            {% csrf_token %}
+            <button class="chip chip-danger" type="submit">{% trans "Deny" %}</button>
+          </form>
+        </div>
+      </li>
+    {% empty %}
+      <li class="list-item">{% trans "No hay solicitudes pendientes." %}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.list{ list-style:none; padding:0; margin:0 }
+.list-item{ display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; border:1px solid var(--border); border-radius:.75rem; margin:.5rem 0 }
+.list-title{ font-weight:800 }
+.list-actions{ display:flex; align-items:center; gap:.5rem; flex-wrap:wrap }
+.inline-form{ margin:0; display:inline }
+.chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:var(--bg-card) }
+button.chip{ cursor:pointer }
+.chip:hover{ background:#f3f4f6 }
+.chip-primary{ background:#1f2937; border-color:#1f2937; color:#fff }
+.chip-primary:hover{ background:#111827 }
+.chip-danger{ background:#ef4444; border-color:#ef4444; color:#fff }
+.chip-danger:hover{ background:#dc2626 }
+.message{ margin-top:.4rem; white-space:pre-wrap }
+</style>
+{% endblock %}

@@ -20,7 +20,7 @@ def _create_user(username, groups):
 
 
 @pytest.mark.django_db
-def test_review_start_submit_updates_decision(client):
+def test_review_start_save_draft_updates_fields(client):
     reviewer = _create_user("reviewer_submit", ["revisores"])
     applicant = _create_user("review_applicant", ["icts_users"])
     proposal = AccessProposal.objects.create(
@@ -39,7 +39,7 @@ def test_review_start_submit_updates_decision(client):
     response = client.post(
         reverse("icts:review_start", args=[proposal.pk]),
         data={
-            "action": "submit_review",
+            "action": "save_draft",
             "feasibility_ok": "True",
             "decision": "approve",
         },
@@ -49,8 +49,9 @@ def test_review_start_submit_updates_decision(client):
     assert response.url == reverse("icts:reviewer_inbox")
     review = ProposalReview.objects.get(proposal=proposal, reviewer=reviewer)
     assert review.decision == "approve"
-    assert review.status == "submitted"
-    assert review.submitted_at is not None
+    assert review.status == "draft"
+    assert review.submitted_at is None
+    assert review.draft_saved_at is not None
 
 
 @pytest.mark.django_db
@@ -80,6 +81,7 @@ def test_review_start_save_draft_allows_pending_decision(client):
     review = ProposalReview.objects.get(proposal=proposal, reviewer=reviewer)
     assert review.decision == "pending"
     assert review.status == "draft"
+    assert review.draft_saved_at is not None
 
 
 @pytest.mark.django_db

@@ -3,7 +3,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.urls import reverse
 
-from icts.models import AccessProposal, ProposalReview
+from django.utils import timezone
+
+from icts.models import (
+    AccessProposal,
+    ProposalReview,
+    ProposalReviewModificationRequest,
+)
 
 
 def _create_user(username, groups):
@@ -49,10 +55,11 @@ def test_reviewer_save_draft_keeps_pending_in_inbox(client):
     review.refresh_from_db()
     assert review.status == "draft"
     assert review.submitted_at is None
+    assert review.draft_saved_at is not None
 
     inbox = client.get(reverse("icts:reviewer_inbox"))
-    pending = list(inbox.context["pending"])
-    assert proposal in pending
+    pending = list(inbox.context["pending_reviews"])
+    assert any(item.proposal_id == proposal.pk for item in pending)
 
 
 @pytest.mark.django_db
@@ -76,10 +83,20 @@ def test_reviewer_submit_moves_to_completed_and_keeps_other_pending(client):
     response = client.post(
         reverse("icts:review_start", args=[proposal.pk]),
         data={
-            "action": "submit_review",
+            "action": "save_draft",
             "feasibility_ok": "True",
+            "score_scientific_quality": "4",
+            "score_need_infrastructure": "4",
+            "score_industrial_potential": "4",
             "decision": "approve",
         },
+    )
+    assert response.status_code == 302
+    review_one.refresh_from_db()
+    assert review_one.draft_saved_at is not None
+
+    response = client.post(
+        reverse("icts:review_send", args=[proposal.pk]),
     )
 
     assert response.status_code == 302
@@ -88,15 +105,15 @@ def test_reviewer_submit_moves_to_completed_and_keeps_other_pending(client):
     assert review_one.submitted_at is not None
 
     inbox = client.get(reverse("icts:reviewer_inbox"))
-    pending = list(inbox.context["pending"])
-    completed = list(inbox.context["completed"])
-    assert proposal not in pending
-    assert any(item.proposal_id == proposal.pk for item in completed)
+    pending = list(inbox.context["pending_reviews"])
+    submitted = list(inbox.context["submitted_reviews"])
+    assert all(item.proposal_id != proposal.pk for item in pending)
+    assert any(item.proposal_id == proposal.pk for item in submitted)
 
     client.force_login(reviewer_two)
     inbox_other = client.get(reverse("icts:reviewer_inbox"))
-    pending_other = list(inbox_other.context["pending"])
-    assert proposal in pending_other
+    pending_other = list(inbox_other.context["pending_reviews"])
+    assert any(item.proposal_id == proposal.pk for item in pending_other)
 
 
 @pytest.mark.django_db
@@ -127,27 +144,27 @@ def test_reviewer_submit_locks_review(client):
 
 
 @pytest.mark.django_db
-def test_reviewer_request_changes_stays_draft(client):
+def test_reviewer_request_modify_creates_pending_request(client):
     reviewer = _create_user("reviewer_changes", ["revisores"])
     applicant = _create_user("changes_applicant", ["icts_users"])
     proposal = _create_proposal(applicant, "Changes proposal")
     review = ProposalReview.objects.create(
         proposal=proposal,
         reviewer=reviewer,
-        status="draft",
+        status="submitted",
+        decision="approve",
+        submitted_at=timezone.now(),
+        draft_saved_at=timezone.now(),
     )
 
     client.force_login(reviewer)
     response = client.post(
-        reverse("icts:review_start", args=[proposal.pk]),
-        data={
-            "action": "request_changes",
-            "change_request_text": "Faltan detalles sobre el plan de trabajo.",
-        },
+        reverse("icts:review_request_modify", args=[proposal.pk]),
+        data={"message": "Necesito ajustar mi evaluación."},
     )
 
     assert response.status_code == 302
-    review.refresh_from_db()
-    assert review.change_request_text == "Faltan detalles sobre el plan de trabajo."
-    assert review.change_request_at is not None
-    assert review.status == "draft"
+    assert ProposalReviewModificationRequest.objects.filter(
+        review=review,
+        status="pending",
+    ).exists()

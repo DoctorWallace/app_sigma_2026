@@ -19,7 +19,13 @@ from .forms import AccessProposalForm, ParticipantFormSet, AttachmentFormSet, Pr
 from django.shortcuts import render
 from django.db.models import Exists, OuterRef
 
-from .models import AccessProposal, ProposalReview, OLMATRequest, ICTSUserProfile
+from .models import (
+    AccessProposal,
+    ProposalReview,
+    ProposalReviewModificationRequest,
+    OLMATRequest,
+    ICTSUserProfile,
+)
 from .utils import (
     build_access_code,
     build_rejected_code,
@@ -1489,26 +1495,37 @@ def reviewer_inbox(request):
     if not is_reviewer(request.user, groups):
         raise PermissionDenied
     proposal_filter = _icts_facilities_q(prefix="proposal__")
-    pending = (
-        AccessProposal.objects.filter(status="submitted")
-        .filter(_icts_facilities_q())
-        .filter(reviews__reviewer=request.user, reviews__status="draft")
-        .order_by("-created_at")
-        .distinct()
-    )
-    completed = (
-        ProposalReview.objects.filter(
-            reviewer=request.user,
-            status="submitted",
-            proposal__status="submitted",
-        )
+    base = (
+        ProposalReview.objects.select_related("proposal", "proposal__applicant")
+        .filter(reviewer=request.user)
         .filter(proposal_filter)
-        .select_related("proposal")
     )
+    pending_reviews = base.filter(
+        status="draft",
+        proposal__status="submitted",
+    ).order_by("-proposal__created_at")
+    submitted_reviews = base.filter(
+        status="submitted",
+        proposal__status="submitted",
+    ).order_by("-submitted_at")
+    pending_mod_request = ProposalReviewModificationRequest.objects.filter(
+        review=OuterRef("pk"),
+        status="pending",
+    )
+    submitted_reviews = submitted_reviews.annotate(
+        has_pending_mod_request=Exists(pending_mod_request)
+    )
+    completed_reviews = base.filter(
+        proposal__status__in=["accepted", "rejected", "changes_requested"]
+    ).order_by("-proposal__created_at")
     return render(
         request,
         "icts/reviewer_inbox.html",
-        {"pending": pending, "completed": completed},
+        {
+            "pending_reviews": pending_reviews,
+            "submitted_reviews": submitted_reviews,
+            "completed_reviews": completed_reviews,
+        },
     )
 
 @login_required(login_url="/accounts/login/icts/")
@@ -1524,32 +1541,36 @@ def reviewer_dashboard_new(request):
         raise PermissionDenied
     from datetime import datetime, timedelta
     proposal_filter = _icts_facilities_q(prefix="proposal__")
-    proposal_filter = _icts_facilities_q(prefix="proposal__")
     
     # Estadísticas básicas
     # Para revisores: mostrar solo sus evaluaciones
     # Para responsables/managers: mostrar todas las evaluaciones
-    pending_reviews = ProposalReview.objects.filter(
+    base = ProposalReview.objects.filter(
         reviewer=request.user,
+    ).filter(
+        proposal_filter
+    ).select_related("proposal")
+
+    pending_reviews = base.filter(
         status="draft",
         proposal__status="submitted",
-    ).filter(
-        proposal_filter
-    ).select_related('proposal')
+    )
 
-    completed_reviews = ProposalReview.objects.filter(
-        reviewer=request.user,
+    submitted_reviews = base.filter(
         status="submitted",
         proposal__status="submitted",
-    ).filter(
-        proposal_filter
+    )
+
+    completed_reviews = base.filter(
+        proposal__status__in=["accepted", "rejected", "changes_requested"],
     )
     
     # Contadores
     pending_count = pending_reviews.count()
+    submitted_count = submitted_reviews.count()
     completed_count = completed_reviews.count()
-    approved_count = completed_reviews.filter(decision='approve').count()
-    rejected_count = completed_reviews.filter(decision='reject').count()
+    approved_count = completed_reviews.filter(proposal__status="accepted").count()
+    rejected_count = completed_reviews.filter(proposal__status="rejected").count()
     
     # Revisiones pendientes con información de días
     pending_with_days = []
@@ -1565,10 +1586,11 @@ def reviewer_dashboard_new(request):
     urgent_count = sum(1 for item in pending_with_days if item['is_urgent'])
     
     # Revisiones recientes (últimas 5)
-    recent_reviews = completed_reviews.order_by('-updated_at')[:5]
+    recent_reviews = submitted_reviews.order_by('-updated_at')[:5]
     
     context = {
         'pending_count': pending_count,
+        'submitted_count': submitted_count,
         'completed_count': completed_count,
         'approved_count': approved_count,
         'rejected_count': rejected_count,
@@ -2291,65 +2313,34 @@ def review_start(request, pk):
     if not is_reviewer(request.user, groups):
         raise PermissionDenied
     obj = get_object_or_404(AccessProposal, pk=pk)
+    if obj.status not in {"submitted", "accepted", "rejected", "changes_requested"}:
+        return HttpResponseForbidden("La propuesta aun no esta lista para revision.")
     if not obj.has_icts_techniques:
         messages.error(request, "Esta propuesta es solo OLMAT y no entra en revision ICTS.")
         return redirect("icts:reviewer_inbox")
-    review = get_object_or_404(ProposalReview, proposal=obj, reviewer=request.user)
-    readonly = review.status == "submitted"
+    review, _ = ProposalReview.objects.get_or_create(
+        proposal=obj,
+        reviewer=request.user,
+    )
+    readonly = review.status == "submitted" or obj.status != "submitted"
 
     if request.method == "POST":
         if readonly:
             return HttpResponseForbidden("Revision ya enviada.")
         form = ProposalReviewForm(request.POST, instance=review)
-        action = request.POST.get("action", "save_draft")
-        if action == "submit":
-            action = "submit_review"
-
         if form.is_valid():
-            if action == "save_draft":
-                review = form.save(commit=False)
-                review.status = "draft"
-                review.submitted_at = None
-                review.save()
-                messages.success(request, "Borrador guardado.")
-                return redirect("icts:reviewer_inbox")
-            if action == "submit_review":
-                # Validar que la revision este completa antes de enviar
-                feasibility_ok = form.cleaned_data.get("feasibility_ok")
-                decision = form.cleaned_data.get("decision")
-                if feasibility_ok is None:
-                    messages.error(request, "Debes indicar si la propuesta es viable tecnicamente.")
-                elif decision not in {"approve", "request_changes", "reject"}:
-                    messages.error(request, "Debes seleccionar una recomendacion final.")
-                else:
-                    review = form.save(commit=False)
-                    review.status = "submitted"
-                    review.submitted_at = timezone.now()
-                    review.save()
-                    # Enviar notificacion de revision completada
-                    send_proposal_notification(obj, 'review_completed')
-                    messages.success(request, "Evaluacion enviada correctamente.")
-                    return redirect("icts:reviewer_inbox")
-            elif action == "request_changes":
-                change_text = (request.POST.get("change_request_text") or "").strip()
-                if not change_text:
-                    messages.error(request, "Debes indicar los cambios solicitados.")
-                else:
-                    review = form.save(commit=False)
-                    review.status = "draft"
-                    review.submitted_at = None
-                    review.change_request_text = change_text
-                    review.change_request_at = timezone.now()
-                    review.save()
-                    messages.success(request, "Solicitud de cambios enviada.")
-                    return redirect("icts:reviewer_inbox")
-            else:
-                messages.error(request, "Accion no valida.")
+            review = form.save(commit=False)
+            review.status = "draft"
+            review.submitted_at = None
+            review.draft_saved_at = timezone.now()
+            review.save()
+            messages.success(request, "Borrador guardado.")
+            return redirect("icts:reviewer_inbox")
         else:
             messages.error(request, "Corrige los errores del formulario.")
     else:
         form = ProposalReviewForm(instance=review)
-    readonly = review.status == "submitted"
+    readonly = review.status == "submitted" or obj.status != "submitted"
 
     return render(request, "icts/review_form.html", {
         "proposal": obj,
@@ -2357,6 +2348,147 @@ def review_start(request, pk):
         "review": review,
         "readonly": readonly,
     })
+
+
+@login_required(login_url="/accounts/login/icts/")
+@never_cache
+@require_POST
+def review_send(request, pk):
+    groups = get_normalized_user_groups(request.user)
+    if is_responsable(request.user, groups):
+        return redirect("icts:responsable_dashboard")
+    if is_manager(request.user, groups):
+        return redirect("icts:manager_dashboard")
+    if not is_reviewer(request.user, groups):
+        raise PermissionDenied
+    proposal = get_object_or_404(AccessProposal, pk=pk)
+    if not proposal.has_icts_techniques:
+        messages.error(request, "Esta propuesta es solo OLMAT y no entra en revision ICTS.")
+        return redirect("icts:reviewer_inbox")
+    review = get_object_or_404(ProposalReview, proposal=proposal, reviewer=request.user)
+    if proposal.status != "submitted":
+        return HttpResponseBadRequest("La propuesta ya tiene una decision final.")
+    if review.status != "draft":
+        return HttpResponseBadRequest("La revision ya fue enviada.")
+    if review.draft_saved_at is None:
+        messages.error(request, "Guarda la evaluacion antes de enviarla.")
+        return redirect("icts:reviewer_inbox")
+    if (
+        review.feasibility_ok is None
+        or review.score_scientific_quality is None
+        or review.score_need_infrastructure is None
+        or review.score_industrial_potential is None
+        or review.decision not in {"approve", "request_changes", "reject"}
+    ):
+        messages.error(request, "Completa todos los campos obligatorios antes de enviar.")
+        return redirect("icts:review_start", pk=proposal.pk)
+    review.status = "submitted"
+    review.submitted_at = timezone.now()
+    review.save(update_fields=["status", "submitted_at"])
+    send_proposal_notification(proposal, "review_completed")
+    messages.success(
+        request,
+        "Evaluacion enviada. No podras modificarla salvo reapertura por responsable.",
+    )
+    return redirect("icts:reviewer_inbox")
+
+
+@login_required(login_url="/accounts/login/icts/")
+@never_cache
+@require_POST
+def review_request_modify(request, pk):
+    groups = get_normalized_user_groups(request.user)
+    if is_responsable(request.user, groups):
+        return redirect("icts:responsable_dashboard")
+    if is_manager(request.user, groups):
+        return redirect("icts:manager_dashboard")
+    if not is_reviewer(request.user, groups):
+        raise PermissionDenied
+    proposal = get_object_or_404(AccessProposal, pk=pk)
+    review = get_object_or_404(ProposalReview, proposal=proposal, reviewer=request.user)
+    if review.status != "submitted":
+        return HttpResponseBadRequest("La revision no esta enviada.")
+    if proposal.status != "submitted":
+        return HttpResponseBadRequest("La propuesta ya tiene una decision final.")
+    message = (request.POST.get("message") or "").strip()
+    if not message:
+        messages.error(request, "Debes indicar el motivo de la solicitud.")
+        return redirect("icts:reviewer_inbox")
+    if ProposalReviewModificationRequest.objects.filter(
+        review=review, status="pending"
+    ).exists():
+        messages.warning(request, "Ya tienes una solicitud pendiente.")
+        return redirect("icts:reviewer_inbox")
+    ProposalReviewModificationRequest.objects.create(
+        review=review,
+        requester=request.user,
+        message=message,
+    )
+    messages.success(request, "Solicitud enviada al responsable.")
+    return redirect("icts:reviewer_inbox")
+
+
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_responsable, raise_exception=True)
+@never_cache
+def responsable_review_messages(request):
+    pending_requests = ProposalReviewModificationRequest.objects.select_related(
+        "review",
+        "review__proposal",
+        "requester",
+    ).filter(
+        status="pending"
+    ).order_by("-created_at")
+    return render(
+        request,
+        "icts/responsable_review_messages.html",
+        {"pending_requests": pending_requests},
+    )
+
+
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_responsable, raise_exception=True)
+@never_cache
+@require_POST
+def approve_review_mod_request(request, request_id):
+    mod_request = get_object_or_404(
+        ProposalReviewModificationRequest,
+        pk=request_id,
+        status="pending",
+    )
+    now = timezone.now()
+    with transaction.atomic():
+        mod_request.status = "approved"
+        mod_request.resolved_by = request.user
+        mod_request.resolved_at = now
+        mod_request.save(update_fields=["status", "resolved_by", "resolved_at"])
+        review = mod_request.review
+        review.status = "draft"
+        review.submitted_at = None
+        review.reopened_at = now
+        review.draft_saved_at = None
+        review.save(update_fields=["status", "submitted_at", "reopened_at", "draft_saved_at"])
+    messages.success(request, "Solicitud aprobada. Revision reabierta.")
+    return redirect("icts:responsable_review_messages")
+
+
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_responsable, raise_exception=True)
+@never_cache
+@require_POST
+def deny_review_mod_request(request, request_id):
+    mod_request = get_object_or_404(
+        ProposalReviewModificationRequest,
+        pk=request_id,
+        status="pending",
+    )
+    now = timezone.now()
+    mod_request.status = "denied"
+    mod_request.resolved_by = request.user
+    mod_request.resolved_at = now
+    mod_request.save(update_fields=["status", "resolved_by", "resolved_at"])
+    messages.success(request, "Solicitud denegada.")
+    return redirect("icts:responsable_review_messages")
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_responsable, raise_exception=True)
 @never_cache

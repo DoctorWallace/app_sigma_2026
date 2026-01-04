@@ -9,6 +9,7 @@
   <h3 style="margin:0 0 1rem 0">{% trans "Resumen" %}</h3>
   <div class="kpi-grid">
     <div class="kpi kpi-pending"><div class="num">{{ pending_count }}</div><div class="lbl">{% trans "Pendientes" %}</div></div>
+    <div class="kpi kpi-submitted"><div class="num">{{ submitted_count }}</div><div class="lbl">{% trans "Enviadas" %}</div></div>
     <div class="kpi kpi-completed"><div class="num">{{ completed_count }}</div><div class="lbl">{% trans "Completadas" %}</div></div>
     <div class="kpi kpi-approved"><div class="num">{{ approved_count }}</div><div class="lbl">{% trans "Aprobadas" %}</div></div>
     <div class="kpi kpi-rejected"><div class="num">{{ rejected_count }}</div><div class="lbl">{% trans "Rechazadas" %}</div></div>
@@ -58,6 +59,7 @@
 .kpi .num{font-size:2rem;font-weight:900}
 .kpi .lbl{color:#4a5568;font-weight:700}
 .kpi-pending{border-left:4px solid #ffc107}
+.kpi-submitted{border-left:4px solid #0ea5e9}
 .kpi-completed{border-left:4px solid #28a745}
 .kpi-approved{border-left:4px solid #17a2b8}
 .kpi-rejected{border-left:4px solid #dc3545}

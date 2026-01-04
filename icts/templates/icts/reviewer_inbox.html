@@ -4,23 +4,29 @@
 {% block page_title %}{% trans "Evaluaciones pendientes" %}{% endblock %}
 
 {% block content %}
-{% trans "(Sin título)" as default_title %}
+{% trans "(Sin titulo)" as default_title %}
 <div class="card">
-  <h3 style="margin-bottom: .75rem;">{% trans "Propuestas enviadas" %}</h3>
+  <h3 style="margin-bottom: .75rem;">{% trans "Pending reviews" %}</h3>
   <ul class="list">
-    {% for p in pending %}
+    {% for r in pending_reviews %}
       <li class="list-item">
         <div>
-          <div class="list-title">{{ p.title|default:default_title }}</div>
+          <div class="list-title">{{ r.proposal.title|default:default_title }}</div>
           <div class="muted">
-            {% blocktrans with proposal_id=p.id created_at=p.created_at|date:"d/m/Y H:i" %}
+            {% blocktrans with proposal_id=r.proposal.id created_at=r.proposal.created_at|date:"d/m/Y H:i" %}
               ID #{{ proposal_id }} - {{ created_at }}
             {% endblocktrans %}
           </div>
         </div>
         <div class="list-actions">
-          <a class="chip" href="{% url 'icts:review_start' p.pk %}">{% trans "Evaluar" %}</a>
-          <a class="chip" href="{% url 'icts:proposal_detail' p.pk %}">{% trans "Ver" %}</a>
+          <a class="chip" href="{% url 'icts:review_start' r.proposal.pk %}">{% trans "Review" %}</a>
+          <a class="chip" href="{% url 'icts:proposal_detail' r.proposal.pk %}">{% trans "View" %}</a>
+          {% if r.draft_saved_at %}
+            <form method="post" action="{% url 'icts:review_send' r.proposal.pk %}" class="inline-form" onsubmit="return confirm('{% trans "¿Enviar evaluación? No podrás modificarla." %}');">
+              {% csrf_token %}
+              <button class="chip chip-primary" type="submit">SEND</button>
+            </form>
+          {% endif %}
         </div>
       </li>
     {% empty %}
@@ -30,25 +36,56 @@
 </div>
 
 <div class="card">
-  <h3 style="margin-bottom: .75rem;">{% trans "Evaluaciones completadas" %}</h3>
+  <h3 style="margin-bottom: .75rem;">{% trans "Submitted reviews" %}</h3>
   <ul class="list">
-    {% for r in completed %}
+    {% for r in submitted_reviews %}
       <li class="list-item">
         <div>
           <div class="list-title">{{ r.proposal.title|default:default_title }}</div>
           <div class="muted">
-            {% blocktrans with decision=r.get_decision_display proposal_id=r.proposal.id %}
-              Estado: {{ decision }} - ID #{{ proposal_id }}
+            {% blocktrans with proposal_id=r.proposal.id %}
+              ID #{{ proposal_id }}
             {% endblocktrans %}
           </div>
         </div>
         <div class="list-actions">
-          <a class="chip" href="{% url 'icts:review_start' r.proposal.pk %}">{% trans "Ver evaluación" %}</a>
-          <a class="chip" href="{% url 'icts:proposal_detail' r.proposal.pk %}">{% trans "Ver" %}</a>
+          <a class="chip" href="{% url 'icts:proposal_detail' r.proposal.pk %}">{% trans "View" %}</a>
+          {% if r.has_pending_mod_request %}
+            <button class="chip chip-disabled" type="button" disabled>{% trans "Modify requested" %}</button>
+          {% else %}
+            <form method="post" action="{% url 'icts:review_request_modify' r.proposal.pk %}" class="inline-form">
+              {% csrf_token %}
+              <input type="hidden" name="message" value="">
+              <button class="chip chip-warning" type="button" onclick="return submitModifyRequest(this);">{% trans "Modify" %}</button>
+            </form>
+          {% endif %}
         </div>
       </li>
     {% empty %}
-      <li class="list-item">{% trans "Aun no has completado evaluaciones." %}</li>
+      <li class="list-item">{% trans "No hay evaluaciones enviadas." %}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom: .75rem;">{% trans "Completed" %}</h3>
+  <ul class="list">
+    {% for r in completed_reviews %}
+      <li class="list-item">
+        <div>
+          <div class="list-title">{{ r.proposal.title|default:default_title }}</div>
+          <div class="muted">
+            {% blocktrans with status=r.proposal.get_status_display proposal_id=r.proposal.id %}
+              Estado final: {{ status }} - ID #{{ proposal_id }}
+            {% endblocktrans %}
+          </div>
+        </div>
+        <div class="list-actions">
+          <a class="chip" href="{% url 'icts:proposal_detail' r.proposal.pk %}">{% trans "View" %}</a>
+        </div>
+      </li>
+    {% empty %}
+      <li class="list-item">{% trans "No hay evaluaciones completadas." %}</li>
     {% endfor %}
   </ul>
 </div>
@@ -59,7 +96,36 @@
 .list{ list-style:none; padding:0; margin:0 }
 .list-item{ display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; border:1px solid var(--border); border-radius:.75rem; margin:.5rem 0 }
 .list-title{ font-weight:800 }
+.list-actions{ display:flex; align-items:center; gap:.5rem; flex-wrap:wrap }
+.inline-form{ margin:0; display:inline }
 .chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:var(--bg-card) }
+button.chip{ cursor:pointer }
 .chip:hover{ background:#f3f4f6 }
+.chip-primary{ background:#1f2937; border-color:#1f2937; color:#fff }
+.chip-primary:hover{ background:#111827 }
+.chip-warning{ background:#f59e0b; border-color:#f59e0b; color:#111827 }
+.chip-warning:hover{ background:#d97706 }
+.chip-disabled{ opacity:.6; cursor:not-allowed }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function submitModifyRequest(button) {
+  var message = window.prompt("{% trans 'Mensaje para el responsable:' %}");
+  if (!message) {
+    return false;
+  }
+  var form = button.closest("form");
+  if (!form) {
+    return false;
+  }
+  var input = form.querySelector("input[name='message']");
+  if (input) {
+    input.value = message;
+  }
+  form.submit();
+  return false;
+}
+</script>
 {% endblock %}

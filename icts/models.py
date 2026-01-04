@@ -158,7 +158,9 @@ class ProposalReview(models.Model):
         default="draft",
         db_index=True,
     )
+    draft_saved_at = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
+    reopened_at = models.DateTimeField(null=True, blank=True)
     change_request_text = models.TextField(blank=True, default="")
     change_request_at = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(blank=True)
@@ -187,6 +189,50 @@ class ProposalReview(models.Model):
 
     def __str__(self):
         return f"Review {self.proposal_id} by {self.reviewer} -> {self.decision}"
+
+
+class ProposalReviewModificationRequest(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("denied", "Denied"),
+    ]
+    review = models.ForeignKey(
+        ProposalReview, on_delete=models.CASCADE, related_name="mod_requests"
+    )
+    requester = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="review_mod_requests",
+    )
+    message = models.TextField()
+    status = models.CharField(
+        max_length=16,
+        choices=STATUS_CHOICES,
+        default="pending",
+        db_index=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="resolved_review_mod_requests",
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["review"],
+                condition=models.Q(status="pending"),
+                name="uniq_pending_mod_request_per_review",
+            ),
+        ]
+
+    def __str__(self):
+        return f"Review mod request {self.review_id} ({self.status})"
 
 
 class ProposalAttachment(models.Model):

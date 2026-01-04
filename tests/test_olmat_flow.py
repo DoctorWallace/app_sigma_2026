@@ -73,9 +73,9 @@ def test_reviewer_inbox_excludes_olmat_only(client):
     client.force_login(reviewer)
     response = client.get(reverse("icts:reviewer_inbox"))
 
-    pending = list(response.context["pending"])
-    assert olmat_only not in pending
-    assert icts_proposal in pending
+    pending = list(response.context["pending_reviews"])
+    assert all(item.proposal_id != olmat_only.pk for item in pending)
+    assert any(item.proposal_id == icts_proposal.pk for item in pending)
 
 
 @pytest.mark.django_db
