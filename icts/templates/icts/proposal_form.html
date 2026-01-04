@@ -1232,7 +1232,12 @@
                     <label class="form-label"><i class="bi bi-folder"></i> {% trans "Archivo" %}</label>
                     {% render_field f.file class="form-input" %}
                     {% if f.instance.pk and f.instance.file %}
-                      <div class="small text-muted">{% trans "Archivo actual:" %} {{ f.instance.file.name }}</div>
+                      <div class="small text-muted">
+                        {% trans "Archivo actual:" %}
+                        <a href="{{ f.instance.file.url }}" target="_blank" rel="noopener">
+                          {{ f.instance.file.name }}
+                        </a>
+                      </div>
                     {% endif %}
                     {{ f.file.errors }}
                   </div>

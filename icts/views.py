@@ -1043,7 +1043,11 @@ def proposal_create(request):
     if request.method == "POST":
         form = AccessProposalForm(request.POST, request=request)
         formset = ParticipantFormSet(request.POST)  # alias simple
-        attachment_formset = AttachmentFormSet(request.POST, request.FILES)
+        attachment_formset = AttachmentFormSet(
+            request.POST,
+            request.FILES,
+            prefix="attachments",
+        )
 
         # Si no se renderiza el formset de adjuntos, no lo hacemos bloquear.
         # Detectamos la management form con el prefijo real del formset
@@ -1100,7 +1104,7 @@ def proposal_create(request):
         form = AccessProposalForm(request=request)
         initial_participant = _build_default_participant_initial(request)
         formset = ParticipantFormSet(initial=[initial_participant])
-        attachment_formset = AttachmentFormSet()
+        attachment_formset = AttachmentFormSet(prefix="attachments")
 
     user_siglas = ensure_user_siglas(request.user)
     next_seq_preview = get_next_user_sequence(request.user)
@@ -1270,7 +1274,12 @@ def proposal_edit(request, pk):
     if request.method == "POST":
         form = AccessProposalForm(request.POST, instance=obj, request=request)
         formset = ParticipantFormSet(request.POST, instance=obj)
-        attachment_formset = AttachmentFormSet(request.POST, request.FILES, instance=obj)
+        attachment_formset = AttachmentFormSet(
+            request.POST,
+            request.FILES,
+            instance=obj,
+            prefix="attachments",
+        )
 
         has_attach_mgmt = f"{attachment_formset.prefix}-TOTAL_FORMS" in request.POST
 
@@ -1311,7 +1320,7 @@ def proposal_edit(request, pk):
             formset = ParticipantFormSet(instance=obj, initial=[initial_participant])
         else:
             formset = ParticipantFormSet(instance=obj)
-        attachment_formset = AttachmentFormSet(instance=obj)
+        attachment_formset = AttachmentFormSet(instance=obj, prefix="attachments")
 
     user_siglas = ensure_user_siglas(request.user)
     next_seq_preview = get_next_user_sequence(request.user)
