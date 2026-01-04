@@ -1,134 +1,135 @@
+{% load i18n %}
 <div class="tech-card">
-  <h4 class="tech-title"><i class="bi bi-binoculars"></i> Metrología de superficies ópticas 3D - Datos de muestras</h4>
+  <h4 class="tech-title"><i class="bi bi-binoculars"></i> {% trans "Metrología de superficies ópticas 3D - Datos de muestras" %}</h4>
   
   <!-- Requirements for Sample Acceptance -->
   <div class="requirements-section">
-    <h5 class="section-title"><i class="bi bi-list-check"></i> Requirements for Sample Acceptance</h5>
+    <h5 class="section-title"><i class="bi bi-list-check"></i> {% trans "Requirements for Sample Acceptance" %}</h5>
     <div class="requirements-list">
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→Material stable at room temperature</span>
+        <span class="requirement-text">{% trans "→Material stable at room temperature" %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→Dimensions: The size of the samples are limited to 100*75*40mm 100x75x40 mm.</span>
+        <span class="requirement-text">{% trans "→Dimensions: The size of the samples are limited to 100*75*40mm 100x75x40 mm." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→Sample must be accompanied with a complete and perfectly legible identification. Sample must be wrapped with a metallic paper or cloth (plastic wrapping is not recommended).</span>
+        <span class="requirement-text">{% trans "→Sample must be accompanied with a complete and perfectly legible identification. Sample must be wrapped with a metallic paper or cloth (plastic wrapping is not recommended)." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→In case of classical metallographic study, the samples will be received polished and etched * (you can request sample preparation following the procedure PT-DTF-15)</span>
+        <span class="requirement-text">{% trans "→In case of classical metallographic study, the samples will be received polished and etched * (you can request sample preparation following the procedure PT-DTF-15)" %}</span>
       </div>
     </div>
   </div>
 
   <!-- Sample Description -->
   <div class="sample-description-section">
-    <h5 class="section-title"><i class="bi bi-card-list"></i> Sample Description</h5>
+    <h5 class="section-title"><i class="bi bi-card-list"></i> {% trans "Sample Description" %}</h5>
     <div class="samples-container" id="confocal-samples-container">
       <div class="sample-card" data-sample-index="0">
         <div class="sample-header">
-          <h6 class="sample-title">Sample 1</h6>
+          <h6 class="sample-title">{% trans "Sample" %} 1</h6>
           <button type="button" class="btn-remove-sample" onclick="removeConfocalSample(this)" style="display: none;">
             <i class="bi bi-trash"></i>
           </button>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Identification</label>
-            <input type="text" name="confocal_sample_0_identification" class="form-input" placeholder="Sample ID">
+            <label class="form-label">{% trans "Identification" %}</label>
+            <input type="text" name="confocal_sample_0_identification" class="form-input" placeholder="{% trans 'Sample ID' %}">
           </div>
           <div class="form-group">
-            <label class="form-label">Name</label>
-            <input type="text" name="confocal_sample_0_name" class="form-input" placeholder="Sample name">
+            <label class="form-label">{% trans "Name" %}</label>
+            <input type="text" name="confocal_sample_0_name" class="form-input" placeholder="{% trans 'Sample name' %}">
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Details (State of the surface, nature, approximate composition, ...)</label>
-          <textarea name="confocal_sample_0_details" rows="3" class="form-input" placeholder="Sample details"></textarea>
+          <label class="form-label">{% trans "Details (State of the surface, nature, approximate composition, ...)" %}</label>
+          <textarea name="confocal_sample_0_details" rows="3" class="form-input" placeholder="{% trans 'Sample details' %}"></textarea>
         </div>
       </div>
     </div>
     <button type="button" class="btn-add-sample" onclick="addConfocalSample(this)">
-      <i class="bi bi-plus-circle"></i> Add Sample
+      <i class="bi bi-plus-circle"></i> {% trans "Add Sample" %}
     </button>
   </div>
 
   <!-- Sample Safe Handling -->
   <div class="safe-handling-section">
-    <h5 class="section-title"><i class="bi bi-shield-check"></i> Sample Safe Handling</h5>
+    <h5 class="section-title"><i class="bi bi-shield-check"></i> {% trans "Sample Safe Handling" %}</h5>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">¿Toxic?</label>
+        <label class="form-label">{% trans "¿Toxic?" %}</label>
         <input type="text" name="confocal_toxic" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Corrosive?</label>
+        <label class="form-label">{% trans "¿Corrosive?" %}</label>
         <input type="text" name="confocal_corrosive" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Irritating?</label>
+        <label class="form-label">{% trans "¿Irritating?" %}</label>
         <input type="text" name="confocal_irritating" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Radioactive?</label>
+        <label class="form-label">{% trans "¿Radioactive?" %}</label>
         <input type="text" name="confocal_radioactive" class="form-input" value="NO" readonly>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Further comments about safety</label>
-      <textarea name="confocal_safety_comments" rows="3" class="form-input" placeholder="Additional safety comments"></textarea>
+      <label class="form-label">{% trans "Further comments about safety" %}</label>
+      <textarea name="confocal_safety_comments" rows="3" class="form-input" placeholder="{% trans 'Additional safety comments' %}"></textarea>
     </div>
   </div>
 
   <!-- Important Information -->
   <div class="important-info-section">
-    <h5 class="section-title"><i class="bi bi-info-circle"></i> Important Information</h5>
+    <h5 class="section-title"><i class="bi bi-info-circle"></i> {% trans "Important Information" %}</h5>
     
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Do you request 2D analysis?</label>
+        <label class="info-question-text">{% trans "Do you request 2D analysis?" %}</label>
         <input type="checkbox" name="confocal_2d_analysis" class="info-checkbox" id="confocal-2d-analysis">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Do you request confocal analysis?</label>
+        <label class="info-question-text">{% trans "Do you request confocal analysis?" %}</label>
         <input type="checkbox" name="confocal_confocal_analysis" class="info-checkbox" id="confocal-confocal-analysis">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Do you request interferometry?</label>
+        <label class="info-question-text">{% trans "Do you request interferometry?" %}</label>
         <input type="checkbox" name="confocal_interferometry" class="info-checkbox" id="confocal-interferometry">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Do you request a metallographic study? *</label>
+        <label class="info-question-text">{% trans "Do you request a metallographic study? *" %}</label>
         <input type="checkbox" name="confocal_metallographic" class="info-checkbox" id="confocal-metallographic">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <div class="metallographic-warning">
       <p class="warning-text">
         <i class="bi bi-exclamation-triangle"></i>
-        The sample/s must be adequately prepared to perform the study. Technician is not responsible for bad results due to bad preparation
+        {% trans "The sample/s must be adequately prepared to perform the study. Technician is not responsible for bad results due to bad preparation" %}
       </p>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Further comments about Confocal analysis</label>
-      <textarea name="confocal_further_comments" rows="4" class="form-input" placeholder="Additional comments about Confocal analysis"></textarea>
+      <label class="form-label">{% trans "Further comments about Confocal analysis" %}</label>
+      <textarea name="confocal_further_comments" rows="4" class="form-input" placeholder="{% trans 'Additional comments about Confocal analysis' %}"></textarea>
     </div>
   </div>
 </div>

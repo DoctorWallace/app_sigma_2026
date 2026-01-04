@@ -46,6 +46,12 @@
       .logos{display:flex;align-items:center;gap:.5rem}
       .logos img{height:60px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08));margin-right:1rem}
       .content{flex:1;max-width:1200px;margin:0 auto;width:100%;padding:2rem}
+      .messages-container{max-width:1200px;margin:0 auto 1.5rem;width:100%}
+      .alert{padding:1rem;margin-bottom:1rem;border-radius:.5rem;border-left:4px solid transparent}
+      .alert-success{background:#f0fdf4;border-left-color:#22c55e;color:#166534}
+      .alert-error{background:#fef2f2;border-left-color:#ef4444;color:#991b1b}
+      .alert-warning{background:#fffbeb;border-left-color:#f59e0b;color:#92400e}
+      .alert-info{background:#eff6ff;border-left-color:#3b82f6;color:#1e40af}
       .card{background:var(--bg-card);border:1px solid var(--border);border-radius:1rem;padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
       .footer{background:var(--bg-sidebar);color:rgba(255,255,255,.8);text-align:center;padding:1.25rem;margin-top:auto}
 
@@ -113,11 +119,11 @@
     <div class="app">
       {# ===== Sidebar (único) ===== #}
       {% block sidebar %}
-      <aside class="sidebar" role="navigation" aria-label="Menú lateral ICTS">
+      <aside class="sidebar" role="navigation" aria-label="{% trans "Menú lateral ICTS" %}">
         <div class="sidebar-header">
           <img class="logo" src="{{ MEDIA_URL }}Logos/logo_sigma_icts2.png" alt="SIGMA ICTS">
           <div class="brand-title">SIGMA ICTS</div>
-          <div class="brand-sub">Sistema de Gestión de Accesos y Muestras a la ICTS del Laboratorio Nacional de Fusión (CIEMAT)</div>
+          <div class="brand-sub">{% trans "Sistema de Gestión de Accesos y Muestras a la ICTS del Laboratorio Nacional de Fusión (CIEMAT)" %}</div>
         </div>
 
         <div class="banner" id="ictsBanner">
@@ -131,31 +137,31 @@
           {% if request.user.is_authenticated %}
             <a class="nav-item" href="{% url 'portal:home' %}">
               <i class="bi bi-house"></i>
-              Portal SIGMA
+              {% trans "Portal SIGMA" %}
             </a>
-            <div class="nav-title">Navegación</div>
+            <div class="nav-title">{% trans "Navegación" %}</div>
             
             <!-- Usuario estándar (no revisor, no responsable, no manager, no técnico) -->
             {% if not request.user|is_reviewer and not request.user|is_responsable and not request.user|is_manager and not request.user|is_sem_technician and not request.user|is_confocal_technician and not request.user|is_imp_technician and not request.user|is_vdg_technician and not request.user.is_superuser %}
               <a class="nav-item" href="{% url 'icts:dashboard' %}">
                 <i class="bi bi-speedometer2"></i>
-                Mi panel
+                {% trans "Mi panel" %}
               </a>
               <a class="nav-item" href="{% url 'icts:my_proposals' %}">
                 <i class="bi bi-folder"></i>
-                Mis propuestas
+                {% trans "Mis propuestas" %}
               </a>
               <a class="nav-item" href="{% url 'icts:proposal_create' %}">
                 <i class="bi bi-plus-circle"></i>
-                Nueva propuesta
+                {% trans "Nueva propuesta" %}
               </a>
             {% endif %}
 
             {% if request.user|is_any_technician or request.user.is_staff or request.user.is_superuser %}
-              <div class="nav-title">Perfilometro</div>
+              <div class="nav-title">{% trans "Perfilometro" %}</div>
               <a class="nav-item {% if request.resolver_match.namespace == 'sigmaprofilometer' %}active{% endif %}" href="{% url 'sigmaprofilometer:dashboard' %}">
                 <i class="bi bi-rulers"></i>
-                SIGMA Perfilometro
+                {% trans "SIGMA Perfilometro" %}
               </a>
             {% endif %}
 
@@ -163,109 +169,109 @@
             {% if request.user|is_reviewer and not request.user|is_responsable %}
               <a class="nav-item" href="{% url 'icts:reviewer_dashboard_new' %}">
                 <i class="bi bi-clipboard-check"></i>
-                Mi panel revisor
+                {% trans "Mi panel revisor" %}
               </a>
               <a class="nav-item" href="{% url 'icts:reviewer_inbox' %}">
                 <i class="bi bi-inbox"></i>
-                Evaluaciones pendientes
+                {% trans "Evaluaciones pendientes" %}
               </a>
               <a class="nav-item" href="{% url 'icts:review_history' %}">
                 <i class="bi bi-clock-history"></i>
-                Historial de evaluaciones
+                {% trans "Historial de evaluaciones" %}
               </a>
               <a class="nav-item" href="{% url 'icts:reviewer_mailbox' %}">
                 <i class="bi bi-envelope"></i>
-                Bandeja de entrada
+                {% trans "Bandeja de entrada" %}
               </a>
             {% endif %}
 
             {% if request.user|is_responsable %}
               <a class="nav-item" href="{% url 'icts:responsable_dashboard' %}">
                 <i class="bi bi-gear"></i>
-                Panel responsable
+                {% trans "Panel responsable" %}
               </a>
             {% endif %}
 
             {% if request.user|is_manager %}
               <a class="nav-item" href="{% url 'icts:manager_dashboard' %}">
                 <i class="bi bi-graph-up"></i>
-                Panel manager
+                {% trans "Panel manager" %}
               </a>
             {% endif %}
 
             {% if request.user|is_confocal_technician or request.user.is_staff %}
-              <div class="nav-title">LO3</div>
+              <div class="nav-title">{% trans "LO3" %}</div>
               <a class="nav-item {% if request.resolver_match.url_name == 'lo3_home' %}active{% endif %}" href="{% url 'sigmaconf:lo3_home' %}">
                 <i class="bi bi-grid"></i>
-                Portal LO3
+                {% trans "Portal LO3" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'mcf_dashboard' or request.resolver_match.url_name == 'mcf_create_session' or request.resolver_match.url_name == 'mcf_create_session_from_proposal' or request.resolver_match.url_name == 'mcf_session_detail' or request.resolver_match.url_name == 'mcf_add_sample' or request.resolver_match.url_name == 'mcf_finish_session' or request.resolver_match.url_name == 'mcf_sample_edit' %}active{% endif %}" href="{% url 'sigmaconf:mcf_dashboard' %}">
                 <i class="bi bi-inboxes"></i>
-                Solicitudes de análisis
+                {% trans "Solicitudes de análisis" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'lo3_results' %}active{% endif %}" href="{% url 'sigmaconf:lo3_results' %}">
                 <i class="bi bi-clipboard-check"></i>
-                Resultados
+                {% trans "Resultados" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'lo3_communications_list' or request.resolver_match.url_name == 'lo3_communications_detail' %}active{% endif %}" href="{% url 'sigmaconf:lo3_communications_list' %}">
                 <i class="bi bi-chat-dots"></i>
-                Comunicaciones
+                {% trans "Comunicaciones" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'lo3_equipment_list' or request.resolver_match.url_name == 'lo3_equipment_detail' or request.resolver_match.url_name == 'lo3_equipment_create' or request.resolver_match.url_name == 'lo3_equipment_edit' %}active{% endif %}" href="{% url 'sigmaconf:lo3_equipment_list' %}">
                 <i class="bi bi-hdd-stack"></i>
-                Fichas de equipos
+                {% trans "Fichas de equipos" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'lo3_calibration_list' or request.resolver_match.url_name == 'lo3_calibration_create' or request.resolver_match.url_name == 'lo3_calibration_edit' %}active{% endif %}" href="{% url 'sigmaconf:lo3_calibration_list' 'interna' %}">
                 <i class="bi bi-activity"></i>
-                Calibraciones
+                {% trans "Calibraciones" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'lo3_reference_material_list' or request.resolver_match.url_name == 'lo3_reference_material_detail' or request.resolver_match.url_name == 'lo3_reference_material_create' or request.resolver_match.url_name == 'lo3_reference_material_edit' %}active{% endif %}" href="{% url 'sigmaconf:lo3_reference_material_list' %}">
                 <i class="bi bi-boxes"></i>
-                Materiales de referencia
+                {% trans "Materiales de referencia" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'lo3_incident_list' or request.resolver_match.url_name == 'lo3_incident_detail' or request.resolver_match.url_name == 'lo3_incident_create' or request.resolver_match.url_name == 'lo3_incident_edit' %}active{% endif %}" href="{% url 'sigmaconf:lo3_incident_list' %}">
                 <i class="bi bi-exclamation-diamond"></i>
-                Incidencias
+                {% trans "Incidencias" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'lo3_habilitation_list' or request.resolver_match.url_name == 'lo3_habilitation_detail' or request.resolver_match.url_name == 'lo3_habilitation_create' %}active{% endif %}" href="{% url 'sigmaconf:lo3_habilitation_list' %}">
                 <i class="bi bi-patch-check"></i>
-                Habilitaciones
+                {% trans "Habilitaciones" %}
               </a>
             {% endif %}
 
             {% if request.user|is_vdg_technician or request.user.is_staff %}
-              <div class="nav-title">L07 (VDG)</div>
+              <div class="nav-title">{% trans "L07 (VDG)" %}</div>
               <a class="nav-item {% if request.resolver_match.url_name == 'vdg_home' %}active{% endif %}" href="{% url 'sigmavdg:vdg_home' %}">
                 <i class="bi bi-lightning-charge"></i>
-                Portal L07 (VDG)
+                {% trans "Portal L07 (VDG)" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'vdg_dashboard' or request.resolver_match.url_name == 'vdg_create_session' or request.resolver_match.url_name == 'vdg_create_session_from_proposal' or request.resolver_match.url_name == 'vdg_session_detail' or request.resolver_match.url_name == 'vdg_add_sample' or request.resolver_match.url_name == 'vdg_finish_session' or request.resolver_match.url_name == 'vdg_sample_edit' or request.resolver_match.url_name == 'vdg_session_update' %}active{% endif %}" href="{% url 'sigmavdg:vdg_dashboard' %}">
                 <i class="bi bi-inboxes"></i>
-                Solicitudes de análisis
+                {% trans "Solicitudes de análisis" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'vdg_equipment_list' or request.resolver_match.url_name == 'vdg_equipment_detail' or request.resolver_match.url_name == 'vdg_equipment_create' or request.resolver_match.url_name == 'vdg_equipment_edit' %}active{% endif %}" href="{% url 'sigmavdg:vdg_equipment_list' %}">
                 <i class="bi bi-hdd-stack"></i>
-                Fichas de equipos
+                {% trans "Fichas de equipos" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'vdg_item_list' or request.resolver_match.url_name == 'vdg_item_movements' or request.resolver_match.url_name == 'vdg_item_create' or request.resolver_match.url_name == 'vdg_item_movement_create' or request.resolver_match.url_name == 'vdg_item_movement_receive' %}active{% endif %}" href="{% url 'sigmavdg:vdg_item_movements' %}">
                 <i class="bi bi-box-seam"></i>
-                Control de items
+                {% trans "Control de items" %}
               </a>
             {% endif %}
 
             {% if request.user|is_imp_technician or request.user.is_staff %}
-              <div class="nav-title">Ion Implanter</div>
+              <div class="nav-title">{% trans "Ion Implanter" %}</div>
               <a class="nav-item {% if request.resolver_match.url_name == 'imp_dashboard' or request.resolver_match.url_name == 'imp_create_session' or request.resolver_match.url_name == 'imp_create_session_from_proposal' or request.resolver_match.url_name == 'imp_session_detail' or request.resolver_match.url_name == 'imp_add_sample' or request.resolver_match.url_name == 'imp_sample_edit' %}active{% endif %}" href="{% url 'sigmaimp:imp_dashboard' %}">
                 <i class="bi bi-inboxes"></i>
-                Solicitudes de análisis
+                {% trans "Solicitudes de análisis" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'imp_results' %}active{% endif %}" href="{% url 'sigmaimp:imp_results' %}">
                 <i class="bi bi-clipboard-check"></i>
-                Resultados
+                {% trans "Resultados" %}
               </a>
               <a class="nav-item {% if request.resolver_match.url_name == 'imp_communications_list' or request.resolver_match.url_name == 'imp_communications_detail' %}active{% endif %}" href="{% url 'sigmaimp:imp_communications_list' %}">
                 <i class="bi bi-chat-dots"></i>
-                Comunicaciones
+                {% trans "Comunicaciones" %}
               </a>
             {% endif %}
 
@@ -273,42 +279,42 @@
             {% if request.user|is_sem_technician %}
               <a class="nav-item" href="{% url 'icts:sigmasem:dashboard' %}">
                 <i class="bi bi-microscope"></i>
-                SIGMA SEM/FIB
+                {% trans "SIGMA SEM/FIB" %}
               </a>
             {% endif %}
 
             {% if request.user.is_superuser %}
               <a class="nav-item" href="/admin/">
                 <i class="bi bi-tools"></i>
-                Administración
+                {% trans "Administración" %}
               </a>
             {% endif %}
 
-            <div class="nav-title">Recursos</div>
+            <div class="nav-title">{% trans "Recursos" %}</div>
             <a class="nav-item" href="{% url 'icts:proposal_evaluation' %}">
               <i class="bi bi-file-text"></i>
-              Procedimiento de evaluación de propuestas
+              {% trans "Procedimiento de evaluación de propuestas" %}
             </a>
             <a class="nav-item" href="{% url 'icts:reviewer_faq' %}">
               <i class="bi bi-question-circle"></i>
-              FAQ Revisor
+              {% trans "FAQ Revisor" %}
             </a>
           {% else %}
             <a class="nav-item" href="{% url 'portal:home' %}">
               <i class="bi bi-house"></i>
-              Portal SIGMA
+              {% trans "Portal SIGMA" %}
             </a>
             <a class="nav-item" href="{% url 'accounts:login_icts' %}">
               <i class="bi bi-box-arrow-in-right"></i>
-              Entrar
+              {% trans "Entrar" %}
             </a>
             <a class="nav-item" href="{% url 'icts:register' %}">
               <i class="bi bi-person-plus"></i>
-              Registrarse
+              {% trans "Registrarse" %}
             </a>
             <a class="nav-item" href="{% url 'portal:faq' %}">
               <i class="bi bi-question-circle"></i>
-              FAQ ICTS
+              {% trans "FAQ ICTS" %}
             </a>
           {% endif %}
         </nav>
@@ -355,11 +361,18 @@
         </header>
 
         <section class="content">
+          {% if messages %}
+            <div class="messages-container">
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
           {% block content %}{% endblock %}
         </section>
 
         <footer class="footer">
-          CIEMAT – Infraestructura Científica y Tecnológica Singular - ICTS
+          {% trans "CIEMAT – Infraestructura Científica y Tecnológica Singular - ICTS" %}
           <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF">
         </footer>
       </main>

@@ -850,7 +850,7 @@
   <div class="card mb-3">
     <div class="card-header"><h2 class="mb-0"><i class="bi bi-plus-circle"></i> {% trans "Nueva propuesta" %}</h2></div>
     <div class="card-body">
-      <p class="mb-0">Completa el formulario para solicitar acceso a las instalaciones ICTS. Puedes guardar como borrador y continuar más tarde.</p>
+      <p class="mb-0">{% trans "Completa el formulario para solicitar acceso a las instalaciones ICTS. Puedes guardar como borrador y continuar más tarde." %}</p>
     </div>
   </div>
 
@@ -860,7 +860,7 @@
 
     {% if form.errors or formset.non_form_errors or attachment_formset.non_form_errors %}
       <div class="alert alert-danger">
-        <strong>Revisa los errores del formulario:</strong>
+        <strong>{% trans "Revisa los errores del formulario:" %}</strong>
         {{ form.non_field_errors }}
         {{ formset.non_form_errors }}
         {{ attachment_formset.non_form_errors }}
@@ -868,38 +868,40 @@
     {% endif %}
 
     <div class="card mb-3 project-title-card">
-      <div class="card-header"><h3 class="mb-0"><i class="bi bi-info-circle"></i> Paso 1: Información del Proyecto</h3></div>
+      <div class="card-header"><h3 class="mb-0"><i class="bi bi-info-circle"></i> {% trans "Paso 1: Información del Proyecto" %}</h3></div>
       <div class="card-body project-title-section">
         <div class="form-group">
           <label class="form-label">
-            {% render_field form.is_new_request class="form-check-input" %} Solicitud nueva
+            {% render_field form.is_new_request class="form-check-input" %} {% trans "Solicitud nueva" %}
           </label>
-          <p class="muted">Marca esta opción si es una nueva solicitud. Desmárcala solo si quieres reutilizar una propuesta aprobada.</p>
+          <p class="muted">{% trans "Marca esta opción si es una nueva solicitud. Desmárcala solo si quieres reutilizar una propuesta aprobada." %}</p>
           {{ form.is_new_request.errors }}
         </div>
 
         <div class="form-group" id="previous-access-block" style="display: none;">
-          <label class="form-label">Solicitud aprobada anterior (si no es nueva):</label>
+          <label class="form-label">{% trans "Solicitud aprobada anterior (si no es nueva):" %}</label>
           {% render_field form.previous_access class="form-input" %}
           {{ form.previous_access.errors }}
         </div>
 
         {% if form.instance and form.instance.pk and form.instance.access_code %}
           <div class="alert alert-info">
-            <strong>Código de acceso actual:</strong>
+            <strong>{% trans "Código de acceso actual:" %}</strong>
             <span class="role-badge">{{ form.instance.access_code }}</span>
           </div>
         {% endif %}
 
-        <div class="form-group">
-          <label class="form-label project-title-label">Título del proyecto *</label>
-          {% render_field form.title class="form-input" placeholder="Título del proyecto" %}
+          <div class="form-group">
+          <label class="form-label project-title-label">{% trans "Título del proyecto *" %}</label>
+          {% trans "Título del proyecto" as title_placeholder %}
+          {% render_field form.title class="form-input" placeholder=title_placeholder %}
           {{ form.title.errors }}
         </div>
 
         <div class="form-group">
-          <label class="form-label">Descripción breve</label>
-          {% render_field form.scope class="form-input" rows="4" placeholder="Describe brevemente tu proyecto" %}
+          <label class="form-label">{% trans "Descripción breve" %}</label>
+          {% trans "Describe brevemente tu proyecto" as scope_placeholder %}
+          {% render_field form.scope class="form-input" rows="4" placeholder=scope_placeholder %}
           {{ form.scope.errors }}
         </div>
       </div>
@@ -908,22 +910,22 @@
     <div id="rest-of-form" class="form-disabled">
 
       <div class="card mb-3">
-        <div class="card-header"><h3 class="mb-0"><i class="bi bi-person-badge"></i> Paso 2: Datos del Solicitante</h3></div>
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-person-badge"></i> {% trans "Paso 2: Datos del Solicitante" %}</h3></div>
         <div class="card-body">
           <div class="form-group">
             <label class="form-label">
-              {% render_field form.applicant_is_different class="form-check-input" %} El solicitante es distinto del usuario registrado
+              {% render_field form.applicant_is_different class="form-check-input" %} {% trans "El solicitante es distinto del usuario registrado" %}
             </label>
-            <p class="muted">Cuando está desmarcado, se usan los datos del usuario registrado.</p>
+            <p class="muted">{% trans "Cuando está desmarcado, se usan los datos del usuario registrado." %}</p>
             {{ form.applicant_is_different.errors }}
           </div>
 
           <div id="current-user-info" class="user-info-display">
             <div class="alert alert-info">
-              <h4>Usando tus datos registrados:</h4>
+              <h4>{% trans "Usando tus datos registrados:" %}</h4>
               <div class="user-data-grid">
-                <div><strong>Contacto:</strong> <span id="display-contact">{{ user.get_full_name|default:user.username }}</span></div>
-                <div><strong>Email:</strong> <span id="display-email">{{ user.email }}</span></div>
+                <div><strong>{% trans "Contacto" %}:</strong> <span id="display-contact">{{ user.get_full_name|default:user.username }}</span></div>
+                <div><strong>{% trans "Email" %}:</strong> <span id="display-email">{{ user.email }}</span></div>
               </div>
             </div>
           </div>
@@ -931,23 +933,27 @@
           <div id="applicant-info" class="applicant-info-section" style="display: none;">
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label">Centro/Institución *</label>
-                {% render_field form.organization class="form-input" placeholder="Centro o institución" %}
+                <label class="form-label">{% trans "Centro/Institución *" %}</label>
+                {% trans "Centro o institución" as organization_placeholder %}
+                {% render_field form.organization class="form-input" placeholder=organization_placeholder %}
                 {{ form.organization.errors }}
               </div>
               <div class="form-group">
-                <label class="form-label">Persona de contacto *</label>
-                {% render_field form.contact_person class="form-input" placeholder="Persona de contacto" %}
+                <label class="form-label">{% trans "Persona de contacto *" %}</label>
+                {% trans "Persona de contacto" as contact_placeholder %}
+                {% render_field form.contact_person class="form-input" placeholder=contact_placeholder %}
                 {{ form.contact_person.errors }}
               </div>
               <div class="form-group">
-                <label class="form-label">Email *</label>
-                {% render_field form.email class="form-input" placeholder="correo@ejemplo.com" %}
+                <label class="form-label">{% trans "Email *" %}</label>
+                {% trans "correo@ejemplo.com" as email_placeholder %}
+                {% render_field form.email class="form-input" placeholder=email_placeholder %}
                 {{ form.email.errors }}
               </div>
               <div class="form-group">
-                <label class="form-label">Teléfono</label>
-                {% render_field form.phone class="form-input" placeholder="Teléfono" %}
+                <label class="form-label">{% trans "Teléfono" %}</label>
+                {% trans "Teléfono" as phone_placeholder %}
+                {% render_field form.phone class="form-input" placeholder=phone_placeholder %}
                 {{ form.phone.errors }}
               </div>
             </div>
@@ -956,34 +962,34 @@
       </div>
 
       <div class="card mb-3 access-code-card">
-        <div class="card-header"><h3 class="mb-0"><i class="bi bi-hash"></i> Código de acceso (previsualización)</h3></div>
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-hash"></i> {% trans "Código de acceso (previsualización)" %}</h3></div>
         <div class="card-body">
           <div class="access-code-display">
-            <div class="access-code-label">Se genera al enviar, según las técnicas seleccionadas.</div>
+            <div class="access-code-label">{% trans "Se genera al enviar, según las técnicas seleccionadas." %}</div>
             <div id="access-code-preview" class="access-code-text">--</div>
             <div class="access-code-explanation">
-              Esta vista previa es orientativa para tu borrador.
+              {% trans "Esta vista previa es orientativa para tu borrador." %}
             </div>
           </div>
         </div>
       </div>
 
       <div class="card mb-3">
-        <div class="card-header"><h3 class="mb-0"><i class="bi bi-building"></i> Paso 3: Técnicas e Instalaciones</h3></div>
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-building"></i> {% trans "Paso 3: Técnicas e Instalaciones" %}</h3></div>
         <div class="card-body">
-          <p class="muted mb-3">Selecciona las técnicas que necesitas y completa su configuración.</p>
+          <p class="muted mb-3">{% trans "Selecciona las técnicas que necesitas y completa su configuración." %}</p>
           <div class="facilities-grid">
             <div class="facility-item" data-technique="sem" data-checkbox="id_facility_sem">
               <div class="facility-checkbox">
                 {% render_field form.facility_sem class="form-check-input" %}
                 <div class="facility-label">
                   <div class="facility-icon"><i class="bi bi-search"></i></div>
-                  <div class="facility-name">SEM/EDX</div>
-                  <div class="facility-desc">Microscopía electrónica de barrido</div>
+                  <div class="facility-name">{% trans "SEM/EDX" %}</div>
+                  <div class="facility-desc">{% trans "Microscopía electrónica de barrido" %}</div>
                 </div>
               </div>
               <button type="button" class="btn-modal-config" data-tech="sem" disabled>
-                <i class="bi bi-gear"></i> Ir a tarjeta
+                <i class="bi bi-gear"></i> {% trans "Ir a tarjeta" %}
               </button>
             </div>
 
@@ -992,12 +998,12 @@
                 {% render_field form.facility_sem_fib class="form-check-input" %}
                 <div class="facility-label">
                   <div class="facility-icon"><i class="bi bi-lightning-charge"></i></div>
-                  <div class="facility-name">FIB</div>
-                  <div class="facility-desc">Focused Ion Beam</div>
+                  <div class="facility-name">{% trans "FIB" %}</div>
+                  <div class="facility-desc">{% trans "Focused Ion Beam" %}</div>
                 </div>
               </div>
               <button type="button" class="btn-modal-config" data-tech="fib" disabled>
-                <i class="bi bi-gear"></i> Ir a tarjeta
+                <i class="bi bi-gear"></i> {% trans "Ir a tarjeta" %}
               </button>
             </div>
 
@@ -1006,12 +1012,12 @@
                 {% render_field form.facility_imp class="form-check-input" %}
                 <div class="facility-label">
                   <div class="facility-icon"><i class="bi bi-bullseye"></i></div>
-                  <div class="facility-name">Ion Implanter</div>
-                  <div class="facility-desc">Implantación iónica</div>
+                  <div class="facility-name">{% trans "Ion Implanter" %}</div>
+                  <div class="facility-desc">{% trans "Implantación iónica" %}</div>
                 </div>
               </div>
               <button type="button" class="btn-modal-config" data-tech="imp" disabled>
-                <i class="bi bi-gear"></i> Ir a tarjeta
+                <i class="bi bi-gear"></i> {% trans "Ir a tarjeta" %}
               </button>
             </div>
 
@@ -1020,12 +1026,12 @@
                 {% render_field form.facility_sims class="form-check-input" %}
                 <div class="facility-label">
                   <div class="facility-icon"><i class="bi bi-graph-up"></i></div>
-                  <div class="facility-name">SIMS</div>
-                  <div class="facility-desc">Espectrometría de masas</div>
+                  <div class="facility-name">{% trans "SIMS" %}</div>
+                  <div class="facility-desc">{% trans "Espectrometría de masas" %}</div>
                 </div>
               </div>
               <button type="button" class="btn-modal-config" data-tech="sims" disabled>
-                <i class="bi bi-gear"></i> Ir a tarjeta
+                <i class="bi bi-gear"></i> {% trans "Ir a tarjeta" %}
               </button>
             </div>
 
@@ -1034,12 +1040,12 @@
                 {% render_field form.facility_confocal class="form-check-input" %}
                 <div class="facility-label">
                   <div class="facility-icon"><i class="bi bi-binoculars"></i></div>
-                  <div class="facility-name">Metrología de superficies ópticas 3D</div>
-                  <div class="facility-desc">Metrología óptica 3D</div>
+                  <div class="facility-name">{% trans "Metrología de superficies ópticas 3D" %}</div>
+                  <div class="facility-desc">{% trans "Metrología óptica 3D" %}</div>
                 </div>
               </div>
               <button type="button" class="btn-modal-config" data-tech="confocal" disabled>
-                <i class="bi bi-gear"></i> Ir a tarjeta
+                <i class="bi bi-gear"></i> {% trans "Ir a tarjeta" %}
               </button>
             </div>
 
@@ -1048,12 +1054,12 @@
                 {% render_field form.facility_vdg class="form-check-input" %}
                 <div class="facility-label">
                   <div class="facility-icon"><i class="bi bi-lightning"></i></div>
-                  <div class="facility-name">VDG</div>
-                  <div class="facility-desc">Generador Van de Graaff</div>
+                  <div class="facility-name">{% trans "VDG" %}</div>
+                  <div class="facility-desc">{% trans "Generador Van de Graaff" %}</div>
                 </div>
               </div>
               <button type="button" class="btn-modal-config" data-tech="vdg" disabled>
-                <i class="bi bi-gear"></i> Ir a tarjeta
+                <i class="bi bi-gear"></i> {% trans "Ir a tarjeta" %}
               </button>
             </div>
 
@@ -1062,12 +1068,12 @@
                 {% render_field form.facility_profilometer class="form-check-input" %}
                 <div class="facility-label">
                   <div class="facility-icon"><i class="bi bi-rulers"></i></div>
-                  <div class="facility-name">Profilometer</div>
-                  <div class="facility-desc">Medición de perfiles</div>
+                  <div class="facility-name">{% trans "Profilometer" %}</div>
+                  <div class="facility-desc">{% trans "Medición de perfiles" %}</div>
                 </div>
               </div>
               <button type="button" class="btn-modal-config" data-modal="profilometerModal" data-tech="profilometer" disabled>
-                <i class="bi bi-gear"></i> Configurar
+                <i class="bi bi-gear"></i> {% trans "Configurar" %}
               </button>
             </div>
 
@@ -1076,51 +1082,53 @@
                 {% render_field form.facility_olmat class="form-check-input" %}
                 <div class="facility-label">
                   <div class="facility-icon"><i class="bi bi-droplet-half"></i></div>
-                  <div class="facility-name">OLMAT</div>
-                  <div class="facility-desc">Flujo independiente</div>
+                  <div class="facility-name">{% trans "OLMAT" %}</div>
+                  <div class="facility-desc">{% trans "Flujo independiente" %}</div>
                 </div>
               </div>
               <button type="button" class="btn-modal-config" data-modal="olmatModal" data-tech="olmat" disabled>
-                <i class="bi bi-gear"></i> Configurar
+                <i class="bi bi-gear"></i> {% trans "Configurar" %}
               </button>
             </div>
           </div>
 
           <div class="dynamic-forms-container">
-            <div class="section-title"><i class="bi bi-clipboard-check"></i> Configuración por técnica</div>
-            <p class="muted">Al seleccionar una técnica, aparecerá su formulario aquí.</p>
+            <div class="section-title"><i class="bi bi-clipboard-check"></i> {% trans "Configuración por técnica" %}</div>
+            <p class="muted">{% trans "Al seleccionar una técnica, aparecerá su formulario aquí." %}</p>
             <div id="dynamic-technique-forms"></div>
           </div>
         </div>
       </div>
 
       <div class="card mb-3">
-        <div class="card-header"><h3 class="mb-0"><i class="bi bi-cash-coin"></i> Paso 4: Proyecto de financiación</h3></div>
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-cash-coin"></i> {% trans "Paso 4: Proyecto de financiación" %}</h3></div>
         <div class="card-body">
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Nombre del proyecto</label>
-              {% render_field form.project_name class="form-input" placeholder="Nombre del proyecto" %}
+              <label class="form-label">{% trans "Nombre del proyecto" %}</label>
+              {% trans "Nombre del proyecto" as project_name_placeholder %}
+              {% render_field form.project_name class="form-input" placeholder=project_name_placeholder %}
               {{ form.project_name.errors }}
             </div>
             <div class="form-group">
-              <label class="form-label">Tipo de proyecto</label>
+              <label class="form-label">{% trans "Tipo de proyecto" %}</label>
               {% render_field form.project_type class="form-input" %}
               {{ form.project_type.errors }}
-              <small class="muted">(International, European, National, Regional)</small>
+              <small class="muted">{% trans "(International, European, National, Regional)" %}</small>
             </div>
             <div class="form-group">
-              <label class="form-label">Fuente de financiación</label>
-              {% render_field form.funding_source class="form-input" placeholder="Fuente de financiación" %}
+              <label class="form-label">{% trans "Fuente de financiación" %}</label>
+              {% trans "Fuente de financiación" as funding_placeholder %}
+              {% render_field form.funding_source class="form-input" placeholder=funding_placeholder %}
               {{ form.funding_source.errors }}
             </div>
             <div class="form-group">
-              <label class="form-label">Año de inicio</label>
+              <label class="form-label">{% trans "Año de inicio" %}</label>
               {% render_field form.start_year class="form-input" placeholder="2024" %}
               {{ form.start_year.errors }}
             </div>
             <div class="form-group">
-              <label class="form-label">Año de fin</label>
+              <label class="form-label">{% trans "Año de fin" %}</label>
               {% render_field form.end_year class="form-input" placeholder="2025" %}
               {{ form.end_year.errors }}
             </div>
@@ -1134,16 +1142,16 @@
       <div class="card mb-3">
         <div class="card-header">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <h3 class="mb-0"><i class="bi bi-people"></i> Paso 5: Participantes</h3>
+            <h3 class="mb-0"><i class="bi bi-people"></i> {% trans "Paso 5: Participantes" %}</h3>
             <div class="d-flex flex-wrap align-items-center gap-3">
               <div class="d-flex align-items-center gap-2">
-                <span class="small text-muted">¿Hay más participantes además del solicitante?</span>
+                <span class="small text-muted">{% trans "¿Hay más participantes además del solicitante?" %}</span>
                 <div class="form-check form-switch m-0">
                   <input class="form-check-input" type="checkbox" id="has-more-participants" data-participants-count="{{ participants_count }}">
-                  <label class="form-check-label" for="has-more-participants">Sí</label>
+                  <label class="form-check-label" for="has-more-participants">{% trans "Sí" %}</label>
                 </div>
               </div>
-              <button type="button" id="add-participant" class="btn btn-sm btn-outline-primary" style="display: none;"><i class="bi bi-plus-circle"></i> Añadir Participante</button>
+              <button type="button" id="add-participant" class="btn btn-sm btn-outline-primary" style="display: none;"><i class="bi bi-plus-circle"></i> {% trans "Añadir Participante" %}</button>
             </div>
           </div>
         </div>
@@ -1154,28 +1162,31 @@
               <div class="card participant-card">
                 {{ f.id }}
                 {% if forloop.first %}
-                  <div class="participant-badge">Solicitante</div>
+                  <div class="participant-badge">{% trans "Solicitante" %}</div>
                 {% endif %}
                 <div class="form-grid">
                   <div class="form-group">
-                    <label class="form-label"><i class="bi bi-person"></i> Nombre completo *</label>
-                    {% render_field f.name class="form-input" placeholder="Nombre completo" %}
+                    <label class="form-label"><i class="bi bi-person"></i> {% trans "Nombre completo *" %}</label>
+                    {% trans "Nombre completo" as participant_name_placeholder %}
+                    {% render_field f.name class="form-input" placeholder=participant_name_placeholder %}
                     {{ f.name.errors }}
                   </div>
                   <div class="form-group">
-                    <label class="form-label"><i class="bi bi-building"></i> Centro/Afiliación</label>
-                    {% render_field f.center class="form-input" placeholder="Centro o institución" %}
+                    <label class="form-label"><i class="bi bi-building"></i> {% trans "Centro/Afiliación" %}</label>
+                    {% trans "Centro o institución" as participant_center_placeholder %}
+                    {% render_field f.center class="form-input" placeholder=participant_center_placeholder %}
                     {{ f.center.errors }}
                   </div>
                   <div class="form-group">
-                    <label class="form-label"><i class="bi bi-geo-alt"></i> Dirección</label>
-                    {% render_field f.address class="form-input" placeholder="Dirección completa" %}
+                    <label class="form-label"><i class="bi bi-geo-alt"></i> {% trans "Dirección" %}</label>
+                    {% trans "Dirección completa" as participant_address_placeholder %}
+                    {% render_field f.address class="form-input" placeholder=participant_address_placeholder %}
                     {{ f.address.errors }}
                   </div>
                 </div>
                 {% if f.DELETE %}
                   <div class="mt-2{% if forloop.first %} d-none{% endif %}">
-                    <label class="small text-muted">{{ f.DELETE|add_class:"participant-delete" }} Eliminar este participante</label>
+                    <label class="small text-muted">{{ f.DELETE|add_class:"participant-delete" }} {% trans "Eliminar este participante" %}</label>
                   </div>
                 {% endif %}
               </div>
@@ -1185,43 +1196,50 @@
       </div>
 
       <div class="card mb-3">
-        <div class="card-header"><h3 class="mb-0"><i class="bi bi-journal-text"></i> Paso 6: Información Adicional</h3></div>
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-journal-text"></i> {% trans "Paso 6: Información Adicional" %}</h3></div>
         <div class="card-body experiment-description-section">
           <div class="form-group mb-3">
-            <label class="form-label">Experimentos previos</label>
-            {% render_field form.previous_experiments class="form-input" rows="3" placeholder="Describe experimentos previos relacionados con tu proyecto" %}
+            <label class="form-label">{% trans "Experimentos previos" %}</label>
+            {% trans "Describe experimentos previos relacionados con tu proyecto" as previous_experiments_placeholder %}
+            {% render_field form.previous_experiments class="form-input" rows="3" placeholder=previous_experiments_placeholder %}
             {{ form.previous_experiments.errors }}
           </div>
           <div class="form-group mb-3">
-            <label class="form-label"><i class="bi bi-book"></i> Referencias</label>
-            {% render_field form.references class="form-input" rows="3" placeholder="Referencias bibliográficas relevantes" %}
+            <label class="form-label"><i class="bi bi-book"></i> {% trans "Referencias" %}</label>
+            {% trans "Referencias bibliográficas relevantes" as references_placeholder %}
+            {% render_field form.references class="form-input" rows="3" placeholder=references_placeholder %}
             {{ form.references.errors }}
           </div>
         </div>
       </div>
 
       <div class="card mb-3">
-        <div class="card-header"><h3 class="mb-0"><i class="bi bi-paperclip"></i> Paso 7: Archivos Adjuntos</h3></div>
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-paperclip"></i> {% trans "Paso 7: Archivos Adjuntos" %}</h3></div>
         <div class="card-body">
           {{ attachment_formset.management_form }}
           <div id="attachments-forms">
             {% for f in attachment_formset %}
               <div class="card attachment-card">
+                {{ f.id }}
                 <div class="form-row">
                   <div class="form-group">
-                    <label class="form-label"><i class="bi bi-file-text"></i> Nombre del documento</label>
-                    {% render_field f.name class="form-input" placeholder="Nombre descriptivo del documento" %}
+                    <label class="form-label"><i class="bi bi-file-text"></i> {% trans "Nombre del documento" %}</label>
+                    {% trans "Nombre descriptivo del documento" as attachment_name_placeholder %}
+                    {% render_field f.name class="form-input" placeholder=attachment_name_placeholder %}
                     {{ f.name.errors }}
                   </div>
                   <div class="form-group">
-                    <label class="form-label"><i class="bi bi-folder"></i> Archivo</label>
+                    <label class="form-label"><i class="bi bi-folder"></i> {% trans "Archivo" %}</label>
                     {% render_field f.file class="form-input" %}
+                    {% if f.instance.pk and f.instance.file %}
+                      <div class="small text-muted">{% trans "Archivo actual:" %} {{ f.instance.file.name }}</div>
+                    {% endif %}
                     {{ f.file.errors }}
                   </div>
                 </div>
                 {% if f.DELETE %}
                   <div class="mt-2">
-                    <label class="small text-muted">{{ f.DELETE }} Eliminar este archivo</label>
+                    <label class="small text-muted">{{ f.DELETE }} {% trans "Eliminar este archivo" %}</label>
                   </div>
                 {% endif %}
               </div>
@@ -1253,7 +1271,7 @@
 <div id="semModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="bi bi-search"></i> Configuración SEM/EDX</h3>
+      <h3><i class="bi bi-search"></i> {% trans "Configuración SEM/EDX" %}</h3>
       <button type="button" class="modal-close" data-modal="semModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -1276,7 +1294,7 @@
 <div id="fibModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="bi bi-lightning-charge"></i> Configuración FIB</h3>
+      <h3><i class="bi bi-lightning-charge"></i> {% trans "Configuración FIB" %}</h3>
       <button type="button" class="modal-close" data-modal="fibModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -1299,7 +1317,7 @@
 <div id="impModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="bi bi-bullseye"></i> Configuración Ion Implanter</h3>
+      <h3><i class="bi bi-bullseye"></i> {% trans "Configuración Ion Implanter" %}</h3>
       <button type="button" class="modal-close" data-modal="impModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -1322,7 +1340,7 @@
 <div id="simsModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="bi bi-graph-up"></i> Configuración SIMS</h3>
+      <h3><i class="bi bi-graph-up"></i> {% trans "Configuración SIMS" %}</h3>
       <button type="button" class="modal-close" data-modal="simsModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -1345,7 +1363,7 @@
 <div id="confocalModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="bi bi-binoculars"></i> Configuración Metrología de superficies ópticas 3D</h3>
+      <h3><i class="bi bi-binoculars"></i> {% trans "Configuración Metrología de superficies ópticas 3D" %}</h3>
       <button type="button" class="modal-close" data-modal="confocalModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -1368,7 +1386,7 @@
 <div id="vdgModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="bi bi-lightning-charge"></i> Configuración VDG</h3>
+      <h3><i class="bi bi-lightning-charge"></i> {% trans "Configuración VDG" %}</h3>
       <button type="button" class="modal-close" data-modal="vdgModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -1391,7 +1409,7 @@
 <div id="profilometerModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="bi bi-rulers"></i> Configuración Profilometer</h3>
+      <h3><i class="bi bi-rulers"></i> {% trans "Configuración Profilometer" %}</h3>
       <button type="button" class="modal-close" data-modal="profilometerModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -1414,7 +1432,7 @@
 <div id="olmatModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="bi bi-droplet-half"></i> Configuración OLMAT</h3>
+      <h3><i class="bi bi-droplet-half"></i> {% trans "Configuración OLMAT" %}</h3>
       <button type="button" class="modal-close" data-modal="olmatModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -1439,16 +1457,16 @@
     <input type="hidden" name="{{ formset.prefix }}-__prefix__-id" id="id_{{ formset.prefix }}-__prefix__-id">
     <div class="form-grid">
       <div class="form-group">
-        <label class="form-label"><i class="bi bi-person"></i> Nombre completo *</label>
-        <input type="text" name="{{ formset.prefix }}-__prefix__-name" id="id_{{ formset.prefix }}-__prefix__-name" class="form-input" placeholder="Nombre completo" required>
+        <label class="form-label"><i class="bi bi-person"></i> {% trans "Nombre completo *" %}</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-name" id="id_{{ formset.prefix }}-__prefix__-name" class="form-input" placeholder="{% trans 'Nombre completo' %}" required>
       </div>
       <div class="form-group">
-        <label class="form-label"><i class="bi bi-building"></i> Centro/Afiliación</label>
-        <input type="text" name="{{ formset.prefix }}-__prefix__-center" id="id_{{ formset.prefix }}-__prefix__-center" class="form-input" placeholder="Centro o institución">
+        <label class="form-label"><i class="bi bi-building"></i> {% trans "Centro/Afiliación" %}</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-center" id="id_{{ formset.prefix }}-__prefix__-center" class="form-input" placeholder="{% trans 'Centro o institución' %}">
       </div>
       <div class="form-group">
-        <label class="form-label"><i class="bi bi-geo-alt"></i> Dirección</label>
-        <input type="text" name="{{ formset.prefix }}-__prefix__-address" id="id_{{ formset.prefix }}-__prefix__-address" class="form-input" placeholder="Dirección completa">
+        <label class="form-label"><i class="bi bi-geo-alt"></i> {% trans "Dirección" %}</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-address" id="id_{{ formset.prefix }}-__prefix__-address" class="form-input" placeholder="{% trans 'Dirección completa' %}">
       </div>
     </div>
     <input type="checkbox" name="{{ formset.prefix }}-__prefix__-DELETE" id="id_{{ formset.prefix }}-__prefix__-DELETE" class="participant-delete" style="display:none">

@@ -1,94 +1,95 @@
+{% load i18n %}
 <div class="tech-card">
-  <h4 class="tech-title"><i class="bi bi-graph-up"></i> SIMS - Datos de muestras</h4>
+  <h4 class="tech-title"><i class="bi bi-graph-up"></i> {% trans "SIMS - Datos de muestras" %}</h4>
   
   <!-- Requirements for Sample Acceptance -->
   <div class="requirements-section">
-    <h5 class="section-title"><i class="bi bi-list-check"></i> Requirements for Sample Acceptance</h5>
+    <h5 class="section-title"><i class="bi bi-list-check"></i> {% trans "Requirements for Sample Acceptance" %}</h5>
     <div class="requirements-list">
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→ Sample must be a clean, compacted, smoothy surface solid.</span>
+        <span class="requirement-text">{% trans "→ Sample must be a clean, compacted, smoothy surface solid." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→Minimum dimensions: 8mm in diameter (or 8x8mm2) Maximum dimensions 15 mm (15x15 mm2).</span>
+        <span class="requirement-text">{% trans "→Minimum dimensions: 8mm in diameter (or 8x8mm2) Maximum dimensions 15 mm (15x15 mm2)." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→Sample must be accompanied with a complete and perfectly legible identification. Sample must be wrapped with a metallic paper or cloth (plastic wrapping is not recommended).</span>
+        <span class="requirement-text">{% trans "→Sample must be accompanied with a complete and perfectly legible identification. Sample must be wrapped with a metallic paper or cloth (plastic wrapping is not recommended)." %}</span>
       </div>
     </div>
   </div>
 
   <!-- Sample Description -->
   <div class="sample-description-section">
-    <h5 class="section-title"><i class="bi bi-card-list"></i> Sample Description</h5>
+    <h5 class="section-title"><i class="bi bi-card-list"></i> {% trans "Sample Description" %}</h5>
     <div class="samples-container" id="sims-samples-container">
       <div class="sample-card" data-sample-index="0">
         <div class="sample-header">
-          <h6 class="sample-title">Sample 1</h6>
+          <h6 class="sample-title">{% trans "Sample" %} 1</h6>
           <button type="button" class="btn-remove-sample" onclick="removeSimsSample(this)" style="display: none;">
             <i class="bi bi-trash"></i>
           </button>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Identification</label>
-            <input type="text" name="sims_sample_0_identification" class="form-input" placeholder="Sample ID">
+            <label class="form-label">{% trans "Identification" %}</label>
+            <input type="text" name="sims_sample_0_identification" class="form-input" placeholder="{% trans 'Sample ID' %}">
           </div>
           <div class="form-group">
-            <label class="form-label">Name</label>
-            <input type="text" name="sims_sample_0_name" class="form-input" placeholder="Sample name">
+            <label class="form-label">{% trans "Name" %}</label>
+            <input type="text" name="sims_sample_0_name" class="form-input" placeholder="{% trans 'Sample name' %}">
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Details (aproximate composition, specific characteristics ...)</label>
-          <textarea name="sims_sample_0_details" rows="3" class="form-input" placeholder="Sample details"></textarea>
+          <label class="form-label">{% trans "Details (aproximate composition, specific characteristics ...)" %}</label>
+          <textarea name="sims_sample_0_details" rows="3" class="form-input" placeholder="{% trans 'Sample details' %}"></textarea>
         </div>
       </div>
     </div>
     <button type="button" class="btn-add-sample" onclick="addSimsSample(this)">
-      <i class="bi bi-plus-circle"></i> Add Sample
+      <i class="bi bi-plus-circle"></i> {% trans "Add Sample" %}
     </button>
   </div>
 
   <!-- Sample Safe Handling -->
   <div class="safe-handling-section">
-    <h5 class="section-title"><i class="bi bi-shield-check"></i> Sample Safe Handling</h5>
+    <h5 class="section-title"><i class="bi bi-shield-check"></i> {% trans "Sample Safe Handling" %}</h5>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">¿Toxic?</label>
+        <label class="form-label">{% trans "¿Toxic?" %}</label>
         <input type="text" name="sims_toxic" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Corrosive?</label>
+        <label class="form-label">{% trans "¿Corrosive?" %}</label>
         <input type="text" name="sims_corrosive" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Irritating?</label>
+        <label class="form-label">{% trans "¿Irritating?" %}</label>
         <input type="text" name="sims_irritating" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Radioactive?</label>
+        <label class="form-label">{% trans "¿Radioactive?" %}</label>
         <input type="text" name="sims_radioactive" class="form-input" value="NO" readonly>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Further comments about safety</label>
-      <textarea name="sims_safety_comments" rows="3" class="form-input" placeholder="Additional safety comments"></textarea>
+      <label class="form-label">{% trans "Further comments about safety" %}</label>
+      <textarea name="sims_safety_comments" rows="3" class="form-input" placeholder="{% trans 'Additional safety comments' %}"></textarea>
     </div>
   </div>
 
   <!-- Important Information -->
   <div class="important-info-section">
-    <h5 class="section-title"><i class="bi bi-info-circle"></i> Important Information</h5>
+    <h5 class="section-title"><i class="bi bi-info-circle"></i> {% trans "Important Information" %}</h5>
     
     <!-- Surface Analysis Request -->
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Is a surface analysis requested?</label>
+        <label class="info-question-text">{% trans "Is a surface analysis requested?" %}</label>
         <input type="checkbox" name="sims_surface_analysis" class="info-checkbox" id="sims-surface-analysis">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
       <div class="form-group" style="margin-top: 1rem;">
         <label class="form-label">Indicate the desired analysis depth (µm)</label>
@@ -99,9 +100,9 @@
     <!-- Profile Analysis Request -->
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">In a profile analysis requested?</label>
+        <label class="info-question-text">{% trans "In a profile analysis requested?" %}</label>
         <input type="checkbox" name="sims_profile_analysis" class="info-checkbox" id="sims-profile-analysis">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
@@ -128,37 +129,37 @@
     <!-- Electrical Conducting Sample -->
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Is an electrical conducting sample?</label>
+        <label class="info-question-text">{% trans "Is an electrical conducting sample?" %}</label>
         <input type="checkbox" name="sims_electrical_conducting" class="info-checkbox" id="sims-electrical-conducting">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <!-- Hygroscopic Sample -->
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">It is a hygroscopic sample?</label>
+        <label class="info-question-text">{% trans "It is a hygroscopic sample?" %}</label>
         <input type="checkbox" name="sims_hygroscopic" class="info-checkbox" id="sims-hygroscopic">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <!-- Atomic Elements of Interest -->
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Atomic elements of interests?</label>
+        <label class="info-question-text">{% trans "Atomic elements of interests?" %}</label>
         <input type="checkbox" name="sims_atomic_elements" class="info-checkbox" id="sims-atomic-elements">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
 
       <!-- Tabla Periódica SIMS - Solo visible si YES -->
       <div id="sims-periodic-table-container" class="periodic-table-section" style="display: none;">
-        <h6 class="periodic-table-title"><i class="bi bi-grid-3x3-gap"></i> Select Atomic Elements of Interest</h6>
+        <h6 class="periodic-table-title"><i class="bi bi-grid-3x3-gap"></i> {% trans "Select Atomic Elements of Interest" %}</h6>
         <div class="periodic-table sims-periodic-table">
           <!-- La tabla periódica se generará dinámicamente -->
         </div>
         <div class="selected-elements">
-          <h6>Selected Elements:</h6>
+          <h6>{% trans "Selected Elements:" %}</h6>
           <div id="sims-selected-elements-list" class="selected-elements-list"></div>
           <input type="hidden" name="sims_selected_elements" id="sims-selected-elements">
         </div>

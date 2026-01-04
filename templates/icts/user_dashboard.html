@@ -5,6 +5,7 @@
 {% block page_title %}{% trans "Mi Panel de Usuario" %}{% endblock %}
 
 {% block content %}
+{% trans "(Sin título)" as default_title %}
 <div class="card" style="margin-bottom:1.25rem">
   <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap">
     <div>
@@ -42,8 +43,10 @@
       {% for p in drafts %}
         <li class="list-item">
           <div>
-            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
-            <div class="muted">ID #{{ p.id }}</div>
+            <div class="list-title">{{ p.title|default:default_title }}</div>
+            <div class="muted">
+              {% blocktrans with proposal_id=p.id %}ID #{{ proposal_id }}{% endblocktrans %}
+            </div>
           </div>
           <div class="list-actions">
             <a class="chip" href="{% url 'icts:proposal_edit' p.id %}">{% trans "Editar" %}</a>
@@ -64,8 +67,10 @@
       {% for p in submitted %}
         <li class="list-item">
           <div>
-            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
-            <div class="muted">ID #{{ p.id }}</div>
+            <div class="list-title">{{ p.title|default:default_title }}</div>
+            <div class="muted">
+              {% blocktrans with proposal_id=p.id %}ID #{{ proposal_id }}{% endblocktrans %}
+            </div>
           </div>
           <div class="list-actions">
             <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">{% trans "Ver" %}</a>
@@ -85,8 +90,10 @@
       {% for p in evaluated %}
         <li class="list-item">
           <div>
-            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
-            <div class="muted">ID #{{ p.id }}</div>
+            <div class="list-title">{{ p.title|default:default_title }}</div>
+            <div class="muted">
+              {% blocktrans with proposal_id=p.id %}ID #{{ proposal_id }}{% endblocktrans %}
+            </div>
           </div>
           <div class="list-actions">
             <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">{% trans "Ver informe" %}</a>

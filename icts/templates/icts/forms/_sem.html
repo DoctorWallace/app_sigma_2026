@@ -1,117 +1,118 @@
+{% load i18n %}
 <div class="tech-card">
-  <h4 class="tech-title"><i class="bi bi-search"></i> SEM EDX - Datos de muestras</h4>
+  <h4 class="tech-title"><i class="bi bi-search"></i> {% trans "SEM EDX - Datos de muestras" %}</h4>
   
   <!-- Requirements for Sample Acceptance -->
   <div class="requirements-section">
-    <h5 class="section-title"><i class="bi bi-list-check"></i> Requirements for Sample Acceptance</h5>
+    <h5 class="section-title"><i class="bi bi-list-check"></i> {% trans "Requirements for Sample Acceptance" %}</h5>
     <div class="requirements-list">
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→Material stable at room temperature</span>
+        <span class="requirement-text">{% trans "→Material stable at room temperature" %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→Dimensions: The size of the samples are limited to 100*75*40mm 100x75x40 mm.</span>
+        <span class="requirement-text">{% trans "→Dimensions: The size of the samples are limited to 100*75*40mm 100x75x40 mm." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→Sample must be accompanied with a complete and perfectly legible identification. Sample must be wrapped with a metallic paper or cloth (plastic wrapping is not recommended).</span>
+        <span class="requirement-text">{% trans "→Sample must be accompanied with a complete and perfectly legible identification. Sample must be wrapped with a metallic paper or cloth (plastic wrapping is not recommended)." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">→In case of classical metallographic study, the samples will be received polished and etched * (you can request sample preparation following the procedure PT-DTF-15)</span>
+        <span class="requirement-text">{% trans "→In case of classical metallographic study, the samples will be received polished and etched * (you can request sample preparation following the procedure PT-DTF-15)" %}</span>
       </div>
     </div>
   </div>
 
   <!-- Sample Description -->
   <div class="sample-description-section">
-    <h5 class="section-title"><i class="bi bi-card-list"></i> Sample Description</h5>
+    <h5 class="section-title"><i class="bi bi-card-list"></i> {% trans "Sample Description" %}</h5>
     <div class="samples-container" id="sem-samples-container">
       <div class="sample-card" data-sample-index="0">
         <div class="sample-header">
-          <h6 class="sample-title">Sample 1</h6>
+          <h6 class="sample-title">{% trans "Sample" %} 1</h6>
           <button type="button" class="btn-remove-sample" onclick="removeSemSample(this)" style="display: none;">
             <i class="bi bi-trash"></i>
           </button>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Identification</label>
-            <input type="text" name="sem_sample_0_identification" class="form-input" placeholder="Sample ID">
+            <label class="form-label">{% trans "Identification" %}</label>
+            <input type="text" name="sem_sample_0_identification" class="form-input" placeholder="{% trans 'Sample ID' %}">
           </div>
           <div class="form-group">
-            <label class="form-label">Name</label>
-            <input type="text" name="sem_sample_0_name" class="form-input" placeholder="Sample name">
+            <label class="form-label">{% trans "Name" %}</label>
+            <input type="text" name="sem_sample_0_name" class="form-input" placeholder="{% trans 'Sample name' %}">
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Details (State of the surface, nature, approximate composition, ...)</label>
-          <textarea name="sem_sample_0_details" rows="3" class="form-input" placeholder="Sample details"></textarea>
+          <label class="form-label">{% trans "Details (State of the surface, nature, approximate composition, ...)" %}</label>
+          <textarea name="sem_sample_0_details" rows="3" class="form-input" placeholder="{% trans 'Sample details' %}"></textarea>
         </div>
       </div>
     </div>
     <button type="button" class="btn-add-sample" onclick="addSemSample(this)">
-      <i class="bi bi-plus-circle"></i> Add Sample
+      <i class="bi bi-plus-circle"></i> {% trans "Add Sample" %}
     </button>
   </div>
 
   <!-- Sample Safe Handling -->
   <div class="safe-handling-section">
-    <h5 class="section-title"><i class="bi bi-shield-check"></i> Sample Safe Handling</h5>
+    <h5 class="section-title"><i class="bi bi-shield-check"></i> {% trans "Sample Safe Handling" %}</h5>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">¿Toxic?</label>
+        <label class="form-label">{% trans "¿Toxic?" %}</label>
         <input type="text" name="sem_toxic" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Corrosive?</label>
+        <label class="form-label">{% trans "¿Corrosive?" %}</label>
         <input type="text" name="sem_corrosive" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Irritating?</label>
+        <label class="form-label">{% trans "¿Irritating?" %}</label>
         <input type="text" name="sem_irritating" class="form-input" value="NO" readonly>
       </div>
       <div class="form-group">
-        <label class="form-label">¿Radioactive?</label>
+        <label class="form-label">{% trans "¿Radioactive?" %}</label>
         <input type="text" name="sem_radioactive" class="form-input" value="NO" readonly>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Further comments</label>
-      <textarea name="sem_safety_comments" rows="3" class="form-input" placeholder="Additional safety comments"></textarea>
+      <label class="form-label">{% trans "Further comments" %}</label>
+      <textarea name="sem_safety_comments" rows="3" class="form-input" placeholder="{% trans 'Additional safety comments' %}"></textarea>
     </div>
   </div>
 
   <!-- Important Information -->
   <div class="important-info-section">
-    <h5 class="section-title"><i class="bi bi-info-circle"></i> Important Information</h5>
+    <h5 class="section-title"><i class="bi bi-info-circle"></i> {% trans "Important Information" %}</h5>
     
     <!-- SEM Analysis Request -->
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Do you request a SEM analysis?</label>
+        <label class="info-question-text">{% trans "Do you request a SEM analysis?" %}</label>
         <input type="checkbox" name="sem_analysis_request" class="info-checkbox" id="sem-analysis-request">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <!-- EDX Study Request -->
     <div class="info-question edx-section">
       <div class="question-row">
-        <label class="info-question-text">Do you request an EDX study?</label>
+        <label class="info-question-text">{% trans "Do you request an EDX study?" %}</label>
         <input type="checkbox" name="sem_edx_request" class="info-checkbox" id="sem-edx-request">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
 
       <!-- Tabla Periódica - Solo visible si EDX es YES -->
       <div id="periodic-table-container" class="periodic-table-section" style="display: none;">
-        <h6 class="periodic-table-title"><i class="bi bi-grid-3x3-gap"></i> Select Elements for EDX Analysis</h6>
+        <h6 class="periodic-table-title"><i class="bi bi-grid-3x3-gap"></i> {% trans "Select Elements for EDX Analysis" %}</h6>
         <div class="periodic-table">
           <!-- La tabla periódica se generará dinámicamente -->
         </div>
         <div class="selected-elements">
-          <h6>Selected Elements:</h6>
+          <h6>{% trans "Selected Elements:" %}</h6>
           <div id="selected-elements-list" class="selected-elements-list"></div>
           <input type="hidden" name="sem_selected_elements" id="sem-selected-elements">
         </div>
@@ -121,28 +122,28 @@
     <!-- Sample Conductive -->
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Is the sample conductive?</label>
+        <label class="info-question-text">{% trans "Is the sample conductive?" %}</label>
         <input type="checkbox" name="sem_sample_conductive" class="info-checkbox" id="sem-sample-conductive" checked>
-        <span class="info-label">YES</span>
+        <span class="info-label">{% trans "YES" %}</span>
       </div>
 
       <!-- Conductive Layer Selection - Solo visible si NO es conductivo -->
       <div id="conductive-layer-container" class="conductive-layer-section" style="display: none;">
         <div class="form-group">
-          <label class="form-label">Conductive layer needed:</label>
+          <label class="form-label">{% trans "Conductive layer needed:" %}</label>
           <select name="sem_conductive_layer" class="form-input">
-            <option value="C" selected>Carbon (C)</option>
-            <option value="Pt">Platinum (Pt)</option>
-            <option value="Pd">Palladium (Pd)</option>
-            <option value="Au">Gold (Au)</option>
+            <option value="C" selected>{% trans "Carbon (C)" %}</option>
+            <option value="Pt">{% trans "Platinum (Pt)" %}</option>
+            <option value="Pd">{% trans "Palladium (Pd)" %}</option>
+            <option value="Au">{% trans "Gold (Au)" %}</option>
           </select>
         </div>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Further comments</label>
-      <textarea name="sem_further_comments" rows="4" class="form-input" placeholder="Comentarios adicionales"></textarea>
+      <label class="form-label">{% trans "Further comments" %}</label>
+      <textarea name="sem_further_comments" rows="4" class="form-input" placeholder="{% trans 'Comentarios adicionales' %}"></textarea>
     </div>
   </div>
 </div>

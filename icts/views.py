@@ -403,15 +403,15 @@ def _validate_required_steps_for_submit(obj):
     if _is_blank_value(project_type) or project_type not in project_type_choices:
         missing.append("Paso 4: Tipo de proyecto")
     if _is_blank_value(getattr(obj, "funding_source", None)):
-        missing.append("Paso 4: Fuente de financiacion")
+        missing.append("Paso 4: Fuente de financiación")
     start_year = getattr(obj, "start_year", None)
     end_year = getattr(obj, "end_year", None)
     if start_year is None:
-        missing.append("Paso 4: Ano de inicio")
+        missing.append("Paso 4: Año de inicio")
     if end_year is None:
-        missing.append("Paso 4: Ano de fin")
+        missing.append("Paso 4: Año de fin")
     if start_year is not None and end_year is not None and end_year < start_year:
-        missing.append("Paso 4: Ano fin debe ser >= ano inicio")
+        missing.append("Paso 4: Año fin debe ser >= año inicio")
 
     if _is_blank_value(getattr(obj, "previous_experiments", None)):
         missing.append("Paso 6: Experimentos previos")

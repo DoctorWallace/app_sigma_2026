@@ -97,6 +97,8 @@ class ProposalAttachmentForm(forms.ModelForm):
 
     def clean(self):
         cleaned = super().clean()
+        if cleaned.get("DELETE"):
+            return cleaned
         name = (cleaned.get("name") or "").strip()
         file_obj = cleaned.get("file")
         if name and not file_obj:
@@ -107,6 +109,8 @@ class ProposalAttachmentForm(forms.ModelForm):
 
     def clean_file(self):
         f = self.cleaned_data.get("file")
+        if not f and getattr(self.instance, "pk", None) and getattr(self.instance, "file", None):
+            return self.instance.file
         if not f:
             return f
         max_mb = 10

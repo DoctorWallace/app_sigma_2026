@@ -1,6 +1,7 @@
 {% extends "base_icts.html" %}
+{% load i18n %}
 {% load form_extras %}
-{% block title %}Registro | ΣSIGMA ICTS{% endblock %}
+{% block title %}{% trans "Registro | ΣSIGMA ICTS" %}{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -226,8 +227,8 @@
             <div class="register-icon">
               <i class="bi bi-person-plus"></i>
             </div>
-            <h1 class="register-title">Crear cuenta SIGMA ICTS</h1>
-            <p class="register-subtitle">Completa el formulario para solicitar acceso. Tu cuenta será revisada por un responsable en un plazo máximo de 48 horas.</p>
+            <h1 class="register-title">{% trans "Crear cuenta SIGMA ICTS" %}</h1>
+            <p class="register-subtitle">{% blocktrans %}Completa el formulario para solicitar acceso. Tu cuenta será revisada por un responsable en un plazo máximo de 48 horas.{% endblocktrans %}</p>
           </div>
           <div class="register-body">
 
@@ -240,7 +241,7 @@
 
             <div class="form-section">
               <h5 class="form-section-title">
-                <i class="bi bi-shield-lock"></i> Datos de acceso
+                <i class="bi bi-shield-lock"></i> {% trans "Datos de acceso" %}
               </h5>
               <div class="row g-3">
                 <div class="col-md-6">
@@ -276,7 +277,7 @@
 
             <div class="form-section">
               <h5 class="form-section-title">
-                <i class="bi bi-person-lines-fill"></i> Información personal
+                <i class="bi bi-person-lines-fill"></i> {% trans "Información personal" %}
               </h5>
               <div class="row g-3">
                 <div class="col-md-6">
@@ -295,16 +296,16 @@
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">
-                    Siglas sugeridas
+                    {% trans "Siglas sugeridas" %}
                   </label>
                   <div id="siglas-preview" class="siglas-preview">
                     —
                   </div>
-                  <small class="text-muted">Vista previa no editable; se asignan automáticamente.</small>
+                  <small class="text-muted">{% trans "Vista previa no editable; se asignan automáticamente." %}</small>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="{{ form.institution.id_for_label }}">
-                    Center
+                    {% trans "Center" %}
                   </label>
                   {{ form.institution|add_class:"form-control" }}
                   {% for e in form.institution.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
@@ -329,7 +330,7 @@
             <!-- Datos CIEMAT (solo si email @ciemat.es) -->
             <div id="ciemat-extra" class="form-section" style="display:none; background:#f0f9f4; border:2px solid #a7d9c2;">
               <h5 class="form-section-title" style="color:#155724; border-color:#a7d9c2;">
-                <i class="bi bi-building"></i> Datos CIEMAT
+                <i class="bi bi-building"></i> {% trans "Datos CIEMAT" %}
               </h5>
               <div class="row g-3">
                 <div class="col-md-6">
@@ -341,7 +342,7 @@
                 </div>
               </div>
               <p class="text-muted mt-2">
-                <i class="bi bi-info-circle"></i> Si tu correo es @ciemat.es este campo es obligatorio.
+                <i class="bi bi-info-circle"></i> {% trans "Si tu correo es @ciemat.es este campo es obligatorio." %}
               </p>
             </div>
 
@@ -355,22 +356,22 @@
 
             <div class="d-flex gap-3 mt-4 flex-wrap">
               <button class="btn btn-primary" type="submit">
-                <i class="bi bi-person-plus"></i> Crear cuenta
+                <i class="bi bi-person-plus"></i> {% trans "Crear cuenta" %}
               </button>
               <a class="btn btn-outline-secondary" href="{% url 'accounts:login_icts' %}">
-                <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+                <i class="bi bi-box-arrow-in-right"></i> {% trans "Iniciar sesión" %}
               </a>
             </div>
 
             <div class="alert alert-info">
-              <i class="bi bi-info-circle"></i> <strong>Importante:</strong> Tu cuenta será revisada por un responsable en un plazo máximo de 48 horas. Recibirás un correo cuando sea activada.
+              <i class="bi bi-info-circle"></i> <strong>{% trans "Importante:" %}</strong> {% blocktrans %}Tu cuenta será revisada por un responsable en un plazo máximo de 48 horas. Recibirás un correo cuando sea activada.{% endblocktrans %}
             </div>
           </form>
           </div>
         </div>
         <p class="text-center mt-4">
           <a href="{% url 'portal:home' %}" class="back-link">
-            <i class="bi bi-arrow-left"></i> Volver al Portal
+            <i class="bi bi-arrow-left"></i> {% trans "Volver al Portal" %}
           </a>
         </p>
       </div>

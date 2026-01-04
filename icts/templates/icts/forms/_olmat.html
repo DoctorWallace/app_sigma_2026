@@ -1,126 +1,127 @@
-﻿<!-- Formulario especifico para OLMAT -->
+﻿{% load i18n %}
+<!-- Formulario especifico para OLMAT -->
 <div class="olmat-form">
-  <h5><i class="bi bi-gear"></i> Configuracion OLMAT</h5>
+  <h5><i class="bi bi-gear"></i> {% trans "Configuracion OLMAT" %}</h5>
 
   <div class="olmat-guidelines alert alert-secondary">
-    <h6><i class="bi bi-info-circle"></i> Application instructions for OLMAT HHF device</h6>
-    <p>Incluye en tu solicitud:</p>
+    <h6><i class="bi bi-info-circle"></i> {% trans "Application instructions for OLMAT HHF device" %}</h6>
+    <p>{% trans "Incluye en tu solicitud:" %}</p>
     <ul>
-      <li>Short description of the activity (1-2 pages) con motivacion, objetivos y heat load / irradiation requirements (si se conocen).</li>
-      <li>Description of the resources required:</li>
+      <li>{% trans "Short description of the activity (1-2 pages) con motivacion, objetivos y heat load / irradiation requirements (si se conocen)." %}</li>
+      <li>{% trans "Description of the resources required:" %}</li>
       <ul>
-        <li>OLMAT diagnostics: thermocouples, IR pyrometry and thermography (1 ms), fast camera, optical spectroscopy, Langmuir probes.</li>
-        <li>Sample preparation at OLMAT laboratory: liquid metal wetting, sample holder design, etc.</li>
-        <li>Use of NBI beam, laser or both.</li>
+        <li>{% trans "OLMAT diagnostics: thermocouples, IR pyrometry and thermography (1 ms), fast camera, optical spectroscopy, Langmuir probes." %}</li>
+        <li>{% trans "Sample preparation at OLMAT laboratory: liquid metal wetting, sample holder design, etc." %}</li>
+        <li>{% trans "Use of NBI beam, laser or both." %}</li>
       </ul>
-      <li>Preferred dates and degree of flexibility.</li>
+      <li>{% trans "Preferred dates and degree of flexibility." %}</li>
     </ul>
   </div>
 
   <div class="row">
     <div class="col-md-6">
       <div class="mb-3">
-        <label for="olmat_service_type" class="form-label">Tipo de servicio *</label>
+        <label for="olmat_service_type" class="form-label">{% trans "Tipo de servicio *" %}</label>
         <select class="form-select" id="olmat_service_type" name="olmat_service_type" required>
-          <option value="">Selecciona el tipo de servicio</option>
-          <option value="technical">Servicio tecnico (5.000 EUR)</option>
-          <option value="research">Servicio de investigacion (10.305 EUR)</option>
+          <option value="">{% trans "Selecciona el tipo de servicio" %}</option>
+          <option value="technical">{% trans "Servicio tecnico (5.000 EUR)" %}</option>
+          <option value="research">{% trans "Servicio de investigacion (10.305 EUR)" %}</option>
         </select>
-        <div class="form-text">Servicio tecnico: operacion y preparacion de muestras. Servicio de investigacion: soporte cientifico y analisis.</div>
+        <div class="form-text">{% trans "Servicio tecnico: operacion y preparacion de muestras. Servicio de investigacion: soporte cientifico y analisis." %}</div>
       </div>
     </div>
     <div class="col-md-6">
       <div class="mb-3">
-        <label class="form-label">Fechas preferidas</label>
+        <label class="form-label">{% trans "Fechas preferidas" %}</label>
         <input type="hidden" id="olmat_preferred_dates" name="olmat_preferred_dates" value="">
         <div id="olmat-date-rows" class="date-rows">
           <div class="date-row" data-row="0">
             <input type="date" class="form-control" data-role="start">
-            <span class="date-sep">a</span>
+            <span class="date-sep">{% trans "a" %}</span>
             <input type="date" class="form-control" data-role="end">
-            <button type="button" class="btn btn-outline-danger btn-sm remove-date" aria-label="Eliminar periodo">&times;</button>
+            <button type="button" class="btn btn-outline-danger btn-sm remove-date" aria-label="{% trans 'Eliminar periodo' %}">&times;</button>
           </div>
         </div>
         <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-olmat-date">
-          <i class="bi bi-plus-circle"></i> Anadir periodo
+          <i class="bi bi-plus-circle"></i> {% trans "Anadir periodo" %}
         </button>
-        <div class="form-text">Propone uno o varios periodos no consecutivos.</div>
+        <div class="form-text">{% trans "Propone uno o varios periodos no consecutivos." %}</div>
       </div>
     </div>
   </div>
 
   <div class="mb-3">
-    <label for="olmat_activity_description" class="form-label">Short description (1-2 pages) *</label>
-    <textarea class="form-control olmat-wide-textarea" id="olmat_activity_description" name="olmat_activity_description" rows="5" required placeholder="Motivacion, objetivos y heat load / irradiation requirements"></textarea>
+    <label for="olmat_activity_description" class="form-label">{% trans "Short description (1-2 pages) *" %}</label>
+    <textarea class="form-control olmat-wide-textarea" id="olmat_activity_description" name="olmat_activity_description" rows="5" required placeholder="{% trans 'Motivacion, objetivos y heat load / irradiation requirements' %}"></textarea>
   </div>
 
   <div class="mb-3">
-    <label for="olmat_irradiation_requirements" class="form-label">Heat load / irradiation requirements</label>
-    <textarea class="form-control olmat-wide-textarea" id="olmat_irradiation_requirements" name="olmat_irradiation_requirements" rows="4" placeholder="Flujo termico previsto, duracion de pulsos, restricciones"></textarea>
+    <label for="olmat_irradiation_requirements" class="form-label">{% trans "Heat load / irradiation requirements" %}</label>
+    <textarea class="form-control olmat-wide-textarea" id="olmat_irradiation_requirements" name="olmat_irradiation_requirements" rows="4" placeholder="{% trans 'Flujo termico previsto, duracion de pulsos, restricciones' %}"></textarea>
   </div>
 
   <div class="row">
     <div class="col-md-6">
       <div class="mb-3">
-        <label class="form-label">OLMAT diagnostics necesarios</label>
+        <label class="form-label">{% trans "OLMAT diagnostics necesarios" %}</label>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_thermocouples" name="olmat_diagnostics" value="thermocouples">
-          <label class="form-check-label" for="olmat_thermocouples">Thermocouples</label>
+          <label class="form-check-label" for="olmat_thermocouples">{% trans "Thermocouples" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_pyrometry" name="olmat_diagnostics" value="pyrometry">
-          <label class="form-check-label" for="olmat_pyrometry">IR pyrometry</label>
+          <label class="form-check-label" for="olmat_pyrometry">{% trans "IR pyrometry" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_thermography" name="olmat_diagnostics" value="thermography">
-          <label class="form-check-label" for="olmat_thermography">IR thermography (1 ms)</label>
+          <label class="form-check-label" for="olmat_thermography">{% trans "IR thermography (1 ms)" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_fast_camera" name="olmat_diagnostics" value="fast_camera">
-          <label class="form-check-label" for="olmat_fast_camera">Fast camera</label>
+          <label class="form-check-label" for="olmat_fast_camera">{% trans "Fast camera" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_optical_spectroscopy" name="olmat_diagnostics" value="optical_spectroscopy">
-          <label class="form-check-label" for="olmat_optical_spectroscopy">Optical spectroscopy</label>
+          <label class="form-check-label" for="olmat_optical_spectroscopy">{% trans "Optical spectroscopy" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_langmuir_probes" name="olmat_diagnostics" value="langmuir_probes">
-          <label class="form-check-label" for="olmat_langmuir_probes">Langmuir probes</label>
+          <label class="form-check-label" for="olmat_langmuir_probes">{% trans "Langmuir probes" %}</label>
         </div>
       </div>
     </div>
 
     <div class="col-md-6">
       <div class="mb-3">
-        <label class="form-label">Sample preparation (lab OLMAT)</label>
+        <label class="form-label">{% trans "Sample preparation (lab OLMAT)" %}</label>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_liquid_metal_wetting" name="olmat_sample_prep" value="liquid_metal_wetting">
-          <label class="form-check-label" for="olmat_liquid_metal_wetting">Liquid metal wetting</label>
+          <label class="form-check-label" for="olmat_liquid_metal_wetting">{% trans "Liquid metal wetting" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_sample_holder_design" name="olmat_sample_prep" value="sample_holder_design">
-          <label class="form-check-label" for="olmat_sample_holder_design">Sample holder design</label>
+          <label class="form-check-label" for="olmat_sample_holder_design">{% trans "Sample holder design" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_sample_prep_other" name="olmat_sample_prep" value="other">
-          <label class="form-check-label" for="olmat_sample_prep_other">Other prep (etc.)</label>
+          <label class="form-check-label" for="olmat_sample_prep_other">{% trans "Other prep (etc.)" %}</label>
         </div>
-        <textarea class="form-control mt-2" id="olmat_sample_prep_notes" name="olmat_sample_prep_notes" rows="2" placeholder="Describe otras preparaciones necesarias" style="display:none;"></textarea>
+        <textarea class="form-control mt-2" id="olmat_sample_prep_notes" name="olmat_sample_prep_notes" rows="2" placeholder="{% trans 'Describe otras preparaciones necesarias' %}" style="display:none;"></textarea>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Use of beam</label>
+        <label class="form-label">{% trans "Use of beam" %}</label>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_nbi_beam" name="olmat_beam_usage" value="nbi">
-          <label class="form-check-label" for="olmat_nbi_beam">NBI beam</label>
+          <label class="form-check-label" for="olmat_nbi_beam">{% trans "NBI beam" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_laser_beam" name="olmat_beam_usage" value="laser">
-          <label class="form-check-label" for="olmat_laser_beam">Laser</label>
+          <label class="form-check-label" for="olmat_laser_beam">{% trans "Laser" %}</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="olmat_both_beams" name="olmat_beam_usage" value="both">
-          <label class="form-check-label" for="olmat_both_beams">Both</label>
+          <label class="form-check-label" for="olmat_both_beams">{% trans "Both" %}</label>
         </div>
       </div>
     </div>
@@ -129,18 +130,18 @@
   <div class="row">
     <div class="col-md-6">
       <div class="mb-3">
-        <label for="olmat_flexibility" class="form-label">Grado de flexibilidad</label>
+        <label for="olmat_flexibility" class="form-label">{% trans "Grado de flexibilidad" %}</label>
         <select class="form-select" id="olmat_flexibility" name="olmat_flexibility">
-          <option value="high">Alta flexibilidad</option>
-          <option value="medium">Flexibilidad media</option>
-          <option value="low">Baja flexibilidad</option>
+          <option value="high">{% trans "Alta flexibilidad" %}</option>
+          <option value="medium">{% trans "Flexibilidad media" %}</option>
+          <option value="low">{% trans "Baja flexibilidad" %}</option>
         </select>
       </div>
     </div>
     <div class="col-md-6">
       <div class="mb-3">
-        <label for="olmat_additional_requirements" class="form-label">Requisitos adicionales</label>
-        <textarea class="form-control olmat-wide-textarea" id="olmat_additional_requirements" name="olmat_additional_requirements" rows="4" placeholder="Aclaraciones tecnicas, referencias, etc."></textarea>
+        <label for="olmat_additional_requirements" class="form-label">{% trans "Requisitos adicionales" %}</label>
+        <textarea class="form-control olmat-wide-textarea" id="olmat_additional_requirements" name="olmat_additional_requirements" rows="4" placeholder="{% trans 'Aclaraciones tecnicas, referencias, etc.' %}"></textarea>
       </div>
     </div>
   </div>

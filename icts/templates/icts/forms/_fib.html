@@ -1,35 +1,36 @@
+{% load i18n %}
 <div class="tech-card">
-  <h4 class="tech-title"><i class="bi bi-bezier"></i> FIB - Requirements for Sample Acceptance</h4>
+  <h4 class="tech-title"><i class="bi bi-bezier"></i> {% trans "FIB - Requirements for Sample Acceptance" %}</h4>
   
   <!-- Requirements for Sample Acceptance -->
   <div class="requirements-section">
-    <h5 class="section-title"><i class="bi bi-list-check"></i> Requirements for Sample Acceptance</h5>
+    <h5 class="section-title"><i class="bi bi-list-check"></i> {% trans "Requirements for Sample Acceptance" %}</h5>
     <div class="requirements-list">
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span>Mirror polished or at least with 2500 grit SiC sandpaper.</span>
+        <span>{% trans "Mirror polished or at least with 2500 grit SiC sandpaper." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-rulers"></i></span>
-        <span>Do not exceed a maximum height of 2 cm, a width of 4 cm and, a length of 4 cm.</span>
+        <span>{% trans "Do not exceed a maximum height of 2 cm, a width of 4 cm and, a length of 4 cm." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-shield-check"></i></span>
-        <span>It is required to provide a clean sample, wrapped in foil or cloth (avoid plastic) and legible identification.</span>
+        <span>{% trans "It is required to provide a clean sample, wrapped in foil or cloth (avoid plastic) and legible identification." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-lightning"></i></span>
-        <span>Conductive sample.</span>
+        <span>{% trans "Conductive sample." %}</span>
       </div>
     </div>
   </div>
 
   <!-- Sample Description -->
   <div class="sample-description-section">
-    <h5 class="section-title"><i class="bi bi-file-text"></i> Sample Description</h5>
+    <h5 class="section-title"><i class="bi bi-file-text"></i> {% trans "Sample Description" %}</h5>
     <div class="samples-container" id="fib-samples-container">
       <div class="samples-header">
-        <button type="button" id="add-fib-sample" class="btn btn-sm btn-outline-primary" onclick="addFibSample(this)"><i class="bi bi-plus-circle"></i> Añadir Muestra</button>
+        <button type="button" id="add-fib-sample" class="btn btn-sm btn-outline-primary" onclick="addFibSample(this)"><i class="bi bi-plus-circle"></i> {% trans "Añadir Muestra" %}</button>
       </div>
       <div id="fib-samples-forms">
         <!-- Las muestras se añadirán dinámicamente aquí -->
@@ -39,64 +40,64 @@
 
   <!-- Sample Safe Handling -->
   <div class="safe-handling-section">
-    <h5 class="section-title"><i class="bi bi-exclamation-triangle"></i> Sample Safe Handling</h5>
+    <h5 class="section-title"><i class="bi bi-exclamation-triangle"></i> {% trans "Sample Safe Handling" %}</h5>
     <div class="safety-questions">
       <div class="safety-row">
-        <label class="safety-question">¿Toxic?</label>
+        <label class="safety-question">{% trans "¿Toxic?" %}</label>
         <input type="checkbox" name="fib_toxic" class="safety-checkbox">
-        <span class="safety-label">NO</span>
+        <span class="safety-label">{% trans "NO" %}</span>
       </div>
       <div class="safety-row">
-        <label class="safety-question">¿Corrosive?</label>
+        <label class="safety-question">{% trans "¿Corrosive?" %}</label>
         <input type="checkbox" name="fib_corrosive" class="safety-checkbox">
-        <span class="safety-label">NO</span>
+        <span class="safety-label">{% trans "NO" %}</span>
       </div>
       <div class="safety-row">
-        <label class="safety-question">¿Irritating?</label>
+        <label class="safety-question">{% trans "¿Irritating?" %}</label>
         <input type="checkbox" name="fib_irritating" class="safety-checkbox">
-        <span class="safety-label">NO</span>
+        <span class="safety-label">{% trans "NO" %}</span>
       </div>
       <div class="safety-row">
-        <label class="safety-question">¿Radioactive?</label>
+        <label class="safety-question">{% trans "¿Radioactive?" %}</label>
         <input type="checkbox" name="fib_radioactive" class="safety-checkbox">
-        <span class="safety-label">NO</span>
+        <span class="safety-label">{% trans "NO" %}</span>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Further comments about safety</label>
-      <textarea name="fib_safety_comments" rows="3" class="form-input" placeholder="Additional safety comments"></textarea>
+      <label class="form-label">{% trans "Further comments about safety" %}</label>
+      <textarea name="fib_safety_comments" rows="3" class="form-input" placeholder="{% trans 'Additional safety comments' %}"></textarea>
     </div>
   </div>
 
   <!-- Important Information -->
   <div class="important-info-section">
-    <h5 class="section-title"><i class="bi bi-info-circle"></i> Important Information</h5>
+    <h5 class="section-title"><i class="bi bi-info-circle"></i> {% trans "Important Information" %}</h5>
     
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Do you specify a particular area of the sample?</label>
+        <label class="info-question-text">{% trans "Do you specify a particular area of the sample?" %}</label>
         <input type="checkbox" name="fib_specific_area" class="info-checkbox">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
       <div class="form-group">
-        <label class="form-label">Describe where:</label>
-        <input type="text" name="fib_area_description" class="form-input" placeholder="Describe el área específica">
+        <label class="form-label">{% trans "Describe where:" %}</label>
+        <input type="text" name="fib_area_description" class="form-input" placeholder="{% trans 'Describe el área específica' %}">
       </div>
     </div>
 
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Are specific dimensions required?</label>
+        <label class="info-question-text">{% trans "Are specific dimensions required?" %}</label>
         <input type="checkbox" name="fib_specific_dimensions" class="info-checkbox">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Depth (µm)?</label>
+          <label class="form-label">{% trans "Depth (µm)?" %}</label>
           <input type="number" name="fib_depth_um" class="form-input" placeholder="0" step="0.1">
         </div>
         <div class="form-group">
-          <label class="form-label">Length (μm)</label>
+          <label class="form-label">{% trans "Length (μm)" %}</label>
           <input type="number" name="fib_length_um" class="form-input" placeholder="0" step="0.1">
         </div>
       </div>
@@ -104,31 +105,31 @@
 
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Is the sample conductive?</label>
+        <label class="info-question-text">{% trans "Is the sample conductive?" %}</label>
         <input type="checkbox" name="fib_sample_conductive" class="info-checkbox">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Is a final polishing with low voltage necessary?</label>
+        <label class="info-question-text">{% trans "Is a final polishing with low voltage necessary?" %}</label>
         <input type="checkbox" name="fib_final_polishing" class="info-checkbox">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <div class="info-question">
       <div class="question-row">
-        <label class="info-question-text">Is the sample sensitive to the Ga beam?</label>
+        <label class="info-question-text">{% trans "Is the sample sensitive to the Ga beam?" %}</label>
         <input type="checkbox" name="fib_ga_sensitive" class="info-checkbox">
-        <span class="info-label">NO</span>
+        <span class="info-label">{% trans "NO" %}</span>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Further comments about FIB analysis</label>
-      <textarea name="fib_further_comments" rows="4" class="form-input" placeholder="Additional comments about FIB analysis"></textarea>
+      <label class="form-label">{% trans "Further comments about FIB analysis" %}</label>
+      <textarea name="fib_further_comments" rows="4" class="form-input" placeholder="{% trans 'Additional comments about FIB analysis' %}"></textarea>
     </div>
   </div>
 </div>
@@ -137,25 +138,25 @@
 <template id="empty-fib-sample-form">
   <div class="sample-card">
     <div class="sample-header">
-      <h6 class="sample-title">Muestra <span class="sample-number">1</span></h6>
-      <button type="button" class="btn btn-sm btn-outline-danger remove-sample"><i class="bi bi-trash"></i> Eliminar</button>
+      <h6 class="sample-title">{% trans "Muestra" %} <span class="sample-number">1</span></h6>
+      <button type="button" class="btn btn-sm btn-outline-danger remove-sample"><i class="bi bi-trash"></i> {% trans "Eliminar" %}</button>
     </div>
     <div class="sample-form-grid">
       <div class="form-group">
-        <label class="form-label">Identification</label>
-        <input type="text" name="fib_sample_0_identification" class="form-input" placeholder="ID de la muestra">
+        <label class="form-label">{% trans "Identification" %}</label>
+        <input type="text" name="fib_sample_0_identification" class="form-input" placeholder="{% trans 'ID de la muestra' %}">
       </div>
       <div class="form-group">
-        <label class="form-label">Name</label>
-        <input type="text" name="fib_sample_0_name" class="form-input" placeholder="Nombre de la muestra">
+        <label class="form-label">{% trans "Name" %}</label>
+        <input type="text" name="fib_sample_0_name" class="form-input" placeholder="{% trans 'Nombre de la muestra' %}">
       </div>
       <div class="form-group">
-        <label class="form-label">Details (Surface condition, nature, chemical composition, ...)</label>
+        <label class="form-label">{% trans "Details (Surface condition, nature, chemical composition, ...)" %}</label>
         <div class="details-container">
           <div class="warning-indicator">
-            <span class="warning-text">Warning!</span>
+            <span class="warning-text">{% trans "Warning!" %}</span>
           </div>
-          <textarea name="fib_sample_0_details" rows="3" class="form-input" placeholder="Detalles de la muestra"></textarea>
+          <textarea name="fib_sample_0_details" rows="3" class="form-input" placeholder="{% trans 'Detalles de la muestra' %}"></textarea>
         </div>
       </div>
     </div>

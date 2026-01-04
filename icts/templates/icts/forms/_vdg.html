@@ -1,79 +1,80 @@
+{% load i18n %}
 <div class="tech-card">
-  <h4 class="tech-title"><i class="bi bi-lightning-charge"></i> Van de Graaff (L07) - Sample data</h4>
+  <h4 class="tech-title"><i class="bi bi-lightning-charge"></i> {% trans "Van de Graaff (L07) - Sample data" %}</h4>
 
   <div class="requirements-section">
-    <h5 class="section-title"><i class="bi bi-list-check"></i> Acceptance of the sample</h5>
+    <h5 class="section-title"><i class="bi bi-list-check"></i> {% trans "Acceptance of the sample" %}</h5>
     <div class="requirements-list">
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">The material or device must be in a solid state.</span>
+        <span class="requirement-text">{% trans "The material or device must be in a solid state." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">Be less than 3 mm thick.</span>
+        <span class="requirement-text">{% trans "Be less than 3 mm thick." %}</span>
       </div>
       <div class="requirement-item">
         <span class="requirement-icon"><i class="bi bi-gem"></i></span>
-        <span class="requirement-text">Less than 15 cm x 15 cm.</span>
+        <span class="requirement-text">{% trans "Less than 15 cm x 15 cm." %}</span>
       </div>
     </div>
   </div>
 
   <div class="sample-description-section">
-    <h5 class="section-title"><i class="bi bi-card-list"></i> Sample data</h5>
+    <h5 class="section-title"><i class="bi bi-card-list"></i> {% trans "Sample data" %}</h5>
     <div class="samples-container" id="vdg-samples-container">
       <div class="sample-card" data-sample-index="0">
         <div class="sample-header">
-          <h6 class="sample-title">Sample 1</h6>
+          <h6 class="sample-title">{% trans "Sample" %} 1</h6>
           <button type="button" class="btn-remove-sample" onclick="removeVdgSample(this)" style="display: none;">
             <i class="bi bi-trash"></i>
           </button>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Code</label>
-            <input type="text" name="vdg_sample_0_code" class="form-input" placeholder="Sample code">
+            <label class="form-label">{% trans "Code" %}</label>
+            <input type="text" name="vdg_sample_0_code" class="form-input" placeholder="{% trans 'Sample code' %}">
           </div>
           <div class="form-group">
-            <label class="form-label">Material</label>
-            <input type="text" name="vdg_sample_0_material" class="form-input" placeholder="Material type">
+            <label class="form-label">{% trans "Material" %}</label>
+            <input type="text" name="vdg_sample_0_material" class="form-input" placeholder="{% trans 'Material type' %}">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Electron fluence (e-)</label>
+            <label class="form-label">{% trans "Electron fluence (e-)" %}</label>
             <input type="number" name="vdg_sample_0_electron_fluence" class="form-input" placeholder="0" step="0.1">
           </div>
           <div class="form-group">
-            <label class="form-label">Temperature (C)</label>
+            <label class="form-label">{% trans "Temperature (C)" %}</label>
             <input type="number" name="vdg_sample_0_temperature" class="form-input" placeholder="0" step="0.1">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Atmosphere (gas)</label>
-            <input type="text" name="vdg_sample_0_atmosphere" class="form-input" placeholder="Gas atmosphere">
+            <label class="form-label">{% trans "Atmosphere (gas)" %}</label>
+            <input type="text" name="vdg_sample_0_atmosphere" class="form-input" placeholder="{% trans 'Gas atmosphere' %}">
           </div>
           <div class="form-group">
-            <label class="form-label">Sample size</label>
-            <input type="text" name="vdg_sample_0_sample_size" class="form-input" placeholder="Sample dimensions">
+            <label class="form-label">{% trans "Sample size" %}</label>
+            <input type="text" name="vdg_sample_0_sample_size" class="form-input" placeholder="{% trans 'Sample dimensions' %}">
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Sample geometry</label>
-          <input type="text" name="vdg_sample_0_sample_geometry" class="form-input" placeholder="Geometry description">
+          <label class="form-label">{% trans "Sample geometry" %}</label>
+          <input type="text" name="vdg_sample_0_sample_geometry" class="form-input" placeholder="{% trans 'Geometry description' %}">
         </div>
       </div>
     </div>
     <button type="button" class="btn-add-sample" onclick="addVdgSample(this)">
-      <i class="bi bi-plus-circle"></i> Add Sample
+      <i class="bi bi-plus-circle"></i> {% trans "Add Sample" %}
     </button>
   </div>
 
   <div class="experiment-description-section">
-    <h5 class="section-title"><i class="bi bi-clipboard-data"></i> Description of the Experiment to be Carried Out</h5>
+    <h5 class="section-title"><i class="bi bi-clipboard-data"></i> {% trans "Description of the Experiment to be Carried Out" %}</h5>
     <div class="form-group">
-      <textarea name="vdg_experiment_description" rows="6" class="form-input" placeholder="Detailed description of the experiment to be carried out"></textarea>
+      <textarea name="vdg_experiment_description" rows="6" class="form-input" placeholder="{% trans 'Detailed description of the experiment to be carried out' %}"></textarea>
     </div>
   </div>
 </div>
