@@ -775,7 +775,7 @@ def icts_user_dashboard(request):
 
     reviewed_qs = ProposalReview.objects.filter(
         proposal=OuterRef("pk"),
-        decision__in=["approve", "reject", "request_changes"]
+        status="submitted",
     )
     evaluated = qs.annotate(has_review=Exists(reviewed_qs)).filter(has_review=True)
 
@@ -1149,7 +1149,7 @@ def proposal_detail(request, pk):
             obj = get_object_or_404(AccessProposal, pk=pk, applicant=request.user)
 
     reviews = obj.reviews.select_related("reviewer").all()
-    decided = obj.reviews.exclude(decision="pending").count()
+    decided = obj.reviews.filter(status="submitted").count()
     total_reviews = obj.reviews.count()
     min_required_reviews = getattr(settings, "ICTS_MIN_REVIEWS_REQUIRED", 4)
     required_reviews = min(min_required_reviews, total_reviews)
@@ -1177,7 +1177,7 @@ def proposal_detail(request, pk):
     if is_applicant and not is_staff_role:
         # Usuario solicitante: solo ver evaluaciones cuando hay decisión final
         if show_reviews_to_applicant:
-            completed = obj.reviews.exclude(decision="pending").order_by("updated_at", "id")
+            completed = obj.reviews.filter(status="submitted").order_by("updated_at", "id")
             reviews = list(completed)
             for i, r in enumerate(completed, start=1):
                 anon_reviews.append({"review": r, "alias": f"Revisor {i}"})
@@ -1197,7 +1197,7 @@ def proposal_detail(request, pk):
     review_summary = None
     review_summary_comments = []
     if is_responsable_user:
-        completed_reviews = obj.reviews.exclude(decision="pending")
+        completed_reviews = obj.reviews.filter(status="submitted")
         avg_scores = completed_reviews.aggregate(
             avg_scientific=Avg("score_scientific_quality"),
             avg_infrastructure=Avg("score_need_infrastructure"),
@@ -1483,11 +1483,24 @@ def reviewer_inbox(request):
     pending = (
         AccessProposal.objects.filter(status="submitted")
         .filter(_icts_facilities_q())
+        .filter(reviews__reviewer=request.user, reviews__status="draft")
         .order_by("-created_at")
+        .distinct()
     )
-    # Para revisores: mostrar solo sus evaluaciones
-    mine = ProposalReview.objects.filter(reviewer=request.user).filter(proposal_filter).select_related("proposal")
-    return render(request, "icts/reviewer_inbox.html", {"pending": pending, "mine": mine})
+    completed = (
+        ProposalReview.objects.filter(
+            reviewer=request.user,
+            status="submitted",
+            proposal__status="submitted",
+        )
+        .filter(proposal_filter)
+        .select_related("proposal")
+    )
+    return render(
+        request,
+        "icts/reviewer_inbox.html",
+        {"pending": pending, "completed": completed},
+    )
 
 @login_required(login_url="/accounts/login/icts/")
 @never_cache
@@ -1509,14 +1522,16 @@ def reviewer_dashboard_new(request):
     # Para responsables/managers: mostrar todas las evaluaciones
     pending_reviews = ProposalReview.objects.filter(
         reviewer=request.user,
-        decision='pending'
+        status="draft",
+        proposal__status="submitted",
     ).filter(
         proposal_filter
     ).select_related('proposal')
 
     completed_reviews = ProposalReview.objects.filter(
         reviewer=request.user,
-        decision__in=['approve', 'reject', 'request_changes']
+        status="submitted",
+        proposal__status="submitted",
     ).filter(
         proposal_filter
     )
@@ -1572,7 +1587,8 @@ def review_history(request):
     
     # Obtener todas las evaluaciones del revisor
     reviews = ProposalReview.objects.filter(
-        reviewer=request.user
+        reviewer=request.user,
+        status="submitted",
     ).select_related('proposal', 'proposal__applicant').order_by('-updated_at')
     
     # Aplicar filtros
@@ -1653,7 +1669,7 @@ def responsable_dashboard(request):
     base_qs = AccessProposal.objects.filter(_icts_facilities_q())
     submitted_qs = AccessProposal.objects.filter(status="submitted").filter(_icts_facilities_q())
     min_required_reviews = getattr(settings, "ICTS_MIN_REVIEWS_REQUIRED", 4)
-    review_completed_filter = Q(reviews__decision__in=['approve', 'reject', 'request_changes'])
+    review_completed_filter = Q(reviews__status="submitted")
     proposal_filter = _icts_facilities_q(prefix="proposal__")
     now = timezone.now()
     overdue_threshold = now - timedelta(days=10)
@@ -1745,7 +1761,7 @@ def responsable_dashboard(request):
             completed = [
                 review
                 for review in proposal.reviews.all()
-                if review.decision != "pending"
+                if review.status == "submitted"
             ]
             reviewer_names = []
             for review in completed:
@@ -1773,13 +1789,13 @@ def responsable_dashboard(request):
     for reviewer in reviewers:
         completed = ProposalReview.objects.filter(
             reviewer=reviewer,
-            decision__in=['approve', 'reject', 'request_changes']
+            status="submitted",
         ).filter(
             proposal_filter
         ).count()
         pending = ProposalReview.objects.filter(
             reviewer=reviewer,
-            decision="pending"
+            status="draft",
         ).filter(
             proposal_filter
         ).count()
@@ -2269,44 +2285,69 @@ def review_start(request, pk):
     if not obj.has_icts_techniques:
         messages.error(request, "Esta propuesta es solo OLMAT y no entra en revision ICTS.")
         return redirect("icts:reviewer_inbox")
-    # Asegura que exista el registro de review para este revisor
-    review, _ = ProposalReview.objects.get_or_create(proposal=obj, reviewer=request.user)
+    review = get_object_or_404(ProposalReview, proposal=obj, reviewer=request.user)
+    readonly = review.status == "submitted"
 
     if request.method == "POST":
+        if readonly:
+            return HttpResponseForbidden("Revision ya enviada.")
         form = ProposalReviewForm(request.POST, instance=review)
-        action = request.POST.get('action', 'save_draft')
-        
+        action = request.POST.get("action", "save_draft")
+        if action == "submit":
+            action = "submit_review"
+
         if form.is_valid():
-            if action == 'submit':
-                # Validar que la revisión esté completa antes de enviar
+            if action == "save_draft":
+                review = form.save(commit=False)
+                review.status = "draft"
+                review.submitted_at = None
+                review.save()
+                messages.success(request, "Borrador guardado.")
+                return redirect("icts:reviewer_inbox")
+            if action == "submit_review":
+                # Validar que la revision este completa antes de enviar
                 feasibility_ok = form.cleaned_data.get("feasibility_ok")
                 decision = form.cleaned_data.get("decision")
                 if feasibility_ok is None:
-                    messages.error(request, "Debes indicar si la propuesta es viable técnicamente.")
+                    messages.error(request, "Debes indicar si la propuesta es viable tecnicamente.")
                 elif decision not in {"approve", "request_changes", "reject"}:
-                    messages.error(request, "Debes seleccionar una recomendación final.")
+                    messages.error(request, "Debes seleccionar una recomendacion final.")
                 else:
-                    form.save()
-                    # Enviar notificación de revisión completada
+                    review = form.save(commit=False)
+                    review.status = "submitted"
+                    review.submitted_at = timezone.now()
+                    review.save()
+                    # Enviar notificacion de revision completada
                     send_proposal_notification(obj, 'review_completed')
-                    messages.success(request, "Evaluación enviada correctamente.")
+                    messages.success(request, "Evaluacion enviada correctamente.")
+                    return redirect("icts:reviewer_inbox")
+            elif action == "request_changes":
+                change_text = (request.POST.get("change_request_text") or "").strip()
+                if not change_text:
+                    messages.error(request, "Debes indicar los cambios solicitados.")
+                else:
+                    review = form.save(commit=False)
+                    review.status = "draft"
+                    review.submitted_at = None
+                    review.change_request_text = change_text
+                    review.change_request_at = timezone.now()
+                    review.save()
+                    messages.success(request, "Solicitud de cambios enviada.")
                     return redirect("icts:reviewer_inbox")
             else:
-                # Guardar como borrador
-                form.save()
-                messages.success(request, "Borrador guardado.")
-                return redirect("icts:reviewer_inbox")
+                messages.error(request, "Accion no valida.")
         else:
             messages.error(request, "Corrige los errores del formulario.")
     else:
         form = ProposalReviewForm(instance=review)
+    readonly = review.status == "submitted"
 
     return render(request, "icts/review_form.html", {
-        "proposal": obj, 
+        "proposal": obj,
         "form": form,
-        "review": review
+        "review": review,
+        "readonly": readonly,
     })
-
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_responsable, raise_exception=True)
 @never_cache
@@ -2325,7 +2366,7 @@ def proposal_decide(request, pk):
             total_reviews = obj.reviews.count()
             min_required_reviews = getattr(settings, "ICTS_MIN_REVIEWS_REQUIRED", 4)
             required_reviews = min(min_required_reviews, total_reviews)
-            decided = obj.reviews.exclude(decision="pending").count()
+            decided = obj.reviews.filter(status="submitted").count()
             submitted_at = obj.submitted_at or obj.created_at or timezone.now()
             days_since_submitted = (timezone.now().date() - submitted_at.date()).days
             if decided < required_reviews and days_since_submitted < 10:

@@ -29,6 +29,7 @@ def _create_pending_reviews(proposal, count):
             proposal=proposal,
             reviewer=reviewer,
             decision="pending",
+            status="draft",
         )
 
 

@@ -54,11 +54,13 @@ def test_responsable_dashboard_num_reviews_and_reviewers_done(client):
         proposal=proposal,
         reviewer=reviewer_one,
         decision="approve",
+        status="submitted",
     )
     ProposalReview.objects.create(
         proposal=proposal,
         reviewer=reviewer_two,
         decision="approve",
+        status="submitted",
     )
 
     client.force_login(responsable)

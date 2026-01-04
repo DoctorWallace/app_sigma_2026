@@ -107,6 +107,7 @@ def test_submit_changes_requested_keeps_reviews(client):
         reviewer=reviewer,
         decision="reject",
         comments="Old review",
+        status="submitted",
     )
 
     client.force_login(user)

@@ -2,6 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.urls import reverse
+from django.utils import timezone
 
 from icts.models import AccessProposal, ProposalReview
 
@@ -38,6 +39,7 @@ def test_responsable_dashboard_uses_completed_reviews_for_pending_list(client):
             proposal=proposal,
             reviewer=reviewer,
             decision="pending",
+            status="draft",
         )
 
     client.force_login(responsable)
@@ -46,7 +48,11 @@ def test_responsable_dashboard_uses_completed_reviews_for_pending_list(client):
     pendientes = list(response.context["pendientes"])
     assert proposal not in pendientes
 
-    ProposalReview.objects.filter(proposal=proposal).update(decision="approve")
+    ProposalReview.objects.filter(proposal=proposal).update(
+        decision="approve",
+        status="submitted",
+        submitted_at=timezone.now(),
+    )
     response = client.get(reverse("icts:responsable_dashboard"))
     pendientes = list(response.context["pendientes"])
     assert proposal in pendientes
@@ -71,6 +77,7 @@ def test_responsable_dashboard_allows_decision_with_two_reviews(client):
             proposal=proposal,
             reviewer=reviewer,
             decision="pending",
+            status="draft",
         )
 
     client.force_login(responsable)
@@ -78,7 +85,11 @@ def test_responsable_dashboard_allows_decision_with_two_reviews(client):
     pendientes = list(response.context["pendientes"])
     assert proposal not in pendientes
 
-    ProposalReview.objects.filter(proposal=proposal).update(decision="approve")
+    ProposalReview.objects.filter(proposal=proposal).update(
+        decision="approve",
+        status="submitted",
+        submitted_at=timezone.now(),
+    )
     response = client.get(reverse("icts:responsable_dashboard"))
     pendientes = list(response.context["pendientes"])
     assert proposal in pendientes

@@ -29,12 +29,17 @@ def test_review_start_submit_updates_decision(client):
         status="submitted",
         facility_sem=True,
     )
+    ProposalReview.objects.create(
+        proposal=proposal,
+        reviewer=reviewer,
+        status="draft",
+    )
 
     client.force_login(reviewer)
     response = client.post(
         reverse("icts:review_start", args=[proposal.pk]),
         data={
-            "action": "submit",
+            "action": "submit_review",
             "feasibility_ok": "True",
             "decision": "approve",
         },
@@ -44,6 +49,8 @@ def test_review_start_submit_updates_decision(client):
     assert response.url == reverse("icts:reviewer_inbox")
     review = ProposalReview.objects.get(proposal=proposal, reviewer=reviewer)
     assert review.decision == "approve"
+    assert review.status == "submitted"
+    assert review.submitted_at is not None
 
 
 @pytest.mark.django_db
@@ -56,6 +63,11 @@ def test_review_start_save_draft_allows_pending_decision(client):
         status="submitted",
         facility_sem=True,
     )
+    ProposalReview.objects.create(
+        proposal=proposal,
+        reviewer=reviewer,
+        status="draft",
+    )
 
     client.force_login(reviewer)
     response = client.post(
@@ -67,6 +79,7 @@ def test_review_start_save_draft_allows_pending_decision(client):
     assert response.url == reverse("icts:reviewer_inbox")
     review = ProposalReview.objects.get(proposal=proposal, reviewer=reviewer)
     assert review.decision == "pending"
+    assert review.status == "draft"
 
 
 @pytest.mark.django_db

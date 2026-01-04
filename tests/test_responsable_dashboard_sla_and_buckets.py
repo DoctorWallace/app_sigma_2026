@@ -48,11 +48,13 @@ def test_responsable_dashboard_sla_buckets(client):
         proposal=proposal_one_review,
         reviewer=reviewer_one,
         decision="approve",
+        status="submitted",
     )
     ProposalReview.objects.create(
         proposal=proposal_one_review,
         reviewer=reviewer_two,
         decision="pending",
+        status="draft",
     )
 
     proposal_overdue = AccessProposal.objects.create(

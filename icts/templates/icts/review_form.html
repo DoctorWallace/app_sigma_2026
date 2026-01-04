@@ -40,13 +40,13 @@
         <div class="form-group mb-4">
           <label class="form-label"><i class="bi bi-check-circle"></i> {% trans "¿Es viable técnicamente esta propuesta?" %}</label>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="feasibility_ok" id="feasibility_yes" value="True" {% if review.feasibility_ok %}checked{% endif %}>
+            <input class="form-check-input" type="radio" name="feasibility_ok" id="feasibility_yes" value="True" {% if review.feasibility_ok %}checked{% endif %}{% if readonly %} disabled{% endif %}>
             <label class="form-check-label" for="feasibility_yes">
               <i class="bi bi-check-circle text-success"></i> {% trans "Sí, es viable" %}
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="feasibility_ok" id="feasibility_no" value="False" {% if not review.feasibility_ok and review.feasibility_ok is not None %}checked{% endif %}>
+            <input class="form-check-input" type="radio" name="feasibility_ok" id="feasibility_no" value="False" {% if not review.feasibility_ok and review.feasibility_ok is not None %}checked{% endif %}{% if readonly %} disabled{% endif %}>
             <label class="form-check-label" for="feasibility_no">
               <i class="bi bi-x-circle text-danger"></i> {% trans "No es viable" %}
             </label>
@@ -58,7 +58,7 @@
           <div class="col-md-4">
             <div class="form-group">
               <label class="form-label"><i class="bi bi-star"></i> {% trans "Calidad Científica (1-5)" %}</label>
-              <select name="score_scientific_quality" class="form-select">
+              <select name="score_scientific_quality" class="form-select"{% if readonly %} disabled{% endif %}>
                 <option value="">{% trans "Selecciona una puntuación" %}</option>
                 <option value="1" {% if review.score_scientific_quality == 1 %}selected{% endif %}>1 - {% trans "Muy baja" %}</option>
                 <option value="2" {% if review.score_scientific_quality == 2 %}selected{% endif %}>2 - {% trans "Baja" %}</option>
@@ -71,7 +71,7 @@
           <div class="col-md-4">
             <div class="form-group">
               <label class="form-label"><i class="bi bi-building"></i> {% trans "Necesidad de Infraestructura (1-5)" %}</label>
-              <select name="score_need_infrastructure" class="form-select">
+              <select name="score_need_infrastructure" class="form-select"{% if readonly %} disabled{% endif %}>
                 <option value="">{% trans "Selecciona una puntuación" %}</option>
                 <option value="1" {% if review.score_need_infrastructure == 1 %}selected{% endif %}>1 - {% trans "No necesita" %}</option>
                 <option value="2" {% if review.score_need_infrastructure == 2 %}selected{% endif %}>2 - {% trans "Necesidad baja" %}</option>
@@ -84,7 +84,7 @@
           <div class="col-md-4">
             <div class="form-group">
               <label class="form-label"><i class="bi bi-briefcase"></i> {% trans "Potencial Industrial (1-5)" %}</label>
-              <select name="score_industrial_potential" class="form-select">
+              <select name="score_industrial_potential" class="form-select"{% if readonly %} disabled{% endif %}>
                 <option value="">{% trans "Selecciona una puntuación" %}</option>
                 <option value="1" {% if review.score_industrial_potential == 1 %}selected{% endif %}>1 - {% trans "Sin interés" %}</option>
                 <option value="2" {% if review.score_industrial_potential == 2 %}selected{% endif %}>2 - {% trans "Bajo interés" %}</option>
@@ -99,7 +99,7 @@
         <!-- Decisión -->
         <div class="form-group mb-4">
           <label class="form-label"><i class="bi bi-flag"></i> {% trans "Recomendación Final" %}</label>
-          <select name="decision" class="form-select">
+          <select name="decision" class="form-select"{% if readonly %} disabled{% endif %}>
             <option value="">{% trans "Selecciona tu recomendación" %}</option>
             <option value="approve" {% if review.decision == 'approve' %}selected{% endif %}>
               {% trans "Aprobar - La propuesta cumple con los criterios" %}
@@ -116,21 +116,42 @@
         <!-- Comentarios -->
         <div class="form-group mb-4">
           <label class="form-label"><i class="bi bi-chat-text"></i> {% trans "Comentarios Detallados" %}</label>
-          <textarea name="comments" rows="6" class="form-control" placeholder="{% trans 'Proporciona comentarios detallados sobre tu evaluación, incluyendo fortalezas, debilidades y recomendaciones...' %}">{{ review.comments }}</textarea>
+          <textarea name="comments" rows="6" class="form-control" placeholder="{% trans 'Proporciona comentarios detallados sobre tu evaluación, incluyendo fortalezas, debilidades y recomendaciones...' %}"{% if readonly %} disabled{% endif %}>{{ review.comments }}</textarea>
         </div>
 
-        <!-- Botones de acción -->
-        <div class="d-flex gap-2 justify-content-center">
-          <button class="btn btn-success btn-lg" type="submit" name="action" value="submit">
-            <i class="bi bi-send"></i> {% trans "Enviar Evaluación" %}
-          </button>
-          <button class="btn btn-outline-primary btn-lg" type="submit" name="action" value="save_draft">
-            <i class="bi bi-save"></i> {% trans "Guardar Borrador" %}
-          </button>
-          <a class="btn btn-outline-secondary btn-lg" href="{% url 'icts:reviewer_inbox' %}">
-            <i class="bi bi-arrow-left"></i> {% trans "Volver a la bandeja" %}
-          </a>
+        {% if not readonly %}
+        <div class="form-group mb-4">
+          <label class="form-label"><i class="bi bi-arrow-clockwise"></i> {% trans "Solicitar cambios" %}</label>
+          <textarea name="change_request_text" rows="3" class="form-control" placeholder="{% trans 'Describe los cambios solicitados al responsable.' %}">{{ review.change_request_text }}</textarea>
         </div>
+        {% endif %}
+
+        <!-- Botones de acción -->
+        {% if readonly %}
+          <div class="d-flex gap-2 justify-content-center">
+            <a class="btn btn-outline-secondary btn-lg" href="{% url 'icts:reviewer_inbox' %}">
+              <i class="bi bi-arrow-left"></i> {% trans "Volver a la bandeja" %}
+            </a>
+            <a class="btn btn-outline-primary btn-lg" href="{% url 'icts:proposal_detail' proposal.pk %}">
+              <i class="bi bi-eye"></i> {% trans "Ver propuesta completa" %}
+            </a>
+          </div>
+        {% else %}
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-outline-primary btn-lg" type="submit" name="action" value="save_draft">
+              <i class="bi bi-save"></i> {% trans "Guardar Borrador" %}
+            </button>
+            <button class="btn btn-success btn-lg" type="submit" name="action" value="submit_review">
+              <i class="bi bi-send"></i> {% trans "Enviar Evaluación" %}
+            </button>
+            <button class="btn btn-warning btn-lg" type="submit" name="action" value="request_changes">
+              <i class="bi bi-arrow-clockwise"></i> {% trans "Solicitar cambios" %}
+            </button>
+            <a class="btn btn-outline-secondary btn-lg" href="{% url 'icts:reviewer_inbox' %}">
+              <i class="bi bi-arrow-left"></i> {% trans "Volver a la bandeja" %}
+            </a>
+          </div>
+        {% endif %}
       </form>
     </div>
   </div>

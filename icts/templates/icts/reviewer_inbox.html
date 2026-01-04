@@ -30,9 +30,9 @@
 </div>
 
 <div class="card">
-  <h3 style="margin-bottom: .75rem;">{% trans "Mis revisiones" %}</h3>
+  <h3 style="margin-bottom: .75rem;">{% trans "Evaluaciones completadas" %}</h3>
   <ul class="list">
-    {% for r in mine %}
+    {% for r in completed %}
       <li class="list-item">
         <div>
           <div class="list-title">{{ r.proposal.title|default:default_title }}</div>
@@ -43,12 +43,12 @@
           </div>
         </div>
         <div class="list-actions">
-          <a class="chip" href="{% url 'icts:review_start' r.proposal.pk %}">{% trans "Evaluar" %}</a>
+          <a class="chip" href="{% url 'icts:review_start' r.proposal.pk %}">{% trans "Ver evaluación" %}</a>
           <a class="chip" href="{% url 'icts:proposal_detail' r.proposal.pk %}">{% trans "Ver" %}</a>
         </div>
       </li>
     {% empty %}
-      <li class="list-item">{% trans "Aún no has emitido revisiones." %}</li>
+      <li class="list-item">{% trans "Aun no has completado evaluaciones." %}</li>
     {% endfor %}
   </ul>
 </div>

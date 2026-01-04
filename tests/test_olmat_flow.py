@@ -64,6 +64,11 @@ def test_reviewer_inbox_excludes_olmat_only(client):
         status="submitted",
         facility_sem=True,
     )
+    ProposalReview.objects.create(
+        proposal=icts_proposal,
+        reviewer=reviewer,
+        status="draft",
+    )
 
     client.force_login(reviewer)
     response = client.get(reverse("icts:reviewer_inbox"))

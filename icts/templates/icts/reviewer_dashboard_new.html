@@ -31,13 +31,13 @@
             <div class="recent-title">{{ review.proposal.title|default:default_title }}</div>
             <div class="recent-meta">
               <span class="badge decision-{{ review.decision }}">
-                {% if review.decision == 'approve' %}{% trans "Aprobada" %}{% elif review.decision == 'reject' %}{% trans "Rechazada" %}{% elif review.decision == 'request_changes' %}{% trans "Cambios solicitados" %}{% else %}{% trans "Pendiente" %}{% endif %}
+                {% if review.status == 'draft' %}{% trans "Borrador" %}{% elif review.decision == 'approve' %}{% trans "Aprobada" %}{% elif review.decision == 'reject' %}{% trans "Rechazada" %}{% elif review.decision == 'request_changes' %}{% trans "Cambios solicitados" %}{% else %}{% trans "Pendiente" %}{% endif %}
               </span>
               <span class="date">{{ review.updated_at|date:"d/m/Y H:i" }}</span>
             </div>
           </div>
           <div class="recent-actions">
-            {% if review.decision == 'pending' %}
+            {% if review.status == 'draft' %}
               <a href="{% url 'icts:review_start' review.proposal.pk %}" class="btn">{% trans "Evaluar" %}</a>
             {% endif %}
             <a href="{% url 'icts:proposal_detail' review.proposal.pk %}" class="btn btn-secondary">{% trans "Ver" %}</a>

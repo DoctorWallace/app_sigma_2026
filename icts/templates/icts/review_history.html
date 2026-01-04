@@ -90,7 +90,8 @@
             </div>
             <div class="review-status">
               <span class="status-badge decision-{{ review.decision }}">
-                {% if review.decision == 'approve' %}<i class="bi bi-check-circle"></i> Aprobada
+                {% if review.status == 'draft' %}<i class="bi bi-pencil"></i> Borrador
+                {% elif review.decision == 'approve' %}<i class="bi bi-check-circle"></i> Aprobada
                 {% elif review.decision == 'reject' %}<i class="bi bi-x-circle"></i> Rechazada
                 {% elif review.decision == 'request_changes' %}<i class="bi bi-arrow-clockwise"></i> Cambios solicitados
                 {% else %}<i class="bi bi-clock"></i> Pendiente{% endif %}
@@ -145,7 +146,7 @@
               <span class="btn-icon"><i class="bi bi-eye"></i></span>
               <span class="btn-text">Ver Propuesta</span>
             </a>
-            {% if review.decision == 'pending' %}
+            {% if review.status == 'draft' %}
             <a href="{% url 'icts:review_start' review.proposal.pk %}" class="action-btn evaluate">
               <span class="btn-icon"><i class="bi bi-file-earmark-text"></i></span>
               <span class="btn-text">Continuar Evaluación</span>

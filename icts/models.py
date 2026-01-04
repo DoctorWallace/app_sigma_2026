@@ -141,6 +141,10 @@ class ProposalReview(models.Model):
         ("request_changes", "Request changes"),
         ("reject", "Reject"),
     ]
+    STATUS_CHOICES = [
+        ("draft", "Draft"),
+        ("submitted", "Submitted"),
+    ]
     proposal = models.ForeignKey(
         AccessProposal, on_delete=models.CASCADE, related_name="reviews"
     )
@@ -148,6 +152,15 @@ class ProposalReview(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="icts_reviews"
     )
     decision = models.CharField(max_length=16, choices=DECISION, default="pending")
+    status = models.CharField(
+        max_length=16,
+        choices=STATUS_CHOICES,
+        default="draft",
+        db_index=True,
+    )
+    submitted_at = models.DateTimeField(null=True, blank=True)
+    change_request_text = models.TextField(blank=True, default="")
+    change_request_at = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(blank=True)
     updated_at = models.DateTimeField(auto_now=True)
     

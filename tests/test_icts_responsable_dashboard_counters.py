@@ -25,10 +25,14 @@ def _create_user(username, groups):
 def _add_reviews(proposal, reviewers, completed_count):
     for idx, reviewer in enumerate(reviewers):
         decision = "approve" if idx < completed_count else "pending"
+        status = "submitted" if decision != "pending" else "draft"
+        submitted_at = timezone.now() if status == "submitted" else None
         ProposalReview.objects.create(
             proposal=proposal,
             reviewer=reviewer,
             decision=decision,
+            status=status,
+            submitted_at=submitted_at,
         )
 
 

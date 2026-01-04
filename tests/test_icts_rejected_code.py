@@ -2,6 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.urls import reverse
+from django.utils import timezone
 
 from icts.models import AccessProposal, ProposalReview
 
@@ -57,7 +58,11 @@ def test_rejected_decision_overwrites_access_code(client):
     assert response.status_code == 302
     assert ProposalReview.objects.filter(proposal=proposal).count() == 4
 
-    ProposalReview.objects.filter(proposal=proposal).update(decision="approve")
+    ProposalReview.objects.filter(proposal=proposal).update(
+        decision="approve",
+        status="submitted",
+        submitted_at=timezone.now(),
+    )
 
     client.force_login(responsable)
     response = client.post(

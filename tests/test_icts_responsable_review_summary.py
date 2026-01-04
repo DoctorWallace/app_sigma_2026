@@ -42,6 +42,7 @@ def test_proposal_detail_responsable_review_summary(client):
         score_scientific_quality=4,
         score_need_infrastructure=3,
         score_industrial_potential=5,
+        status="submitted",
     )
     ProposalReview.objects.create(
         proposal=proposal,
@@ -51,11 +52,13 @@ def test_proposal_detail_responsable_review_summary(client):
         score_scientific_quality=2,
         score_need_infrastructure=3,
         score_industrial_potential=1,
+        status="submitted",
     )
     ProposalReview.objects.create(
         proposal=proposal,
         reviewer=reviewer_pending,
         decision="pending",
+        status="draft",
     )
 
     client.force_login(responsable)
