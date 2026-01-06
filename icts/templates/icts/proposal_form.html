@@ -2942,11 +2942,11 @@
     }
 
     // Inicializar funcionalidad de checkboxes
-    const checkboxes = formCard.querySelectorAll('.info-checkbox');
+    const checkboxes = formCard.querySelectorAll('.info-checkbox, .safety-checkbox');
     checkboxes.forEach(checkbox => {
       checkbox.addEventListener('change', function() {
         const label = this.nextElementSibling;
-        if (label && label.classList.contains('info-label')) {
+        if (label && (label.classList.contains('info-label') || label.classList.contains('safety-label'))) {
           label.textContent = this.checked ? 'YES' : 'NO';
         }
       });

@@ -60,22 +60,26 @@
   <!-- Sample Safe Handling -->
   <div class="safe-handling-section">
     <h5 class="section-title"><i class="bi bi-shield-check"></i> {% trans "Sample Safe Handling" %}</h5>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">{% trans "¿Toxic?" %}</label>
-        <input type="text" name="sem_toxic" class="form-input" value="NO" readonly>
+    <div class="safety-questions">
+      <div class="safety-row">
+        <label class="safety-question">{% trans "¨Toxic?" %}</label>
+        <input type="checkbox" name="sem_toxic" class="safety-checkbox">
+        <span class="safety-label">{% trans "NO" %}</span>
       </div>
-      <div class="form-group">
-        <label class="form-label">{% trans "¿Corrosive?" %}</label>
-        <input type="text" name="sem_corrosive" class="form-input" value="NO" readonly>
+      <div class="safety-row">
+        <label class="safety-question">{% trans "¨Corrosive?" %}</label>
+        <input type="checkbox" name="sem_corrosive" class="safety-checkbox">
+        <span class="safety-label">{% trans "NO" %}</span>
       </div>
-      <div class="form-group">
-        <label class="form-label">{% trans "¿Irritating?" %}</label>
-        <input type="text" name="sem_irritating" class="form-input" value="NO" readonly>
+      <div class="safety-row">
+        <label class="safety-question">{% trans "¨Irritating?" %}</label>
+        <input type="checkbox" name="sem_irritating" class="safety-checkbox">
+        <span class="safety-label">{% trans "NO" %}</span>
       </div>
-      <div class="form-group">
-        <label class="form-label">{% trans "¿Radioactive?" %}</label>
-        <input type="text" name="sem_radioactive" class="form-input" value="NO" readonly>
+      <div class="safety-row">
+        <label class="safety-question">{% trans "¨Radioactive?" %}</label>
+        <input type="checkbox" name="sem_radioactive" class="safety-checkbox">
+        <span class="safety-label">{% trans "NO" %}</span>
       </div>
     </div>
     <div class="form-group">
@@ -251,6 +255,38 @@
 
 .safe-handling-section {
   margin-bottom: 2rem;
+}
+
+.safety-questions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.safety-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+}
+
+.safety-question {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.safety-checkbox {
+  transform: scale(1.2);
+}
+
+.safety-label {
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .important-info-section {
