@@ -188,7 +188,7 @@
   <div class="equipment-wrap">
     <a class="equipment-card" href="{% url 'icts:facility_info' 'van-der-graaff' %}">
       <img src="/media/facilities/Acelerador.png" alt="Van der Graaff" class="equipment-image">
-      <div class="equipment-title">{% trans "Acelerador Van de Graaff" %}</div>
+      <div class="equipment-title">{% trans "Acelerador de electrones Van de Graaff" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
           Acelerador de electrones para irradiación y ensayos con haces controlados hasta 2 MeV.
@@ -198,27 +198,27 @@
 
     <a class="equipment-card" href="{% url 'icts:facility_info' 'sem-edx' %}">
       <img src="/media/facilities/SEM1.png" alt="SEM/EDX" class="equipment-image">
-      <div class="equipment-title">{% trans "FEG-SEM EDX/EBSD" %}</div>
+      <div class="equipment-title">{% trans "FEG-SEM + EDX/EBSD" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
-          Microscopía electrónica de barrido con análisis elemental por espectroscopía de rayos X dispersiva.
+          Microscopía electrónica de barrido con análisis elemental por espectroscopía de rayos X dispersiva y difracción de electrones retrodispersados.
         {% endblocktrans %}
       </div>
     </a>
 
     <a class="equipment-card" href="{% url 'icts:facility_info' 'fib' %}">
       <img src="/media/facilities/FIB.png" alt="FIB" class="equipment-image">
-      <div class="equipment-title">{% trans "FIB" %}</div>
+      <div class="equipment-title">{% trans "FEG-SEM + FIB" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
-          Haz de iones focalizado para micromecanizado de precisión y cortes de muestra localizados.
+          Haz de iones de Ga focalizado para micromecanizado de precisión y cortes de muestra localizados.
         {% endblocktrans %}
       </div>
     </a>
 
     <a class="equipment-card" href="{% url 'icts:facility_info' 'sims' %}">
       <img src="/media/facilities/SIMS.png" alt="SIMS" class="equipment-image">
-      <div class="equipment-title">{% trans "SIMS" %}</div>
+      <div class="equipment-title">{% trans "Espectrometría de masas de iones secundarios" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
           Espectrometría de masas de iones secundarios para perfiles de composición en profundidad.
@@ -228,7 +228,7 @@
 
     <a class="equipment-card" href="{% url 'icts:facility_info' 'implantador' %}">
       <img src="/media/facilities/Implantador.png" alt="Implantador" class="equipment-image">
-      <div class="equipment-title">{% trans "Implantador de iones" %}</div>
+      <div class="equipment-title">{% trans "Implantador de iones Danfysik hasta 60 keV" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
           Sistema de implantación iónica para modificación superficial de materiales.
@@ -238,7 +238,7 @@
 
     <a class="equipment-card" href="{% url 'icts:facility_info' 'confocal' %}">
       <img src="/media/facilities/confocal.png" alt="Confocal" class="equipment-image">
-      <div class="equipment-title">{% trans "Microscopio Confocal/Interferométrico" %}</div>
+      <div class="equipment-title">{% trans "Microscopio Confocal - Interferométrico" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
           Microscopía confocal láser para caracterización óptica confocal e interferometría.
@@ -258,7 +258,7 @@
 
     <a class="equipment-card" href="{% url 'icts:facility_info' 'impedancia' %}">
       <img src="/media/facilities/impedancia.jpg" alt="Impedancia" class="equipment-image">
-      <div class="equipment-title">{% trans "Impedancia eléctrica a alta temperatura" %}</div>
+      <div class="equipment-title">{% trans "Propiedades dieléctricas" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
           Plataforma para caracterización eléctrica e impedanciometría de materiales y componentes.
@@ -267,21 +267,21 @@
     </a>
 
     <a class="equipment-card" href="{% url 'icts:facility_info' 'lithium-combustion' %}">
-      <img src="/media/facilities/Lithium-combustion.png" alt="Lithium combustion" class="equipment-image">
-      <div class="equipment-title">{% trans "Lithium combustion" %}</div>
+      <img src="/media/facilities/Lithium-combustion.png" alt="{% trans 'Propiedades ópticas' %}" class="equipment-image">
+      <div class="equipment-title">{% trans "Laboratorio de propiedades ópticas" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
-          Laboratorio especializado en el estudio de litio
+          Estudios de propiedades ópticas desde UV-VIS y FTIR en absorción y transmisión.
         {% endblocktrans %}
       </div>
     </a>
 
     <a class="equipment-card" href="{% url 'icts:facility_info' 'pbli-corrosion' %}">
       <img src="/media/facilities/PbLi-corrosion.jpeg" alt="PbLi corrosion" class="equipment-image">
-      <div class="equipment-title">{% trans "PbLi corrosion" %}</div>
+      <div class="equipment-title">{% trans "Corrosión de materiales en PbLi líquido" %}</div>
       <div class="equipment-desc">
         {% blocktrans trimmed %}
-          Canal de corrosión PbLi para evaluación de materiales en condiciones de metal líquido.
+          Laboratorio de metales líquidos para estudios de corrosión en PbLi de materiales de interés para la fusión.
         {% endblocktrans %}
       </div>
     </a>

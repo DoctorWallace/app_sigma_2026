@@ -2541,7 +2541,18 @@
   }
 
   function getDynamicSampleCount(template, templateData) {
-    if (!templateData || typeof templateData !== 'object') return 1;
+    if (!templateData || typeof templateData !== 'object') {
+      return template === 'profilometer' ? 0 : 1;
+    }
+
+    if (template === 'profilometer') {
+      const rawCount = templateData.profilometer_num_samples;
+      const parsed = parseInt(rawCount, 10);
+      if (!Number.isNaN(parsed)) {
+        return Math.max(parsed, 0);
+      }
+    }
+
     const pattern = new RegExp(`^${template}_sample_(\\d+)_`);
     let maxIndex = -1;
     Object.keys(templateData).forEach(name => {
@@ -2552,17 +2563,24 @@
         maxIndex = index;
       }
     });
-    return Math.max(maxIndex + 1, 1);
+    const minimum = template === 'profilometer' ? 0 : 1;
+    return Math.max(maxIndex + 1, minimum);
   }
 
   function ensureSampleCards(template, formCard, neededCount) {
-    const samplesTemplates = ['sem', 'fib', 'sims', 'confocal', 'imp', 'vdg'];
+    const samplesTemplates = ['sem', 'fib', 'sims', 'confocal', 'imp', 'vdg', 'profilometer'];
     if (!samplesTemplates.includes(template) || !formCard) return;
-    const needed = Math.max(neededCount || 1, 1);
 
     const container = formCard.querySelector(`#${template}-samples-container`);
     if (!container) return;
 
+    if (template === 'profilometer') {
+      const desired = Number.isFinite(neededCount) ? neededCount : 0;
+      setProfilometerSampleCount(container, Math.max(desired, 0));
+      return;
+    }
+
+    const needed = Math.max(neededCount || 1, 1);
     const adders = {
       sem: typeof addSemSample === 'function' ? addSemSample : null,
       fib: typeof addFibSample === 'function' ? addFibSample : null,
@@ -2904,8 +2922,10 @@
         break;
       case 'imp':
       case 'vdg':
-      case 'profilometer':
         // Estas técnicas no requieren inicialización especial
+        break;
+      case 'profilometer':
+        initializeProfilometerForm(formCard);
         break;
     }
 
@@ -3094,6 +3114,92 @@
   }
 
   // Función para agregar listeners de validación
+  // Funcion para inicializar formulario Profilometer
+  function getProfilometerSampleTemplate(container) {
+    if (!container) return null;
+    if (container.dataset.sampleTemplate) {
+      return container.dataset.sampleTemplate;
+    }
+    const firstCard = container.querySelector('.sample-card');
+    if (!firstCard) return null;
+    container.dataset.sampleTemplate = firstCard.outerHTML;
+    return container.dataset.sampleTemplate;
+  }
+
+  function addProfilometerSample(container) {
+    const templateHtml = getProfilometerSampleTemplate(container);
+    if (!templateHtml) return;
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = templateHtml.trim();
+    const sampleCard = wrapper.firstElementChild;
+    if (!sampleCard) return;
+    sampleCard.querySelectorAll('input, textarea').forEach(input => {
+      if (input.type === 'checkbox' || input.type === 'radio') {
+        input.checked = false;
+      } else {
+        input.value = '';
+      }
+    });
+    container.appendChild(sampleCard);
+  }
+
+  function updateProfilometerSampleNumbers(container) {
+    if (!container) return;
+    const sampleCards = container.querySelectorAll('.sample-card');
+    sampleCards.forEach((card, index) => {
+      const title = card.querySelector('.sample-title');
+      if (title) {
+        title.textContent = `Sample ${index + 1}`;
+      }
+      const inputs = card.querySelectorAll('input, textarea');
+      inputs.forEach(input => {
+        const name = input.getAttribute('name');
+        if (name) {
+          const newName = name.replace(/profilometer_sample_\\d+_/, `profilometer_sample_${index}_`);
+          input.setAttribute('name', newName);
+        }
+      });
+      card.setAttribute('data-sample-index', index);
+    });
+  }
+
+  function setProfilometerSampleCount(container, count) {
+    if (!container) return;
+    const desired = Number.isFinite(count) ? Math.max(count, 0) : 0;
+    getProfilometerSampleTemplate(container);
+
+    const sampleCards = Array.from(container.querySelectorAll('.sample-card'));
+    if (desired < sampleCards.length) {
+      for (let i = sampleCards.length - 1; i >= desired; i -= 1) {
+        sampleCards[i].remove();
+      }
+    } else if (desired > sampleCards.length) {
+      for (let i = sampleCards.length; i < desired; i += 1) {
+        addProfilometerSample(container);
+      }
+    }
+
+    updateProfilometerSampleNumbers(container);
+    container.style.display = desired > 0 ? '' : 'none';
+  }
+
+  function initializeProfilometerForm(formCard) {
+    if (!formCard) return;
+    const numSamplesInput = formCard.querySelector('input[name="profilometer_num_samples"]');
+    const samplesContainer = formCard.querySelector('#profilometer-samples-container');
+    if (!numSamplesInput || !samplesContainer) return;
+
+    const syncSampleCards = () => {
+      const parsed = parseInt(numSamplesInput.value, 10);
+      const desired = Number.isNaN(parsed) ? 0 : Math.max(parsed, 0);
+      setProfilometerSampleCount(samplesContainer, desired);
+    };
+
+    numSamplesInput.addEventListener('input', syncSampleCards);
+    numSamplesInput.addEventListener('change', syncSampleCards);
+    syncSampleCards();
+  }
+
   function addValidationListeners(formCard, template) {
     const inputs = formCard.querySelectorAll('input, select, textarea');
     
@@ -3519,7 +3625,7 @@
 
     techniqueData[template] = templateData;
 
-    const needsSamples = ['sem', 'fib', 'sims', 'confocal', 'imp', 'vdg'].includes(template);
+    const needsSamples = ['sem', 'fib', 'sims', 'confocal', 'imp', 'vdg', 'profilometer'].includes(template);
     const needsCheckboxSync = ['sem', 'fib', 'sims', 'confocal'].includes(template);
     const formCard = document.getElementById(`technique-form-${template}`);
     if (formCard) {

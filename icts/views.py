@@ -9,6 +9,7 @@ from django.db import transaction, connection
 from django.db.models import Count, Q, Avg, F, Max, Case, When, Value, IntegerField
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from datetime import datetime, timedelta
 import logging
 import json
@@ -395,6 +396,38 @@ def _validate_imp_data(proposal, facility_data):
             errors.append("Ion Implanter: diametro maximo para small area es 10 mm.")
         if chamber == "large_area" and diameter > 20:
             errors.append("Ion Implanter: diametro maximo para large area es 20 mm.")
+
+    return errors
+
+
+def _validate_profilometer_data(facility_data):
+    errors = []
+    if not isinstance(facility_data, dict):
+        return errors
+
+    payload = facility_data.get("profilometer") or {}
+    if not isinstance(payload, dict):
+        payload = {}
+
+    raw_count = payload.get("profilometer_num_samples")
+    try:
+        count = int(str(raw_count).strip())
+    except (TypeError, ValueError):
+        errors.append(_("Profilometer: number of samples must be an integer >= 1."))
+        return errors
+
+    if count < 1:
+        errors.append(_("Profilometer: number of samples must be an integer >= 1."))
+        return errors
+
+    for index in range(count):
+        sample_id = payload.get(f"profilometer_sample_{index}_id")
+        sample_name = payload.get(f"profilometer_sample_{index}_name")
+        if not str(sample_id or "").strip() or not str(sample_name or "").strip():
+            errors.append(
+                _("Profilometer: sample %(index)s requires ID and name.")
+                % {"index": index + 1}
+            )
 
     return errors
 
@@ -1399,6 +1432,15 @@ def proposal_submit(request, pk):
         imp_errors = _validate_imp_data(obj, obj.facility_data)
         if imp_errors:
             for error in imp_errors:
+                messages.error(request, error)
+            return redirect("icts:proposal_detail", pk=obj.pk)
+        profilometer_errors = (
+            _validate_profilometer_data(obj.facility_data)
+            if getattr(obj, "facility_profilometer", False)
+            else []
+        )
+        if profilometer_errors:
+            for error in profilometer_errors:
                 messages.error(request, error)
             return redirect("icts:proposal_detail", pk=obj.pk)
         missing_sections = _require_text_or_ack(obj, request.POST)

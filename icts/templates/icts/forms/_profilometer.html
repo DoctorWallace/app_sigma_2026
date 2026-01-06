@@ -15,6 +15,30 @@
       <input type="number" step="any" name="profilometer_resolution_nm" class="form-input" placeholder="1">
     </div>
   </div>
+  <div class="sample-description-section">
+    <h5 class="section-title"><i class="bi bi-card-list"></i> {% trans "Sample Description" %}</h5>
+    <div class="samples-container" id="profilometer-samples-container">
+      <div class="sample-card" data-sample-index="0">
+        <div class="sample-header">
+          <h6 class="sample-title">{% trans "Sample" %} 1</h6>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{% trans "Identification" %}</label>
+            <input type="text" name="profilometer_sample_0_id" class="form-input" placeholder="{% trans 'Sample ID' %}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">{% trans "Name" %}</label>
+            <input type="text" name="profilometer_sample_0_name" class="form-input" placeholder="{% trans 'Sample name' %}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{% trans "Details" %}</label>
+          <textarea name="profilometer_sample_0_details" rows="3" class="form-input" placeholder="{% trans 'Sample details' %}"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="form-group">
     <label class="form-label">{% trans "Descripción / regiones a medir" %}</label>
     <textarea name="profilometer_notes" rows="4" class="form-input" placeholder="{% trans 'Describe geometría, tolerancias y puntos de medida' %}"></textarea>

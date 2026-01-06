@@ -1113,14 +1113,16 @@ msgid "Crear Cuenta"
 msgstr "Create Account"
 
 #: .\icts\templates\icts\home.html:177
-#, fuzzy
-#| msgid "Ir al Historial"
 msgid "Salir al Portal"
 msgstr "Back to Portal"
 
 #: .\icts\templates\icts\home.html:186
 msgid "Equipos ICTS Disponibles"
 msgstr "Available ICTS Equipment"
+
+#: .\icts\templates\icts\home.html:191
+msgid "Acelerador de electrones Van de Graaff"
+msgstr "Van de Graaff electron accelerator"
 
 #: .\icts\templates\icts\home.html:193
 msgid ""
@@ -1131,32 +1133,32 @@ msgstr ""
 "MeV."
 
 #: .\icts\templates\icts\home.html:201
-msgid "FEG-SEM EDX/EBSD"
-msgstr "FEG-SEM EDX/EBSD"
+msgid "FEG-SEM + EDX/EBSD"
+msgstr "FEG-SEM + EDX/EBSD"
 
 #: .\icts\templates\icts\home.html:203
 msgid ""
 "Microscopía electrónica de barrido con análisis elemental por espectroscopía "
-"de rayos X dispersiva."
+"de rayos X dispersiva y difracción de electrones retrodispersados."
 msgstr ""
 "Scanning electron microscopy with elemental analysis by energy-dispersive X-"
-"ray spectroscopy."
+"ray spectroscopy and electron backscatter diffraction."
 
 #: .\icts\templates\icts\home.html:211
-msgid "FIB"
-msgstr "FIB"
+msgid "FEG-SEM + FIB"
+msgstr "FEG-SEM + FIB"
 
 #: .\icts\templates\icts\home.html:213
 msgid ""
-"Haz de iones focalizado para micromecanizado de precisión y cortes de "
+"Haz de iones de Ga focalizado para micromecanizado de precisión y cortes de "
 "muestra localizados."
 msgstr ""
-"Focused ion beam for precision micromachining and localized sample cross-"
-"sections."
+"Focused Ga ion beam for precision micromachining and localized sample "
+"cross-sections."
 
 #: .\icts\templates\icts\home.html:221
-msgid "SIMS"
-msgstr "SIMS"
+msgid "Espectrometría de masas de iones secundarios"
+msgstr "Secondary ion mass spectrometry"
 
 #: .\icts\templates\icts\home.html:223
 msgid ""
@@ -1165,15 +1167,17 @@ msgid ""
 msgstr "Secondary ion mass spectrometry for depth composition profiles."
 
 #: .\icts\templates\icts\home.html:231
-#, fuzzy
-#| msgid "Implantador de iones "
-msgid "Implantador de iones"
-msgstr "Ion implanter"
+msgid "Implantador de iones Danfysik hasta 60 keV"
+msgstr "Danfysik ion implanter up to 60 keV"
 
 #: .\icts\templates\icts\home.html:233
 msgid ""
 "Sistema de implantación iónica para modificación superficial de materiales."
 msgstr "Ion implantation system for surface modification of materials."
+
+#: .\icts\templates\icts\home.html:241
+msgid "Microscopio Confocal - Interferométrico"
+msgstr "Confocal/Interferometric Microscope"
 
 #: .\icts\templates\icts\home.html:243
 msgid ""
@@ -1196,8 +1200,8 @@ msgstr ""
 "contact profilometry."
 
 #: .\icts\templates\icts\home.html:261
-msgid "Impedancia eléctrica a alta temperatura"
-msgstr "High-temperature electrical impedance"
+msgid "Propiedades dieléctricas"
+msgstr "Dielectric Properties"
 
 #: .\icts\templates\icts\home.html:263
 msgid ""
@@ -1207,25 +1211,33 @@ msgstr ""
 "Platform for electrical characterization and impedance measurement of "
 "materials and components."
 
+#: .\icts\templates\icts\home.html:270
+msgid "Propiedades ópticas"
+msgstr "Optical properties"
+
 #: .\icts\templates\icts\home.html:271
-msgid "Lithium combustion"
-msgstr "Lithium combustion"
+msgid "Laboratorio de propiedades ópticas"
+msgstr "Optical properties laboratory"
 
 #: .\icts\templates\icts\home.html:273
-msgid "Laboratorio especializado en el estudio de litio"
-msgstr "Laboratory specialized in the study of lithium"
+msgid ""
+"Estudios de propiedades ópticas desde UV-VIS y FTIR en absorción y "
+"transmisión."
+msgstr ""
+"Optical absorption studies and UV-VIS and FTIR transmission measurements are "
+"performed."
 
 #: .\icts\templates\icts\home.html:281
-msgid "PbLi corrosion"
-msgstr "PbLi corrosion"
+msgid "Corrosión de materiales en PbLi líquido"
+msgstr "Materials corrosion in liquid PbLi"
 
 #: .\icts\templates\icts\home.html:283
 msgid ""
-"Canal de corrosión PbLi para evaluación de materiales en condiciones de "
-"metal líquido."
+"Laboratorio de metales líquidos para estudios de corrosión en PbLi de "
+"materiales de interés para la fusión."
 msgstr ""
-"PbLi corrosion channel for evaluating materials under liquid-metal "
-"conditions."
+"Liquid-metal laboratory for corrosion studies in PbLi of materials of "
+"interest for fusion."
 
 #: .\icts\templates\icts\home.html:291
 msgid "OLMAT"
@@ -1240,8 +1252,6 @@ msgstr ""
 "and laser."
 
 #: .\icts\templates\icts\home.html:306
-#, fuzzy
-#| msgid "Necesidad baja"
 msgid "¿Necesitas ayuda?"
 msgstr "Need help?"
 
@@ -1260,6 +1270,14 @@ msgstr "Evaluation Procedure"
 #: .\icts\templates\icts\home.html:318
 msgid "FAQ"
 msgstr "FAQ"
+
+#: .\icts\templates\icts\proposal_form.html:1001
+msgid "FIB"
+msgstr "FIB"
+
+#: .\icts\templates\icts\proposal_form.html:1029
+msgid "SIMS"
+msgstr "SIMS"
 
 #: .\icts\templates\icts\my_proposals.html:3
 #: .\icts\templates\icts\my_proposals.html:4

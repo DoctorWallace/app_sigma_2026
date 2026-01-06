@@ -1120,8 +1120,8 @@ msgid ""
 "Sistema de Gestión de Accesos y Muestras a la ICTS del Laboratorio Nacional "
 "de Fusión (CIEMAT)"
 msgstr ""
-"Système de gestion des accès et des échantillons à l'ICTS du Laboratoire "
-"National de Fusion (CIEMAT)"
+"Système de gestion des accès et des échantillons de l'ICTS du Laboratoire "
+"national de fusion (CIEMAT)"
 
 #: .\icts\templates\icts\home.html:169
 msgid "Entrar"
@@ -1139,6 +1139,10 @@ msgstr "Retour au portail"
 msgid "Equipos ICTS Disponibles"
 msgstr "Équipements ICTS disponibles"
 
+#: .\icts\templates\icts\home.html:191
+msgid "Acelerador de electrones Van de Graaff"
+msgstr "Accélérateur d'électrons Van de Graaff"
+
 #: .\icts\templates\icts\home.html:193
 msgid ""
 "Acelerador de electrones para irradiación y ensayos con haces controlados "
@@ -1148,52 +1152,51 @@ msgstr ""
 "contrôlés jusqu'à 2 MeV."
 
 #: .\icts\templates\icts\home.html:201
-msgid "FEG-SEM EDX/EBSD"
-msgstr "FEG-SEM EDX/EBSD"
+msgid "FEG-SEM + EDX/EBSD"
+msgstr "FEG-SEM + EDX/EBSD"
 
 #: .\icts\templates\icts\home.html:203
 msgid ""
 "Microscopía electrónica de barrido con análisis elemental por espectroscopía "
-"de rayos X dispersiva."
+"de rayos X dispersiva y difracción de electrones retrodispersados."
 msgstr ""
-"Microscopie électronique à balayage avec analyse élémentaire par "
-"spectroscopie de rayons X à dispersion d'énergie."
+"Microscopie électronique à balayage avec analyse élémentaire par spectroscopie "
+"de rayons X dispersive en énergie et diffraction d'électrons rétrodiffusés."
 
 #: .\icts\templates\icts\home.html:211
-msgid "FIB"
-msgstr "FIB"
+msgid "FEG-SEM + FIB"
+msgstr "FEG-SEM + FIB"
 
 #: .\icts\templates\icts\home.html:213
 msgid ""
-"Haz de iones focalizado para micromecanizado de precisión y cortes de "
+"Haz de iones de Ga focalizado para micromecanizado de precisión y cortes de "
 "muestra localizados."
 msgstr ""
-"Faisceau d'ions focalisé pour le microusinage de précision et des coupes "
-"d'échantillon localisées."
+"Faisceau d'ions Ga focalisé pour le micro-usinage de précision et des coupes "
+"d'échantillons localisées."
 
 #: .\icts\templates\icts\home.html:221
-msgid "SIMS"
-msgstr "SIMS"
+msgid "Espectrometría de masas de iones secundarios"
+msgstr "Spectrométrie de masse d'ions secondaires"
 
 #: .\icts\templates\icts\home.html:223
 msgid ""
 "Espectrometría de masas de iones secundarios para perfiles de composición en "
 "profundidad."
-msgstr ""
-"Spectrométrie de masse d'ions secondaires pour des profils de composition en "
-"profondeur."
+msgstr "Spectrométrie de masse d'ions secondaires pour des profils de composition en profondeur."
 
 #: .\icts\templates\icts\home.html:231
-#, fuzzy
-#| msgid "Implantador de iones "
-msgid "Implantador de iones"
-msgstr "Implanteur d'ions"
+msgid "Implantador de iones Danfysik hasta 60 keV"
+msgstr "Implanteur d'ions Danfysik jusqu'à 60 keV"
 
 #: .\icts\templates\icts\home.html:233
 msgid ""
 "Sistema de implantación iónica para modificación superficial de materiales."
-msgstr ""
-"Système d'implantation ionique pour la modification de surface des matériaux."
+msgstr "Système d'implantation ionique pour la modification de surface des matériaux."
+
+#: .\icts\templates\icts\home.html:241
+msgid "Microscopio Confocal - Interferométrico"
+msgstr "Microscope confocal/interférométrique"
 
 #: .\icts\templates\icts\home.html:243
 msgid ""
@@ -1212,12 +1215,12 @@ msgid ""
 "Medición de rugosidad y espesores con resolución nanométrica mediante "
 "perfilometría de contacto."
 msgstr ""
-"Mesure de la rugosité et des épaisseurs avec une résolution nanométrique "
-"grâce à la profilométrie de contact."
+"Mesure de rugosité et d'épaisseur avec une résolution nanométrique par "
+"profilométrie de contact."
 
 #: .\icts\templates\icts\home.html:261
-msgid "Impedancia eléctrica a alta temperatura"
-msgstr "Impédance électrique à haute température"
+msgid "Propiedades dieléctricas"
+msgstr "Propriétés diélectriques"
 
 #: .\icts\templates\icts\home.html:263
 msgid ""
@@ -1227,25 +1230,33 @@ msgstr ""
 "Plateforme pour la caractérisation électrique et l'impédancemétrie des "
 "matériaux et composants."
 
+#: .\icts\templates\icts\home.html:270
+msgid "Propiedades ópticas"
+msgstr "Propriétés optiques"
+
 #: .\icts\templates\icts\home.html:271
-msgid "Lithium combustion"
-msgstr "Combustion du lithium"
+msgid "Laboratorio de propiedades ópticas"
+msgstr "Laboratoire de propriétés optiques"
 
 #: .\icts\templates\icts\home.html:273
-msgid "Laboratorio especializado en el estudio de litio"
-msgstr "Laboratoire spécialisé dans l'étude du lithium"
+msgid ""
+"Estudios de propiedades ópticas desde UV-VIS y FTIR en absorción y "
+"transmisión."
+msgstr ""
+"Des études d'absorption optique et des mesures de transmission UV-VIS et FTIR "
+"sont réalisées."
 
 #: .\icts\templates\icts\home.html:281
-msgid "PbLi corrosion"
-msgstr "Corrosion PbLi"
+msgid "Corrosión de materiales en PbLi líquido"
+msgstr "Corrosion des matériaux dans le PbLi liquide"
 
 #: .\icts\templates\icts\home.html:283
 msgid ""
-"Canal de corrosión PbLi para evaluación de materiales en condiciones de "
-"metal líquido."
+"Laboratorio de metales líquidos para estudios de corrosión en PbLi de "
+"materiales de interés para la fusión."
 msgstr ""
-"Canal de corrosion PbLi pour l'évaluation des matériaux en conditions de "
-"métal liquide."
+"Laboratoire de métaux liquides pour des études de corrosion en PbLi de "
+"matériaux d'intérêt pour la fusion."
 
 #: .\icts\templates\icts\home.html:291
 msgid "OLMAT"
@@ -1278,6 +1289,14 @@ msgstr "Procédure d'évaluation"
 #: .\icts\templates\icts\home.html:318
 msgid "FAQ"
 msgstr "FAQ"
+
+#: .\icts\templates\icts\proposal_form.html:1001
+msgid "FIB"
+msgstr "FIB"
+
+#: .\icts\templates\icts\proposal_form.html:1029
+msgid "SIMS"
+msgstr "SIMS"
 
 #: .\icts\templates\icts\my_proposals.html:3
 #: .\icts\templates\icts\my_proposals.html:4
