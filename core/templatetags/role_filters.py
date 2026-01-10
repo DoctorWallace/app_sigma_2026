@@ -41,6 +41,16 @@ def is_sem_technician(user):
 
 
 @register.filter
+def is_sims_technician(user):
+    return core_roles.is_sims_tech(user)
+
+
+@register.filter
+def is_optics_technician(user):
+    return core_roles.is_optics_tech(user)
+
+
+@register.filter
 def is_imp_technician(user):
     return core_roles.is_imp_tech(user)
 

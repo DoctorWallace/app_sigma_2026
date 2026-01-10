@@ -1271,6 +1271,7 @@ msgstr ""
 "faisceau NBI et laser."
 
 #: .\icts\templates\icts\home.html:306
+#: .\templates\portal\home.html:299
 msgid "¿Necesitas ayuda?"
 msgstr "Besoin d'aide ?"
 
@@ -1287,6 +1288,7 @@ msgid "Procedimiento de Evaluación"
 msgstr "Procédure d'évaluation"
 
 #: .\icts\templates\icts\home.html:318
+#: .\templates\portal\home.html:316
 msgid "FAQ"
 msgstr "FAQ"
 
@@ -2027,8 +2029,8 @@ msgid "Diagrama de flujo de acceso competitivo"
 msgstr "Schéma du flux d'accès compétitif"
 
 #: .\templates\portal\icts_access.html:135
-msgid "Figura 2 — Flujo de acceso competitivo"
-msgstr "Figure 2 — Flux d'accès compétitif"
+msgid "Figura 1 — Flujo de acceso competitivo"
+msgstr "Figure 1 — Flux d'accès compétitif"
 
 #: .\templates\portal\icts_access.html:136
 #: .\templates\portal\icts_access.html:240
@@ -2155,5 +2157,285 @@ msgid "Diagrama de flujo de solicitud directa"
 msgstr "Schéma du flux de demande directe"
 
 #: .\templates\portal\icts_access.html:239
-msgid "Figura 3 — Flujo de solicitud directa"
-msgstr "Figure 3 — Flux de demande directe"
+msgid "Figura 2 - Flujo de solicitud directa"
+msgstr "Figure 2 - Flux de demande directe"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:98
+msgid "Espectro de masas"
+msgstr "Spectre de masse"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:100
+msgid "Identificación rápida de especies e impurezas en superficie."
+msgstr "Identification rapide des espèces et impuretés en surface."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:102
+msgid "Coste 75.84 €"
+msgstr "Coût d'utilisation 75,84 €"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:105
+msgid "Perfil de masas en profundidad"
+msgstr "Profil de masse en profondeur"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:107
+msgid "Distribución de elementos en función de la profundidad."
+msgstr "Distribution des éléments en fonction de la profondeur."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:109
+msgid "Coste 92,36 €"
+msgstr "Coût d'utilisation 92,36 €"
+
+#: .\templates\portal\home.html:8
+#: .\templates\portal\home.html:210
+msgid "Σ-SIGMA Portal"
+msgstr "Portail Σ-SIGMA"
+
+#: .\templates\portal\home.html:180
+msgid "Español"
+msgstr "Espagnol"
+
+#: .\templates\portal\home.html:184
+msgid "Inglés"
+msgstr "Anglais"
+
+#: .\templates\portal\home.html:188
+msgid "Francés"
+msgstr "Français"
+
+#: .\templates\portal\home.html:211
+msgid "Sistema Integrado de Gestión de Muestras y Accesos"
+msgstr "Système intégré de gestion des échantillons et des accès"
+
+#: .\templates\portal\home.html:215
+msgid ""
+"Plataforma unificada para la gestión de equipos científicos y laboratorios "
+"de investigación. Accede a los sistemas ICTS y DTF desde un único punto de "
+"entrada."
+msgstr ""
+"Plateforme unifiée pour la gestion des équipements scientifiques et des "
+"laboratoires de recherche. Accédez aux systèmes ICTS et DTF depuis un point "
+"d'entrée unique."
+
+#: .\templates\portal\home.html:242
+msgid "Solicitudes vía ICTS-LNF"
+msgstr "Demandes via l'ICTS-LNF"
+
+#: .\templates\portal\home.html:245
+msgid ""
+"Sistema de gestión de evaluaciones de solicitudes de acceso a equipos "
+"científicos pertenecientes a la ICTS-LNF - Σ-SIGMA ICTS"
+msgstr ""
+"Système de gestion des évaluations des demandes d'accès aux équipements "
+"scientifiques de l'ICTS-LNF - Σ-SIGMA ICTS"
+
+#: .\templates\portal\home.html:249
+msgid ""
+"Acceso competitivo a equipos científico-técnico singulares pertenecientes a "
+"la ICTS-LNF"
+msgstr ""
+"Accès compétitif à des équipements scientifiques et techniques singuliers "
+"appartenant à l'ICTS-LNF"
+
+#: .\templates\portal\home.html:254
+#: .\templates\portal\home.html:282
+msgid "Acceder"
+msgstr "Accéder"
+
+#: .\templates\portal\home.html:261
+msgid "Más información sobre acceso competitivo"
+msgstr "Plus d'informations sur l'accès compétitif"
+
+#: .\templates\portal\home.html:275
+msgid "Laboratorios y servicios fuera de ICTS"
+msgstr "Laboratoires et services hors ICTS"
+
+#: .\templates\portal\home.html:277
+msgid ""
+"Gestión de laboratorios pertenecientes a la División de Tecnología del "
+"Laboratorio Nacional de Fusión"
+msgstr ""
+"Gestion des laboratoires appartenant à la Division de la Technologie du "
+"Laboratoire National de Fusion"
+
+#: .\templates\portal\home.html:301
+msgid ""
+"Consulta las preguntas frecuentes o contacta con el equipo técnico para "
+"soporte especializado."
+msgstr ""
+"Consultez la FAQ ou contactez l'équipe technique pour un support spécialisé."
+
+#: .\templates\portal\home.html:310
+msgid "Protocolo acceso ICTS"
+msgstr "Protocole d'accès ICTS"
+
+#: .\templates\portal\home.html:314
+msgid "Solicitud directa (tarifas)"
+msgstr "Demande directe (tarifs)"
+
+#: .\templates\portal\home.html:322
+msgid "CIEMAT - Web"
+msgstr "CIEMAT - Site web"
+
+#: .\templates\portal\home.html:326
+msgid "LNF - Web"
+msgstr "LNF - Site web"
+
+#: .\templates\portal\home.html:342
+msgid ""
+"© 2025 Σ-SIGMA Sistema Integrado de Gestión de Muestras y Accesos (LNF) - "
+"Desarrollado por la Unidad de Materiales del LNF"
+msgstr ""
+"© 2025 Σ-SIGMA Système intégré de gestion des échantillons et des accès "
+"(LNF) - Développé par l'Unité des Matériaux du LNF"
+
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "SIGMA Optics - Datos de muestras"
+msgstr "SIGMA Optics - Données d’échantillons"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Requisitos de aceptación"
+msgstr "Exigences d’acceptation"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "El tamaño máximo es de 45 x 60 mm (diámetro máximo 45 mm)."
+msgstr "La taille maximale est de 45 x 60 mm (diamètre maximal 45 mm)."
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Muestras empaquetadas en cajas o bolsas y etiquetadas de forma clara y escueta."
+msgstr "Échantillons emballés dans des boîtes ou des sachets et étiquetés de manière claire et concise."
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Proteja la muestra adecuadamente."
+msgstr "Protégez l’échantillon de manière appropriée."
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Descripción de muestras"
+msgstr "Description des échantillons"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Sample"
+msgstr "Échantillon"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Identification"
+msgstr "Identification"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Sample ID"
+msgstr "ID échantillon"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Name"
+msgstr "Nom"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Sample name"
+msgstr "Nom de l’échantillon"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Observations"
+msgstr "Observations"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Sample observations"
+msgstr "Observations sur l’échantillon"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Add Sample"
+msgstr "Ajouter un échantillon"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Recuperación de muestras"
+msgstr "Récupération des échantillons"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "¿Recuperar muestra(s)?"
+msgstr "Récupérer le(s) échantillon(s) ?"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "NO"
+msgstr "NON"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Por defecto las muestras no se conservan después de la medida. Si se quiere recuperar la muestra debe indicarlo aquí. Se guardarán como máximo 2 meses después de la fecha de entrega de resultados."
+msgstr "Par défaut, les échantillons ne sont pas conservés après la mesure. Si vous souhaitez récupérer l’échantillon, vous devez l’indiquer ici. Ils seront conservés au maximum 2 mois après la date de remise des résultats."
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Manipulación segura"
+msgstr "Manipulation sûre"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "¿Toxic?"
+msgstr "Toxique ?"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "¿Corrosive?"
+msgstr "Corrosif ?"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "¿Irritating?"
+msgstr "Irritant ?"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "¿Radioactive?"
+msgstr "Radioactif ?"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Further comments"
+msgstr "Commentaires supplémentaires"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Additional safety comments"
+msgstr "Commentaires supplémentaires sur la sécurité"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Información requerida"
+msgstr "Informations requises"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Medida"
+msgstr "Mesure"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Absorción"
+msgstr "Absorption"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Transmisión"
+msgstr "Transmission"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Longitud de onda mínima"
+msgstr "Longueur d’onde minimale"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Longitud de onda máxima"
+msgstr "Longueur d’onde maximale"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "En caso de que exista incertidumbre en la medida, el técnico responsable se comunicará con el usuario."
+msgstr "En cas d’incertitude dans la mesure, le technicien responsable contactera l’utilisateur."
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Material"
+msgstr "Matériau"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Tipo de medida"
+msgstr "Type de mesure"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Selecciona una opción"
+msgstr "Sélectionnez une option"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "UV-VIS"
+msgstr "UV-VIS"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "FTIR"
+msgstr "FTIR"
+
+#: .\icts\templates\icts\forms\_optics.html
+msgid "Comentarios finales"
+msgstr "Commentaires finaux"

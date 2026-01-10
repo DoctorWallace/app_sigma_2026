@@ -20,6 +20,7 @@ class AccessProposal(models.Model):
         "facility_imp",
         "facility_sims",
         "facility_confocal",
+        "facility_optics",
         "facility_vdg",
         "facility_profilometer",
     )
@@ -46,7 +47,7 @@ class AccessProposal(models.Model):
     title = models.CharField(max_length=200)
     scope = models.TextField(blank=True)
     facilities = models.ManyToManyField(Facility, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft", db_index=True)
     responsable_comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
@@ -92,6 +93,7 @@ class AccessProposal(models.Model):
     facility_imp = models.BooleanField(default=False)
     facility_sims = models.BooleanField(default=False)
     facility_confocal = models.BooleanField(default=False)
+    facility_optics = models.BooleanField(default=False)
     facility_vdg = models.BooleanField(default=False)
     facility_profilometer = models.BooleanField(default=False)
     facility_olmat = models.BooleanField(default=False)
@@ -259,13 +261,23 @@ class ICTSUserProfile(models.Model):
     center = models.CharField("Centro / Institución", max_length=150, blank=True)
     phone = models.CharField("Teléfono", max_length=30, blank=True)
     address = models.TextField("Dirección", blank=True)
-    user_siglas = models.CharField("Siglas usuario", max_length=10, blank=True, null=True, unique=True)
+    # unique=True removed; using UniqueConstraint with condition for portability
+    user_siglas = models.CharField("Siglas usuario", max_length=10, blank=True, null=True, db_index=True)
     proposal_counter = models.PositiveIntegerField(default=0)
     validated = models.BooleanField("Validado por responsable", default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
     # Campos CIEMAT
     matricula = models.CharField("Matrícula CIEMAT", max_length=50, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_siglas"],
+                condition=~models.Q(user_siglas__isnull=True) & ~models.Q(user_siglas=""),
+                name="unique_non_null_user_siglas",
+            ),
+        ]
 
     def __str__(self):
         return f"Perfil ICTS de {self.user.get_username()}"

@@ -25,6 +25,8 @@ def build_access_code(proposal, user_siglas=None, include_olmat=False):
         techniques.append("SIMS")
     if proposal.facility_confocal:
         techniques.append("CONF")
+    if getattr(proposal, "facility_optics", False):
+        techniques.append("OPT")
     if proposal.facility_vdg:
         techniques.append("VDG")
     if proposal.facility_profilometer:

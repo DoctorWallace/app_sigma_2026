@@ -1,4 +1,5 @@
 {% extends "sigmasims/base_sigmasims.html" %}
+{% load role_filters %}
 
 {% block sem_content %}
 <div class="sem-card">
@@ -8,7 +9,97 @@
 
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% if form.non_field_errors %}
+      <div class="sem-form-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.delivery_date.id_for_label }}">{{ form.delivery_date.label }}</label>
+      {{ form.delivery_date|add_class:"sem-form-control" }}
+      {% if form.delivery_date.help_text %}
+        <small class="sem-form-help">{{ form.delivery_date.help_text }}</small>
+      {% endif %}
+      {% for error in form.delivery_date.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.determination.id_for_label }}">{{ form.determination.label }}</label>
+      {{ form.determination|add_class:"sem-form-control" }}
+      {% if form.determination.help_text %}
+        <small class="sem-form-help">{{ form.determination.help_text }}</small>
+      {% endif %}
+      {% for error in form.determination.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.procedure_used.id_for_label }}">{{ form.procedure_used.label }}</label>
+      {{ form.procedure_used|add_class:"sem-form-control" }}
+      {% if form.procedure_used.help_text %}
+        <small class="sem-form-help">{{ form.procedure_used.help_text }}</small>
+      {% endif %}
+      {% for error in form.procedure_used.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.technique_text.id_for_label }}">{{ form.technique_text.label }}</label>
+      {{ form.technique_text|add_class:"sem-form-control" }}
+      {% if form.technique_text.help_text %}
+        <small class="sem-form-help">{{ form.technique_text.help_text }}</small>
+      {% endif %}
+      {% for error in form.technique_text.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.sample_description.id_for_label }}">{{ form.sample_description.label }}</label>
+      {{ form.sample_description|add_class:"sem-form-control" }}
+      {% if form.sample_description.help_text %}
+        <small class="sem-form-help">{{ form.sample_description.help_text }}</small>
+      {% endif %}
+      {% for error in form.sample_description.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.measurement_conditions.id_for_label }}">{{ form.measurement_conditions.label }}</label>
+      {{ form.measurement_conditions|add_class:"sem-form-control" }}
+      {% if form.measurement_conditions.help_text %}
+        <small class="sem-form-help">{{ form.measurement_conditions.help_text }}</small>
+      {% endif %}
+      {% for error in form.measurement_conditions.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.results_text.id_for_label }}">{{ form.results_text.label }}</label>
+      {{ form.results_text|add_class:"sem-form-control" }}
+      {% if form.results_text.help_text %}
+        <small class="sem-form-help">{{ form.results_text.help_text }}</small>
+      {% endif %}
+      {% for error in form.results_text.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.conclusions.id_for_label }}">{{ form.conclusions.label }}</label>
+      {{ form.conclusions|add_class:"sem-form-control" }}
+      {% if form.conclusions.help_text %}
+        <small class="sem-form-help">{{ form.conclusions.help_text }}</small>
+      {% endif %}
+      {% for error in form.conclusions.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
     <button class="sem-btn sem-btn-primary" type="submit">Guardar</button>
     <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}">Volver</a>
   </form>

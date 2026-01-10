@@ -1,0 +1,125 @@
+{% extends "sigmaoptics_icts/base_sigmaoptics_icts.html" %}
+
+{% block optics_content %}
+<div class="optics-card">
+  <h2 style="margin-top:0;">Resumen</h2>
+  <div class="optics-stats">
+    <div class="optics-stat-card">
+      <div class="optics-stat-number">{{ accepted_count }}</div>
+      <div class="optics-stat-label">Propuestas aceptadas</div>
+    </div>
+    <div class="optics-stat-card">
+      <div class="optics-stat-number">{{ session_count }}</div>
+      <div class="optics-stat-label">Sesiones registradas</div>
+    </div>
+  </div>
+</div>
+
+<div class="optics-card">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+      <h2 style="margin:0;">Propuestas aceptadas</h2>
+      <p class="text-muted mb-0">Solicitudes ICTS pendientes de sesión Optics.</p>
+    </div>
+  </div>
+
+  {% if accepted_proposals %}
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Código acceso</th>
+            <th>Título</th>
+            <th>Solicitante</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for proposal in accepted_proposals %}
+            <tr>
+              <td>#{{ proposal.id }}</td>
+              <td>{{ proposal.access_code|default:"-" }}</td>
+              <td>{{ proposal.title|default:"(Sin título)" }}</td>
+              <td>{{ proposal.contact_person|default:proposal.applicant.get_full_name|default:proposal.applicant.username }}</td>
+              <td>{{ proposal.created_at|date:"d/m/Y" }}</td>
+              <td>
+                <form method="post" action="{% url 'sigmaoptics_icts:create_session_from_proposal' proposal.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Crear sesión
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted mb-0">No hay propuestas aceptadas pendientes.</p>
+  {% endif %}
+</div>
+
+<div class="optics-card">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+      <h2 style="margin:0;">Sesiones registradas</h2>
+      <p class="text-muted mb-0">Sesiones Optics creadas desde propuestas.</p>
+    </div>
+  </div>
+
+  {% if sessions %}
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Solicitud</th>
+            <th>Informe</th>
+            <th>Solicitante</th>
+            <th>Muestras</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in sessions %}
+            <tr>
+              <td>{{ session.request_code|default:"-" }}</td>
+              <td>{{ session.report_code|default:"-" }}</td>
+              <td>
+                {% if session.access_proposal %}
+                  {{ session.access_proposal.contact_person|default:session.access_proposal.applicant.get_full_name|default:session.access_proposal.applicant.username }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td>{{ session.sample_count }}</td>
+              <td>{{ session.get_status_display }}</td>
+              <td>{{ session.created_at|date:"d/m/Y" }}</td>
+              <td>
+                <div class="d-flex flex-wrap gap-2">
+                  <a class="btn btn-sm btn-outline-primary" href="{% url 'sigmaoptics_icts:session_detail' session.pk %}">
+                    Ver sesión
+                  </a>
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'sigmaoptics_icts:report_edit' session.pk %}">
+                    Editar informe
+                  </a>
+                  <a class="btn btn-sm btn-outline-dark" href="{% url 'sigmaoptics_icts:report_pdf_download' session.pk %}">
+                    PDF
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted mb-0">No hay sesiones registradas.</p>
+  {% endif %}
+</div>
+{% endblock %}

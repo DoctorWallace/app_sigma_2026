@@ -23,5 +23,5 @@ def test_sims_id_generation_increments_by_year():
         client_requirements="Req",
     )
 
-    assert record_one.sims_id == "SIMS_25_001"
-    assert record_two.sims_id == "SIMS_25_002"
+    assert record_one.sims_id == "SIMS-25-001"
+    assert record_two.sims_id == "SIMS-25-002"

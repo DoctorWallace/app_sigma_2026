@@ -1049,6 +1049,20 @@
               </button>
             </div>
 
+            <div class="facility-item" data-technique="optics" data-checkbox="id_facility_optics">
+              <div class="facility-checkbox">
+                {% render_field form.facility_optics class="form-check-input" %}
+                <div class="facility-label">
+                  <div class="facility-icon"><i class="bi bi-sun"></i></div>
+                  <div class="facility-name">{% trans "SIGMA Optics" %}</div>
+                  <div class="facility-desc">{% trans "Caracterización óptica" %}</div>
+                </div>
+              </div>
+              <button type="button" class="btn-modal-config" data-tech="optics" disabled>
+                <i class="bi bi-gear"></i> {% trans "Ir a tarjeta" %}
+              </button>
+            </div>
+
             <div class="facility-item" data-technique="vdg" data-checkbox="id_facility_vdg">
               <div class="facility-checkbox">
                 {% render_field form.facility_vdg class="form-check-input" %}
@@ -1381,6 +1395,29 @@
         <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
       </button>
       <button type="button" class="btn-modal-save" data-modal="confocalModal" data-tech="confocal">
+        <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Optics (oculto, solo para extraer contenido) -->
+<div id="opticsModal" class="modal-overlay" style="display: none !important; visibility: hidden !important; position: absolute !important; left: -9999px !important;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="bi bi-sun"></i> {% trans "Configuración SIGMA Optics" %}</h3>
+      <button type="button" class="modal-close" data-modal="opticsModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="facility-section" data-tech="optics" data-checkbox-id="id_facility_optics">
+        {% include 'icts/forms/_optics.html' %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" data-modal="opticsModal">
+        <i class="bi bi-x-circle"></i> {% trans "Cancelar" %}
+      </button>
+      <button type="button" class="btn-modal-save" data-modal="opticsModal" data-tech="optics">
         <i class="bi bi-check-circle"></i> {% trans "Guardar" %}
       </button>
     </div>
@@ -1937,7 +1974,7 @@
 // Sistema de modales para configuración de técnicas
 (function(){
   // Techniques that already have dynamic cards; keep users on the card to avoid modal/card conflicts.
-  const CARD_TECHNIQUES = new Set(['sem', 'fib', 'sims', 'confocal', 'vdg', 'imp']);
+  const CARD_TECHNIQUES = new Set(['sem', 'fib', 'sims', 'confocal', 'optics', 'vdg', 'imp']);
 
   function getTechniqueCheckboxId(tech) {
     if (tech === 'fib') {
@@ -2228,6 +2265,7 @@
 
     const techniqueOrder = [
       { checkboxId: 'id_facility_confocal', code: 'CONF' },
+      { checkboxId: 'id_facility_optics', code: 'OPT' },
       { checkboxId: 'id_facility_sem_fib', code: 'FIB' },
       { checkboxId: 'id_facility_imp', code: 'IMP' },
       { checkboxId: 'id_facility_profilometer', code: 'PERF' },
@@ -2568,7 +2606,7 @@
   }
 
   function ensureSampleCards(template, formCard, neededCount) {
-    const samplesTemplates = ['sem', 'fib', 'sims', 'confocal', 'imp', 'vdg', 'profilometer'];
+    const samplesTemplates = ['sem', 'fib', 'sims', 'confocal', 'optics', 'imp', 'vdg', 'profilometer'];
     if (!samplesTemplates.includes(template) || !formCard) return;
 
     const container = formCard.querySelector(`#${template}-samples-container`);
@@ -2586,6 +2624,7 @@
       fib: typeof addFibSample === 'function' ? addFibSample : null,
       sims: typeof addSimsSample === 'function' ? addSimsSample : null,
       confocal: typeof addConfocalSample === 'function' ? addConfocalSample : null,
+      optics: typeof addOpticsSample === 'function' ? addOpticsSample : null,
       imp: typeof addImpSample === 'function' ? addImpSample : null,
       vdg: typeof addVdgSample === 'function' ? addVdgSample : null
     };
@@ -2657,6 +2696,11 @@
       name: 'Metrolog\u00eda de superficies \u00f3pticas 3D',
       icon: 'bi-binoculars',
       template: 'confocal'
+    },
+    'id_facility_optics': {
+      name: 'SIGMA Optics',
+      icon: 'bi-sun',
+      template: 'optics'
     },
     'id_facility_vdg': {
       name: 'VDG',
@@ -2920,6 +2964,9 @@
       case 'confocal':
         initializeConfocalForm(formCard);
         break;
+      case 'optics':
+        initializeOpticsForm(formCard);
+        break;
       case 'imp':
       case 'vdg':
         // Estas técnicas no requieren inicialización especial
@@ -3113,6 +3160,18 @@
     });
   }
 
+  function initializeOpticsForm(formCard) {
+    const checkboxes = formCard.querySelectorAll('.safety-checkbox, .info-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (label && (label.classList.contains('safety-label') || label.classList.contains('info-label'))) {
+          label.textContent = this.checked ? 'YES' : 'NO';
+        }
+      });
+    });
+  }
+
   // Función para agregar listeners de validación
   // Funcion para inicializar formulario Profilometer
   function getProfilometerSampleTemplate(container) {
@@ -3247,6 +3306,11 @@
         { name: 'confocal_sample_0_identification', label: 'Sample Identification', type: 'text' },
         { name: 'confocal_sample_0_name', label: 'Sample Name', type: 'text' },
         { name: 'confocal_sample_0_details', label: 'Sample Details', type: 'textarea' }
+      ],
+      'optics': [
+        { name: 'optics_sample_0_identification', label: 'Sample Identification', type: 'text' },
+        { name: 'optics_sample_0_name', label: 'Sample Name', type: 'text' },
+        { name: 'optics_sample_0_observations', label: 'Sample Observations', type: 'textarea' }
       ],
         'imp': [
           { name: 'imp_sample_0_identification', label: 'Sample Identification', type: 'text' },
@@ -3401,6 +3465,18 @@
 
   function validateConfocalForm(formCard) {
     // Similar validación para Confocal
+    const sampleCards = formCard.querySelectorAll('.sample-card');
+    if (sampleCards.length === 0) return false;
+    
+    const firstSample = sampleCards[0];
+    const identification = firstSample.querySelector('input[name*="identification"]');
+    const name = firstSample.querySelector('input[name*="name"]');
+    
+    return identification && identification.value.trim() && 
+           name && name.value.trim();
+  }
+
+  function validateOpticsForm(formCard) {
     const sampleCards = formCard.querySelectorAll('.sample-card');
     if (sampleCards.length === 0) return false;
     
@@ -3625,8 +3701,8 @@
 
     techniqueData[template] = templateData;
 
-    const needsSamples = ['sem', 'fib', 'sims', 'confocal', 'imp', 'vdg', 'profilometer'].includes(template);
-    const needsCheckboxSync = ['sem', 'fib', 'sims', 'confocal'].includes(template);
+    const needsSamples = ['sem', 'fib', 'sims', 'confocal', 'optics', 'imp', 'vdg', 'profilometer'].includes(template);
+    const needsCheckboxSync = ['sem', 'fib', 'sims', 'confocal', 'optics'].includes(template);
     const formCard = document.getElementById(`technique-form-${template}`);
     if (formCard) {
       if (needsSamples) {
@@ -3669,6 +3745,8 @@
         return validateSimsForm(formCard);
       case 'confocal':
         return validateConfocalForm(formCard);
+      case 'optics':
+        return validateOpticsForm(formCard);
       case 'imp':
         return validateImpForm(formCard);
       case 'vdg':

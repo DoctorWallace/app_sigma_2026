@@ -35,7 +35,7 @@ class AccessProposalForm(forms.ModelForm):
             "project_name", "project_type", "funding_source", "start_year", "end_year",
             "previous_experiments", "references",
             "facility_sem", "facility_sem_fib", "facility_imp", "facility_sims",
-            "facility_confocal", "facility_vdg", "facility_profilometer", "facility_olmat"
+            "facility_confocal", "facility_optics", "facility_vdg", "facility_profilometer", "facility_olmat"
         ]
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your project title"}),

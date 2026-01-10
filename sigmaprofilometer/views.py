@@ -10,7 +10,7 @@ def _can_access(user):
         return False
     if user.is_staff or user.is_superuser:
         return True
-    return core_roles.is_any_tech(user)
+    return core_roles.is_dp_tech(user)
 
 
 @login_required_icts

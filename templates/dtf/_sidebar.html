@@ -45,12 +45,10 @@
         <a class="nav-item" href="{% url 'sigmadp:inbox' %}"><i class="bi bi-envelope"></i> Mensajes S-DP</a>
         <a class="nav-item" href="{% url 'sigmadp:ficha_equipo' %}"><i class="bi bi-gear"></i> Ficha Equipo</a>
         <a class="nav-item" href="{% url 'sigmadp:necesidades' %}"><i class="bi bi-clipboard-check"></i> Necesidades</a>
-      {# Para técnicos de S-OPTICS #}
+      {# Para técnicos de S-OPTICS (migrado a ICTS) #}
       {% elif request.user|has_group:'tecnico_responsable_s_optics' %}
-        <div class="nav-title">Panel Técnico S-OPTICS</div>
-        <a class="nav-item" href="{% url 'sigmaoptics:panel_tecnico' %}"><i class="bi bi-speedometer2"></i> Mi Panel Técnico</a>
-        <a class="nav-item" href="{% url 'sigmaoptics:solicitud_list' %}"><i class="bi bi-list-ul"></i> Solicitudes</a>
-        <a class="nav-item" href="{% url 'sigmaoptics:solicitud_create' %}"><i class="bi bi-plus-circle"></i> Nueva Solicitud</a>
+        <div class="nav-title">SIGMA Optics (ICTS)</div>
+        <a class="nav-item" href="/sigmaoptics/"><i class="bi bi-sun"></i> SIGMA Optics</a>
       {% else %}
         {# Para usuarios normales #}
         <div class="nav-title">Navegación</div>
@@ -58,7 +56,6 @@
         <a class="nav-item" href="/dtf/lab/"><i class="bi bi-flask"></i> S-LAB</a>
         <a class="nav-item" href="/dtf/mec/"><i class="bi bi-gear"></i> S-MEC</a>
         <a class="nav-item" href="/dtf/dp/"><i class="bi bi-thermometer-half"></i> S-DP</a>
-        <a class="nav-item" href="/dtf/optics/"><i class="bi bi-eye"></i> S-OPTICS</a>
       {% endif %}
       
       {# Enlaces comunes #}

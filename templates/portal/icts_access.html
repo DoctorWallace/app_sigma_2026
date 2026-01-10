@@ -31,9 +31,14 @@
             box-shadow: 0 4px 12px rgba(0,0,0,.08);
             border: none;
         }
+        .flow-figure{
+            text-align: center;
+        }
         .flow-figure img{
-            max-width: 100%;
+            width: 100%;
+            max-width: 720px;
             height: auto;
+            display: inline-block;
         }
     </style>
 </head>
@@ -128,11 +133,11 @@
 
                     <figure class="flow-figure mt-4">
                         {% if LANGUAGE_CODE|slice:":2" == "es" %}
-                          <img src="{% static 'portal/img/Gemini_Generated_Image_pyfzdbpyfzdbpyfz.png' %}" class="img-fluid border rounded" alt="{% trans 'Diagrama de flujo de acceso competitivo' %}">
+                          <img src="{% static 'portal/img/Competitivo_SPA.png' %}" class="img-fluid border rounded" alt="{% trans 'Diagrama de flujo de acceso competitivo' %}">
                         {% else %}
-                          <img src="{% static 'portal/img/Gemini_Generated_Image_59e49c59e49c59e4.png' %}" class="img-fluid border rounded" alt="{% trans 'Diagrama de flujo de acceso competitivo' %}">
+                          <img src="{% static 'portal/img/Competitive_ENG.png' %}" class="img-fluid border rounded" alt="{% trans 'Diagrama de flujo de acceso competitivo' %}">
                         {% endif %}
-                        <figcaption class="text-muted small mt-2">{% trans "Figura 2 — Flujo de acceso competitivo" %}</figcaption>
+                        <figcaption class="text-muted small mt-2">{% trans "Figura 1 — Flujo de acceso competitivo" %}</figcaption>
                         <div class="text-muted small">{% trans "Diagrama provisional; se sustituirá por un gráfico." %}</div>
                     </figure>
                 </section>
@@ -232,11 +237,11 @@
 
                     <figure class="flow-figure mt-4">
                         {% if LANGUAGE_CODE|slice:":2" == "es" %}
-                          <img src="{% static 'portal/img/Gemini_Generated_Image_pyfzdbpyfzdbpyfz.png' %}" class="img-fluid border rounded" alt="{% trans 'Diagrama de flujo de solicitud directa' %}">
+                          <img src="{% static 'portal/img/Directo_SPA.png' %}" class="img-fluid border rounded" alt="{% trans 'Diagrama de flujo de solicitud directa' %}">
                         {% else %}
-                          <img src="{% static 'portal/img/Gemini_Generated_Image_59e49c59e49c59e4.png' %}" class="img-fluid border rounded" alt="{% trans 'Diagrama de flujo de solicitud directa' %}">
+                          <img src="{% static 'portal/img/Direct_ENG.png' %}" class="img-fluid border rounded" alt="{% trans 'Diagrama de flujo de solicitud directa' %}">
                         {% endif %}
-                        <figcaption class="text-muted small mt-2">{% trans "Figura 3 — Flujo de solicitud directa" %}</figcaption>
+                        <figcaption class="text-muted small mt-2">{% trans "Figura 2 — Flujo de solicitud directa" %}</figcaption>
                         <div class="text-muted small">{% trans "Diagrama provisional; se sustituirá por un gráfico." %}</div>
                     </figure>
                 </section>

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction, connection
 from django.utils import timezone
@@ -33,14 +34,23 @@ class SIMSRecord(models.Model):
         return f"{self.sims_id or 'SIMS'} - {self.sample_identification}"
 
     @property
-    def i1_days(self):
+    def quality_i1_days(self):
         if self.analysis_date and self.reception_date:
             return (self.analysis_date - self.reception_date).days
         return None
 
+    @property
+    def quality_i1_is_valid(self):
+        days = self.quality_i1_days
+        return days is not None and days >= 0
+
+    @property
+    def i1_days(self):
+        return self.quality_i1_days
+
     def _generate_sims_id(self):
         year = (self.reception_date or timezone.now().date()).year
-        prefix = f"SIMS_{year % 100:02d}_"
+        prefix = f"SIMS-{year % 100:02d}-"
         with transaction.atomic():
             qs = SIMSRecord.objects.filter(sims_id__startswith=prefix)
             if connection.features.has_select_for_update:
@@ -53,7 +63,7 @@ class SIMSRecord(models.Model):
             seq = 0
             if last_id:
                 try:
-                    seq = int(last_id.rsplit("_", 1)[-1])
+                    seq = int(last_id.rsplit("-", 1)[-1])
                 except ValueError:
                     seq = 0
             return f"{prefix}{seq + 1:03d}"
@@ -73,7 +83,7 @@ class SIMSRecord(models.Model):
         if not self.sims_id:
             self.sims_id = self._generate_sims_id()
         if not self.request_code and self.access_proposal:
-            self.request_code = self.access_proposal.access_code or ""
+            self.request_code = (self.access_proposal.access_code or "").replace("_", "-")
         self.full_clean()
         super().save(*args, **kwargs)
 
@@ -147,3 +157,224 @@ class SIMSDocument(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.code})"
+
+
+class SIMSEquipment(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    description = models.CharField(max_length=255, blank=True)
+    is_reference = models.BooleanField(default=False, blank=True)
+    responsible = models.CharField(max_length=200, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    received_date = models.DateField(null=True, blank=True)
+    decommission_date = models.DateField(null=True, blank=True)
+    observations = models.TextField(blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    brand = models.CharField(max_length=200, blank=True)
+    model = models.CharField(max_length=200, blank=True)
+    serial_number = models.CharField(max_length=200, blank=True)
+    supplier = models.CharField(max_length=200, blank=True)
+    inventory_number = models.CharField(max_length=200, blank=True)
+    measurement_magnitude = models.CharField(max_length=200, blank=True)
+    measurement_range = models.CharField(max_length=200, blank=True)
+    breakdown_contact = models.TextField(blank=True)
+    calibration_acceptance_criteria = models.TextField(blank=True)
+    specification_conformity = models.TextField(blank=True)
+    associated_equipment = models.TextField(blank=True)
+    technical_characteristics = models.TextField(blank=True)
+    usage_instructions = models.TextField(blank=True)
+    validation_data = models.TextField(blank=True)
+    maintenance_required = models.BooleanField(default=False, blank=True)
+    maintenance_company = models.CharField(max_length=200, blank=True)
+    maintenance_procedure = models.CharField(max_length=200, blank=True)
+    maintenance_period = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        ordering = ["code"]
+
+    def __str__(self):
+        return self.code
+
+
+class SIMSEquipmentDocRef(models.Model):
+    equipment = models.ForeignKey(
+        SIMSEquipment,
+        on_delete=models.CASCADE,
+        related_name="doc_refs",
+    )
+    doc_code = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=255)
+    file = models.FileField(
+        upload_to="sigmasims/equipment/docs/",
+        null=True,
+        blank=True,
+    )
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class SIMSMaintenanceActivity(models.Model):
+    equipment = models.ForeignKey(
+        SIMSEquipment,
+        on_delete=models.CASCADE,
+        related_name="maintenance_activities",
+    )
+    activity = models.CharField(max_length=255)
+    frequency = models.CharField(max_length=200)
+    code = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class SIMSMaintenanceRecord(models.Model):
+    equipment = models.ForeignKey(
+        SIMSEquipment,
+        on_delete=models.CASCADE,
+        related_name="maintenance_records",
+    )
+    performed_at = models.DateField()
+    code = models.CharField(max_length=100, blank=True)
+    performed_by = models.CharField(max_length=200, blank=True)
+    result = models.CharField(max_length=255, blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class SIMSEquipmentIncident(models.Model):
+    equipment = models.ForeignKey(
+        SIMSEquipment,
+        on_delete=models.CASCADE,
+        related_name="incidents",
+    )
+    date = models.DateField()
+    operation = models.CharField(max_length=255)
+    performed_by = models.CharField(max_length=200, blank=True)
+    description = models.TextField(blank=True)
+    attachment = models.FileField(
+        upload_to="sigmasims/equipment/incidents/",
+        null=True,
+        blank=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class SIMSSparePartInventory(models.Model):
+    item_name = models.CharField(max_length=255)
+    stock_2024_01 = models.IntegerField(null=True, blank=True)
+    stock_2024_06 = models.IntegerField(null=True, blank=True)
+    next_orders = models.IntegerField(null=True, blank=True)
+    actions = models.TextField(blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["item_name"]
+
+
+class SIMSAnnualPlan(models.Model):
+    year = models.PositiveSmallIntegerField(unique=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-year"]
+
+
+class SIMSAnnualPlanEntry(models.Model):
+    ACTIVITY_MAINTENANCE = "MAINTENANCE"
+    ACTIVITY_CALIBRATION = "CALIBRATION"
+    ACTIVITY_VERIFICATION = "VERIFICATION"
+    ACTIVITY_VALIDATION = "VALIDATION"
+    ACTIVITY_CONTROL = "CONTROL"
+    ACTIVITY_CHOICES = [
+        (ACTIVITY_MAINTENANCE, "Mantenimiento"),
+        (ACTIVITY_CALIBRATION, "Calibracion"),
+        (ACTIVITY_VERIFICATION, "Verificacion"),
+        (ACTIVITY_VALIDATION, "Validacion"),
+        (ACTIVITY_CONTROL, "Control"),
+    ]
+
+    EXECUTION_INTERNAL = "INTERNAL"
+    EXECUTION_EXTERNAL = "EXTERNAL"
+    EXECUTION_CHOICES = [
+        (EXECUTION_INTERNAL, "INTERNO"),
+        (EXECUTION_EXTERNAL, "EXTERNO"),
+    ]
+
+    plan = models.ForeignKey(
+        SIMSAnnualPlan,
+        on_delete=models.CASCADE,
+        related_name="entries",
+    )
+    equipment = models.ForeignKey(
+        SIMSEquipment,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    equipment_code = models.CharField(max_length=50, blank=True)
+    description = models.CharField(max_length=255, blank=True)
+    activity = models.CharField(max_length=30, choices=ACTIVITY_CHOICES)
+    execution_type = models.CharField(max_length=10, choices=EXECUTION_CHOICES)
+    month_01 = models.BooleanField(default=False)
+    month_02 = models.BooleanField(default=False)
+    month_03 = models.BooleanField(default=False)
+    month_04 = models.BooleanField(default=False)
+    month_05 = models.BooleanField(default=False)
+    month_06 = models.BooleanField(default=False)
+    month_07 = models.BooleanField(default=False)
+    month_08 = models.BooleanField(default=False)
+    month_09 = models.BooleanField(default=False)
+    month_10 = models.BooleanField(default=False)
+    month_11 = models.BooleanField(default=False)
+    month_12 = models.BooleanField(default=False)
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["plan__year", "equipment_code", "activity"]
+
+    def save(self, *args, **kwargs):
+        if self.equipment and not self.equipment_code:
+            self.equipment_code = self.equipment.code
+        super().save(*args, **kwargs)
+
+
+class SIMSAnnualPlanChangeLog(models.Model):
+    ACTION_COPY = "COPY"
+    ACTION_CREATE = "CREATE"
+    ACTION_UPDATE = "UPDATE"
+    ACTION_DELETE = "DELETE"
+    ACTION_CHOICES = [
+        (ACTION_COPY, "Copia"),
+        (ACTION_CREATE, "Creacion"),
+        (ACTION_UPDATE, "Actualizacion"),
+        (ACTION_DELETE, "Borrado"),
+    ]
+
+    plan = models.ForeignKey(
+        SIMSAnnualPlan,
+        on_delete=models.CASCADE,
+        related_name="change_logs",
+    )
+    entry = models.ForeignKey(
+        SIMSAnnualPlanEntry,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="change_logs",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    action = models.CharField(max_length=10, choices=ACTION_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    before_data = models.JSONField(null=True, blank=True)
+    after_data = models.JSONField(null=True, blank=True)
+    message = models.CharField(max_length=255, blank=True)

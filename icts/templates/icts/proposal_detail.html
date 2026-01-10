@@ -91,9 +91,10 @@
           {% if obj.facility_imp %}<span class="facility-tag"><i class="bi bi-bullseye"></i> Ion Implanter</span>{% endif %}
           {% if obj.facility_sims %}<span class="facility-tag"><i class="bi bi-graph-up"></i> SIMS</span>{% endif %}
           {% if obj.facility_confocal %}<span class="facility-tag"><i class="bi bi-eye"></i> Metrología de superficies ópticas 3D</span>{% endif %}
+          {% if obj.facility_optics %}<span class="facility-tag"><i class="bi bi-sun"></i> SIGMA Optics</span>{% endif %}
           {% if obj.facility_vdg %}<span class="facility-tag"><i class="bi bi-lightning"></i> VDG</span>{% endif %}
           {% if obj.facility_profilometer %}<span class="facility-tag"><i class="bi bi-rulers"></i> Profilometer</span>{% endif %}
-          {% if not obj.facility_sem and not obj.facility_sem_fib and not obj.facility_imp and not obj.facility_sims and not obj.facility_confocal and not obj.facility_vdg and not obj.facility_profilometer %}
+          {% if not obj.facility_sem and not obj.facility_sem_fib and not obj.facility_imp and not obj.facility_sims and not obj.facility_confocal and not obj.facility_optics and not obj.facility_vdg and not obj.facility_profilometer %}
             <span class="no-facilities">No se han seleccionado instalaciones específicas</span>
           {% endif %}
         </div>

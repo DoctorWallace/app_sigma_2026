@@ -18,6 +18,10 @@ urlpatterns = [
     path("sigmaimp/", include(("sigmaimp.urls", "sigmaimp"), namespace="sigmaimp")),
     path("sigmavdg/", include(("sigmavdg.urls", "sigmavdg"), namespace="sigmavdg")),
     path(
+        "sigmaoptics/",
+        include(("sigmaoptics_icts.urls", "sigmaoptics_icts"), namespace="sigmaoptics_icts"),
+    ),
+    path(
         "sigmaprofilometer/",
         include(("sigmaprofilometer.urls", "sigmaprofilometer"), namespace="sigmaprofilometer"),
     ),

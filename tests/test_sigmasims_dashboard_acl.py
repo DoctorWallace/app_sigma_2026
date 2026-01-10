@@ -37,3 +37,12 @@ def test_sigmasims_dashboard_allows_sims_tech(client):
     client.force_login(user)
     response = client.get(reverse("icts:sigmasims:dashboard"))
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_icts_dashboard_redirects_sims_tech(client):
+    user = _create_user("sims_redirect", ["tecnicos_sims"])
+    client.force_login(user)
+    response = client.get(reverse("icts:dashboard"))
+    assert response.status_code == 302
+    assert response.url == reverse("icts:sigmasims:dashboard")

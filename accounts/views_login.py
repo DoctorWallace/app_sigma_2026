@@ -1,7 +1,7 @@
 # accounts/views_login.py
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
@@ -9,6 +9,8 @@ from django.views.decorators.cache import never_cache
 from icts.auth_utils import (
     CONF_TECH_GROUPS,
     TECH_SEM_GROUPS,
+    TECH_SIMS_GROUPS,
+    OPTICS_TECH_GROUPS,
     get_normalized_user_groups,
     is_manager,
     is_responsable,
@@ -50,6 +52,13 @@ class LoginICTS(LoginView):
         groups = get_normalized_user_groups(user)
         if user_in_groups(user, TECH_SEM_GROUPS, groups):
             return reverse("icts:sigmasem:dashboard")
+        if user_in_groups(user, TECH_SIMS_GROUPS, groups):
+            return reverse("icts:sigmasims:dashboard")
+        if user_in_groups(user, OPTICS_TECH_GROUPS, groups):
+            try:
+                return reverse("sigmaoptics_icts:dashboard")
+            except NoReverseMatch:
+                return reverse("icts:dashboard")
         if user_in_groups(user, CONF_TECH_GROUPS, groups):
             return reverse("sigmaconf:mcf_dashboard")
         if is_responsable(user, groups):

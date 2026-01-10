@@ -1,12 +1,15 @@
 # icts/views.py
 from django.contrib import messages
 from django.conf import settings
-from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest  # <-- añade esto
+from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.exceptions import PermissionDenied
 from django.views.generic import FormView
 from django.db import transaction, connection
-from django.db.models import Count, Q, Avg, F, Max, Case, When, Value, IntegerField
+from django.db.models import Count, Q, Avg, F, Max, Case, When, Value, IntegerField, Exists, OuterRef
+from django.db.models.functions import TruncMonth, ExtractYear, ExtractMonth
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -17,9 +20,8 @@ import re
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from .forms import AccessProposalForm, ParticipantFormSet, AttachmentFormSet, ProposalReviewForm, RegistrationICTSForm, OLMATRequestForm, OLMATEvaluationForm
-from django.shortcuts import render
-from django.db.models import Exists, OuterRef
 
+from core import roles as core_roles
 from .models import (
     AccessProposal,
     ProposalReview,
@@ -37,7 +39,6 @@ from .utils import (
     send_new_user_registration_notification,
     send_user_approval_notification,
 )
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, user_passes_test as django_user_passes_test
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from functools import wraps
@@ -46,6 +47,7 @@ from .auth_utils import (
     ICTS_CORE_GROUPS,
     OLMAT_TECH_GROUPS,
     TECH_SEM_GROUPS,
+    TECH_SIMS_GROUPS,
     IMP_TECH_GROUPS,
     VDG_TECH_GROUPS,
     get_normalized_user_groups,
@@ -122,6 +124,7 @@ FACILITY_TECH_MAP = {
     "imp": "facility_imp",
     "sims": "facility_sims",
     "confocal": "facility_confocal",
+    "optics": "facility_optics",
     "vdg": "facility_vdg",
     "profilometer": "facility_profilometer",
     "olmat": "facility_olmat",
@@ -145,21 +148,12 @@ def _filter_facility_data_by_selection(payload, proposal):
 # we rehydrate/merge from session drafts here.
 #
 # NOTE: These keys are internal and MUST NOT be translated with i18n.
-_FACILITY_TECH_MAPPING = {
-    "sem": "facility_sem",
-    "fib": "facility_sem_fib",
-    "imp": "facility_imp",
-    "sims": "facility_sims",
-    "confocal": "facility_confocal",
-    "vdg": "facility_vdg",
-    "profilometer": "facility_profilometer",
-    "olmat": "facility_olmat",
-}
+# NOTE: Uses FACILITY_TECH_MAP defined above to avoid duplication.
 
 
 def _get_selected_techniques(proposal):
     return [
-        key for key, field in _FACILITY_TECH_MAPPING.items()
+        key for key, field in FACILITY_TECH_MAP.items()
         if getattr(proposal, field, False)
     ]
 
@@ -182,7 +176,7 @@ def _get_session_technique_draft_bucket(request, proposal_id):
 
     # Compatibility: sometimes drafts were stored flat in session.
     flat = {}
-    for tech in _FACILITY_TECH_MAPPING.keys():
+    for tech in FACILITY_TECH_MAP.keys():
         value = technique_drafts.get(tech)
         if isinstance(value, dict):
             flat[tech] = value
@@ -432,6 +426,88 @@ def _validate_profilometer_data(facility_data):
     return errors
 
 
+def _validate_optics_data(proposal, facility_data):
+    errors = []
+    if not getattr(proposal, "facility_optics", False):
+        return errors
+
+    payload = {}
+    if isinstance(facility_data, dict):
+        payload = facility_data.get("optics") or {}
+    if not isinstance(payload, dict):
+        payload = {}
+
+    sample_entries = {}
+    sample_pattern = re.compile(r"^optics_sample_(\d+)_(identification|name)$")
+    for key, value in payload.items():
+        match = sample_pattern.match(str(key))
+        if not match:
+            continue
+        idx = int(match.group(1))
+        field = match.group(2)
+        sample_entries.setdefault(idx, {})[field] = str(value or "").strip()
+
+    sample_ids = [entry.get("identification") for entry in sample_entries.values() if entry.get("identification")]
+    if not sample_ids:
+        errors.append("Optics: indica al menos una muestra con identificacion.")
+
+    for idx, entry in sorted(sample_entries.items()):
+        if entry.get("identification") and not entry.get("name"):
+            errors.append(f"Optics: indica el nombre de la muestra {idx + 1}.")
+
+    measurement_mode = (payload.get("optics_measurement_mode") or "").strip()
+    if measurement_mode not in {"absorption", "transmission"}:
+        errors.append("Optics: selecciona el modo de medida (absorcion o transmision).")
+
+    measurement_type = (payload.get("optics_measurement_type") or "").strip()
+    if measurement_type not in {"uvvis", "ftir"}:
+        errors.append("Optics: selecciona el tipo de medida (UV-VIS o FTIR).")
+
+    def parse_wavelength(value_key, unit_key, label):
+        raw = payload.get(value_key)
+        unit = (payload.get(unit_key) or "").strip().lower()
+        if raw is None or str(raw).strip() == "":
+            errors.append(f"Optics: {label} es obligatoria.")
+            return None
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            errors.append(f"Optics: {label} debe ser un numero.")
+            return None
+        if unit not in {"nm", "um"}:
+            errors.append(f"Optics: unidad para {label} debe ser nm o um.")
+            return None
+        if value <= 0:
+            errors.append(f"Optics: {label} debe ser mayor que 0.")
+        return value * 1000 if unit == "um" else value
+
+    min_nm = parse_wavelength("optics_wavelength_min", "optics_wavelength_min_unit", "longitud de onda minima")
+    max_nm = parse_wavelength("optics_wavelength_max", "optics_wavelength_max_unit", "longitud de onda maxima")
+    if min_nm is not None and max_nm is not None and min_nm >= max_nm:
+        errors.append("Optics: la longitud de onda minima debe ser menor que la maxima.")
+
+    def is_truthy(value):
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, (int, float)):
+            return value != 0
+        if isinstance(value, str):
+            return value.strip().lower() in {"true", "1", "yes", "on", "si", "s"}
+        return False
+
+    hazards = [
+        payload.get("optics_toxic"),
+        payload.get("optics_corrosive"),
+        payload.get("optics_irritating"),
+        payload.get("optics_radioactive"),
+    ]
+    safety_comments = (payload.get("optics_safety_comments") or "").strip()
+    if any(is_truthy(item) for item in hazards) and not safety_comments:
+        errors.append("Optics: indica comentarios de seguridad cuando hay riesgos marcados.")
+
+    return errors
+
+
 def _validate_required_steps_for_submit(obj):
     missing = []
     project_type_choices = {choice[0] for choice in AccessProposal.PROJECT_TYPE_CHOICES}
@@ -564,9 +640,10 @@ def _build_facility_data_view(facility_data):
         "imp": 3,
         "sims": 4,
         "confocal": 5,
-        "vdg": 6,
-        "profilometer": 7,
-        "olmat": 8,
+        "optics": 6,
+        "vdg": 7,
+        "profilometer": 8,
+        "olmat": 9,
     }
     tech_labels = {
         "sem": "SEM",
@@ -574,6 +651,7 @@ def _build_facility_data_view(facility_data):
         "imp": "IMP",
         "sims": "SIMS",
         "confocal": "CONF",
+        "optics": "OPT",
         "vdg": "VDG",
         "profilometer": "PERF",
         "olmat": "OLMAT",
@@ -793,6 +871,8 @@ def dashboard(request):
         return redirect("sigmavdg:vdg_home")
     if user_in_groups(request.user, TECH_SEM_GROUPS, groups):
         return redirect("icts:sigmasem:dashboard")
+    if core_roles.is_sims_tech(request.user, groups):
+        return redirect("icts:sigmasims:dashboard")
     if user_in_groups(request.user, CONF_TECH_GROUPS, groups):
         return redirect("sigmaconf:mcf_dashboard")
     return redirect("icts:user_dashboard")
@@ -852,35 +932,37 @@ def icts_user_dashboard(request):
     ).select_related("access_proposal", "technician").order_by("-created_at")
 
     # Datos para el gráfico de barras (últimos 12 meses)
-    from datetime import datetime, timedelta
-    proposal_filter = _icts_facilities_q(prefix="proposal__")
-    proposal_filter = _icts_facilities_q(prefix="proposal__")
-    from django.db.models import Count
-    from django.utils import timezone
-    
     end_date = timezone.now().date()
     start_date = end_date - timedelta(days=365)
     
-    # Solicitudes enviadas por mes
-    submitted_by_month = qs.filter(
-        status="submitted",
-        created_at__date__gte=start_date
-    ).extra(
-        select={'month': "strftime('%%Y-%%m', created_at)"}
-    ).values('month').annotate(count=Count('id')).order_by('month')
+    # Solicitudes enviadas por mes (usando TruncMonth para portabilidad entre BDs)
+    submitted_by_month = list(
+        qs.filter(status="submitted", created_at__date__gte=start_date)
+        .annotate(month=TruncMonth("created_at"))
+        .values("month")
+        .annotate(count=Count("id"))
+        .order_by("month")
+    )
+    # Formatear month como string para JSON
+    for item in submitted_by_month:
+        if item["month"]:
+            item["month"] = item["month"].strftime("%Y-%m")
     
     # Solicitudes aceptadas por mes
-    accepted_by_month = qs.filter(
-        status="accepted",
-        created_at__date__gte=start_date
-    ).extra(
-        select={'month': "strftime('%%Y-%%m', created_at)"}
-    ).values('month').annotate(count=Count('id')).order_by('month')
+    accepted_by_month = list(
+        qs.filter(status="accepted", created_at__date__gte=start_date)
+        .annotate(month=TruncMonth("created_at"))
+        .values("month")
+        .annotate(count=Count("id"))
+        .order_by("month")
+    )
+    for item in accepted_by_month:
+        if item["month"]:
+            item["month"] = item["month"].strftime("%Y-%m")
 
     # Convertir datos del gráfico a formato JSON
-    import json
-    submitted_data_json = json.dumps(list(submitted_by_month))
-    accepted_data_json = json.dumps(list(accepted_by_month))
+    submitted_data_json = json.dumps(submitted_by_month)
+    accepted_data_json = json.dumps(accepted_by_month)
 
     return render(request, "icts/user_dashboard.html", {
         "drafts": drafts,
@@ -931,6 +1013,7 @@ def my_proposals(request):
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_plain_icts_user, raise_exception=True)
+@never_cache
 def save_technique_draft(request):
     """Vista para guardar borradores de tecnicas individuales"""
     if request.method == 'POST':
@@ -965,13 +1048,15 @@ def save_technique_draft(request):
             
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Datos JSON invalidos'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+        except Exception:
+            logger.exception("Error en save_technique_draft")
+            return JsonResponse({'success': False, 'error': 'Error interno del servidor'})
     
     return JsonResponse({'success': False, 'error': 'Metodo no permitido'})
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_plain_icts_user, raise_exception=True)
+@never_cache
 def load_technique_draft(request):
     """Vista para cargar borradores de tecnicas individuales"""
     groups = get_normalized_user_groups(request.user)
@@ -1005,6 +1090,7 @@ def load_technique_draft(request):
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_plain_icts_user, raise_exception=True)
+@never_cache
 def load_previous_proposal(request):
     """Vista para cargar datos de una propuesta anterior"""
     if request.method == 'GET':
@@ -1069,13 +1155,15 @@ def load_previous_proposal(request):
             
         except AccessProposal.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Propuesta anterior no encontrada'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+        except Exception:
+            logger.exception("Error en load_previous_proposal")
+            return JsonResponse({'success': False, 'error': 'Error interno del servidor'})
     
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_icts_user, raise_exception=True)
+@never_cache
 def proposal_create(request):
     facility_data_payload = {}
     facility_data_parsed = None
@@ -1102,38 +1190,33 @@ def proposal_create(request):
             len(fd) if fd is not None else None,
             isinstance(facility_data_parsed, dict),
         )
-        logger.debug(
-            "facility_data_json size=%s parsed=%s",
-            len(fd) if fd is not None else None,
-            isinstance(facility_data_parsed, dict),
-        )
-
 
         if form.is_valid() and formset.is_valid() and (attachment_formset.is_valid() if has_attach_mgmt else True):
-            obj = form.save(commit=False)
-            obj.applicant = request.user
-            if not obj.applicant_is_different:
-                obj.contact_person = request.user.get_full_name() or request.user.username
-                obj.email = request.user.email
-                if hasattr(request.user, "icts_profile") and request.user.icts_profile:
-                    obj.organization = request.user.icts_profile.center
-            base_facility_payload = facility_data_parsed if isinstance(facility_data_parsed, dict) else {}
-            base_facility_payload = _apply_session_technique_drafts(
-                request,
-                obj,
-                base_facility_payload,
-                proposal_id="legacy",
-            )
-            obj.facility_data = _filter_facility_data_by_selection(base_facility_payload, obj)
-            obj.save()
-            form.save_m2m()
+            with transaction.atomic():
+                obj = form.save(commit=False)
+                obj.applicant = request.user
+                if not obj.applicant_is_different:
+                    obj.contact_person = request.user.get_full_name() or request.user.username
+                    obj.email = request.user.email
+                    if hasattr(request.user, "icts_profile") and request.user.icts_profile:
+                        obj.organization = request.user.icts_profile.center
+                base_facility_payload = facility_data_parsed if isinstance(facility_data_parsed, dict) else {}
+                base_facility_payload = _apply_session_technique_drafts(
+                    request,
+                    obj,
+                    base_facility_payload,
+                    proposal_id="legacy",
+                )
+                obj.facility_data = _filter_facility_data_by_selection(base_facility_payload, obj)
+                obj.save()
+                form.save_m2m()
 
-            formset.instance = obj
-            formset.save()
+                formset.instance = obj
+                formset.save()
 
-            if has_attach_mgmt:
-                attachment_formset.instance = obj
-                attachment_formset.save()
+                if has_attach_mgmt:
+                    attachment_formset.instance = obj
+                    attachment_formset.save()
 
             messages.success(request, "Propuesta creada como borrador.")
             return redirect("icts:proposal_detail", pk=obj.pk)
@@ -1330,25 +1413,26 @@ def proposal_edit(request, pk):
 
 
         if form.is_valid() and formset.is_valid() and (attachment_formset.is_valid() if has_attach_mgmt else True):
-            obj = form.save(commit=False)
-            if isinstance(facility_data_parsed, dict):
-                base_facility_payload = facility_data_parsed
-            elif fd is not None:
-                base_facility_payload = {}
-            else:
-                base_facility_payload = obj.facility_data or {}
-            base_facility_payload = _apply_session_technique_drafts(
-                request,
-                obj,
-                base_facility_payload,
-                proposal_id=obj.pk,
-            )
-            obj.facility_data = _filter_facility_data_by_selection(base_facility_payload, obj)
-            obj.save()
-            form.save_m2m()
-            formset.save()
-            if has_attach_mgmt:
-                attachment_formset.save()
+            with transaction.atomic():
+                obj = form.save(commit=False)
+                if isinstance(facility_data_parsed, dict):
+                    base_facility_payload = facility_data_parsed
+                elif fd is not None:
+                    base_facility_payload = {}
+                else:
+                    base_facility_payload = obj.facility_data or {}
+                base_facility_payload = _apply_session_technique_drafts(
+                    request,
+                    obj,
+                    base_facility_payload,
+                    proposal_id=obj.pk,
+                )
+                obj.facility_data = _filter_facility_data_by_selection(base_facility_payload, obj)
+                obj.save()
+                form.save_m2m()
+                formset.save()
+                if has_attach_mgmt:
+                    attachment_formset.save()
             messages.success(request, "Borrador actualizado.")
             return redirect("icts:proposal_detail", pk=obj.pk)
 
@@ -1432,6 +1516,11 @@ def proposal_submit(request, pk):
         imp_errors = _validate_imp_data(obj, obj.facility_data)
         if imp_errors:
             for error in imp_errors:
+                messages.error(request, error)
+            return redirect("icts:proposal_detail", pk=obj.pk)
+        optics_errors = _validate_optics_data(obj, obj.facility_data)
+        if optics_errors:
+            for error in optics_errors:
                 messages.error(request, error)
             return redirect("icts:proposal_detail", pk=obj.pk)
         profilometer_errors = (
@@ -1647,9 +1736,6 @@ def reviewer_dashboard_new(request):
 @never_cache
 def review_history(request):
     """Historial de evaluaciones del revisor con filtros"""
-    from django.core.paginator import Paginator
-    from django.db.models import Q
-
     groups = get_normalized_user_groups(request.user)
     if is_responsable(request.user, groups):
         return redirect("icts:responsable_dashboard")
@@ -1733,7 +1819,6 @@ def reviewer_faq(request):
 @never_cache
 def responsable_dashboard(request):
     """Dashboard del responsable con semáforo de revisiones"""
-    from django.contrib.auth import get_user_model
     from sigmaconf.models import MCFSession
     from sigmavdg.models import VDGSession
     from sigmaimp.models import IMPSession
@@ -2004,10 +2089,6 @@ def responsable_dashboard(request):
 @never_cache
 def manager_dashboard(request):
     """Dashboard para managers con metricas agregadas."""
-    from django.contrib.auth import get_user_model
-    from django.db.models import Count, Q
-    from django.db.models.functions import ExtractYear
-
     User = get_user_model()
     base_qs = AccessProposal.objects.filter(_icts_facilities_q())
 
@@ -2158,14 +2239,12 @@ def manager_dashboard(request):
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_manager, raise_exception=True)
+@never_cache
 def export_manager_data(request):
     """Exportar datos agregados del manager a Excel."""
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
     from openpyxl.utils import get_column_letter
-    from django.http import HttpResponse
-    from django.db.models import Count, Q
-    from django.db.models.functions import ExtractYear, ExtractMonth
 
     export_type = request.GET.get("type", "summary")
     include_olmat = request.GET.get("include_olmat") == "1"
@@ -2589,9 +2668,6 @@ def proposal_decide(request, pk):
 @never_cache
 def pending_users(request):
     """Vista para mostrar usuarios pendientes de validación"""
-    from django.contrib.auth import get_user_model
-    from .models import ICTSUserProfile
-    
     User = get_user_model()
     
     # Usuarios inactivos con perfil ICTS
@@ -2621,9 +2697,6 @@ def pending_users(request):
 @never_cache
 def users_admin(request):
     """Vista para administración completa de usuarios"""
-    from django.contrib.auth import get_user_model
-    from django.db.models import Q
-    
     User = get_user_model()
     
     # Parámetros de ordenación
@@ -2680,8 +2753,6 @@ def users_admin(request):
 @never_cache
 def approve_user(request, user_id):
     """Aprobar un usuario pendiente"""
-    from django.contrib.auth import get_user_model
-    
     User = get_user_model()
     user = get_object_or_404(User, id=user_id)
     if not hasattr(user, "icts_profile"):
@@ -2707,8 +2778,6 @@ def approve_user(request, user_id):
 @never_cache
 def reject_user(request, user_id):
     """Rechazar un usuario pendiente"""
-    from django.contrib.auth import get_user_model
-    
     User = get_user_model()
     user = get_object_or_404(User, id=user_id)
     if not hasattr(user, "icts_profile"):

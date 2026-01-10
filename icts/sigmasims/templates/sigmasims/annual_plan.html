@@ -1,0 +1,112 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+{% load role_filters %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Plan anual</h2>
+  </div>
+
+  <form method="get" class="mb-3">
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ year_form.year.id_for_label }}">{{ year_form.year.label }}</label>
+      {{ year_form.year|add_class:"sem-form-control" }}
+    </div>
+    <button class="sem-btn sem-btn-primary" type="submit">Ver</button>
+    {% if can_edit %}
+      <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:annual_plan_entry_create' %}?year={{ year }}">Anadir entrada</a>
+    {% endif %}
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:annual_plan_history' %}?year={{ year }}">Historial de cambios</a>
+  </form>
+
+  {% if preview and source_plan %}
+    <p><strong>No existe plan para {{ year }}. Mostrando plantilla de {{ source_plan.year }} (meses sin marcar).</strong></p>
+    {% if can_edit %}
+      <form method="post" action="{% url 'icts:sigmasims:annual_plan_copy_previous' %}">
+        {% csrf_token %}
+        <input type="hidden" name="year" value="{{ year }}">
+        <button class="sem-btn sem-btn-primary" type="submit">Copiar del ano anterior</button>
+      </form>
+    {% endif %}
+  {% elif not plan %}
+    <p>No hay plan anterior para copiar.</p>
+  {% endif %}
+
+  {% if entries %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Descripcion</th>
+          <th>Actividad</th>
+          <th>Interno/Externo</th>
+          <th>E</th>
+          <th>F</th>
+          <th>M</th>
+          <th>A</th>
+          <th>M</th>
+          <th>J</th>
+          <th>J</th>
+          <th>A</th>
+          <th>S</th>
+          <th>O</th>
+          <th>N</th>
+          <th>D</th>
+          {% if can_edit and plan %}
+            <th>Acciones</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in entries %}
+        <tr>
+          <td>
+            {% if entry.equipment_code %}
+              {{ entry.equipment_code }}
+            {% elif entry.equipment %}
+              {{ entry.equipment.code }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if entry.description %}
+              {{ entry.description }}
+            {% elif entry.equipment %}
+              {{ entry.equipment.description|default:"-" }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>{{ entry.get_activity_display }}</td>
+          <td>{{ entry.get_execution_type_display }}</td>
+          <td>{% if not preview and entry.month_01 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_02 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_03 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_04 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_05 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_06 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_07 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_08 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_09 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_10 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_11 %}X{% endif %}</td>
+          <td>{% if not preview and entry.month_12 %}X{% endif %}</td>
+          {% if can_edit and plan %}
+            <td>
+              <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:annual_plan_entry_edit' entry.pk %}">Editar</a>
+              <form method="post" action="{% url 'icts:sigmasims:annual_plan_entry_delete' entry.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <button class="sem-btn sem-btn-warning" type="submit">Borrar</button>
+              </form>
+            </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay entradas para el ano seleccionado.</p>
+  {% endif %}
+</div>
+{% endblock %}

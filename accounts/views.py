@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
 from icts.auth_utils import (
@@ -79,7 +79,10 @@ class LoginDTF(LoginView):
         if user_in_groups(user, DP_TECH_GROUPS, groups):
             return reverse("sigmadp:panel_tecnico")
         if user_in_groups(user, OPTICS_TECH_GROUPS, groups):
-            return reverse("sigmaoptics:panel_tecnico")
+            try:
+                return reverse("sigmaoptics_icts:dashboard")
+            except NoReverseMatch:
+                return f"{reverse('accounts:login_icts')}?next=/sigmaoptics/"
         return reverse("dtf:dashboard")
 
 

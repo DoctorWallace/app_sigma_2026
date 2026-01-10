@@ -17,9 +17,9 @@ def create_canonical_groups(apps, schema_editor):
             created_groups.append(group_name)
     
     if created_groups:
-        print(f"✅ Grupos creados: {', '.join(created_groups)}")
+        print(f"Grupos creados: {', '.join(created_groups)}")
     else:
-        print("ℹ️  Todos los grupos canónicos ya existen")
+        print("Todos los grupos canonicos ya existen")
 
 
 def cleanup_legacy_groups(apps, schema_editor):
@@ -37,9 +37,9 @@ def cleanup_legacy_groups(apps, schema_editor):
             group.delete()
     
     if removed_groups:
-        print(f"🗑️  Grupos legados eliminados: {', '.join(removed_groups)}")
+        print(f"Grupos legados eliminados: {', '.join(removed_groups)}")
     else:
-        print("ℹ️  No se encontraron grupos legados para eliminar")
+        print("No se encontraron grupos legados para eliminar")
 
 
 class Migration(migrations.Migration):

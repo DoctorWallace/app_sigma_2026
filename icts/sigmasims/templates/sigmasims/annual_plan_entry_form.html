@@ -1,0 +1,88 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+{% load role_filters %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">
+      {% if is_create %}Nueva entrada plan anual{% else %}Editar entrada plan anual{% endif %}
+    </h2>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="sem-form-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.equipment.id_for_label }}">{{ form.equipment.label }}</label>
+      {{ form.equipment|add_class:"sem-form-control" }}
+      {% for error in form.equipment.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.equipment_code.id_for_label }}">{{ form.equipment_code.label }}</label>
+      {{ form.equipment_code|add_class:"sem-form-control" }}
+      {% for error in form.equipment_code.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+      {{ form.description|add_class:"sem-form-control" }}
+      {% for error in form.description.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.activity.id_for_label }}">{{ form.activity.label }}</label>
+      {{ form.activity|add_class:"sem-form-control" }}
+      {% for error in form.activity.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.execution_type.id_for_label }}">{{ form.execution_type.label }}</label>
+      {{ form.execution_type|add_class:"sem-form-control" }}
+      {% for error in form.execution_type.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label">Meses</label>
+      <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+        <label>{{ form.month_01 }} {{ form.month_01.label }}</label>
+        <label>{{ form.month_02 }} {{ form.month_02.label }}</label>
+        <label>{{ form.month_03 }} {{ form.month_03.label }}</label>
+        <label>{{ form.month_04 }} {{ form.month_04.label }}</label>
+        <label>{{ form.month_05 }} {{ form.month_05.label }}</label>
+        <label>{{ form.month_06 }} {{ form.month_06.label }}</label>
+        <label>{{ form.month_07 }} {{ form.month_07.label }}</label>
+        <label>{{ form.month_08 }} {{ form.month_08.label }}</label>
+        <label>{{ form.month_09 }} {{ form.month_09.label }}</label>
+        <label>{{ form.month_10 }} {{ form.month_10.label }}</label>
+        <label>{{ form.month_11 }} {{ form.month_11.label }}</label>
+        <label>{{ form.month_12 }} {{ form.month_12.label }}</label>
+      </div>
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+      {{ form.notes|add_class:"sem-form-control" }}
+      {% for error in form.notes.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <button class="sem-btn sem-btn-primary" type="submit">Guardar</button>
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:annual_plan' %}?year={{ year }}">Volver</a>
+  </form>
+</div>
+{% endblock %}

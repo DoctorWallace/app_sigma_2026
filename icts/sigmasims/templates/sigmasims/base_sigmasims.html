@@ -9,8 +9,8 @@
   /* Usar el esquema de colores de ICTS */
   :root {
     --sem-primary: #a50943;
-    --sem-primary-dark: #0f2a4a;
-    --sem-primary-light: #8b2d54;
+    --sem-primary-dark: #7a0830;
+    --sem-primary-light: #d66788;
     --sem-accent: #b81735;
     --sem-accent-light: #20c997;
     --sem-success: #28a745;
@@ -24,8 +24,8 @@
 
   /* Header principal */
   .sem-header {
-    background: linear-gradient(135deg, var(--sem-primary) 30%, var(--sem-primary-dark) 70%);
-    color: #da1010;
+    background: linear-gradient(135deg, var(--sem-primary) 20%, var(--sem-primary-dark) 90%);
+    color: #ffffff;
     padding: 2rem;
     margin-bottom: 2rem;
     border-radius: 0 0 1rem 1rem;
@@ -36,13 +36,13 @@
     margin: 0;
     font-size: 2.2rem;
     font-weight: 800;
-    color: #071ae4;
+    color: #ffffff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .sem-header .subtitle {
     margin: 0.5rem 0 0 0;
-    color: rgb(7, 129, 228);
+    color: rgba(255, 255, 255, 0.82);
     font-size: 1.1rem;
     font-weight: 500;
   }
@@ -307,6 +307,20 @@
     box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
   }
 
+  .sem-form-help {
+    display: block;
+    margin-top: 0.35rem;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .sem-form-error {
+    margin-top: 0.35rem;
+    color: #dc2626;
+    font-weight: 700;
+  }
+
   /* Tablas */
   .sem-table {
     width: 100%;
@@ -432,6 +446,18 @@
       <i class="bi bi-folder2-open"></i>
       Documentación
     </a>
+    <a href="{% url 'icts:sigmasims:equipment_list' %}" class="nav-item {% if request.resolver_match.url_name == 'equipment_list' or request.resolver_match.url_name == 'equipment_detail' or request.resolver_match.url_name == 'equipment_create' or request.resolver_match.url_name == 'equipment_edit' %}active{% endif %}">
+      <i class="bi bi-tools"></i>
+      Equipos
+    </a>
+    <a href="{% url 'icts:sigmasims:inventory_list' %}" class="nav-item {% if request.resolver_match.url_name == 'inventory_list' or request.resolver_match.url_name == 'inventory_create' or request.resolver_match.url_name == 'inventory_edit' %}active{% endif %}">
+      <i class="bi bi-box-seam"></i>
+      Inventario
+    </a>
+    <a href="{% url 'icts:sigmasims:annual_plan' %}" class="nav-item {% if request.resolver_match.url_name == 'annual_plan' or request.resolver_match.url_name == 'annual_plan_entry_create' or request.resolver_match.url_name == 'annual_plan_entry_edit' or request.resolver_match.url_name == 'annual_plan_entry_delete' or request.resolver_match.url_name == 'annual_plan_history' %}active{% endif %}">
+      <i class="bi bi-calendar-check"></i>
+      Plan anual
+    </a>
     <a href="{% url 'icts:sigmasims:indicators_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'indicators_dashboard' %}active{% endif %}">
       <i class="bi bi-graph-up"></i>
       Indicadores
@@ -441,3 +467,4 @@
 
 {% block sem_content %}{% endblock %}
 {% endblock %}
+

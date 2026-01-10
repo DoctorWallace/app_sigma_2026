@@ -1,0 +1,56 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Inventario de repuesto SIMS</h2>
+  </div>
+
+  <form method="get" class="mb-3">
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="q">Busqueda</label>
+      <input class="sem-form-control" type="text" id="q" name="q" value="{{ query }}" placeholder="Nombre del repuesto">
+    </div>
+    <button class="sem-btn sem-btn-primary" type="submit">Filtrar</button>
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:inventory_list' %}">Limpiar</a>
+    {% if can_edit %}
+      <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:inventory_create' %}">Nuevo item</a>
+    {% endif %}
+  </form>
+
+  {% if items %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Nombre del repuesto</th>
+          <th>Cantidad en stock a 01/24</th>
+          <th>Cantidad en stock a 06/2024</th>
+          <th>Proximos pedidos</th>
+          <th>Acciones</th>
+          <th>Edicion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.item_name }}</td>
+          <td>{{ item.stock_2024_01|default_if_none:"-" }}</td>
+          <td>{{ item.stock_2024_06|default_if_none:"-" }}</td>
+          <td>{{ item.next_orders|default_if_none:"-" }}</td>
+          <td>{{ item.actions|default:"-"|linebreaksbr }}</td>
+          <td>
+            {% if can_edit %}
+              <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:inventory_edit' item.pk %}">Editar</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay items en el inventario.</p>
+  {% endif %}
+</div>
+{% endblock %}

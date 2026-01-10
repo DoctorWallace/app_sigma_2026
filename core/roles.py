@@ -51,6 +51,7 @@ OPTICS_TECH_GROUPS = _clean_targets({
     "tecnico_responsable_s_optics",
     "tecnicos_responsables_s_optics",
     "tecnicos responsables s optics",
+    "tecnico_resp_opt",
     "s-optics technicians",
 })
 SEM_TECH_GROUPS = _clean_targets({
@@ -111,6 +112,7 @@ OLMAT_TECH_GROUPS = _clean_targets({
 
 ICTS_TECH_GROUPS = (
     SEM_TECH_GROUPS
+    | OPTICS_TECH_GROUPS
     | SIMS_TECH_GROUPS
     | IMP_TECH_GROUPS
     | VDG_TECH_GROUPS

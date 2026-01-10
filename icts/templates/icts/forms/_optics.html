@@ -1,0 +1,264 @@
+{% load i18n %}
+<div class="tech-card">
+  <h4 class="tech-title"><i class="bi bi-sun"></i> {% trans "SIGMA Optics - Datos de muestras" %}</h4>
+
+  <div class="requirements-section">
+    <h5 class="section-title"><i class="bi bi-list-check"></i> {% trans "Requisitos de aceptación" %}</h5>
+    <div class="requirements-list">
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">{% trans "El tamaño máximo es de 45 x 60 mm (diámetro máximo 45 mm)." %}</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">{% trans "Muestras empaquetadas en cajas o bolsas y etiquetadas de forma clara y escueta." %}</span>
+      </div>
+      <div class="requirement-item">
+        <span class="requirement-icon"><i class="bi bi-gem"></i></span>
+        <span class="requirement-text">{% trans "Proteja la muestra adecuadamente." %}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-description-section">
+    <h5 class="section-title"><i class="bi bi-card-list"></i> {% trans "Descripción de muestras" %}</h5>
+    <div class="samples-container" id="optics-samples-container">
+      <div class="sample-card" data-sample-index="0">
+        <div class="sample-header">
+          <h6 class="sample-title">{% trans "Sample" %} 1</h6>
+          <button type="button" class="btn-remove-sample" onclick="removeOpticsSample(this)" style="display: none;">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{% trans "Identification" %}</label>
+            <input type="text" name="optics_sample_0_identification" class="form-input" placeholder="{% trans 'Sample ID' %}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">{% trans "Name" %}</label>
+            <input type="text" name="optics_sample_0_name" class="form-input" placeholder="{% trans 'Sample name' %}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{% trans "Observations" %}</label>
+          <textarea name="optics_sample_0_observations" rows="3" class="form-input" placeholder="{% trans 'Sample observations' %}"></textarea>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-add-sample" onclick="addOpticsSample(this)">
+      <i class="bi bi-plus-circle"></i> {% trans "Add Sample" %}
+    </button>
+  </div>
+
+  <div class="important-info-section">
+    <h5 class="section-title"><i class="bi bi-box-arrow-in-down"></i> {% trans "Recuperación de muestras" %}</h5>
+    <div class="info-question">
+      <div class="question-row">
+        <label class="info-question-text">{% trans "¿Recuperar muestra(s)?" %}</label>
+        <input type="checkbox" name="optics_recover_samples" class="info-checkbox">
+        <span class="info-label">{% trans "NO" %}</span>
+      </div>
+    </div>
+    <p class="muted">{% trans "Por defecto las muestras no se conservan después de la medida. Si se quiere recuperar la muestra debe indicarlo aquí. Se guardarán como máximo 2 meses después de la fecha de entrega de resultados." %}</p>
+  </div>
+
+  <div class="safe-handling-section">
+    <h5 class="section-title"><i class="bi bi-shield-check"></i> {% trans "Manipulación segura" %}</h5>
+    <div class="safety-questions">
+      <div class="safety-row">
+        <label class="safety-question">{% trans "¿Toxic?" %}</label>
+        <input type="checkbox" name="optics_toxic" class="safety-checkbox">
+        <span class="safety-label">{% trans "NO" %}</span>
+      </div>
+      <div class="safety-row">
+        <label class="safety-question">{% trans "¿Corrosive?" %}</label>
+        <input type="checkbox" name="optics_corrosive" class="safety-checkbox">
+        <span class="safety-label">{% trans "NO" %}</span>
+      </div>
+      <div class="safety-row">
+        <label class="safety-question">{% trans "¿Irritating?" %}</label>
+        <input type="checkbox" name="optics_irritating" class="safety-checkbox">
+        <span class="safety-label">{% trans "NO" %}</span>
+      </div>
+      <div class="safety-row">
+        <label class="safety-question">{% trans "¿Radioactive?" %}</label>
+        <input type="checkbox" name="optics_radioactive" class="safety-checkbox">
+        <span class="safety-label">{% trans "NO" %}</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">{% trans "Further comments" %}</label>
+      <textarea name="optics_safety_comments" rows="3" class="form-input" placeholder="{% trans 'Additional safety comments' %}"></textarea>
+    </div>
+  </div>
+
+  <div class="important-info-section">
+    <h5 class="section-title"><i class="bi bi-clipboard-data"></i> {% trans "Información requerida" %}</h5>
+
+    <div class="form-group">
+      <label class="form-label">{% trans "Medida" %} *</label>
+      <div class="form-row">
+        <label class="form-label">
+          <input type="radio" name="optics_measurement_mode" value="absorption" required>
+          {% trans "Absorción" %}
+        </label>
+        <label class="form-label">
+          <input type="radio" name="optics_measurement_mode" value="transmission" required>
+          {% trans "Transmisión" %}
+        </label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">{% trans "Longitud de onda mínima" %}</label>
+        <div class="form-row">
+          <input type="number" name="optics_wavelength_min" class="form-input" min="0" step="0.01" required>
+          <select name="optics_wavelength_min_unit" class="form-input" required>
+            <option value="nm">nm</option>
+            <option value="um">um</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Longitud de onda máxima" %}</label>
+        <div class="form-row">
+          <input type="number" name="optics_wavelength_max" class="form-input" min="0" step="0.01" required>
+          <select name="optics_wavelength_max_unit" class="form-input" required>
+            <option value="nm">nm</option>
+            <option value="um">um</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <p class="muted">{% trans "En caso de que exista incertidumbre en la medida, el técnico responsable se comunicará con el usuario." %}</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">{% trans "Material" %}</label>
+        <input type="text" name="optics_material" class="form-input" placeholder="{% trans 'Material' %}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">{% trans "Tipo de medida" %} *</label>
+        <select name="optics_measurement_type" class="form-input" required>
+          <option value="">{% trans "Selecciona una opción" %}</option>
+          <option value="uvvis">{% trans "UV-VIS" %}</option>
+          <option value="ftir">{% trans "FTIR" %}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">{% trans "Comentarios finales" %}</label>
+    <textarea name="optics_comments" rows="4" class="form-input" placeholder="{% trans 'Comentarios finales' %}"></textarea>
+  </div>
+</div>
+
+<script>
+const opticsI18n = {
+  sample: "{% trans 'Sample'|escapejs %}",
+  identification: "{% trans 'Identification'|escapejs %}",
+  name: "{% trans 'Name'|escapejs %}",
+  observations: "{% trans 'Observations'|escapejs %}",
+  sampleId: "{% trans 'Sample ID'|escapejs %}",
+  sampleName: "{% trans 'Sample name'|escapejs %}",
+  sampleObservations: "{% trans 'Sample observations'|escapejs %}"
+};
+
+function resolveOpticsSamplesContainer(containerElOrTrigger) {
+  const target = containerElOrTrigger || (typeof event !== 'undefined' ? event.target : null);
+  if (target instanceof HTMLElement) {
+    if (target.id === 'optics-samples-container') {
+      return target;
+    }
+    const formCard = target.closest('.technique-form-card')
+      || target.closest('.tech-card')
+      || target.closest('.sample-description-section');
+    if (formCard) {
+      const container = formCard.querySelector('#optics-samples-container');
+      if (container) {
+        return container;
+      }
+    }
+  }
+  return null;
+}
+
+function addOpticsSample(containerElOrTrigger) {
+  const container = resolveOpticsSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const index = container.querySelectorAll('.sample-card').length;
+  const newSampleCard = document.createElement('div');
+  newSampleCard.className = 'sample-card';
+  newSampleCard.setAttribute('data-sample-index', index);
+
+  newSampleCard.innerHTML = `
+    <div class="sample-header">
+      <h6 class="sample-title">${opticsI18n.sample} ${index + 1}</h6>
+      <button type="button" class="btn-remove-sample" onclick="removeOpticsSample(this)">
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">${opticsI18n.identification}</label>
+        <input type="text" name="optics_sample_${index}_identification" class="form-input" placeholder="${opticsI18n.sampleId}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">${opticsI18n.name}</label>
+        <input type="text" name="optics_sample_${index}_name" class="form-input" placeholder="${opticsI18n.sampleName}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">${opticsI18n.observations}</label>
+      <textarea name="optics_sample_${index}_observations" rows="3" class="form-input" placeholder="${opticsI18n.sampleObservations}"></textarea>
+    </div>
+  `;
+
+  container.appendChild(newSampleCard);
+  updateOpticsRemoveButtons(container);
+}
+
+function removeOpticsSample(button) {
+  const sampleCard = button.closest('.sample-card');
+  if (!sampleCard) return;
+  const container = sampleCard.closest('.samples-container');
+  sampleCard.remove();
+  updateOpticsSampleNumbers(container);
+  updateOpticsRemoveButtons(container);
+}
+
+function updateOpticsSampleNumbers(containerElOrTrigger) {
+  const container = resolveOpticsSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const sampleCards = container.querySelectorAll('.sample-card');
+  sampleCards.forEach((card, index) => {
+    const title = card.querySelector('.sample-title');
+    if (title) {
+      title.textContent = `${opticsI18n.sample} ${index + 1}`;
+    }
+    const inputs = card.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+      const name = input.getAttribute('name');
+      if (name) {
+        const newName = name.replace(/optics_sample_\\d+_/, `optics_sample_${index}_`);
+        input.setAttribute('name', newName);
+      }
+    });
+    card.setAttribute('data-sample-index', index);
+  });
+}
+
+function updateOpticsRemoveButtons(containerElOrTrigger) {
+  const container = resolveOpticsSamplesContainer(containerElOrTrigger);
+  if (!container) return;
+  const sampleCards = container.querySelectorAll('.sample-card');
+  const removeButtons = container.querySelectorAll('.btn-remove-sample');
+  removeButtons.forEach(button => {
+    button.style.display = sampleCards.length > 1 ? 'flex' : 'none';
+  });
+}
+</script>

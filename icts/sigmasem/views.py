@@ -10,9 +10,12 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from pathlib import Path
 import json
+import logging
 import os
 import uuid
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -379,8 +382,9 @@ def get_proposal_samples(request, proposal_id):
 
     except Http404:
         raise
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    except Exception:
+        logger.exception("Error en get_proposal_samples")
+        return JsonResponse({'error': 'Error interno del servidor'}, status=500)
 
 
 @login_required(login_url="/accounts/login/icts/")
@@ -555,8 +559,9 @@ def upload_files(request, pk):
                 'message': f'{len(uploaded_files)} archivo(s) subido(s) exitosamente'
             })
             
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+        except Exception:
+            logger.exception("Error en upload_files")
+            return JsonResponse({'error': 'Error interno del servidor'}, status=500)
     
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 

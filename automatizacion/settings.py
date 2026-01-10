@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     "sigmaimp.apps.SigmaimpConfig",
     "sigmavdg.apps.SigmavdgConfig",
     "sigmaoptics.apps.SigmaopticsConfig",
+    "sigmaoptics_icts.apps.SigmaOpticsICTSConfig",
     "sigmaprofilometer.apps.SigmaprofilometerConfig",
     "widget_tweaks",
 ]

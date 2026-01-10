@@ -1,0 +1,65 @@
+{% extends "sigmaoptics_icts/base_sigmaoptics_icts.html" %}
+
+{% block optics_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Fichas de equipo</h2>
+  </div>
+
+  {% if last_update %}
+    <p><strong>FECHA ACTUALIZACION:</strong> {{ last_update|date:"d/m/Y H:i" }}</p>
+  {% endif %}
+
+  <form method="get" class="mb-3">
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="q">Busqueda</label>
+      <input class="sem-form-control" type="text" id="q" name="q" value="{{ query }}" placeholder="Codigo, descripcion, responsable, localizacion">
+    </div>
+    <button class="sem-btn sem-btn-primary" type="submit">Filtrar</button>
+    <a class="sem-btn sem-btn-secondary" href="{% url 'sigmaoptics_icts:equipment_list' %}">Limpiar</a>
+    {% if can_edit %}
+      <a class="sem-btn sem-btn-success" href="{% url 'sigmaoptics_icts:equipment_create' %}">Nuevo equipo</a>
+    {% endif %}
+  </form>
+
+  {% if equipments %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Descripcion</th>
+          <th>Es patron?</th>
+          <th>Responsable</th>
+          <th>Localizacion</th>
+          <th>Fecha recepcion</th>
+          <th>Fecha baja</th>
+          <th>Observaciones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for equipment in equipments %}
+        <tr>
+          <td>{{ equipment.code }}</td>
+          <td>{{ equipment.description|default:"-" }}</td>
+          <td>{{ equipment.is_reference|yesno:"Si,No" }}</td>
+          <td>{{ equipment.responsible|default:"-" }}</td>
+          <td>{{ equipment.location|default:"-" }}</td>
+          <td>{{ equipment.received_date|date:"d/m/Y"|default:"-" }}</td>
+          <td>{{ equipment.decommission_date|date:"d/m/Y"|default:"-" }}</td>
+          <td>{{ equipment.observations|default:"-" }}</td>
+          <td>
+            <a class="sem-btn sem-btn-secondary" href="{% url 'sigmaoptics_icts:equipment_detail' equipment.pk %}">Ver</a>
+            {% if can_edit %}
+              <a class="sem-btn sem-btn-primary" href="{% url 'sigmaoptics_icts:equipment_edit' equipment.pk %}">Editar</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay equipos registrados.</p>
+  {% endif %}
+</div>
+{% endblock %}

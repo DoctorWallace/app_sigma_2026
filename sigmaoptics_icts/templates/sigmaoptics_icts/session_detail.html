@@ -1,0 +1,89 @@
+{% extends "sigmaoptics_icts/base_sigmaoptics_icts.html" %}
+
+{% block optics_page_title %}Sesión {{ session.request_code|default:session.pk }}{% endblock %}
+
+{% block optics_content %}
+<div class="optics-card">
+  <h2 style="margin-top:0;">Sesión Optics</h2>
+  <div class="d-flex flex-wrap gap-4 mb-3">
+    <div><strong>Solicitud:</strong> {{ session.request_code|default:"-" }}</div>
+    <div><strong>Informe:</strong> {{ session.report_code|default:"-" }}</div>
+    <div><strong>Estado:</strong> {{ session.get_status_display }}</div>
+  </div>
+  {% if session.access_proposal %}
+    <div class="text-muted">
+      Propuesta:
+      <a href="{% url 'icts:proposal_detail' session.access_proposal.pk %}">
+        {{ session.access_proposal.access_code|default:session.access_proposal.title|default:"Acceso" }}
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<div class="optics-card">
+  <h3>Datos de la sesión</h3>
+  <form method="post" action="{% url 'sigmaoptics_icts:session_update' session.pk %}">
+    {% csrf_token %}
+    {{ session_form.as_p }}
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+  </form>
+</div>
+
+<div class="optics-card">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Muestras</h3>
+    <a class="btn btn-sm btn-primary" href="{% url 'sigmaoptics_icts:sample_add' session.pk %}">
+      <i class="bi bi-plus-circle"></i>
+      Añadir muestra
+    </a>
+  </div>
+
+  {% if samples %}
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Identificación</th>
+            <th>Nombre</th>
+            <th>Material</th>
+            <th>Observaciones</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in samples %}
+            <tr>
+              <td>{{ sample.sequence }}</td>
+              <td>{{ sample.identification|default:"-" }}</td>
+              <td>{{ sample.name|default:"-" }}</td>
+              <td>{{ sample.material|default:"-" }}</td>
+              <td>{{ sample.observations|default:"-"|truncatechars:80 }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'sigmaoptics_icts:sample_edit' sample.pk %}">
+                  Editar
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted mb-0">No hay muestras registradas.</p>
+  {% endif %}
+</div>
+
+<div class="optics-card">
+  <h3>Informe</h3>
+  <p class="text-muted">Completa los datos del informe y genera el PDF.</p>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'sigmaoptics_icts:report_edit' session.pk %}">
+      Editar informe
+    </a>
+    <a class="btn btn-outline-dark" href="{% url 'sigmaoptics_icts:report_pdf_download' session.pk %}">
+      Descargar PDF
+    </a>
+  </div>
+</div>
+{% endblock %}

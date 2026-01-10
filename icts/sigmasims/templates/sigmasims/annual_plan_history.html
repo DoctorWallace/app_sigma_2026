@@ -1,0 +1,47 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Historial plan anual {{ year }}</h2>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:annual_plan' %}?year={{ year }}">Volver</a>
+  </div>
+
+  {% if plan %}
+    {% if log_rows %}
+      <table class="sem-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Accion</th>
+            <th>Codigo</th>
+            <th>Actividad</th>
+            <th>Interno/Externo</th>
+            <th>Resumen cambios</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in log_rows %}
+          <tr>
+            <td>{{ row.log.created_at|date:"d/m/Y H:i" }}</td>
+            <td>{{ row.log.user|default:"-" }}</td>
+            <td>{{ row.log.get_action_display }}</td>
+            <td>{{ row.equipment_code|default:"-" }}</td>
+            <td>{{ row.activity }}</td>
+            <td>{{ row.execution }}</td>
+            <td>{{ row.summary|default:"-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No hay cambios registrados para este plan.</p>
+    {% endif %}
+  {% else %}
+    <p>No existe plan para {{ year }}.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -36,5 +36,36 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <div class="sem-card-header">
+    <h3 class="sem-card-title">Indicador de Calidad I1</h3>
+  </div>
+
+  <table class="sem-table">
+    <thead>
+      <tr>
+        <th>Media (dias)</th>
+        <th>Mediana (dias)</th>
+        <th>Min/Max (dias)</th>
+        <th>Validos</th>
+        <th>Pendientes</th>
+        <th>Invalidos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ i1_stats.i1_avg_days|default_if_none:"-" }}</td>
+        <td>{{ i1_stats.i1_median_days|default_if_none:"-" }}</td>
+        <td>
+          {{ i1_stats.i1_min_days|default_if_none:"-" }}
+          /
+          {{ i1_stats.i1_max_days|default_if_none:"-" }}
+        </td>
+        <td>{{ i1_stats.i1_count|default_if_none:"-" }}</td>
+        <td>{{ i1_stats.i1_pending_count|default_if_none:"-" }}</td>
+        <td>{{ i1_stats.i1_invalid_count|default_if_none:"-" }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 {% endblock %}

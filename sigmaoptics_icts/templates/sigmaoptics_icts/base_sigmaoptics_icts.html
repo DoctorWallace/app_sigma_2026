@@ -1,0 +1,158 @@
+{% extends "base_icts.html" %}
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+{% block title %}{% block page_title %}SIGMA Optics{% endblock %} - SIGMA ICTS{% endblock %}
+
+{% block extra_css %}
+<style>
+  .optics-header {
+    background: linear-gradient(135deg, #0f4c81 0%, #1f6fb5 100%);
+    color: #ffffff;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 0 0 1rem 1rem;
+    box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
+  }
+
+  .optics-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .optics-badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .optics-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+
+  .optics-header .subtitle {
+    margin: 0.35rem 0 0 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+  }
+
+  .optics-nav {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+  }
+
+  .optics-nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 700;
+    color: #0f4c81;
+    border: 2px solid #0f4c81;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+  }
+
+  .optics-nav-item:hover {
+    background: #0f4c81;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .optics-nav-item.active {
+    background: #dcfce7;
+    border-color: #16a34a;
+    color: #166534;
+  }
+
+  .optics-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+    margin-bottom: 2rem;
+  }
+
+  .optics-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .optics-stat-card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(15, 76, 129, 0.08);
+  }
+
+  .optics-stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0f4c81;
+    margin-bottom: 0.5rem;
+  }
+
+  .optics-stat-label {
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="optics-header">
+  <div class="optics-header-inner">
+    <div class="optics-badge"><i class="bi bi-sun"></i></div>
+    <div>
+      <h1>{% block optics_page_title %}SIGMA Optics{% endblock %}</h1>
+      <p class="subtitle">Optics ICTS workspace</p>
+    </div>
+  </div>
+</div>
+
+<nav class="optics-nav">
+  <a href="{% url 'sigmaoptics_icts:dashboard' %}" class="optics-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+    <i class="bi bi-speedometer2"></i>
+    Dashboard
+  </a>
+  <a href="{% url 'sigmaoptics_icts:equipment_list' %}" class="optics-nav-item {% if request.resolver_match.url_name == 'equipment_list' or request.resolver_match.url_name == 'equipment_detail' or request.resolver_match.url_name == 'equipment_create' or request.resolver_match.url_name == 'equipment_edit' %}active{% endif %}">
+    <i class="bi bi-tools"></i>
+    Equipos
+  </a>
+  <a href="{% url 'sigmaoptics_icts:annual_plan' %}" class="optics-nav-item {% if request.resolver_match.url_name == 'annual_plan' or request.resolver_match.url_name == 'annual_plan_entry_create' or request.resolver_match.url_name == 'annual_plan_entry_edit' or request.resolver_match.url_name == 'annual_plan_entry_delete' or request.resolver_match.url_name == 'annual_plan_history' %}active{% endif %}">
+    <i class="bi bi-calendar-check"></i>
+    Plan anual
+  </a>
+  <a href="{% url 'sigmaoptics_icts:register' %}" class="optics-nav-item {% if request.resolver_match.url_name == 'register' %}active{% endif %}">
+    <i class="bi bi-journal-text"></i>
+    Registro
+  </a>
+</nav>
+
+{% block optics_content %}{% endblock %}
+{% endblock %}

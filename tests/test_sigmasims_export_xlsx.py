@@ -44,23 +44,14 @@ def test_sigmasims_export_xlsx(client):
     assert response["Content-Type"] == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     workbook = load_workbook(BytesIO(response.content))
-    sheet = workbook.active
-    headers = [cell.value for cell in sheet[1]]
-    assert headers == [
-        "Número ID",
-        "Número de solicitud",
-        "FECHA",
-        "Identificación muestra",
-        "Cliente",
-        "Características de la muestra",
-        "Responsable",
-        "Requerimientos cliente",
-        "Fecha del análisis",
-        "Fecha de devolución",
-        "Observaciones e Incidencias",
-        "Indicador de Calidad (I1 días)",
-        "Comentarios",
-    ]
-    row = [cell.value for cell in sheet[2]]
-    assert row[0] == record.sims_id
-    assert row[3] == "Sample X"
+    assert "SIMS" in workbook.sheetnames
+    sheet = workbook["SIMS"]
+
+    assert (sheet["B9"].value or "").strip()
+    assert (sheet["P9"].value or "").strip()
+    assert sheet["B11"].value == record.sims_id
+    assert sheet["E11"].value == "Sample X"
+
+    formula = sheet["N11"].value
+    assert isinstance(formula, str)
+    assert "IF(OR(" in formula or "J11-D11" in formula

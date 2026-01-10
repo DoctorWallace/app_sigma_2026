@@ -1,0 +1,49 @@
+{% extends "sigmaoptics_icts/base_sigmaoptics_icts.html" %}
+
+{% block optics_content %}
+<div class="optics-card">
+  <h2 style="margin-top:0;">Registro de medidas</h2>
+  {% if rows %}
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Código solicitud</th>
+            <th>Código informe</th>
+            <th>Solicitante</th>
+            <th>Ref. muestra</th>
+            <th>Material</th>
+            <th>Fecha recepción</th>
+            <th>Fecha análisis</th>
+            <th>Magnitud</th>
+            <th>Técnico</th>
+            <th>Fecha informe</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td>
+                <a href="{% url 'sigmaoptics_icts:session_detail' row.session.pk %}">
+                  {{ row.request_code|default:"-" }}
+                </a>
+              </td>
+              <td>{{ row.report_code|default:"-" }}</td>
+              <td>{{ row.applicant|default:"-" }}</td>
+              <td>{{ row.sample.identification|default:row.sample.name|default:"-" }}</td>
+              <td>{{ row.sample.material|default:"-" }}</td>
+              <td>{{ row.reception_date|date:"d/m/Y"|default:"-" }}</td>
+              <td>{{ row.analysis_date|date:"d/m/Y"|default:"-" }}</td>
+              <td>{{ row.measurement_magnitude|default:"-" }}</td>
+              <td>{{ row.technician.get_full_name|default:row.technician.username }}</td>
+              <td>{{ row.report_delivery_date|date:"d/m/Y"|default:"-" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted mb-0">No hay registros disponibles.</p>
+  {% endif %}
+</div>
+{% endblock %}

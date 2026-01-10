@@ -8,6 +8,7 @@
 
   <div class="mb-3">
     <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_edit' proposal.pk %}">Editar informe</a>
+    <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create' %}?proposal_id={{ proposal.pk }}">Anadir muestra</a>
     {% if report %}
       <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:report_export_docx' proposal.pk %}">Exportar DOCX</a>
     {% endif %}
@@ -74,6 +75,37 @@
       </div>
       <button class="sem-btn sem-btn-secondary" type="submit">Subir archivo</button>
     </form>
+
+    <h3>Imagenes</h3>
+    {% if report.images.all %}
+      <div style="display:flex; flex-wrap:wrap; gap:1rem;">
+        {% for img in report.images.all %}
+          <div>
+            <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Imagen' }}" style="max-width:220px; height:auto; display:block;">
+            {% if img.caption %}
+              <p>{{ img.caption }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No hay imagenes adjuntas.</p>
+    {% endif %}
+
+    <h3>Archivos</h3>
+    {% if report.files.all %}
+      <ul>
+        {% for f in report.files.all %}
+          <li>
+            <a class="sem-btn sem-btn-secondary" href="{{ f.file.url }}">
+              {{ f.caption|default:"Archivo" }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No hay archivos adjuntos.</p>
+    {% endif %}
   </div>
 {% endif %}
 {% endblock %}

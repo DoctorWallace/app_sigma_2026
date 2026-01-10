@@ -6,6 +6,14 @@
     <h2 class="sem-card-title">Documentación SIMS</h2>
   </div>
 
+  {% if can_edit %}
+    <div class="mb-3">
+      <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:doc_upload' %}">
+        Subir documento
+      </a>
+    </div>
+  {% endif %}
+
   {% if documents %}
     <table class="sem-table">
       <thead>

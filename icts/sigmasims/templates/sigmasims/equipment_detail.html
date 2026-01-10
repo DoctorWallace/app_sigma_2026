@@ -1,0 +1,312 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+{% load role_filters %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Ficha de equipo {{ equipment.code }}</h2>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:equipment_list' %}">Volver</a>
+    {% if can_edit %}
+      <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:equipment_edit' equipment.pk %}">Editar</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Indice</h2>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+    <a class="sem-btn sem-btn-secondary" href="#datos-equipo">1 Datos del equipo</a>
+    <a class="sem-btn sem-btn-secondary" href="#equipos-asociados">2 Equipos asociados</a>
+    <a class="sem-btn sem-btn-secondary" href="#caracteristicas-tecnicas">3 Caracteristicas tecnicas</a>
+    <a class="sem-btn sem-btn-secondary" href="#documentacion">4 Documentacion asociada</a>
+    <a class="sem-btn sem-btn-secondary" href="#instrucciones-uso">5 Instrucciones tecnicas de uso</a>
+    <a class="sem-btn sem-btn-secondary" href="#datos-validacion">6 Datos de validacion</a>
+    <a class="sem-btn sem-btn-secondary" href="#datos-mantenimiento">7 Datos de mantenimiento</a>
+    <a class="sem-btn sem-btn-secondary" href="#incidencias">9 Incidencias</a>
+  </div>
+</div>
+
+<div id="datos-equipo" class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">1 Datos del equipo</h2>
+  </div>
+  <table class="sem-table">
+    <tbody>
+      <tr><th>Codigo</th><td>{{ equipment.code }}</td></tr>
+      <tr><th>Descripcion</th><td>{{ equipment.description|default:"-" }}</td></tr>
+      <tr><th>Es patron?</th><td>{{ equipment.is_reference|yesno:"Si,No" }}</td></tr>
+      <tr><th>Responsable</th><td>{{ equipment.responsible|default:"-" }}</td></tr>
+      <tr><th>Localizacion</th><td>{{ equipment.location|default:"-" }}</td></tr>
+      <tr><th>Fecha recepcion</th><td>{{ equipment.received_date|date:"d/m/Y"|default:"-" }}</td></tr>
+      <tr><th>Fecha baja</th><td>{{ equipment.decommission_date|date:"d/m/Y"|default:"-" }}</td></tr>
+      <tr><th>Observaciones</th><td>{{ equipment.observations|default:"-"|linebreaksbr }}</td></tr>
+      <tr><th>Fecha actualizacion</th><td>{{ equipment.updated_at|date:"d/m/Y H:i" }}</td></tr>
+      <tr><th>Fecha alta</th><td>{{ equipment.created_at|date:"d/m/Y H:i" }}</td></tr>
+      <tr><th>Marca</th><td>{{ equipment.brand|default:"-" }}</td></tr>
+      <tr><th>Modelo</th><td>{{ equipment.model|default:"-" }}</td></tr>
+      <tr><th>Nro serie</th><td>{{ equipment.serial_number|default:"-" }}</td></tr>
+      <tr><th>Proveedor</th><td>{{ equipment.supplier|default:"-" }}</td></tr>
+      <tr><th>Nro inventario</th><td>{{ equipment.inventory_number|default:"-" }}</td></tr>
+      <tr><th>Magnitud de medida</th><td>{{ equipment.measurement_magnitude|default:"-" }}</td></tr>
+      <tr><th>Rango de medida</th><td>{{ equipment.measurement_range|default:"-" }}</td></tr>
+      <tr><th>Empresa averias, contacto y telefono</th><td>{{ equipment.breakdown_contact|default:"-"|linebreaksbr }}</td></tr>
+      <tr><th>Criterio de aceptacion calibraciones</th><td>{{ equipment.calibration_acceptance_criteria|default:"-"|linebreaksbr }}</td></tr>
+      <tr><th>Verificacion conformidad con la especificacion</th><td>{{ equipment.specification_conformity|default:"-"|linebreaksbr }}</td></tr>
+      <tr><th>Equipos asociados</th><td>{{ equipment.associated_equipment|default:"-"|linebreaksbr }}</td></tr>
+      <tr><th>Caracteristicas tecnicas</th><td>{{ equipment.technical_characteristics|default:"-"|linebreaksbr }}</td></tr>
+      <tr><th>Instrucciones tecnicas de uso</th><td>{{ equipment.usage_instructions|default:"-"|linebreaksbr }}</td></tr>
+      <tr><th>Datos de validacion</th><td>{{ equipment.validation_data|default:"-"|linebreaksbr }}</td></tr>
+      <tr><th>Es necesaria la realizacion?</th><td>{{ equipment.maintenance_required|yesno:"Si,No" }}</td></tr>
+      <tr><th>Empresa encargada</th><td>{{ equipment.maintenance_company|default:"-" }}</td></tr>
+      <tr><th>Procedimiento</th><td>{{ equipment.maintenance_procedure|default:"-" }}</td></tr>
+      <tr><th>Periodo entre mantenimiento</th><td>{{ equipment.maintenance_period|default:"-" }}</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="equipos-asociados" class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">2 Equipos asociados</h2>
+  </div>
+  <p>{{ equipment.associated_equipment|default:"-"|linebreaksbr }}</p>
+</div>
+
+<div id="caracteristicas-tecnicas" class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">3 Caracteristicas tecnicas</h2>
+  </div>
+  <p>{{ equipment.technical_characteristics|default:"-"|linebreaksbr }}</p>
+</div>
+
+<div id="documentacion" class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">4 Documentacion asociada</h2>
+  </div>
+  {% if doc_refs %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Codigo del documento</th>
+          <th>Titulo</th>
+          <th>Archivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in doc_refs %}
+        <tr>
+          <td>{{ doc.doc_code|default:"-" }}</td>
+          <td>{{ doc.title }}</td>
+          <td>
+            {% if doc.file %}
+              <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:equipment_docref_download' doc.pk %}">Descargar</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay documentacion asociada.</p>
+  {% endif %}
+
+  {% if can_edit %}
+    <form method="post" enctype="multipart/form-data" action="{% url 'icts:sigmasims:equipment_docref_add' equipment.pk %}">
+      {% csrf_token %}
+      {% if docref_form.non_field_errors %}
+        <div class="sem-form-error">{{ docref_form.non_field_errors }}</div>
+      {% endif %}
+      {% for field in docref_form %}
+        <div class="sem-form-group">
+          <label class="sem-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field|add_class:"sem-form-control" }}
+          {% for error in field.errors %}
+            <div class="sem-form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button class="sem-btn sem-btn-primary" type="submit">Anadir documento</button>
+    </form>
+  {% endif %}
+</div>
+
+<div id="instrucciones-uso" class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">5 Instrucciones tecnicas de uso</h2>
+  </div>
+  <p>{{ equipment.usage_instructions|default:"-"|linebreaksbr }}</p>
+</div>
+
+<div id="datos-validacion" class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">6 Datos de validacion</h2>
+  </div>
+  <p>{{ equipment.validation_data|default:"-"|linebreaksbr }}</p>
+</div>
+
+<div id="datos-mantenimiento" class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">7 Datos de mantenimiento</h2>
+  </div>
+  <table class="sem-table">
+    <tbody>
+      <tr><th>Es necesaria la realizacion?</th><td>{{ equipment.maintenance_required|yesno:"Si,No" }}</td></tr>
+      <tr><th>Empresa encargada</th><td>{{ equipment.maintenance_company|default:"-" }}</td></tr>
+      <tr><th>Procedimiento</th><td>{{ equipment.maintenance_procedure|default:"-" }}</td></tr>
+      <tr><th>Periodo entre mantenimiento</th><td>{{ equipment.maintenance_period|default:"-" }}</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Actividades de mantenimiento a realizar</h3>
+  {% if maintenance_activities %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Actividad</th>
+          <th>Frecuencia</th>
+          <th>Codigo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for activity in maintenance_activities %}
+        <tr>
+          <td>{{ activity.activity }}</td>
+          <td>{{ activity.frequency }}</td>
+          <td>{{ activity.code|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay actividades registradas.</p>
+  {% endif %}
+
+  {% if can_edit %}
+    <form method="post" action="{% url 'icts:sigmasims:equipment_maintenance_activity_add' equipment.pk %}">
+      {% csrf_token %}
+      {% if maintenance_activity_form.non_field_errors %}
+        <div class="sem-form-error">{{ maintenance_activity_form.non_field_errors }}</div>
+      {% endif %}
+      {% for field in maintenance_activity_form %}
+        <div class="sem-form-group">
+          <label class="sem-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field|add_class:"sem-form-control" }}
+          {% for error in field.errors %}
+            <div class="sem-form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button class="sem-btn sem-btn-primary" type="submit">Anadir actividad</button>
+    </form>
+  {% endif %}
+
+  <h3>Registros de mantenimiento realizados</h3>
+  {% if maintenance_records %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Codigo</th>
+          <th>Realizado por</th>
+          <th>Resultado</th>
+          <th>Notas</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in maintenance_records %}
+        <tr>
+          <td>{{ record.performed_at|date:"d/m/Y" }}</td>
+          <td>{{ record.code|default:"-" }}</td>
+          <td>{{ record.performed_by|default:"-" }}</td>
+          <td>{{ record.result|default:"-" }}</td>
+          <td>{{ record.notes|default:"-"|linebreaksbr }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay registros de mantenimiento.</p>
+  {% endif %}
+
+  {% if can_edit %}
+    <form method="post" action="{% url 'icts:sigmasims:equipment_maintenance_record_add' equipment.pk %}">
+      {% csrf_token %}
+      {% if maintenance_record_form.non_field_errors %}
+        <div class="sem-form-error">{{ maintenance_record_form.non_field_errors }}</div>
+      {% endif %}
+      {% for field in maintenance_record_form %}
+        <div class="sem-form-group">
+          <label class="sem-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field|add_class:"sem-form-control" }}
+          {% for error in field.errors %}
+            <div class="sem-form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button class="sem-btn sem-btn-primary" type="submit">Anadir registro</button>
+    </form>
+  {% endif %}
+</div>
+
+<div id="incidencias" class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">9 Incidencias</h2>
+  </div>
+  {% if incidents %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Operacion</th>
+          <th>Realizada por</th>
+          <th>Descripcion</th>
+          <th>Adjunto</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for incident in incidents %}
+        <tr>
+          <td>{{ incident.date|date:"d/m/Y" }}</td>
+          <td>{{ incident.operation }}</td>
+          <td>{{ incident.performed_by|default:"-" }}</td>
+          <td>{{ incident.description|default:"-"|linebreaksbr }}</td>
+          <td>
+            {% if incident.attachment %}
+              <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:equipment_incident_download' incident.pk %}">Descargar</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay incidencias registradas.</p>
+  {% endif %}
+
+  {% if can_edit %}
+    <form method="post" enctype="multipart/form-data" action="{% url 'icts:sigmasims:equipment_incident_add' equipment.pk %}">
+      {% csrf_token %}
+      {% if incident_form.non_field_errors %}
+        <div class="sem-form-error">{{ incident_form.non_field_errors }}</div>
+      {% endif %}
+      {% for field in incident_form %}
+        <div class="sem-form-group">
+          <label class="sem-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field|add_class:"sem-form-control" }}
+          {% for error in field.errors %}
+            <div class="sem-form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button class="sem-btn sem-btn-primary" type="submit">Anadir incidencia</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

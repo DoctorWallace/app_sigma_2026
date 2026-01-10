@@ -94,14 +94,60 @@
         text-shadow:none; border:1px solid rgba(255,255,255,0.2);
       }
       .lang-switcher{
-        display:inline-flex; align-items:center; gap:.35rem; margin-right:.5rem;
-        font-size:.85rem; font-weight:700;
+        display:inline-flex;
+        align-items:center;
+        gap:.35rem;
+        padding:.25rem;
+        margin-right:.5rem;
+        border-radius:999px;
+        border:1px solid #dbe4ee;
+        background:linear-gradient(135deg,#f8fafc,#e2e8f0);
+        box-shadow:0 6px 16px rgba(15,23,42,.12);
       }
-      .lang-switcher select{
-        border:1px solid #dee2e6; border-radius:.35rem; padding:.2rem .4rem;
-        background:#ffffff; color:#212529; font-weight:700;
+      .lang-label{
+        color:#1f2937;
+        font-weight:800;
+        font-size:.7rem;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        padding:0 .35rem;
       }
-      .lang-label{ color:#212529; font-weight:700; }
+      .lang-pill{
+        border:0;
+        background:transparent;
+        color:#334155;
+        display:inline-flex;
+        align-items:center;
+        gap:.35rem;
+        padding:.3rem .75rem;
+        border-radius:999px;
+        font-weight:700;
+        letter-spacing:.02em;
+        transition:all .2s ease;
+        cursor:pointer;
+      }
+      .lang-pill:hover{
+        color:#0f172a;
+        background:rgba(15,23,42,.08);
+      }
+      .lang-pill.is-active{
+        background:var(--primary);
+        color:#fff;
+        box-shadow:0 6px 14px rgba(26,54,93,.25);
+      }
+      .lang-code{
+        font-size:.7rem;
+        font-weight:800;
+        letter-spacing:.12em;
+      }
+      .lang-name{
+        font-size:.8rem;
+        font-weight:600;
+      }
+      @media (max-width:768px){
+        .lang-name{ display:none; }
+        .lang-pill{ padding:.3rem .6rem; }
+      }
 
       .nav-item.active{
         color:#fff;
@@ -142,7 +188,7 @@
             <div class="nav-title">{% trans "Navegación" %}</div>
             
             <!-- Usuario estándar (no revisor, no responsable, no manager, no técnico) -->
-            {% if not request.user|is_reviewer and not request.user|is_responsable and not request.user|is_manager and not request.user|is_sem_technician and not request.user|is_confocal_technician and not request.user|is_imp_technician and not request.user|is_vdg_technician and not request.user.is_superuser %}
+            {% if not request.user|is_reviewer and not request.user|is_responsable and not request.user|is_manager and not request.user|is_any_technician and not request.user.is_staff and not request.user.is_superuser %}
               <a class="nav-item" href="{% url 'icts:dashboard' %}">
                 <i class="bi bi-speedometer2"></i>
                 {% trans "Mi panel" %}
@@ -157,11 +203,19 @@
               </a>
             {% endif %}
 
-            {% if request.user|is_any_technician or request.user.is_staff or request.user.is_superuser %}
+            {% if request.user|is_dp_technician or request.user.is_staff or request.user.is_superuser %}
               <div class="nav-title">{% trans "Perfilometro" %}</div>
               <a class="nav-item {% if request.resolver_match.namespace == 'sigmaprofilometer' %}active{% endif %}" href="{% url 'sigmaprofilometer:dashboard' %}">
                 <i class="bi bi-rulers"></i>
                 {% trans "SIGMA Perfilometro" %}
+              </a>
+            {% endif %}
+
+            {% if request.user|is_optics_technician or request.user.is_staff or request.user.is_superuser %}
+              <div class="nav-title">{% trans "Laboratorios (ICTS)" %}</div>
+              <a class="nav-item" href="/sigmaoptics/">
+                <i class="bi bi-sun"></i>
+                {% trans "SIGMA Optics" %}
               </a>
             {% endif %}
 
@@ -283,6 +337,26 @@
               </a>
             {% endif %}
 
+            {% if request.user|is_sims_technician or request.user.is_staff %}
+              <div class="nav-title">{% trans "SIMS" %}</div>
+              <a class="nav-item {% if request.resolver_match.namespace == 'sigmasims' and request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'icts:sigmasims:dashboard' %}">
+                <i class="bi bi-speedometer2"></i>
+                {% trans "SIGMA SIMS" %}
+              </a>
+              <a class="nav-item {% if '/sigmasims/records' in request.path %}active{% endif %}" href="{% url 'icts:sigmasims:record_list' %}">
+                <i class="bi bi-journal-text"></i>
+                {% trans "Registro" %}
+              </a>
+              <a class="nav-item {% if '/sigmasims/indicators' in request.path %}active{% endif %}" href="{% url 'icts:sigmasims:indicators_dashboard' %}">
+                <i class="bi bi-bar-chart"></i>
+                {% trans "Indicadores" %}
+              </a>
+              <a class="nav-item {% if '/sigmasims/docs' in request.path %}active{% endif %}" href="{% url 'icts:sigmasims:docs_list' %}">
+                <i class="bi bi-file-earmark-text"></i>
+                {% trans "Documentaci¢n" %}
+              </a>
+            {% endif %}
+
             {% if request.user.is_superuser %}
               <a class="nav-item" href="/admin/">
                 <i class="bi bi-tools"></i>
@@ -334,7 +408,7 @@
                   <img src="{{ MEDIA_URL }}Logos/sigma_lab.png" alt="S-LAB">
                 {% elif 'S-MEC' in page_title or 'mec' in request.path %}
                   <img src="{{ MEDIA_URL }}Logos/sigma_mec.png" alt="S-MEC">
-                {% elif 'S-SIMS' in page_title or 'SIMS' in page_title %}
+                {% elif 'sigmasims' in request.path %}
                   <img src="{{ MEDIA_URL }}Logos/logo_sigma_imp_sims.png" alt="S-SIMS">
                 {% elif 'S-D&P' in page_title or 'DP' in page_title %}
                   <img src="{{ MEDIA_URL }}Logos/sigma_DP3.png" alt="S-D&P">
@@ -344,12 +418,19 @@
                   <form class="lang-switcher" action="{% url 'set_language' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                    <label class="lang-label" for="language-select">{% trans "Idioma" %}</label>
-                    <select id="language-select" name="language" onchange="this.form.submit()">
-                      <option value="en" {% if CURRENT_LANGUAGE|slice:":2" == "en" %}selected{% endif %}>EN</option>
-                      <option value="fr" {% if CURRENT_LANGUAGE|slice:":2" == "fr" %}selected{% endif %}>FR</option>
-                      <option value="es" {% if CURRENT_LANGUAGE|slice:":2" == "es" %}selected{% endif %}>ES</option>
-                    </select>
+                    <span class="lang-label">{% trans "Idioma" %}</span>
+                    <button class="lang-pill {% if CURRENT_LANGUAGE|slice:":2" == "es" %}is-active{% endif %}" type="submit" name="language" value="es" aria-current="{% if CURRENT_LANGUAGE|slice:":2" == "es" %}true{% else %}false{% endif %}">
+                      <span class="lang-code">ES</span>
+                      <span class="lang-name">{% trans "Español" %}</span>
+                    </button>
+                    <button class="lang-pill {% if CURRENT_LANGUAGE|slice:":2" == "en" %}is-active{% endif %}" type="submit" name="language" value="en" aria-current="{% if CURRENT_LANGUAGE|slice:":2" == "en" %}true{% else %}false{% endif %}">
+                      <span class="lang-code">EN</span>
+                      <span class="lang-name">{% trans "Inglés" %}</span>
+                    </button>
+                    <button class="lang-pill {% if CURRENT_LANGUAGE|slice:":2" == "fr" %}is-active{% endif %}" type="submit" name="language" value="fr" aria-current="{% if CURRENT_LANGUAGE|slice:":2" == "fr" %}true{% else %}false{% endif %}">
+                      <span class="lang-code">FR</span>
+                      <span class="lang-name">{% trans "Francés" %}</span>
+                    </button>
                   </form>
                 {% endif %}
                 {% include "icts/_topbar_actions.html" %}
