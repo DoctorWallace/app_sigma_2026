@@ -7,6 +7,10 @@
     <h2 class="sem-card-title">Subir documento SIMS</h2>
   </div>
 
+  <div class="alert alert-info mb-3" style="background-color: #e7f3ff; padding: 12px; border-left: 4px solid #2196F3; border-radius: 4px;">
+    <strong>📄 Formato requerido:</strong> Solo se permiten archivos PDF. Asegúrese de que el archivo tenga extensión .pdf
+  </div>
+
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% if form.non_field_errors %}
@@ -25,7 +29,7 @@
         {% endfor %}
       </div>
     {% endfor %}
-    <button class="sem-btn sem-btn-primary" type="submit">Subir</button>
+    <button class="sem-btn sem-btn-primary" type="submit">Subir documento PDF</button>
     <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:docs_list' %}">Volver</a>
   </form>
 </div>

@@ -15,139 +15,169 @@
       <div class="sem-stat-label">Muestras registradas</div>
     </div>
     <div class="sem-stat-card">
-      <div class="sem-stat-number">{{ status_counts.submitted|default:0 }}</div>
-      <div class="sem-stat-label">Enviadas</div>
+      <div class="sem-stat-number">{{ count_disponibles|default:0 }}</div>
+      <div class="sem-stat-label">Disponibles</div>
     </div>
     <div class="sem-stat-card">
-      <div class="sem-stat-number">{{ status_counts.accepted|default:0 }}</div>
+      <div class="sem-stat-number">{{ count_aceptadas|default:0 }}</div>
       <div class="sem-stat-label">Aceptadas</div>
     </div>
   </div>
-  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:1.5rem;">
-    <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:record_list' %}">Registro de muestras</a>
-    <a class="sem-btn sem-btn-info" href="{% url 'icts:sigmasims:record_export_xlsx' %}">Exportar Excel</a>
-    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:indicators_dashboard' %}">Indicadores</a>
-    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:docs_list' %}">Documentacion</a>
-    <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:equipment_list' %}">Equipos</a>
-    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:inventory_list' %}">Inventario</a>
-    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:annual_plan' %}">Plan anual</a>
+
+  <!-- Buscador de propuestas -->
+  <div style="margin-top: 2rem; padding: 1.5rem; background: var(--sem-primary-light); border-radius: 0.75rem; border: 1px solid #e2e8f0;">
+    <h3 style="margin: 0 0 1rem 0; color: var(--sem-primary); font-size: 1.1rem;">🔍 Buscar propuesta</h3>
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+      <div style="flex: 1; min-width: 200px;">
+        <label class="sem-form-label" for="search_q">Código, título o solicitante</label>
+        <input class="sem-form-control" type="text" id="search_q" name="q" value="{{ search_query|default:'' }}" placeholder="Buscar...">
+      </div>
+      <div>
+        <button class="sem-btn sem-btn-primary" type="submit">Buscar</button>
+        {% if search_query %}
+          <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:dashboard' %}">Limpiar</a>
+        {% endif %}
+      </div>
+    </form>
+    {% if search_results %}
+      <div style="margin-top: 1rem;">
+        <table class="sem-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Título</th>
+              <th>Solicitante</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for proposal in search_results %}
+              <tr>
+                <td>{{ proposal.access_code|default:proposal.id }}</td>
+                <td>{{ proposal.title|truncatewords:8 }}</td>
+                <td>{{ proposal.applicant.icts_profile.user_siglas|default:proposal.applicant.username }}</td>
+                <td>
+                  {% if proposal.has_analysis %}
+                    <span class="sem-badge sem-badge-success">Aceptada</span>
+                  {% else %}
+                    <span class="sem-badge sem-badge-warning">Disponible</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:proposal_summary' proposal.pk %}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                      👁️ Ver
+                    </a>
+                    {% if proposal.has_analysis %}
+                      <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                        📊 Análisis
+                      </a>
+                    {% endif %}
+                    <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create_bulk' %}?proposal_id={{ proposal.pk }}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                      ➕ Añadir
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% elif search_query %}
+      <p style="margin-top: 1rem; color: #6b7280;">No se encontraron propuestas para "{{ search_query }}".</p>
+    {% endif %}
   </div>
 </div>
 
 <div class="sem-card">
   <div class="sem-card-header">
-    <h2 class="sem-card-title">Propuestas aceptadas</h2>
+    <h2 class="sem-card-title">Propuestas Disponibles</h2>
+    <p style="margin: 0.5rem 0 0 0; color: #6b7280; font-size: 0.9rem;">Últimas 5 propuestas pendientes de asignar fecha de análisis</p>
   </div>
-  {% if accepted_proposals %}
+  {% if proposals_without_analysis %}
     <table class="sem-table">
       <thead>
         <tr>
-          <th>Codigo</th>
-          <th>Titulo</th>
+          <th>Código</th>
+          <th>Título</th>
           <th>Solicitante</th>
-          <th>Estado</th>
           <th>Fecha</th>
           <th>Muestras</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {% for proposal in accepted_proposals %}
+        {% for proposal in proposals_without_analysis %}
           <tr>
             <td>{{ proposal.access_code|default:proposal.id }}</td>
             <td>{{ proposal.title }}</td>
             <td>{{ proposal.applicant.icts_profile.user_siglas|default:proposal.applicant.username }}</td>
-            <td><span class="sem-badge sem-badge-success">Aceptada</span></td>
             <td>{{ proposal.submitted_at|default:proposal.created_at|date:"Y-m-d" }}</td>
             <td>{{ proposal.sample_count|default:0 }}</td>
             <td>
-              <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}">Informe</a>
-              <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create' %}?proposal_id={{ proposal.pk }}">Anadir muestra</a>
+              <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:proposal_summary' proposal.pk %}" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                  👁️ Ver
+                </a>
+                <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create_bulk' %}?proposal_id={{ proposal.pk }}" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                  ➕ Añadir muestras
+                </a>
+              </div>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <p>No hay propuestas SIMS aceptadas.</p>
+    <p>No hay propuestas disponibles para asignar fecha de análisis.</p>
   {% endif %}
 </div>
 
 <div class="sem-card">
   <div class="sem-card-header">
-    <h2 class="sem-card-title">Propuestas enviadas</h2>
+    <h2 class="sem-card-title">Propuestas Aceptadas</h2>
+    <p style="margin: 0.5rem 0 0 0; color: #6b7280; font-size: 0.9rem;">Últimas 5 propuestas con fecha de análisis asignada</p>
   </div>
-  {% if submitted_proposals %}
+  {% if proposals_with_analysis %}
     <table class="sem-table">
       <thead>
         <tr>
-          <th>Codigo</th>
-          <th>Titulo</th>
+          <th>Código</th>
+          <th>Título</th>
           <th>Solicitante</th>
-          <th>Estado</th>
           <th>Fecha</th>
           <th>Muestras</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {% for proposal in submitted_proposals %}
+        {% for proposal in proposals_with_analysis %}
           <tr>
             <td>{{ proposal.access_code|default:proposal.id }}</td>
             <td>{{ proposal.title }}</td>
             <td>{{ proposal.applicant.icts_profile.user_siglas|default:proposal.applicant.username }}</td>
-            <td><span class="sem-badge sem-badge-sem">Enviada</span></td>
             <td>{{ proposal.submitted_at|default:proposal.created_at|date:"Y-m-d" }}</td>
             <td>{{ proposal.sample_count|default:0 }}</td>
             <td>
-              <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}">Informe</a>
-              <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create' %}?proposal_id={{ proposal.pk }}">Anadir muestra</a>
+              <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:proposal_summary' proposal.pk %}" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                  👁️ Ver
+                </a>
+                <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                  📊 Análisis
+                </a>
+                <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create_bulk' %}?proposal_id={{ proposal.pk }}" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                  ➕ Añadir
+                </a>
+              </div>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <p>No hay propuestas SIMS enviadas.</p>
+    <p>No hay propuestas en proceso.</p>
   {% endif %}
 </div>
-
-{% if other_proposals %}
-  <div class="sem-card">
-    <div class="sem-card-header">
-      <h2 class="sem-card-title">Otras propuestas SIMS</h2>
-    </div>
-    <table class="sem-table">
-      <thead>
-        <tr>
-          <th>Codigo</th>
-          <th>Titulo</th>
-          <th>Solicitante</th>
-          <th>Estado</th>
-          <th>Fecha</th>
-          <th>Muestras</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for proposal in other_proposals %}
-          <tr>
-            <td>{{ proposal.access_code|default:proposal.id }}</td>
-            <td>{{ proposal.title }}</td>
-            <td>{{ proposal.applicant.icts_profile.user_siglas|default:proposal.applicant.username }}</td>
-            <td>
-              <span class="sem-badge sem-badge-warning">{{ proposal.get_status_display }}</span>
-            </td>
-            <td>{{ proposal.submitted_at|default:proposal.created_at|date:"Y-m-d" }}</td>
-            <td>{{ proposal.sample_count|default:0 }}</td>
-            <td>
-              <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}">Informe</a>
-              <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create' %}?proposal_id={{ proposal.pk }}">Anadir muestra</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% endif %}
 {% endblock %}

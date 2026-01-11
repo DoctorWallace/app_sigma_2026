@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SIGMA ICTS\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-01 16:13+0100\n"
+"POT-Creation-Date: 2026-01-11 03:09+0100\n"
 "PO-Revision-Date: 2025-12-29 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -11,6 +11,40 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\icts\templates\icts\_topbar_actions.html:5
+#: .\icts\templates\icts\_topbar_actions.html:13
+msgid "USER"
+msgstr ""
+
+#: .\icts\templates\icts\_topbar_actions.html:7
+msgid "REVIEWER"
+msgstr ""
+
+#: .\icts\templates\icts\_topbar_actions.html:9
+msgid "TÉCNICO"
+msgstr ""
+
+#: .\icts\templates\icts\_topbar_actions.html:18
+#: .\icts\templates\icts\_topbar_actions.html:20
+#: .\icts\templates\icts\_topbar_actions.html:22
+#: .\icts\templates\icts\_topbar_actions.html:24
+#: .\icts\templates\icts\_topbar_actions.html:26
+#: .\icts\templates\icts\_topbar_actions.html:28
+#: .\icts\templates\icts\_topbar_actions.html:30
+#: .\icts\templates\icts\_topbar_actions.html:32 .\templates\base_icts.html:194
+#, fuzzy
+#| msgid "Mi Panel"
+msgid "Mi panel"
+msgstr "My Dashboard"
+
+#: .\icts\templates\icts\_topbar_actions.html:34
+msgid "Atrás"
+msgstr ""
+
+#: .\icts\templates\icts\_topbar_actions.html:35
+msgid "Salir"
+msgstr ""
 
 #: .\icts\templates\icts\facilities\_OLMAT.html:9
 msgid "Dispositivo HHF OLMAT"
@@ -151,10 +185,16 @@ msgstr ""
 "that the technical team may request additional information during evaluation."
 
 #: .\icts\templates\icts\facilities\_OLMAT.html:112
+#, fuzzy
+#| msgid ""
+#| "Para contexto adicional consulta la <a href=\\\"https://"
+#| "www.fusion.ciemat.es/inicio/acceso-instalaciones-competitivas/olmat/\\\" "
+#| "target=\\\"_blank\\\" rel=\\\"noopener\\\">página oficial de OLMAT</a> "
+#| "del CIEMAT."
 msgid ""
-"Para contexto adicional consulta la <a href=\\\"https://www.fusion.ciemat.es/"
-"inicio/acceso-instalaciones-competitivas/olmat/\\\" target=\\\"_blank\\\" "
-"rel=\\\"noopener\\\">página oficial de OLMAT</a> del CIEMAT."
+"Para contexto adicional consulta la <a href=\"https://www.fusion.ciemat.es/"
+"inicio/acceso-instalaciones-competitivas/olmat/\" target=\"_blank\" "
+"rel=\"noopener\">página oficial de OLMAT</a> del CIEMAT."
 msgstr ""
 "For additional context, see CIEMAT's <a href=\"https://www.fusion.ciemat.es/"
 "inicio/acceso-instalaciones-competitivas/olmat/\" target=\"_blank\" "
@@ -396,7 +436,6 @@ msgstr ""
 "techniques."
 
 #: .\icts\templates\icts\facilities\_SEM_FIB.html:93
-#: .\icts\templates\icts\facilities\_SIMS.html:97
 #: .\icts\templates\icts\facilities\_confocal.html:96
 #: .\icts\templates\icts\facilities\_profilometer.html:109
 #: .\icts\templates\icts\facilities\_van_der_graaff.html:87
@@ -516,8 +555,31 @@ msgstr ""
 "microstructural characterization of advanced materials, providing detailed "
 "spatial information on element distribution and material structure."
 
+#: .\icts\templates\icts\facilities\_SIMS.html:98
+msgid "Espectro de masas"
+msgstr "Mass spectrum"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:99
+msgid "Identificación rápida de especies e impurezas en superficie."
+msgstr "Rapid identification of species and surface impurities."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:102
+msgid "Coste 75.84 €"
+msgstr "Usage cost 75.84 €"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:105
+msgid "Perfil de masas en profundidad"
+msgstr "In-depth mass profile"
+
+#: .\icts\templates\icts\facilities\_SIMS.html:106
+msgid "Distribución de elementos en función de la profundidad."
+msgstr "Distribution of elements as a function of depth."
+
+#: .\icts\templates\icts\facilities\_SIMS.html:109
+msgid "Coste 92,36 €"
+msgstr "Usage cost 92.36 €"
+
 #: .\icts\templates\icts\facilities\_confocal.html:9
-#: .\icts\templates\icts\home.html:241
 msgid "Microscopio Confocal/Interferométrico"
 msgstr "Confocal/Interferometric Microscope"
 
@@ -928,7 +990,6 @@ msgid "Trazabilidad a estándares metrológicos internacionales"
 msgstr "Traceability to international metrological standards"
 
 #: .\icts\templates\icts\facilities\_van_der_graaff.html:9
-#: .\icts\templates\icts\home.html:191
 msgid "Acelerador Van de Graaff"
 msgstr "Van de Graaff Accelerator"
 
@@ -1088,6 +1149,1042 @@ msgstr "Equipment/Configuration 3 (generic)"
 msgid "Entrar en SIGMA ICTS"
 msgstr "Enter SIGMA ICTS"
 
+#: .\icts\templates\icts\forms\_confocal.html:3
+#, fuzzy
+#| msgid "SIGMA Optics - Datos de muestras"
+msgid "Metrología de superficies ópticas 3D - Datos de muestras"
+msgstr "SIGMA Optics - Sample data"
+
+#: .\icts\templates\icts\forms\_confocal.html:7
+#: .\icts\templates\icts\forms\_fib.html:7
+#: .\icts\templates\icts\forms\_sem.html:7
+#: .\icts\templates\icts\forms\_sims.html:7
+msgid "Requirements for Sample Acceptance"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:11
+#: .\icts\templates\icts\forms\_sem.html:11
+msgid "→Material stable at room temperature"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:15
+#: .\icts\templates\icts\forms\_sem.html:15
+msgid ""
+"→Dimensions: The size of the samples are limited to 100*75*40mm 100x75x40 mm."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:19
+#: .\icts\templates\icts\forms\_sem.html:19
+#: .\icts\templates\icts\forms\_sims.html:19
+msgid ""
+"→Sample must be accompanied with a complete and perfectly legible "
+"identification. Sample must be wrapped with a metallic paper or cloth "
+"(plastic wrapping is not recommended)."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:23
+#: .\icts\templates\icts\forms\_sem.html:23
+msgid ""
+"→In case of classical metallographic study, the samples will be received "
+"polished and etched * (you can request sample preparation following the "
+"procedure PT-DTF-15)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:30
+#: .\icts\templates\icts\forms\_fib.html:30
+#: .\icts\templates\icts\forms\_profilometer.html:19
+#: .\icts\templates\icts\forms\_sem.html:30
+#: .\icts\templates\icts\forms\_sims.html:26
+#, fuzzy
+#| msgid "Sample observations"
+msgid "Sample Description"
+msgstr "Sample observations"
+
+#: .\icts\templates\icts\forms\_confocal.html:34
+#: .\icts\templates\icts\forms\_imp.html:83
+#: .\icts\templates\icts\forms\_optics.html:28
+#: .\icts\templates\icts\forms\_optics.html:162
+#: .\icts\templates\icts\forms\_profilometer.html:23
+#: .\icts\templates\icts\forms\_sem.html:34
+#: .\icts\templates\icts\forms\_sims.html:30
+#: .\icts\templates\icts\forms\_vdg.html:28
+msgid "Sample"
+msgstr "Sample"
+
+#: .\icts\templates\icts\forms\_confocal.html:41
+#: .\icts\templates\icts\forms\_fib.html:146
+#: .\icts\templates\icts\forms\_imp.html:90
+#: .\icts\templates\icts\forms\_optics.html:35
+#: .\icts\templates\icts\forms\_optics.html:163
+#: .\icts\templates\icts\forms\_profilometer.html:27
+#: .\icts\templates\icts\forms\_sem.html:41
+#: .\icts\templates\icts\forms\_sims.html:37
+msgid "Identification"
+msgstr "Identification"
+
+#: .\icts\templates\icts\forms\_confocal.html:42
+#: .\icts\templates\icts\forms\_imp.html:91
+#: .\icts\templates\icts\forms\_optics.html:36
+#: .\icts\templates\icts\forms\_optics.html:166
+#: .\icts\templates\icts\forms\_profilometer.html:28
+#: .\icts\templates\icts\forms\_sem.html:42
+#: .\icts\templates\icts\forms\_sims.html:38
+msgid "Sample ID"
+msgstr "Sample ID"
+
+#: .\icts\templates\icts\forms\_confocal.html:45
+#: .\icts\templates\icts\forms\_fib.html:150
+#: .\icts\templates\icts\forms\_imp.html:94
+#: .\icts\templates\icts\forms\_optics.html:39
+#: .\icts\templates\icts\forms\_optics.html:164
+#: .\icts\templates\icts\forms\_profilometer.html:31
+#: .\icts\templates\icts\forms\_sem.html:45
+#: .\icts\templates\icts\forms\_sims.html:41
+msgid "Name"
+msgstr "Name"
+
+#: .\icts\templates\icts\forms\_confocal.html:46
+#: .\icts\templates\icts\forms\_imp.html:95
+#: .\icts\templates\icts\forms\_optics.html:40
+#: .\icts\templates\icts\forms\_optics.html:167
+#: .\icts\templates\icts\forms\_profilometer.html:32
+#: .\icts\templates\icts\forms\_sem.html:46
+#: .\icts\templates\icts\forms\_sims.html:42
+msgid "Sample name"
+msgstr "Sample name"
+
+#: .\icts\templates\icts\forms\_confocal.html:50
+#: .\icts\templates\icts\forms\_imp.html:99
+#: .\icts\templates\icts\forms\_sem.html:50
+msgid "Details (State of the surface, nature, approximate composition, ...)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:51
+#: .\icts\templates\icts\forms\_imp.html:100
+#: .\icts\templates\icts\forms\_profilometer.html:37
+#: .\icts\templates\icts\forms\_sem.html:51
+#: .\icts\templates\icts\forms\_sims.html:47
+#, fuzzy
+#| msgid "Sample observations"
+msgid "Sample details"
+msgstr "Sample observations"
+
+#: .\icts\templates\icts\forms\_confocal.html:56
+#: .\icts\templates\icts\forms\_imp.html:105
+#: .\icts\templates\icts\forms\_optics.html:50
+#: .\icts\templates\icts\forms\_sem.html:56
+#: .\icts\templates\icts\forms\_sims.html:52
+#: .\icts\templates\icts\forms\_vdg.html:70
+msgid "Add Sample"
+msgstr "Add Sample"
+
+#: .\icts\templates\icts\forms\_confocal.html:62
+#: .\icts\templates\icts\forms\_fib.html:43
+#: .\icts\templates\icts\forms\_sem.html:62
+#: .\icts\templates\icts\forms\_sims.html:58
+msgid "Sample Safe Handling"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:65
+#: .\icts\templates\icts\forms\_fib.html:46
+#: .\icts\templates\icts\forms\_optics.html:70
+#: .\icts\templates\icts\forms\_sims.html:61
+msgid "¿Toxic?"
+msgstr "Toxic?"
+
+#: .\icts\templates\icts\forms\_confocal.html:69
+#: .\icts\templates\icts\forms\_fib.html:51
+#: .\icts\templates\icts\forms\_optics.html:75
+#: .\icts\templates\icts\forms\_sims.html:65
+msgid "¿Corrosive?"
+msgstr "Corrosive?"
+
+#: .\icts\templates\icts\forms\_confocal.html:73
+#: .\icts\templates\icts\forms\_fib.html:56
+#: .\icts\templates\icts\forms\_optics.html:80
+#: .\icts\templates\icts\forms\_sims.html:69
+msgid "¿Irritating?"
+msgstr "Irritating?"
+
+#: .\icts\templates\icts\forms\_confocal.html:77
+#: .\icts\templates\icts\forms\_fib.html:61
+#: .\icts\templates\icts\forms\_optics.html:85
+#: .\icts\templates\icts\forms\_sims.html:73
+msgid "¿Radioactive?"
+msgstr "Radioactive?"
+
+#: .\icts\templates\icts\forms\_confocal.html:82
+#: .\icts\templates\icts\forms\_fib.html:67
+#: .\icts\templates\icts\forms\_sims.html:78
+#, fuzzy
+#| msgid "Further comments"
+msgid "Further comments about safety"
+msgstr "Further comments"
+
+#: .\icts\templates\icts\forms\_confocal.html:83
+#: .\icts\templates\icts\forms\_fib.html:68
+#: .\icts\templates\icts\forms\_optics.html:92
+#: .\icts\templates\icts\forms\_sem.html:87
+#: .\icts\templates\icts\forms\_sims.html:79
+msgid "Additional safety comments"
+msgstr "Additional safety comments"
+
+#: .\icts\templates\icts\forms\_confocal.html:89
+#: .\icts\templates\icts\forms\_fib.html:74
+#: .\icts\templates\icts\forms\_sem.html:93
+#: .\icts\templates\icts\forms\_sims.html:85
+msgid "Important Information"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:93
+msgid "Do you request 2D analysis?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:95
+#: .\icts\templates\icts\forms\_confocal.html:103
+#: .\icts\templates\icts\forms\_confocal.html:111
+#: .\icts\templates\icts\forms\_confocal.html:119
+#: .\icts\templates\icts\forms\_fib.html:48
+#: .\icts\templates\icts\forms\_fib.html:53
+#: .\icts\templates\icts\forms\_fib.html:58
+#: .\icts\templates\icts\forms\_fib.html:63
+#: .\icts\templates\icts\forms\_fib.html:80
+#: .\icts\templates\icts\forms\_fib.html:92
+#: .\icts\templates\icts\forms\_fib.html:110
+#: .\icts\templates\icts\forms\_fib.html:118
+#: .\icts\templates\icts\forms\_fib.html:126
+#: .\icts\templates\icts\forms\_optics.html:60
+#: .\icts\templates\icts\forms\_optics.html:72
+#: .\icts\templates\icts\forms\_optics.html:77
+#: .\icts\templates\icts\forms\_optics.html:82
+#: .\icts\templates\icts\forms\_optics.html:87
+#: .\icts\templates\icts\forms\_sem.html:67
+#: .\icts\templates\icts\forms\_sem.html:72
+#: .\icts\templates\icts\forms\_sem.html:77
+#: .\icts\templates\icts\forms\_sem.html:82
+#: .\icts\templates\icts\forms\_sem.html:100
+#: .\icts\templates\icts\forms\_sem.html:109
+#: .\icts\templates\icts\forms\_sims.html:92
+#: .\icts\templates\icts\forms\_sims.html:105
+#: .\icts\templates\icts\forms\_sims.html:134
+#: .\icts\templates\icts\forms\_sims.html:143
+#: .\icts\templates\icts\forms\_sims.html:152
+msgid "NO"
+msgstr "NO"
+
+#: .\icts\templates\icts\forms\_confocal.html:101
+msgid "Do you request confocal analysis?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:109
+msgid "Do you request interferometry?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:117
+msgid "Do you request a metallographic study? *"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:126
+msgid ""
+"The sample/s must be adequately prepared to perform the study. Technician is "
+"not responsible for bad results due to bad preparation"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:131
+msgid "Further comments about Confocal analysis"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_confocal.html:132
+msgid "Additional comments about Confocal analysis"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:3
+msgid "FIB - Requirements for Sample Acceptance"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:11
+msgid "Mirror polished or at least with 2500 grit SiC sandpaper."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:15
+msgid ""
+"Do not exceed a maximum height of 2 cm, a width of 4 cm and, a length of 4 "
+"cm."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:19
+msgid ""
+"It is required to provide a clean sample, wrapped in foil or cloth (avoid "
+"plastic) and legible identification."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:23
+msgid "Conductive sample."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:33
+#, fuzzy
+#| msgid "Tamaño de muestra"
+msgid "Añadir Muestra"
+msgstr "Sample size"
+
+#: .\icts\templates\icts\forms\_fib.html:78
+msgid "Do you specify a particular area of the sample?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:83
+msgid "Describe where:"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:84
+msgid "Describe el área específica"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:90
+msgid "Are specific dimensions required?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:96
+msgid "Depth (µm)?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:100
+msgid "Length (μm)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:108
+#: .\icts\templates\icts\forms\_sem.html:129
+msgid "Is the sample conductive?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:116
+msgid "Is a final polishing with low voltage necessary?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:124
+msgid "Is the sample sensitive to the Ga beam?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:131
+#, fuzzy
+#| msgid "Further comments"
+msgid "Further comments about FIB analysis"
+msgstr "Further comments"
+
+#: .\icts\templates\icts\forms\_fib.html:132
+msgid "Additional comments about FIB analysis"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:141
+#, fuzzy
+#| msgid "Muestreo"
+msgid "Muestra"
+msgstr "Sampling"
+
+#: .\icts\templates\icts\forms\_fib.html:142
+#: .\icts\templates\icts\my_proposals.html:67
+msgid "Eliminar"
+msgstr "Delete"
+
+#: .\icts\templates\icts\forms\_fib.html:147
+#, fuzzy
+#| msgid "Tamaño de muestra"
+msgid "ID de la muestra"
+msgstr "Sample size"
+
+#: .\icts\templates\icts\forms\_fib.html:151
+#, fuzzy
+#| msgid "Tamaño de muestra"
+msgid "Nombre de la muestra"
+msgstr "Sample size"
+
+#: .\icts\templates\icts\forms\_fib.html:154
+msgid "Details (Surface condition, nature, chemical composition, ...)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:157
+msgid "Warning!"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_fib.html:159
+#, fuzzy
+#| msgid "Descripción de muestras"
+msgid "Detalles de la muestra"
+msgstr "Sample description"
+
+#: .\icts\templates\icts\forms\_imp.html:3
+#, fuzzy
+#| msgid "Energía de implantación"
+msgid "Ion Implanter - Datos de implantacion"
+msgstr "Implantation energy"
+
+#: .\icts\templates\icts\forms\_imp.html:6
+#, fuzzy
+#| msgid "Tamaño de muestra"
+msgid "Numero de muestras"
+msgstr "Sample size"
+
+#: .\icts\templates\icts\forms\_imp.html:10
+msgid "Camara"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:12
+#, fuzzy
+#| msgid "Selecciona una opción"
+msgid "Selecciona"
+msgstr "Select an option"
+
+#: .\icts\templates\icts\forms\_imp.html:13
+msgid "Small area (<= 10 mm)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:14
+msgid "Large area (<= 20 mm, RT)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:18
+msgid "Energia (keV)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:24
+msgid "Fluencia (ion/cm2)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:28
+msgid "Temperatura (C)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:30
+msgid "Large area: solo temperatura ambiente (<= 30 C)."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:33
+msgid "Diametro muestra (mm)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:39
+#, fuzzy
+#| msgid "¿Recuperar muestra(s)?"
+msgid "Espesor muestra (mm)"
+msgstr "Recover sample(s)?"
+
+#: .\icts\templates\icts\forms\_imp.html:43
+msgid "Otras especies / comentarios"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:44
+msgid "Otros gases o comentarios"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:45
+msgid "Requiere consulta previa."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:49
+msgid "Ion species"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:69
+msgid "H (Hidrogeno)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:73
+msgid "D (Deuterio)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:76
+msgid ""
+"Solo iones de fuentes gaseosas. Otras especies requieren consulta previa."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:79
+#, fuzzy
+#| msgid "Propuestas enviadas"
+msgid "Muestras declaradas"
+msgstr "Submitted proposals"
+
+#: .\icts\templates\icts\forms\_imp.html:109
+msgid "Condiciones y observaciones"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_imp.html:110
+msgid "Condiciones adicionales, observaciones, etc."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:4
+#, fuzzy
+#| msgid "Técnico OLMAT"
+msgid "Configuracion OLMAT"
+msgstr "OLMAT technician"
+
+#: .\icts\templates\icts\forms\_olmat.html:7
+msgid "Application instructions for OLMAT HHF device"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:8
+msgid "Incluye en tu solicitud:"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:10
+msgid ""
+"Short description of the activity (1-2 pages) con motivacion, objetivos y "
+"heat load / irradiation requirements (si se conocen)."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:11
+msgid "Description of the resources required:"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:13
+msgid ""
+"OLMAT diagnostics: thermocouples, IR pyrometry and thermography (1 ms), fast "
+"camera, optical spectroscopy, Langmuir probes."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:14
+msgid ""
+"Sample preparation at OLMAT laboratory: liquid metal wetting, sample holder "
+"design, etc."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:15
+msgid "Use of NBI beam, laser or both."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:17
+msgid "Preferred dates and degree of flexibility."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:24
+#, fuzzy
+#| msgid "Mis revisiones"
+msgid "Tipo de servicio *"
+msgstr "Types of Measurements"
+
+#: .\icts\templates\icts\forms\_olmat.html:26
+msgid "Selecciona el tipo de servicio"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:27
+#, fuzzy
+#| msgid "Servicio técnico"
+msgid "Servicio tecnico (5.000 EUR)"
+msgstr "Technical service"
+
+#: .\icts\templates\icts\forms\_olmat.html:28
+#, fuzzy
+#| msgid "Servicio de investigación"
+msgid "Servicio de investigacion (10.305 EUR)"
+msgstr "Research service"
+
+#: .\icts\templates\icts\forms\_olmat.html:30
+msgid ""
+"Servicio tecnico: operacion y preparacion de muestras. Servicio de "
+"investigacion: soporte cientifico y analisis."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:35
+msgid "Fechas preferidas"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:40
+msgid "a"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:42
+#, fuzzy
+#| msgid "Eliminar"
+msgid "Eliminar periodo"
+msgstr "Delete"
+
+#: .\icts\templates\icts\forms\_olmat.html:46
+msgid "Anadir periodo"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:48
+msgid "Propone uno o varios periodos no consecutivos."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:54
+msgid "Short description (1-2 pages) *"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:55
+msgid "Motivacion, objetivos y heat load / irradiation requirements"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:59
+msgid "Heat load / irradiation requirements"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:60
+msgid "Flujo termico previsto, duracion de pulsos, restricciones"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:66
+msgid "OLMAT diagnostics necesarios"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:69
+msgid "Thermocouples"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:73
+msgid "IR pyrometry"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:77
+msgid "IR thermography (1 ms)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:81
+msgid "Fast camera"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:85
+msgid "Optical spectroscopy"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:89
+msgid "Langmuir probes"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:96
+msgid "Sample preparation (lab OLMAT)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:99
+msgid "Liquid metal wetting"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:103
+#, fuzzy
+#| msgid "Sample observations"
+msgid "Sample holder design"
+msgstr "Sample observations"
+
+#: .\icts\templates\icts\forms\_olmat.html:107
+msgid "Other prep (etc.)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:109
+msgid "Describe otras preparaciones necesarias"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:113
+msgid "Use of beam"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:116
+msgid "NBI beam"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:120
+msgid "Laser"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:124
+msgid "Both"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:133
+#, fuzzy
+#| msgid "Fechas preferidas y grado de flexibilidad."
+msgid "Grado de flexibilidad"
+msgstr "Preferred dates and degree of flexibility."
+
+#: .\icts\templates\icts\forms\_olmat.html:135
+msgid "Alta flexibilidad"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:136
+#, fuzzy
+#| msgid "Necesidad media"
+msgid "Flexibilidad media"
+msgstr "Medium need"
+
+#: .\icts\templates\icts\forms\_olmat.html:137
+msgid "Baja flexibilidad"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_olmat.html:143
+#, fuzzy
+#| msgid "Requisitos de aceptación"
+msgid "Requisitos adicionales"
+msgstr "Acceptance requirements"
+
+#: .\icts\templates\icts\forms\_olmat.html:144
+msgid "Aclaraciones tecnicas, referencias, etc."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_optics.html:3
+msgid "SIGMA Optics - Datos de muestras"
+msgstr "SIGMA Optics - Sample data"
+
+#: .\icts\templates\icts\forms\_optics.html:6
+msgid "Requisitos de aceptación"
+msgstr "Acceptance requirements"
+
+#: .\icts\templates\icts\forms\_optics.html:10
+msgid "El tamaño máximo es de 45 x 60 mm (diámetro máximo 45 mm)."
+msgstr "Maximum size is 45 x 60 mm (maximum diameter 45 mm)."
+
+#: .\icts\templates\icts\forms\_optics.html:14
+msgid ""
+"Muestras empaquetadas en cajas o bolsas y etiquetadas de forma clara y "
+"escueta."
+msgstr "Samples packaged in boxes or bags and labeled clearly and concisely."
+
+#: .\icts\templates\icts\forms\_optics.html:18
+msgid "Proteja la muestra adecuadamente."
+msgstr "Protect the sample adequately."
+
+#: .\icts\templates\icts\forms\_optics.html:24
+msgid "Descripción de muestras"
+msgstr "Sample description"
+
+#: .\icts\templates\icts\forms\_optics.html:44
+#: .\icts\templates\icts\forms\_optics.html:165
+msgid "Observations"
+msgstr "Observations"
+
+#: .\icts\templates\icts\forms\_optics.html:45
+#: .\icts\templates\icts\forms\_optics.html:168
+msgid "Sample observations"
+msgstr "Sample observations"
+
+#: .\icts\templates\icts\forms\_optics.html:55
+msgid "Recuperación de muestras"
+msgstr "Sample recovery"
+
+#: .\icts\templates\icts\forms\_optics.html:58
+msgid "¿Recuperar muestra(s)?"
+msgstr "Recover sample(s)?"
+
+#: .\icts\templates\icts\forms\_optics.html:63
+msgid ""
+"Por defecto las muestras no se conservan después de la medida. Si se quiere "
+"recuperar la muestra debe indicarlo aquí. Se guardarán como máximo 2 meses "
+"después de la fecha de entrega de resultados."
+msgstr ""
+"By default, samples are not kept after the measurement. If you want to "
+"recover the sample, you must indicate it here. They will be kept for a "
+"maximum of 2 months after the results delivery date."
+
+#: .\icts\templates\icts\forms\_optics.html:67
+msgid "Manipulación segura"
+msgstr "Safe handling"
+
+#: .\icts\templates\icts\forms\_optics.html:91
+#: .\icts\templates\icts\forms\_sem.html:86
+#: .\icts\templates\icts\forms\_sem.html:149
+msgid "Further comments"
+msgstr "Further comments"
+
+#: .\icts\templates\icts\forms\_optics.html:97
+msgid "Información requerida"
+msgstr "Required information"
+
+#: .\icts\templates\icts\forms\_optics.html:100
+msgid "Medida"
+msgstr "Measurement"
+
+#: .\icts\templates\icts\forms\_optics.html:104
+msgid "Absorción"
+msgstr "Absorption"
+
+#: .\icts\templates\icts\forms\_optics.html:108
+msgid "Transmisión"
+msgstr "Transmission"
+
+#: .\icts\templates\icts\forms\_optics.html:115
+msgid "Longitud de onda mínima"
+msgstr "Minimum wavelength"
+
+#: .\icts\templates\icts\forms\_optics.html:125
+msgid "Longitud de onda máxima"
+msgstr "Maximum wavelength"
+
+#: .\icts\templates\icts\forms\_optics.html:136
+msgid ""
+"En caso de que exista incertidumbre en la medida, el técnico responsable se "
+"comunicará con el usuario."
+msgstr ""
+"If there is any uncertainty in the measurement, the responsible technician "
+"will contact the user."
+
+#: .\icts\templates\icts\forms\_optics.html:140
+#: .\icts\templates\icts\forms\_optics.html:141
+#: .\icts\templates\icts\forms\_vdg.html:39
+msgid "Material"
+msgstr "Material"
+
+#: .\icts\templates\icts\forms\_optics.html:144
+msgid "Tipo de medida"
+msgstr "Measurement type"
+
+#: .\icts\templates\icts\forms\_optics.html:146
+msgid "Selecciona una opción"
+msgstr "Select an option"
+
+#: .\icts\templates\icts\forms\_optics.html:147
+msgid "UV-VIS"
+msgstr "UV-VIS"
+
+#: .\icts\templates\icts\forms\_optics.html:148
+msgid "FTIR"
+msgstr "FTIR"
+
+#: .\icts\templates\icts\forms\_optics.html:155
+#: .\icts\templates\icts\forms\_optics.html:156
+msgid "Comentarios finales"
+msgstr "Final comments"
+
+#: .\icts\templates\icts\forms\_profilometer.html:3
+#, fuzzy
+#| msgid "Perfilómetro de Contacto"
+msgid "Perfilómetro - Datos de muestras"
+msgstr "Contact Profilometer"
+
+#: .\icts\templates\icts\forms\_profilometer.html:6
+#, fuzzy
+#| msgid "Tamaño de muestra"
+msgid "Número de muestras"
+msgstr "Sample size"
+
+#: .\icts\templates\icts\forms\_profilometer.html:10
+msgid "Rango (µm)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_profilometer.html:14
+#, fuzzy
+#| msgid "Resolución EDS"
+msgid "Resolución (nm)"
+msgstr "EDS resolution"
+
+#: .\icts\templates\icts\forms\_profilometer.html:36
+msgid "Details"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_profilometer.html:43
+#, fuzzy
+#| msgid "Descripción de muestras"
+msgid "Descripción / regiones a medir"
+msgstr "Sample description"
+
+#: .\icts\templates\icts\forms\_profilometer.html:44
+msgid "Describe geometría, tolerancias y puntos de medida"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:3
+#, fuzzy
+#| msgid "SIGMA Optics - Datos de muestras"
+msgid "SEM EDX - Datos de muestras"
+msgstr "SIGMA Optics - Sample data"
+
+#: .\icts\templates\icts\forms\_sem.html:65
+#, fuzzy
+#| msgid "¿Toxic?"
+msgid "¨Toxic?"
+msgstr "Toxic?"
+
+#: .\icts\templates\icts\forms\_sem.html:70
+#, fuzzy
+#| msgid "¿Corrosive?"
+msgid "¨Corrosive?"
+msgstr "Corrosive?"
+
+#: .\icts\templates\icts\forms\_sem.html:75
+#, fuzzy
+#| msgid "¿Irritating?"
+msgid "¨Irritating?"
+msgstr "Irritating?"
+
+#: .\icts\templates\icts\forms\_sem.html:80
+#, fuzzy
+#| msgid "¿Radioactive?"
+msgid "¨Radioactive?"
+msgstr "Radioactive?"
+
+#: .\icts\templates\icts\forms\_sem.html:98
+msgid "Do you request a SEM analysis?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:107
+msgid "Do you request an EDX study?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:114
+msgid "Select Elements for EDX Analysis"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:119
+#: .\icts\templates\icts\forms\_sims.html:162
+msgid "Selected Elements:"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:131
+msgid "YES"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:137
+msgid "Conductive layer needed:"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:139
+msgid "Carbon (C)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:140
+msgid "Platinum (Pt)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:141
+msgid "Palladium (Pd)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:142
+msgid "Gold (Au)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sem.html:150
+#, fuzzy
+#| msgid "Comentarios finales"
+msgid "Comentarios adicionales"
+msgstr "Final comments"
+
+#: .\icts\templates\icts\forms\_sims.html:3
+#, fuzzy
+#| msgid "SIGMA Optics - Datos de muestras"
+msgid "SIMS - Datos de muestras"
+msgstr "SIGMA Optics - Sample data"
+
+#: .\icts\templates\icts\forms\_sims.html:11
+msgid "→ Sample must be a clean, compacted, smoothy surface solid."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sims.html:15
+msgid ""
+"→Minimum dimensions: 8mm in diameter (or 8x8mm2) Maximum dimensions 15 mm "
+"(15x15 mm2)."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sims.html:46
+msgid "Details (aproximate composition, specific characteristics ...)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sims.html:90
+msgid "Is a surface analysis requested?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sims.html:103
+msgid "In a profile analysis requested?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sims.html:132
+msgid "Is an electrical conducting sample?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sims.html:141
+msgid "It is a hygroscopic sample?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sims.html:150
+msgid "Atomic elements of interests?"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_sims.html:157
+msgid "Select Atomic Elements of Interest"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:3
+msgid "Van de Graaff (L07) - Sample data"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:6
+msgid "Acceptance of the sample"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:10
+msgid "The material or device must be in a solid state."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:14
+msgid "Be less than 3 mm thick."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:18
+msgid "Less than 15 cm x 15 cm."
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:24
+#, fuzzy
+#| msgid "Sample name"
+msgid "Sample data"
+msgstr "Sample name"
+
+#: .\icts\templates\icts\forms\_vdg.html:35
+msgid "Code"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:36
+#, fuzzy
+#| msgid "Sample name"
+msgid "Sample code"
+msgstr "Sample name"
+
+#: .\icts\templates\icts\forms\_vdg.html:40
+#, fuzzy
+#| msgid "Materiales"
+msgid "Material type"
+msgstr "Materials"
+
+#: .\icts\templates\icts\forms\_vdg.html:45
+msgid "Electron fluence (e-)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:49
+msgid "Temperature (C)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:55
+msgid "Atmosphere (gas)"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:56
+msgid "Gas atmosphere"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:59
+#, fuzzy
+#| msgid "Sample name"
+msgid "Sample size"
+msgstr "Sample name"
+
+#: .\icts\templates\icts\forms\_vdg.html:60
+#, fuzzy
+#| msgid "Sample observations"
+msgid "Sample dimensions"
+msgstr "Sample observations"
+
+#: .\icts\templates\icts\forms\_vdg.html:64
+#, fuzzy
+#| msgid "Sample name"
+msgid "Sample geometry"
+msgstr "Sample name"
+
+#: .\icts\templates\icts\forms\_vdg.html:65
+msgid "Geometry description"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:75
+msgid "Description of the Experiment to be Carried Out"
+msgstr ""
+
+#: .\icts\templates\icts\forms\_vdg.html:77
+msgid "Detailed description of the experiment to be carried out"
+msgstr ""
+
 #: .\icts\templates\icts\home.html:4
 msgid "SIGMA ICTS · Home"
 msgstr "SIGMA ICTS · Home"
@@ -1096,7 +2193,7 @@ msgstr "SIGMA ICTS · Home"
 msgid "¡Bienvenido/a a SIGMA ICTS!"
 msgstr "Welcome to SIGMA ICTS!"
 
-#: .\icts\templates\icts\home.html:165
+#: .\icts\templates\icts\home.html:165 .\templates\base_icts.html:172
 msgid ""
 "Sistema de Gestión de Accesos y Muestras a la ICTS del Laboratorio Nacional "
 "de Fusión (CIEMAT)"
@@ -1104,7 +2201,7 @@ msgstr ""
 "Access and Sample Management System for the ICTS of the National Fusion "
 "Laboratory (CIEMAT)"
 
-#: .\icts\templates\icts\home.html:169
+#: .\icts\templates\icts\home.html:169 .\templates\base_icts.html:383
 msgid "Entrar"
 msgstr "Sign in"
 
@@ -1153,8 +2250,8 @@ msgid ""
 "Haz de iones de Ga focalizado para micromecanizado de precisión y cortes de "
 "muestra localizados."
 msgstr ""
-"Focused Ga ion beam for precision micromachining and localized sample "
-"cross-sections."
+"Focused Ga ion beam for precision micromachining and localized sample cross-"
+"sections."
 
 #: .\icts\templates\icts\home.html:221
 msgid "Espectrometría de masas de iones secundarios"
@@ -1240,6 +2337,7 @@ msgstr ""
 "interest for fusion."
 
 #: .\icts\templates\icts\home.html:291
+#: .\icts\templates\icts\proposal_form.html:1099
 msgid "OLMAT"
 msgstr "OLMAT"
 
@@ -1251,8 +2349,7 @@ msgstr ""
 "Optimization of advanced liquid-metal targets for HHF tests with NBI beam "
 "and laser."
 
-#: .\icts\templates\icts\home.html:306
-#: .\templates\portal\home.html:299
+#: .\icts\templates\icts\home.html:306 .\templates\portal\home.html:299
 msgid "¿Necesitas ayuda?"
 msgstr "Need help?"
 
@@ -1268,22 +2365,13 @@ msgstr ""
 msgid "Procedimiento de Evaluación"
 msgstr "Evaluation Procedure"
 
-#: .\icts\templates\icts\home.html:318
-#: .\templates\portal\home.html:316
+#: .\icts\templates\icts\home.html:318 .\templates\portal\home.html:318
 msgid "FAQ"
 msgstr "FAQ"
 
-#: .\icts\templates\icts\proposal_form.html:1001
-msgid "FIB"
-msgstr "FIB"
-
-#: .\icts\templates\icts\proposal_form.html:1029
-msgid "SIMS"
-msgstr "SIMS"
-
 #: .\icts\templates\icts\my_proposals.html:3
-#: .\icts\templates\icts\my_proposals.html:4
-#: .\templates\icts\user_dashboard.html:20
+#: .\icts\templates\icts\my_proposals.html:4 .\templates\base_icts.html:198
+#: .\templates\icts\user_dashboard.html:21
 msgid "Mis propuestas"
 msgstr "My proposals"
 
@@ -1293,12 +2381,13 @@ msgstr "List"
 
 #: .\icts\templates\icts\my_proposals.html:10
 #: .\icts\templates\icts\proposal_form.html:3
-#: .\icts\templates\icts\proposal_form.html:851
-#: .\templates\icts\user_dashboard.html:19
+#: .\icts\templates\icts\proposal_form.html:851 .\templates\base_icts.html:202
+#: .\templates\icts\user_dashboard.html:20
 msgid "Nueva propuesta"
 msgstr "New proposal"
 
 #: .\icts\templates\icts\my_proposals.html:20
+#: .\icts\templates\icts\reviewer_dashboard_new.html:35
 msgid "Borrador"
 msgstr "Draft"
 
@@ -1309,17 +2398,17 @@ msgid "En Revisi▋"
 msgstr "In review"
 
 #: .\icts\templates\icts\my_proposals.html:22
-#: .\icts\templates\icts\reviewer_dashboard_new.html:34
+#: .\icts\templates\icts\reviewer_dashboard_new.html:35
 msgid "Cambios solicitados"
 msgstr "Changes requested"
 
 #: .\icts\templates\icts\my_proposals.html:23
-#: .\icts\templates\icts\reviewer_dashboard_new.html:34
+#: .\icts\templates\icts\reviewer_dashboard_new.html:35
 msgid "Aprobada"
 msgstr "Approved"
 
 #: .\icts\templates\icts\my_proposals.html:24
-#: .\icts\templates\icts\reviewer_dashboard_new.html:34
+#: .\icts\templates\icts\reviewer_dashboard_new.html:35
 msgid "Rechazada"
 msgstr "Rejected"
 
@@ -1328,74 +2417,552 @@ msgid "Creada"
 msgstr "Created"
 
 #: .\icts\templates\icts\my_proposals.html:63
-#: .\icts\templates\icts\reviewer_dashboard_new.html:43
-#: .\icts\templates\icts\reviewer_inbox.html:23
-#: .\icts\templates\icts\reviewer_inbox.html:47
-#: .\templates\icts\user_dashboard.html:50
-#: .\templates\icts\user_dashboard.html:71
+#: .\icts\templates\icts\reviewer_dashboard_new.html:44
+#: .\templates\icts\user_dashboard.html:53
+#: .\templates\icts\user_dashboard.html:76
 msgid "Ver"
 msgstr "View"
 
 #: .\icts\templates\icts\my_proposals.html:65
-#: .\templates\icts\user_dashboard.html:49
+#: .\templates\icts\user_dashboard.html:52
 msgid "Editar"
 msgstr "Edit"
 
-#: .\icts\templates\icts\my_proposals.html:67
-msgid "Eliminar"
-msgstr "Delete"
+#: .\icts\templates\icts\proposal_detail.html:3
+#, fuzzy
+#| msgid "Evaluación de Propuesta"
+msgid "Detalle de propuesta"
+msgstr "Proposal creation"
+
+#: .\icts\templates\icts\proposal_detail.html:383
+msgid "Confirmo que no añadiré más texto en Alcance."
+msgstr "I confirm that I will not add more text in Scope."
+
+#: .\icts\templates\icts\proposal_detail.html:390
+msgid "Confirmo que no añadiré más texto en Experimentos previos."
+msgstr "I confirm that I will not add more text in Previous Experiments."
+
+#: .\icts\templates\icts\proposal_detail.html:397
+msgid "Confirmo que no añadiré más texto en Referencias."
+msgstr "I confirm that I will not add more text in References."
 
 #: .\icts\templates\icts\proposal_form.html:3
 msgid "Editar propuesta"
 msgstr "Edit proposal"
 
-#: .\icts\templates\icts\proposal_form.html:1235
-#: .\icts\templates\icts\review_form.html:128
+#: .\icts\templates\icts\proposal_form.html:853
+msgid ""
+"Completa el formulario para solicitar acceso a las instalaciones ICTS. "
+"Puedes guardar como borrador y continuar más tarde."
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:863
+msgid "Revisa los errores del formulario:"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:871
+msgid "Paso 1: Información del Proyecto"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:875
+#, fuzzy
+#| msgid "Solicitante"
+msgid "Solicitud nueva"
+msgstr "Applicant"
+
+#: .\icts\templates\icts\proposal_form.html:877
+msgid ""
+"Marca esta opción si es una nueva solicitud. Desmárcala solo si quieres "
+"reutilizar una propuesta aprobada."
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:882
+msgid "Solicitud aprobada anterior (si no es nueva):"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:889
+msgid "Código de acceso actual:"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:895
+#, fuzzy
+#| msgid "Título del proyecto."
+msgid "Título del proyecto *"
+msgstr "Project title."
+
+#: .\icts\templates\icts\proposal_form.html:896
+#, fuzzy
+#| msgid "Título del proyecto."
+msgid "Título del proyecto"
+msgstr "Project title."
+
+#: .\icts\templates\icts\proposal_form.html:902
+#, fuzzy
+#| msgid "Descripción de muestras"
+msgid "Descripción breve"
+msgstr "Sample description"
+
+#: .\icts\templates\icts\proposal_form.html:903
+msgid "Describe brevemente tu proyecto"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:913
+msgid "Paso 2: Datos del Solicitante"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:917
+msgid "El solicitante es distinto del usuario registrado"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:919
+msgid "Cuando está desmarcado, se usan los datos del usuario registrado."
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:925
+msgid "Usando tus datos registrados:"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:927
+msgid "Contacto"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:928
+#, fuzzy
+#| msgid "Email:"
+msgid "Email"
+msgstr "Email:"
+
+#: .\icts\templates\icts\proposal_form.html:936
+msgid "Centro/Institución *"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:937
+#: .\icts\templates\icts\proposal_form.html:1190
+#: .\icts\templates\icts\proposal_form.html:1507
+#, fuzzy
+#| msgid "Servicio de investigación"
+msgid "Centro o institución"
+msgstr "Research service"
+
+#: .\icts\templates\icts\proposal_form.html:942
+#, fuzzy
+#| msgid "Perfilómetro de Contacto"
+msgid "Persona de contacto *"
+msgstr "Contact Profilometer"
+
+#: .\icts\templates\icts\proposal_form.html:943
+#, fuzzy
+#| msgid "Perfilómetro de Contacto"
+msgid "Persona de contacto"
+msgstr "Contact Profilometer"
+
+#: .\icts\templates\icts\proposal_form.html:948
+#, fuzzy
+#| msgid "Email:"
+msgid "Email *"
+msgstr "Email:"
+
+#: .\icts\templates\icts\proposal_form.html:949
+msgid "correo@ejemplo.com"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:954
+#: .\icts\templates\icts\proposal_form.html:955
+#, fuzzy
+#| msgid "Teléfono:"
+msgid "Teléfono"
+msgstr "Phone:"
+
+#: .\icts\templates\icts\proposal_form.html:965
+msgid "Código de acceso (previsualización)"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:968
+msgid "Se genera al enviar, según las técnicas seleccionadas."
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:971
+msgid "Esta vista previa es orientativa para tu borrador."
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:978
+msgid "Paso 3: Técnicas e Instalaciones"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:980
+msgid "Selecciona las técnicas que necesitas y completa su configuración."
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:987
+msgid "SEM/EDX"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:988
+#, fuzzy
+#| msgid "Microscopio Electrónico SEM-FIB"
+msgid "Microscopía electrónica de barrido"
+msgstr "SEM-FIB Electron Microscope"
+
+#: .\icts\templates\icts\proposal_form.html:992
+#: .\icts\templates\icts\proposal_form.html:1006
+#: .\icts\templates\icts\proposal_form.html:1020
+#: .\icts\templates\icts\proposal_form.html:1034
+#: .\icts\templates\icts\proposal_form.html:1048
+#: .\icts\templates\icts\proposal_form.html:1062
+#: .\icts\templates\icts\proposal_form.html:1076
+msgid "Ir a tarjeta"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1001
+msgid "FIB"
+msgstr "FIB"
+
+#: .\icts\templates\icts\proposal_form.html:1002
+msgid "Focused Ion Beam"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1015 .\templates\base_icts.html:317
+msgid "Ion Implanter"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1016
+#, fuzzy
+#| msgid "Investigación en Fusión"
+msgid "Implantación iónica"
+msgstr "Fusion Research"
+
+#: .\icts\templates\icts\proposal_form.html:1029 .\templates\base_icts.html:341
+msgid "SIMS"
+msgstr "SIMS"
+
+#: .\icts\templates\icts\proposal_form.html:1030
+#, fuzzy
+#| msgid "Espectro de masas"
+msgid "Espectrometría de masas"
+msgstr "Mass spectrum"
+
+#: .\icts\templates\icts\proposal_form.html:1043
+msgid "Metrología de superficies ópticas 3D"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1044
+#, fuzzy
+#| msgid "Espectroscopia óptica"
+msgid "Metrología óptica 3D"
+msgstr "Optical spectroscopy"
+
+#: .\icts\templates\icts\proposal_form.html:1057 .\templates\base_icts.html:218
+msgid "SIGMA Optics"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1058
+#, fuzzy
+#| msgid "Características Técnicas"
+msgid "Caracterización óptica"
+msgstr "Technical Specifications"
+
+#: .\icts\templates\icts\proposal_form.html:1071
+msgid "VDG"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1072
+#, fuzzy
+#| msgid "Acelerador Van de Graaff"
+msgid "Generador Van de Graaff"
+msgstr "Van de Graaff Accelerator"
+
+#: .\icts\templates\icts\proposal_form.html:1085
+msgid "Profilometer"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1086
+#, fuzzy
+#| msgid "Evaluación de Propuesta"
+msgid "Medición de perfiles"
+msgstr "Proposal creation"
+
+#: .\icts\templates\icts\proposal_form.html:1090
+#: .\icts\templates\icts\proposal_form.html:1104
+msgid "Configurar"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1100
+#, fuzzy
+#| msgid "Evaluaciones pendientes"
+msgid "Flujo independiente"
+msgstr "Pending reviews"
+
+#: .\icts\templates\icts\proposal_form.html:1110
+#, fuzzy
+#| msgid "Solicitud de muestras y configuración por técnica"
+msgid "Configuración por técnica"
+msgstr "Sample request and configuration by technique"
+
+#: .\icts\templates\icts\proposal_form.html:1111
+msgid "Al seleccionar una técnica, aparecerá su formulario aquí."
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1118
+msgid "Paso 4: Proyecto de financiación"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1122
+#: .\icts\templates\icts\proposal_form.html:1123
+#, fuzzy
+#| msgid "Título del proyecto."
+msgid "Nombre del proyecto"
+msgstr "Project title."
+
+#: .\icts\templates\icts\proposal_form.html:1128
+#, fuzzy
+#| msgid "Título del proyecto."
+msgid "Tipo de proyecto"
+msgstr "Project title."
+
+#: .\icts\templates\icts\proposal_form.html:1131
+msgid "(International, European, National, Regional)"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1134
+#: .\icts\templates\icts\proposal_form.html:1135
+#, fuzzy
+#| msgid "Financiación"
+msgid "Fuente de financiación"
+msgstr "Funding"
+
+#: .\icts\templates\icts\proposal_form.html:1140
+msgid "Año de inicio"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1145
+msgid "Año de fin"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1159
+msgid "Paso 5: Participantes"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1162
+msgid "¿Hay más participantes además del solicitante?"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1165
+msgid "Sí"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1168
+msgid "Añadir Participante"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1179
+#: .\icts\templates\icts\review_form.html:19
+msgid "Solicitante"
+msgstr "Applicant"
+
+#: .\icts\templates\icts\proposal_form.html:1183
+#: .\icts\templates\icts\proposal_form.html:1502
+msgid "Nombre completo *"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1184
+#: .\icts\templates\icts\proposal_form.html:1503
+msgid "Nombre completo"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1189
+#: .\icts\templates\icts\proposal_form.html:1506
+msgid "Centro/Afiliación"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1195
+#: .\icts\templates\icts\proposal_form.html:1510
+#, fuzzy
+#| msgid "Fabricación"
+msgid "Dirección"
+msgstr "Fabrication"
+
+#: .\icts\templates\icts\proposal_form.html:1196
+#: .\icts\templates\icts\proposal_form.html:1511
+#, fuzzy
+#| msgid "Evaluación de Propuesta"
+msgid "Dirección completa"
+msgstr "Proposal creation"
+
+#: .\icts\templates\icts\proposal_form.html:1203
+msgid "Eliminar este participante"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1213
+msgid "Paso 6: Información Adicional"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1216
+msgid "Experimentos previos"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1217
+msgid "Describe experimentos previos relacionados con tu proyecto"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1222
+msgid "Referencias"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1223
+msgid "Referencias bibliográficas relevantes"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1231
+msgid "Paso 7: Archivos Adjuntos"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1240
+msgid "Nombre del documento"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1241
+msgid "Nombre descriptivo del documento"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1246
+msgid "Archivo"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1250
+msgid "Archivo actual:"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1261
+msgid "Eliminar este archivo"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1272
 msgid "Guardar Borrador"
 msgstr "Save Draft"
 
-#: .\icts\templates\icts\proposal_form.html:1237
-#: .\icts\templates\icts\proposal_form.html:1239
-#: .\icts\templates\icts\proposal_form.html:1266
-#: .\icts\templates\icts\proposal_form.html:1289
-#: .\icts\templates\icts\proposal_form.html:1312
-#: .\icts\templates\icts\proposal_form.html:1335
-#: .\icts\templates\icts\proposal_form.html:1358
-#: .\icts\templates\icts\proposal_form.html:1381
-#: .\icts\templates\icts\proposal_form.html:1404
-#: .\icts\templates\icts\proposal_form.html:1427
+#: .\icts\templates\icts\proposal_form.html:1274
+#: .\icts\templates\icts\proposal_form.html:1276
+#: .\icts\templates\icts\proposal_form.html:1303
+#: .\icts\templates\icts\proposal_form.html:1326
+#: .\icts\templates\icts\proposal_form.html:1349
+#: .\icts\templates\icts\proposal_form.html:1372
+#: .\icts\templates\icts\proposal_form.html:1395
+#: .\icts\templates\icts\proposal_form.html:1418
+#: .\icts\templates\icts\proposal_form.html:1441
+#: .\icts\templates\icts\proposal_form.html:1464
+#: .\icts\templates\icts\proposal_form.html:1487
 msgid "Cancelar"
 msgstr "Cancel"
 
-#: .\icts\templates\icts\proposal_form.html:1269
-#: .\icts\templates\icts\proposal_form.html:1292
-#: .\icts\templates\icts\proposal_form.html:1315
-#: .\icts\templates\icts\proposal_form.html:1338
-#: .\icts\templates\icts\proposal_form.html:1361
-#: .\icts\templates\icts\proposal_form.html:1384
-#: .\icts\templates\icts\proposal_form.html:1407
-#: .\icts\templates\icts\proposal_form.html:1430
+#: .\icts\templates\icts\proposal_form.html:1293
+msgid "Configuración SEM/EDX"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1306
+#: .\icts\templates\icts\proposal_form.html:1329
+#: .\icts\templates\icts\proposal_form.html:1352
+#: .\icts\templates\icts\proposal_form.html:1375
+#: .\icts\templates\icts\proposal_form.html:1398
+#: .\icts\templates\icts\proposal_form.html:1421
+#: .\icts\templates\icts\proposal_form.html:1444
+#: .\icts\templates\icts\proposal_form.html:1467
+#: .\icts\templates\icts\proposal_form.html:1490
 msgid "Guardar"
 msgstr "Save"
+
+#: .\icts\templates\icts\proposal_form.html:1316
+#, fuzzy
+#| msgid "Información"
+msgid "Configuración FIB"
+msgstr "Information"
+
+#: .\icts\templates\icts\proposal_form.html:1339
+msgid "Configuración Ion Implanter"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1362
+msgid "Configuración SIMS"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1385
+msgid "Configuración Metrología de superficies ópticas 3D"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1408
+msgid "Configuración SIGMA Optics"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1431
+#, fuzzy
+#| msgid "Información"
+msgid "Configuración VDG"
+msgstr "Information"
+
+#: .\icts\templates\icts\proposal_form.html:1454
+msgid "Configuración Profilometer"
+msgstr ""
+
+#: .\icts\templates\icts\proposal_form.html:1477
+msgid "Configuración OLMAT"
+msgstr ""
+
+#: .\icts\templates\icts\responsable_review_messages.html:3
+#: .\icts\templates\icts\responsable_review_messages.html:4
+#, fuzzy
+#| msgid "Mis revisiones"
+msgid "Mensajes revisores"
+msgstr "My reviews"
+
+#: .\icts\templates\icts\responsable_review_messages.html:7
+#: .\icts\templates\icts\review_form.html:7
+#: .\icts\templates\icts\reviewer_dashboard_new.html:7
+#: .\templates\icts\user_dashboard.html:8
+msgid "(Sin título)"
+msgstr "(Untitled)"
+
+#: .\icts\templates\icts\responsable_review_messages.html:9
+#, fuzzy
+#| msgid "Modos de medición"
+msgid "Solicitudes de modificación"
+msgstr "Measurement modes"
+
+#: .\icts\templates\icts\responsable_review_messages.html:16
+#, fuzzy, python-format
+#| msgid "ID #%(proposal_id)s - %(created_at)s"
+msgid ""
+"\n"
+"              ID #%(proposal_id)s - %(reviewer)s - %(created_at)s\n"
+"            "
+msgstr "ID #%(proposal_id)s - %(created_at)s"
+
+#: .\icts\templates\icts\responsable_review_messages.html:23
+#, fuzzy
+#| msgid "Mis propuestas"
+msgid "Ver propuesta"
+msgstr "proposal"
+
+#: .\icts\templates\icts\responsable_review_messages.html:26
+msgid "Approve"
+msgstr ""
+
+#: .\icts\templates\icts\responsable_review_messages.html:30
+msgid "Deny"
+msgstr ""
+
+#: .\icts\templates\icts\responsable_review_messages.html:35
+#, fuzzy
+#| msgid "No hay propuestas pendientes."
+msgid "No hay solicitudes pendientes."
+msgstr "No pending proposals."
 
 #: .\icts\templates\icts\review_form.html:3
 #: .\icts\templates\icts\review_form.html:4
 msgid "Revisar propuesta"
 msgstr "Review proposal"
 
-#: .\icts\templates\icts\review_form.html:7
-#: .\icts\templates\icts\reviewer_dashboard_new.html:7
-#: .\icts\templates\icts\reviewer_inbox.html:7
-msgid "(Sin título)"
-msgstr "(Untitled)"
-
 #: .\icts\templates\icts\review_form.html:11
 msgid "Evaluación de Propuesta"
 msgstr "Proposal Evaluation"
-
-#: .\icts\templates\icts\review_form.html:19
-msgid "Solicitante"
-msgstr "Applicant"
 
 #: .\icts\templates\icts\review_form.html:22
 msgid "ID"
@@ -1531,19 +3098,35 @@ msgstr ""
 "Provide detailed comments about your evaluation, including strengths, "
 "weaknesses, and recommendations..."
 
-#: .\icts\templates\icts\review_form.html:125
-msgid "Enviar Evaluación"
-msgstr "Submit Review"
+#: .\icts\templates\icts\review_form.html:124
+#, fuzzy
+#| msgid "Evaluación de Propuesta"
+msgid "Evaluación enviada; bloqueada."
+msgstr "Proposal Evaluation"
 
-#: .\icts\templates\icts\review_form.html:131
+#: .\icts\templates\icts\review_form.html:127
+#: .\icts\templates\icts\review_form.html:139
 msgid "Volver a la bandeja"
 msgstr "Back to inbox"
+
+#: .\icts\templates\icts\review_form.html:130
+#, fuzzy
+#| msgid "Revisar propuesta"
+msgid "Ver propuesta completa"
+msgstr "Review proposal"
+
+#: .\icts\templates\icts\review_form.html:136
+#, fuzzy
+#| msgid "Enviar Evaluación"
+msgid "Guardar evaluación"
+msgstr "Submit Review"
 
 #: .\icts\templates\icts\reviewer_dashboard_new.html:3
 msgid "Dashboard del Revisor"
 msgstr "Reviewer Dashboard"
 
 #: .\icts\templates\icts\reviewer_dashboard_new.html:4
+#: .\templates\base_icts.html:226
 msgid "Mi panel revisor"
 msgstr "Reviewer dashboard"
 
@@ -1556,96 +3139,156 @@ msgid "Pendientes"
 msgstr "Pending"
 
 #: .\icts\templates\icts\reviewer_dashboard_new.html:12
+#: .\icts\templates\icts\user_dashboard.html:31
+msgid "Enviadas"
+msgstr "Submitted"
+
+#: .\icts\templates\icts\reviewer_dashboard_new.html:13
 msgid "Completadas"
 msgstr "Completed"
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:13
+#: .\icts\templates\icts\reviewer_dashboard_new.html:14
 msgid "Aprobadas"
 msgstr "Approved"
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:14
+#: .\icts\templates\icts\reviewer_dashboard_new.html:15
 msgid "Rechazadas"
 msgstr "Rejected"
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:16
+#: .\icts\templates\icts\reviewer_dashboard_new.html:17
 msgid ""
 "Para ver tus evaluaciones pendientes, usa el menú Evaluaciones pendientes."
 msgstr "To view your pending reviews, use the Pending reviews menu."
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:17
+#: .\icts\templates\icts\reviewer_dashboard_new.html:18
 msgid "Para consultar el historial completo, usa Historial de evaluaciones."
 msgstr "To see the full history, use Review history."
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:18
+#: .\icts\templates\icts\reviewer_dashboard_new.html:19
 msgid "Ir a Evaluaciones pendientes"
 msgstr "Go to Pending reviews"
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:18
+#: .\icts\templates\icts\reviewer_dashboard_new.html:19
 msgid "Ir al Historial"
 msgstr "Go to History"
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:23
+#: .\icts\templates\icts\reviewer_dashboard_new.html:24
 msgid "Evaluaciones recientes"
 msgstr "Recent reviews"
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:34
+#: .\icts\templates\icts\reviewer_dashboard_new.html:35
 msgid "Pendiente"
 msgstr "Pending"
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:41
-#: .\icts\templates\icts\reviewer_inbox.html:22
-#: .\icts\templates\icts\reviewer_inbox.html:46
+#: .\icts\templates\icts\reviewer_dashboard_new.html:42
 msgid "Evaluar"
 msgstr "Review"
 
-#: .\icts\templates\icts\reviewer_dashboard_new.html:49
+#: .\icts\templates\icts\reviewer_dashboard_new.html:50
 msgid "No hay evaluaciones recientes"
 msgstr "No recent reviews"
 
 #: .\icts\templates\icts\reviewer_inbox.html:3
-#: .\icts\templates\icts\reviewer_inbox.html:4
+#: .\icts\templates\icts\reviewer_inbox.html:4 .\templates\base_icts.html:230
 msgid "Evaluaciones pendientes"
 msgstr "Pending reviews"
 
+#: .\icts\templates\icts\reviewer_inbox.html:7
+#, fuzzy
+#| msgid "(Sin título)"
+msgid "(Sin titulo)"
+msgstr "(Untitled)"
+
 #: .\icts\templates\icts\reviewer_inbox.html:9
-msgid "Propuestas enviadas"
-msgstr "Submitted proposals"
+#, fuzzy
+#| msgid "Pendientes"
+msgid "Pending reviews"
+msgstr "Pending"
 
 #: .\icts\templates\icts\reviewer_inbox.html:16
 #, fuzzy, python-format
 #| msgid "ID #%(proposal_id)s - %(created_at)s"
 msgid ""
-"\\n"
-"              ID #%(proposal_id)s - %(created_at)s\\n"
+"\n"
+"              ID #%(proposal_id)s - %(created_at)s\n"
 "            "
 msgstr "ID #%(proposal_id)s - %(created_at)s"
 
-#: .\icts\templates\icts\reviewer_inbox.html:27
+#: .\icts\templates\icts\reviewer_inbox.html:22
+msgid "Review"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:23
+#: .\icts\templates\icts\reviewer_inbox.html:52
+#: .\icts\templates\icts\reviewer_inbox.html:84
+msgid "View"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:25
+msgid "¿Enviar evaluación? No podrás modificarla."
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:33
 msgid "No hay propuestas pendientes."
 msgstr "No pending proposals."
 
-#: .\icts\templates\icts\reviewer_inbox.html:33
-msgid "Mis revisiones"
-msgstr "My reviews"
+#: .\icts\templates\icts\reviewer_inbox.html:39
+msgid "Submitted reviews"
+msgstr ""
 
-#: .\icts\templates\icts\reviewer_inbox.html:40
+#: .\icts\templates\icts\reviewer_inbox.html:46
+#, fuzzy, python-format
+#| msgid "ID #%(proposal_id)s - %(created_at)s"
+msgid ""
+"\n"
+"              ID #%(proposal_id)s\n"
+"            "
+msgstr "ID #%(proposal_id)s - %(created_at)s"
+
+#: .\icts\templates\icts\reviewer_inbox.html:54
+msgid "Modify requested"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:59
+msgid "Modify"
+msgstr ""
+
+#: .\icts\templates\icts\reviewer_inbox.html:65
+#, fuzzy
+#| msgid "No hay evaluaciones recientes"
+msgid "No hay evaluaciones enviadas."
+msgstr "No recent reviews"
+
+#: .\icts\templates\icts\reviewer_inbox.html:71
+#, fuzzy
+#| msgid "Completadas"
+msgid "Completed"
+msgstr "Completed"
+
+#: .\icts\templates\icts\reviewer_inbox.html:78
 #, fuzzy, python-format
 #| msgid "Estado: %(decision)s - ID #%(proposal_id)s"
 msgid ""
-"\\n"
-"              Estado: %(decision)s - ID #%(proposal_id)s\\n"
+"\n"
+"              Estado final: %(status)s - ID #%(proposal_id)s\n"
 "            "
 msgstr "Status: %(decision)s - ID #%(proposal_id)s"
 
-#: .\icts\templates\icts\reviewer_inbox.html:51
-msgid "Aún no has emitido revisiones."
-msgstr "You haven't submitted any reviews yet."
+#: .\icts\templates\icts\reviewer_inbox.html:88
+#, fuzzy
+#| msgid "No hay evaluaciones recientes"
+msgid "No hay evaluaciones completadas."
+msgstr "No recent reviews"
+
+#: .\icts\templates\icts\reviewer_inbox.html:115
+msgid "Mensaje para el responsable:"
+msgstr ""
 
 #: .\icts\templates\icts\reviewer_mailbox.html:3
 msgid "Bandeja de entrada - Revisor"
 msgstr "Inbox - Reviewer"
 
-#: .\icts\templates\icts\reviewer_mailbox.html:4
+#: .\icts\templates\icts\reviewer_mailbox.html:4 .\templates\base_icts.html:238
 msgid "Bandeja de entrada"
 msgstr "Inbox"
 
@@ -1692,18 +3335,14 @@ msgid "Mi Panel de Usuario"
 msgstr "My User Dashboard"
 
 #: .\icts\templates\icts\user_dashboard.html:15
-#: .\templates\icts\user_dashboard.html:32
-#: .\templates\icts\user_dashboard.html:39
+#: .\templates\icts\user_dashboard.html:33
+#: .\templates\icts\user_dashboard.html:40
 msgid "Borradores"
 msgstr "Drafts"
 
-#: .\icts\templates\icts\user_dashboard.html:31
-msgid "Enviadas"
-msgstr "Submitted"
-
 #: .\icts\templates\icts\user_dashboard.html:39
-#: .\templates\icts\user_dashboard.html:34
-#: .\templates\icts\user_dashboard.html:82
+#: .\templates\icts\user_dashboard.html:35
+#: .\templates\icts\user_dashboard.html:87
 msgid "Evaluadas"
 msgstr "Reviewed"
 
@@ -1727,6 +3366,15 @@ msgstr "View All"
 msgid "Actividad por Mes"
 msgstr "Activity by Month"
 
+#: .\icts\views.py:410 .\icts\views.py:414
+msgid "Profilometer: number of samples must be an integer >= 1."
+msgstr ""
+
+#: .\icts\views.py:422
+#, python-format
+msgid "Profilometer: sample %(index)s requires ID and name."
+msgstr ""
+
 #: .\templates\accounts\login_dtf.html:6 .\templates\accounts\login_dtf.html:7
 msgid "Iniciar sesión – SIGMA DTF"
 msgstr "Sign in – SIGMA DTF"
@@ -1745,7 +3393,7 @@ msgstr "Password"
 
 #: .\templates\accounts\login_dtf.html:66
 #: .\templates\accounts\login_icts.html:28
-#: .\templates\accounts\login_icts.html:59
+#: .\templates\accounts\login_icts.html:59 .\templates\icts\register.html:362
 #, fuzzy
 #| msgid "Investigación en Fusión"
 msgid "Iniciar sesión"
@@ -1762,7 +3410,7 @@ msgid "Registrar nuevo usuario"
 msgstr "Register new user"
 
 #: .\templates\accounts\login_dtf.html:73
-#: .\templates\accounts\login_icts.html:68
+#: .\templates\accounts\login_icts.html:68 .\templates\icts\register.html:374
 #, fuzzy
 #| msgid "Ir al Historial"
 msgid "Volver al Portal"
@@ -1774,412 +3422,306 @@ msgstr "Back to Portal"
 msgid "Iniciar sesión · SIGMA ICTS"
 msgstr "Sign in · SIGMA ICTS"
 
-#: .\templates\base_icts.html:341
+#: .\templates\base_icts.html:168
+msgid "Menú lateral ICTS"
+msgstr ""
+
+#: .\templates\base_icts.html:186 .\templates\base_icts.html:379
+msgid "Portal SIGMA"
+msgstr ""
+
+#: .\templates\base_icts.html:188
+#, fuzzy
+#| msgid "Enviar Evaluación"
+msgid "Navegación"
+msgstr "Evaluation"
+
+#: .\templates\base_icts.html:207
+#, fuzzy
+#| msgid "Perfilómetro"
+msgid "Perfilometro"
+msgstr "Profilometer"
+
+#: .\templates\base_icts.html:210
+#, fuzzy
+#| msgid "Perfilómetro"
+msgid "SIGMA Perfilometro"
+msgstr "Profilometer"
+
+#: .\templates\base_icts.html:215
+msgid "Laboratorios (ICTS)"
+msgstr ""
+
+#: .\templates\base_icts.html:234
+msgid "Historial de evaluaciones"
+msgstr ""
+
+#: .\templates\base_icts.html:245
+#, fuzzy
+#| msgid "Responsable"
+msgid "Panel responsable"
+msgstr "Responsible"
+
+#: .\templates\base_icts.html:252
+msgid "Panel manager"
+msgstr ""
+
+#: .\templates\base_icts.html:257
+msgid "LO3"
+msgstr ""
+
+#: .\templates\base_icts.html:260
+msgid "Portal LO3"
+msgstr ""
+
+#: .\templates\base_icts.html:264 .\templates\base_icts.html:304
+#: .\templates\base_icts.html:320
+#, fuzzy
+#| msgid "Modos de análisis"
+msgid "Solicitudes de análisis"
+msgstr "Analysis modes"
+
+#: .\templates\base_icts.html:268 .\templates\base_icts.html:324
+#, fuzzy
+#| msgid "Estado"
+msgid "Resultados"
+msgstr "Status"
+
+#: .\templates\base_icts.html:272 .\templates\base_icts.html:328
+msgid "Comunicaciones"
+msgstr ""
+
+#: .\templates\base_icts.html:276 .\templates\base_icts.html:308
+msgid "Fichas de equipos"
+msgstr ""
+
+#: .\templates\base_icts.html:280
+msgid "Calibraciones"
+msgstr ""
+
+#: .\templates\base_icts.html:284
+#, fuzzy
+#| msgid "Materiales objetivo"
+msgid "Materiales de referencia"
+msgstr "Target materials"
+
+#: .\templates\base_icts.html:288
+msgid "Incidencias"
+msgstr ""
+
+#: .\templates\base_icts.html:292
+msgid "Habilitaciones"
+msgstr ""
+
+#: .\templates\base_icts.html:297
+msgid "L07 (VDG)"
+msgstr ""
+
+#: .\templates\base_icts.html:300
+msgid "Portal L07 (VDG)"
+msgstr ""
+
+#: .\templates\base_icts.html:312
+#, fuzzy
+#| msgid "Entorno de ensayo"
+msgid "Control de items"
+msgstr "Test environment"
+
+#: .\templates\base_icts.html:336
+msgid "SIGMA SEM/FIB"
+msgstr ""
+
+#: .\templates\base_icts.html:344
+msgid "SIGMA SIMS"
+msgstr ""
+
+#: .\templates\base_icts.html:348
+#, fuzzy
+#| msgid "registro"
+msgid "Registro"
+msgstr "registration"
+
+#: .\templates\base_icts.html:352
+msgid "Indicadores"
+msgstr ""
+
+#: .\templates\base_icts.html:356
+msgid "Documentaci¢n"
+msgstr ""
+
+#: .\templates\base_icts.html:363
+#, fuzzy
+#| msgid "Financiación"
+msgid "Administración"
+msgstr "Funding"
+
+#: .\templates\base_icts.html:367
+msgid "Recursos"
+msgstr ""
+
+#: .\templates\base_icts.html:370
+#, fuzzy
+#| msgid "Procedimiento de Evaluación"
+msgid "Procedimiento de evaluación de propuestas"
+msgstr "Evaluation Procedure"
+
+#: .\templates\base_icts.html:374
+msgid "FAQ Revisor"
+msgstr ""
+
+#: .\templates\base_icts.html:387
+#, fuzzy
+#| msgid "Registro y acceso"
+msgid "Registrarse"
+msgstr "Registration and access"
+
+#: .\templates\base_icts.html:391
+msgid "FAQ ICTS"
+msgstr ""
+
+#: .\templates\base_icts.html:421
 msgid "Idioma"
 msgstr "Language"
 
-#: .\templates\icts\user_dashboard.html:12
+#: .\templates\base_icts.html:424 .\templates\portal\home.html:180
+msgid "Español"
+msgstr "Spanish"
+
+#: .\templates\base_icts.html:428 .\templates\portal\home.html:184
+msgid "Inglés"
+msgstr "English"
+
+#: .\templates\base_icts.html:432 .\templates\portal\home.html:188
+msgid "Francés"
+msgstr "French"
+
+#: .\templates\base_icts.html:456
+msgid "CIEMAT – Infraestructura Científica y Tecnológica Singular - ICTS"
+msgstr ""
+
+#: .\templates\icts\register.html:4
+#, fuzzy
+#| msgid "Entrar en SIGMA ICTS"
+msgid "Registro | ΣSIGMA ICTS"
+msgstr "Go to Σ‑SIGMA ICTS"
+
+#: .\templates\icts\register.html:230
+#, fuzzy
+#| msgid "Entrar en SIGMA ICTS"
+msgid "Crear cuenta SIGMA ICTS"
+msgstr "Enter SIGMA ICTS"
+
+#: .\templates\icts\register.html:231
+msgid ""
+"Completa el formulario para solicitar acceso. Tu cuenta será revisada por un "
+"responsable en un plazo máximo de 48 horas."
+msgstr ""
+
+#: .\templates\icts\register.html:244
+#, fuzzy
+#| msgid "Registro y acceso"
+msgid "Datos de acceso"
+msgstr "Registration and access"
+
+#: .\templates\icts\register.html:280
+#, fuzzy
+#| msgid "Información requerida"
+msgid "Información personal"
+msgstr "Required information"
+
+#: .\templates\icts\register.html:299
+msgid "Siglas sugeridas"
+msgstr ""
+
+#: .\templates\icts\register.html:304
+msgid "Vista previa no editable; se asignan automáticamente."
+msgstr ""
+
+#: .\templates\icts\register.html:308
+#, fuzzy
+#| msgid "Corriente"
+msgid "Center"
+msgstr "Current"
+
+#: .\templates\icts\register.html:333
+msgid "Datos CIEMAT"
+msgstr ""
+
+#: .\templates\icts\register.html:345
+msgid "Si tu correo es @ciemat.es este campo es obligatorio."
+msgstr ""
+
+#: .\templates\icts\register.html:359
+#, fuzzy
+#| msgid "Crear Cuenta"
+msgid "Crear cuenta"
+msgstr "Create Account"
+
+#: .\templates\icts\register.html:367
+msgid "Importante:"
+msgstr ""
+
+#: .\templates\icts\register.html:367
+msgid ""
+"Tu cuenta será revisada por un responsable en un plazo máximo de 48 horas. "
+"Recibirás un correo cuando sea activada."
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:13
 #, fuzzy, python-format
 #| msgid "Bienvenido/a %(name)s"
 msgid ""
-"\\n"
-"          Bienvenido/a %(name)s\\n"
+"\n"
+"          Bienvenido/a %(name)s\n"
 "        "
 msgstr "Welcome %(name)s"
 
-#: .\templates\icts\user_dashboard.html:16
+#: .\templates\icts\user_dashboard.html:17
 msgid "Desde aquí puedes gestionar tus propuestas ICTS."
 msgstr "From here you can manage your ICTS proposals."
 
-#: .\templates\icts\user_dashboard.html:25
+#: .\templates\icts\user_dashboard.html:26
 #, python-format
 msgid "Rol: %(role)s"
 msgstr "Role: %(role)s"
 
-#: .\templates\icts\user_dashboard.html:33
-#: .\templates\icts\user_dashboard.html:61
+#: .\templates\icts\user_dashboard.html:34
+#: .\templates\icts\user_dashboard.html:64
 msgid "Enviadas / En revisión"
 msgstr "Submitted / In review"
 
-#: .\templates\icts\user_dashboard.html:56
+#: .\templates\icts\user_dashboard.html:48
+#: .\templates\icts\user_dashboard.html:72
+#: .\templates\icts\user_dashboard.html:95
+#, python-format
+msgid "ID #%(proposal_id)s"
+msgstr ""
+
+#: .\templates\icts\user_dashboard.html:59
 msgid "No tienes borradores."
 msgstr "You have no drafts."
 
-#: .\templates\icts\user_dashboard.html:77
+#: .\templates\icts\user_dashboard.html:82
 msgid "No tienes propuestas enviadas."
 msgstr "You have no submitted proposals."
 
-#: .\templates\icts\user_dashboard.html:92
+#: .\templates\icts\user_dashboard.html:99
 msgid "Ver informe"
 msgstr "View report"
 
-#: .\templates\icts\user_dashboard.html:98
+#: .\templates\icts\user_dashboard.html:105
 msgid "Aún no tienes propuestas evaluadas."
 msgstr "You don't have evaluated proposals yet."
 
-#: .\templates\portal\icts_access.html:9
-msgid "Acceso ICTS-LNF · SIGMA Portal"
-msgstr "ICTS-LNF Access · SIGMA Portal"
-
-#: .\templates\portal\icts_access.html:59
-msgid "Acceso a ICTS-LNF"
-msgstr "Access to ICTS-LNF"
-
-#: .\templates\portal\icts_access.html:61
-msgid ""
-"Información pública sobre el acceso competitivo y la solicitud directa "
-"(pago)."
-msgstr "Public information on competitive access and direct request (paid)."
-
-#: .\templates\portal\icts_access.html:67
-msgid "Acceso competitivo"
-msgstr "Competitive access"
-
-#: .\templates\portal\icts_access.html:70
-msgid "Solicitud directa (pago)"
-msgstr "Direct request (paid)"
-
-#: .\templates\portal\icts_access.html:75
-msgid "Acceso competitivo (Σ‑SIGMA ICTS)"
-msgstr "Competitive access (Σ‑SIGMA ICTS)"
-
-#: .\templates\portal\icts_access.html:77
-#: .\templates\portal\icts_access.html:143
-#, fuzzy
-#| msgid "Objetivos"
-msgid "Objetivo"
-msgstr "Objective"
-
-#: .\templates\portal\icts_access.html:79
-msgid ""
-"Gestionar propuestas de acceso a equipos científico‑técnicos singulares "
-"mediante:"
-msgstr "Manage access proposals to unique scientific-technical equipment through:"
-
-#: .\templates\portal\icts_access.html:84
-msgid "registro"
-msgstr "registration"
-
-#: .\templates\portal\icts_access.html:85
-#, fuzzy
-#| msgid "Mis propuestas"
-msgid "propuesta"
-msgstr "proposal"
-
-#: .\templates\portal\icts_access.html:86
-#, fuzzy
-#| msgid "Evaluación de Propuesta"
-msgid "evaluación por revisores"
-msgstr "reviewer evaluation"
-
-#: .\templates\portal\icts_access.html:87
-msgid "decisión final por Responsable"
-msgstr "final decision by the Responsible"
-
-#: .\templates\portal\icts_access.html:88
-msgid "asignación de código de acceso en caso de aceptación"
-msgstr "assignment of an access code in case of acceptance"
-
-#: .\templates\portal\icts_access.html:91
-#: .\templates\portal\icts_access.html:150
-msgid "Pasos"
-msgstr "Steps"
-
-#: .\templates\portal\icts_access.html:93
-msgid "Registro y acceso"
-msgstr "Registration and access"
-
-#: .\templates\portal\icts_access.html:94
-msgid "El solicitante crea una cuenta y entra en el portal ICTS."
-msgstr "The applicant creates an account and logs in to the ICTS portal."
-
-#: .\templates\portal\icts_access.html:96
-#, fuzzy
-#| msgid "Evaluación de Propuesta"
-msgid "Creación de propuesta"
-msgstr "Proposal creation"
-
-#: .\templates\portal\icts_access.html:97
-#, fuzzy
-#| msgid "Título del proyecto."
-msgid "Define título, alcance y datos del proyecto."
-msgstr "Define the title, scope, and project data."
-
-#: .\templates\portal\icts_access.html:98
-msgid ""
-"Selecciona las técnicas/equipos requeridos (p. ej. SEM/EDX, Confocal, SIMS, "
-"VDG, etc.)."
-msgstr "Select the required techniques/equipment (e.g., SEM/EDX, Confocal, SIMS, VDG, etc.)."
-
-#: .\templates\portal\icts_access.html:100
-msgid "Solicitud de muestras y configuración por técnica"
-msgstr "Sample request and configuration by technique"
-
-#: .\templates\portal\icts_access.html:101
-msgid "Para cada técnica seleccionada, se registran:"
-msgstr "For each selected technique, the following are recorded:"
-
-#: .\templates\portal\icts_access.html:103
-msgid "identificación de muestras (Sample ID)"
-msgstr "sample identification (Sample ID)"
-
-#: .\templates\portal\icts_access.html:104
-#, fuzzy
-#| msgid "Análisis"
-msgid "tipo de análisis solicitado"
-msgstr "requested analysis type"
-
-#: .\templates\portal\icts_access.html:105
-msgid "condiciones/requisitos (y cualquier dato específico del equipo)"
-msgstr "conditions/requirements (and any equipment-specific data)"
-
-#: .\templates\portal\icts_access.html:108
-#, fuzzy
-#| msgid "Guardar Borrador"
-msgid "Guardar borrador"
-msgstr "Save draft"
-
-#: .\templates\portal\icts_access.html:109
-msgid ""
-"La propuesta puede guardarse como borrador para completarla más adelante sin "
-"perder información."
-msgstr "The proposal can be saved as a draft to complete later without losing information."
-
-#: .\templates\portal\icts_access.html:111
-#, fuzzy
-#| msgid "Enviar Evaluación"
-msgid "Envío a evaluación"
-msgstr "Submit for evaluation"
-
-#: .\templates\portal\icts_access.html:112
-msgid "Cuando está completa, se envía para revisión."
-msgstr "When complete, it is submitted for review."
-
-#: .\templates\portal\icts_access.html:114
-#, fuzzy
-#| msgid "Enviar Evaluación"
-msgid "Evaluación"
-msgstr "Evaluation"
-
-#: .\templates\portal\icts_access.html:115
-msgid "Revisores asignados emiten evaluación (aprobación / cambios / rechazo)."
-msgstr "Assigned reviewers issue an evaluation (approve / changes / reject)."
-
-#: .\templates\portal\icts_access.html:117
-#, fuzzy
-#| msgid "En Revisión"
-msgid "Decisión"
-msgstr "Decision"
-
-#: .\templates\portal\icts_access.html:118
-msgid "El Responsable toma la decisión final:"
-msgstr "The Responsible makes the final decision:"
-
-#: .\templates\portal\icts_access.html:120
-msgid ""
-"Aceptada → se asigna un código de acceso y se continúa a ejecución del "
-"servicio."
-msgstr "Accepted → an access code is assigned and the service execution continues."
-
-#: .\templates\portal\icts_access.html:121
-msgid "Cambios solicitados → el solicitante actualiza y reenvía."
-msgstr "Changes requested → the applicant updates and resubmits."
-
-#: .\templates\portal\icts_access.html:122
-msgid ""
-"Rechazada → queda registrada como rechazada y puede servir como base para "
-"una nueva solicitud."
-msgstr "Rejected → it is recorded as rejected and can serve as the basis for a new request."
-
-#: .\templates\portal\icts_access.html:126
-#, fuzzy
-#| msgid "Entrar en SIGMA ICTS"
-msgid "Ir a Σ‑SIGMA ICTS"
-msgstr "Go to Σ‑SIGMA ICTS"
-
-#: .\templates\portal\icts_access.html:131
-#: .\templates\portal\icts_access.html:133
-msgid "Diagrama de flujo de acceso competitivo"
-msgstr "Competitive access flow diagram"
-
-#: .\templates\portal\icts_access.html:135
-msgid "Figura 1 — Flujo de acceso competitivo"
-msgstr "Figure 1 — Competitive access flow"
-
-#: .\templates\portal\icts_access.html:136
-#: .\templates\portal\icts_access.html:240
-msgid "Diagrama provisional; se sustituirá por un gráfico."
-msgstr "Provisional diagram; it will be replaced by a graphic."
-
-#: .\templates\portal\icts_access.html:141
-msgid "Solicitud directa (pago / no competitiva)"
-msgstr "Direct request (paid / non-competitive)"
-
-#: .\templates\portal\icts_access.html:145
-msgid ""
-"Permitir que un usuario solicite un servicio técnico‑científico sin "
-"evaluación competitiva, conforme a tarifas vigentes y procedimiento "
-"administrativo."
-msgstr "Allow a user to request a technical-scientific service without competitive evaluation, according to current fees and administrative procedure."
-
-#: .\templates\portal\icts_access.html:152
-msgid "Consultar alcance y tarifas"
-msgstr "Check scope and fees"
-
-#: .\templates\portal\icts_access.html:153
-msgid ""
-"El usuario revisa si el servicio está tarifado y el alcance del trabajo."
-msgstr "The user reviews whether the service is priced and the scope of the work."
-
-#: .\templates\portal\icts_access.html:155
-msgid "Rellenar formulario oficial"
-msgstr "Fill out the official form"
-
-#: .\templates\portal\icts_access.html:157
-msgid "Se completa el documento “Solicitud de servicios técnicos al CIEMAT”."
-msgstr "The document “Request for technical services to CIEMAT” is completed."
-
-#: .\templates\portal\icts_access.html:163
-msgid ""
-"El propio formulario indica que debe enviarse por e-mail a <a "
-"href=\\\"mailto:serviciostecnicos@ciemat.es\\\">serviciostecnicos@ciemat.es</a>."
-msgstr ""
-
-#: .\templates\portal\icts_access.html:167
-#: .\templates\portal\icts_access.html:175
-msgid "PT-CIEMAT-30-03-F01 ed. 10"
-msgstr "PT-CIEMAT-30-03-F01 ed. 10"
-
-#: .\templates\portal\icts_access.html:169
-msgid "Certificados (si aplica)"
-msgstr "Certificates (if applicable)"
-
-#: .\templates\portal\icts_access.html:171
-msgid ""
-"Si se solicita emisión de certificado, el formulario exige email (indica que "
-"es imprescindible) y contempla la firma con certificado electrónico (RD "
-"203/2021)."
-msgstr "If a certificate is requested, the form requires email (it states it is mandatory) and contemplates signing with an electronic certificate (RD 203/2021)."
-
-#: .\templates\portal\icts_access.html:177
-msgid "Gestión CIEMAT"
-msgstr "CIEMAT processing"
-
-#: .\templates\portal\icts_access.html:178
-msgid ""
-"CIEMAT revisa la solicitud, confirma condiciones, y gestiona el pedido/"
-"contrato."
-msgstr "CIEMAT reviews the request, confirms conditions, and manages the order/contract."
-
-#: .\templates\portal\icts_access.html:180
-msgid "Ejecución y entrega"
-msgstr "Execution and delivery"
-
-#: .\templates\portal\icts_access.html:181
-msgid "Recepción de muestras → análisis → informe/entrega de resultados."
-msgstr "Sample reception → analysis → report/results delivery."
-
-#: .\templates\portal\icts_access.html:184
-msgid "Formulario PT-CIEMAT-30-03-F01:"
-msgstr "Form PT-CIEMAT-30-03-F01:"
-
-#: .\templates\portal\icts_access.html:185
-msgid "descargar y enviar a"
-msgstr "download and send to"
-
-#: .\templates\portal\icts_access.html:189
-msgid "Descargar PDF PT-CIEMAT-30-03-F01"
-msgstr "Download PDF PT-CIEMAT-30-03-F01"
-
-#: .\templates\portal\icts_access.html:195
-msgid "Enviar solicitud directa (subir PDF)"
-msgstr "Submit direct request (upload PDF)"
-
-#: .\templates\portal\icts_access.html:203
-#, fuzzy
-#| msgid "Servicio técnico"
-msgid "Servicio"
-msgstr "Service"
-
-#: .\templates\portal\icts_access.html:204
-msgid "Código"
-msgstr "Code"
-
-#: .\templates\portal\icts_access.html:205
-msgid "Precio"
-msgstr "Price"
-
-#: .\templates\portal\icts_access.html:206
-msgid "Unidad"
-msgstr "Unit"
-
-#: .\templates\portal\icts_access.html:207
-msgid "Notas"
-msgstr "Notes"
-
-#: .\templates\portal\icts_access.html:219
-msgid "Por definir"
-msgstr "To be defined"
-
-#: .\templates\portal\icts_access.html:230
-msgid "Tarifas pueden actualizarse; confirmar vigencia."
-msgstr "Fees may be updated; please confirm validity."
-
-#: .\templates\portal\icts_access.html:235
-#: .\templates\portal\icts_access.html:237
-msgid "Diagrama de flujo de solicitud directa"
-msgstr "Direct request flow diagram"
-
-#: .\templates\portal\icts_access.html:239
-msgid "Figura 2 - Flujo de solicitud directa"
-msgstr "Figure 2 - Direct request flow"
-
-#: .\icts\templates\icts\facilities\_SIMS.html:98
-msgid "Espectro de masas"
-msgstr "Mass spectrum"
-
-#: .\icts\templates\icts\facilities\_SIMS.html:100
-msgid "Identificación rápida de especies e impurezas en superficie."
-msgstr "Rapid identification of species and surface impurities."
-
-#: .\icts\templates\icts\facilities\_SIMS.html:102
-msgid "Coste 75.84 €"
-msgstr "Usage cost 75.84 €"
-
-#: .\icts\templates\icts\facilities\_SIMS.html:105
-msgid "Perfil de masas en profundidad"
-msgstr "In-depth mass profile"
-
-#: .\icts\templates\icts\facilities\_SIMS.html:107
-msgid "Distribución de elementos en función de la profundidad."
-msgstr "Distribution of elements as a function of depth."
-
-#: .\icts\templates\icts\facilities\_SIMS.html:109
-msgid "Coste 92,36 €"
-msgstr "Usage cost 92.36 €"
-
-#: .\templates\portal\home.html:8
-#: .\templates\portal\home.html:210
+#: .\templates\portal\home.html:8 .\templates\portal\home.html:210
 msgid "Σ-SIGMA Portal"
 msgstr "Σ-SIGMA Portal"
-
-#: .\templates\portal\home.html:180
-msgid "Español"
-msgstr "Spanish"
-
-#: .\templates\portal\home.html:184
-msgid "Inglés"
-msgstr "English"
-
-#: .\templates\portal\home.html:188
-msgid "Francés"
-msgstr "French"
 
 #: .\templates\portal\home.html:211
 msgid "Sistema Integrado de Gestión de Muestras y Accesos"
 msgstr "Integrated Sample and Access Management System"
 
-#: .\templates\portal\home.html:215
+#: .\templates\portal\home.html:216
 msgid ""
 "Plataforma unificada para la gestión de equipos científicos y laboratorios "
 "de investigación. Accede a los sistemas ICTS y DTF desde un único punto de "
@@ -2192,7 +3734,7 @@ msgstr ""
 msgid "Solicitudes vía ICTS-LNF"
 msgstr "Requests via ICTS-LNF"
 
-#: .\templates\portal\home.html:245
+#: .\templates\portal\home.html:244
 msgid ""
 "Sistema de gestión de evaluaciones de solicitudes de acceso a equipos "
 "científicos pertenecientes a la ICTS-LNF - Σ-SIGMA ICTS"
@@ -2208,8 +3750,7 @@ msgstr ""
 "Competitive access to unique scientific-technical equipment belonging to "
 "ICTS-LNF"
 
-#: .\templates\portal\home.html:254
-#: .\templates\portal\home.html:282
+#: .\templates\portal\home.html:254 .\templates\portal\home.html:282
 msgid "Acceder"
 msgstr "Access"
 
@@ -2233,8 +3774,7 @@ msgstr ""
 msgid ""
 "Consulta las preguntas frecuentes o contacta con el equipo técnico para "
 "soporte especializado."
-msgstr ""
-"Check the FAQ or contact the technical team for specialized support."
+msgstr "Check the FAQ or contact the technical team for specialized support."
 
 #: .\templates\portal\home.html:310
 msgid "Protocolo acceso ICTS"
@@ -2252,7 +3792,7 @@ msgstr "CIEMAT - Website"
 msgid "LNF - Web"
 msgstr "LNF - Website"
 
-#: .\templates\portal\home.html:342
+#: .\templates\portal\home.html:345
 msgid ""
 "© 2025 Σ-SIGMA Sistema Integrado de Gestión de Muestras y Accesos (LNF) - "
 "Desarrollado por la Unidad de Materiales del LNF"
@@ -2260,154 +3800,340 @@ msgstr ""
 "© 2025 Σ-SIGMA Integrated Sample and Access Management System (LNF) - "
 "Developed by the LNF Materials Unit"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "SIGMA Optics - Datos de muestras"
-msgstr "SIGMA Optics - Sample data"
+#: .\templates\portal\icts_access.html:9
+msgid "Acceso ICTS-LNF · SIGMA Portal"
+msgstr "ICTS-LNF Access · SIGMA Portal"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Requisitos de aceptación"
-msgstr "Acceptance requirements"
+#: .\templates\portal\icts_access.html:64
+msgid "Acceso a ICTS-LNF"
+msgstr "Access to ICTS-LNF"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "El tamaño máximo es de 45 x 60 mm (diámetro máximo 45 mm)."
-msgstr "Maximum size is 45 x 60 mm (maximum diameter 45 mm)."
+#: .\templates\portal\icts_access.html:66
+msgid ""
+"Información pública sobre el acceso competitivo y la solicitud directa "
+"(pago)."
+msgstr "Public information on competitive access and direct request (paid)."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Muestras empaquetadas en cajas o bolsas y etiquetadas de forma clara y escueta."
-msgstr "Samples packaged in boxes or bags and labeled clearly and concisely."
+#: .\templates\portal\icts_access.html:72
+msgid "Acceso competitivo"
+msgstr "Competitive access"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Proteja la muestra adecuadamente."
-msgstr "Protect the sample adequately."
+#: .\templates\portal\icts_access.html:75
+msgid "Solicitud directa (pago)"
+msgstr "Direct request (paid)"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Descripción de muestras"
-msgstr "Sample description"
+#: .\templates\portal\icts_access.html:80
+msgid "Acceso competitivo (Σ‑SIGMA ICTS)"
+msgstr "Competitive access (Σ‑SIGMA ICTS)"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Sample"
-msgstr "Sample"
+#: .\templates\portal\icts_access.html:82
+#: .\templates\portal\icts_access.html:148
+#, fuzzy
+#| msgid "Objetivos"
+msgid "Objetivo"
+msgstr "Objective"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Identification"
-msgstr "Identification"
+#: .\templates\portal\icts_access.html:84
+msgid ""
+"Gestionar propuestas de acceso a equipos científico‑técnicos singulares "
+"mediante:"
+msgstr ""
+"Manage access proposals to unique scientific-technical equipment through:"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Sample ID"
-msgstr "Sample ID"
+#: .\templates\portal\icts_access.html:89
+msgid "registro"
+msgstr "registration"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Name"
-msgstr "Name"
+#: .\templates\portal\icts_access.html:90
+#, fuzzy
+#| msgid "Mis propuestas"
+msgid "propuesta"
+msgstr "proposal"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Sample name"
-msgstr "Sample name"
+#: .\templates\portal\icts_access.html:91
+#, fuzzy
+#| msgid "Evaluación de Propuesta"
+msgid "evaluación por revisores"
+msgstr "reviewer evaluation"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Observations"
-msgstr "Observations"
+#: .\templates\portal\icts_access.html:92
+msgid "decisión final por Responsable"
+msgstr "final decision by the Responsible"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Sample observations"
-msgstr "Sample observations"
+#: .\templates\portal\icts_access.html:93
+msgid "asignación de código de acceso en caso de aceptación"
+msgstr "assignment of an access code in case of acceptance"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Add Sample"
-msgstr "Add Sample"
+#: .\templates\portal\icts_access.html:96
+#: .\templates\portal\icts_access.html:155
+msgid "Pasos"
+msgstr "Steps"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Recuperación de muestras"
-msgstr "Sample recovery"
+#: .\templates\portal\icts_access.html:98
+msgid "Registro y acceso"
+msgstr "Registration and access"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "¿Recuperar muestra(s)?"
-msgstr "Recover sample(s)?"
+#: .\templates\portal\icts_access.html:99
+msgid "El solicitante crea una cuenta y entra en el portal ICTS."
+msgstr "The applicant creates an account and logs in to the ICTS portal."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "NO"
-msgstr "NO"
+#: .\templates\portal\icts_access.html:101
+#, fuzzy
+#| msgid "Evaluación de Propuesta"
+msgid "Creación de propuesta"
+msgstr "Proposal creation"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Por defecto las muestras no se conservan después de la medida. Si se quiere recuperar la muestra debe indicarlo aquí. Se guardarán como máximo 2 meses después de la fecha de entrega de resultados."
-msgstr "By default, samples are not kept after the measurement. If you want to recover the sample, you must indicate it here. They will be kept for a maximum of 2 months after the results delivery date."
+#: .\templates\portal\icts_access.html:102
+#, fuzzy
+#| msgid "Título del proyecto."
+msgid "Define título, alcance y datos del proyecto."
+msgstr "Define the title, scope, and project data."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Manipulación segura"
-msgstr "Safe handling"
+#: .\templates\portal\icts_access.html:103
+msgid ""
+"Selecciona las técnicas/equipos requeridos (p. ej. SEM/EDX, Confocal, SIMS, "
+"VDG, etc.)."
+msgstr ""
+"Select the required techniques/equipment (e.g., SEM/EDX, Confocal, SIMS, "
+"VDG, etc.)."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "¿Toxic?"
-msgstr "Toxic?"
+#: .\templates\portal\icts_access.html:105
+msgid "Solicitud de muestras y configuración por técnica"
+msgstr "Sample request and configuration by technique"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "¿Corrosive?"
-msgstr "Corrosive?"
+#: .\templates\portal\icts_access.html:106
+msgid "Para cada técnica seleccionada, se registran:"
+msgstr "For each selected technique, the following are recorded:"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "¿Irritating?"
-msgstr "Irritating?"
+#: .\templates\portal\icts_access.html:108
+msgid "identificación de muestras (Sample ID)"
+msgstr "sample identification (Sample ID)"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "¿Radioactive?"
-msgstr "Radioactive?"
+#: .\templates\portal\icts_access.html:109
+#, fuzzy
+#| msgid "Análisis"
+msgid "tipo de análisis solicitado"
+msgstr "requested analysis type"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Further comments"
-msgstr "Further comments"
+#: .\templates\portal\icts_access.html:110
+msgid "condiciones/requisitos (y cualquier dato específico del equipo)"
+msgstr "conditions/requirements (and any equipment-specific data)"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Additional safety comments"
-msgstr "Additional safety comments"
+#: .\templates\portal\icts_access.html:113
+#, fuzzy
+#| msgid "Guardar Borrador"
+msgid "Guardar borrador"
+msgstr "Save draft"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Información requerida"
-msgstr "Required information"
+#: .\templates\portal\icts_access.html:114
+msgid ""
+"La propuesta puede guardarse como borrador para completarla más adelante sin "
+"perder información."
+msgstr ""
+"The proposal can be saved as a draft to complete later without losing "
+"information."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Medida"
-msgstr "Measurement"
+#: .\templates\portal\icts_access.html:116
+#, fuzzy
+#| msgid "Enviar Evaluación"
+msgid "Envío a evaluación"
+msgstr "Submit for evaluation"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Absorción"
-msgstr "Absorption"
+#: .\templates\portal\icts_access.html:117
+msgid "Cuando está completa, se envía para revisión."
+msgstr "When complete, it is submitted for review."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Transmisión"
-msgstr "Transmission"
+#: .\templates\portal\icts_access.html:119
+#, fuzzy
+#| msgid "Enviar Evaluación"
+msgid "Evaluación"
+msgstr "Evaluation"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Longitud de onda mínima"
-msgstr "Minimum wavelength"
+#: .\templates\portal\icts_access.html:120
+msgid "Revisores asignados emiten evaluación (aprobación / cambios / rechazo)."
+msgstr "Assigned reviewers issue an evaluation (approve / changes / reject)."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Longitud de onda máxima"
-msgstr "Maximum wavelength"
+#: .\templates\portal\icts_access.html:122
+#, fuzzy
+#| msgid "En Revisión"
+msgid "Decisión"
+msgstr "Decision"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "En caso de que exista incertidumbre en la medida, el técnico responsable se comunicará con el usuario."
-msgstr "If there is any uncertainty in the measurement, the responsible technician will contact the user."
+#: .\templates\portal\icts_access.html:123
+msgid "El Responsable toma la decisión final:"
+msgstr "The Responsible makes the final decision:"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Material"
-msgstr "Material"
+#: .\templates\portal\icts_access.html:125
+msgid ""
+"Aceptada → se asigna un código de acceso y se continúa a ejecución del "
+"servicio."
+msgstr ""
+"Accepted → an access code is assigned and the service execution continues."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Tipo de medida"
-msgstr "Measurement type"
+#: .\templates\portal\icts_access.html:126
+msgid "Cambios solicitados → el solicitante actualiza y reenvía."
+msgstr "Changes requested → the applicant updates and resubmits."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Selecciona una opción"
-msgstr "Select an option"
+#: .\templates\portal\icts_access.html:127
+msgid ""
+"Rechazada → queda registrada como rechazada y puede servir como base para "
+"una nueva solicitud."
+msgstr ""
+"Rejected → it is recorded as rejected and can serve as the basis for a new "
+"request."
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "UV-VIS"
-msgstr "UV-VIS"
+#: .\templates\portal\icts_access.html:131
+#, fuzzy
+#| msgid "Entrar en SIGMA ICTS"
+msgid "Ir a Σ‑SIGMA ICTS"
+msgstr "Go to Σ‑SIGMA ICTS"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "FTIR"
-msgstr "FTIR"
+#: .\templates\portal\icts_access.html:136
+#: .\templates\portal\icts_access.html:138
+msgid "Diagrama de flujo de acceso competitivo"
+msgstr "Competitive access flow diagram"
 
-#: .\icts\templates\icts\forms\_optics.html
-msgid "Comentarios finales"
-msgstr "Final comments"
+#: .\templates\portal\icts_access.html:140
+msgid "Figura 1 — Flujo de acceso competitivo"
+msgstr "Figure 1 — Competitive access flow"
+
+#: .\templates\portal\icts_access.html:141
+#: .\templates\portal\icts_access.html:245
+msgid "Diagrama provisional; se sustituirá por un gráfico."
+msgstr "Provisional diagram; it will be replaced by a graphic."
+
+#: .\templates\portal\icts_access.html:146
+msgid "Solicitud directa (pago / no competitiva)"
+msgstr "Direct request (paid / non-competitive)"
+
+#: .\templates\portal\icts_access.html:150
+msgid ""
+"Permitir que un usuario solicite un servicio técnico‑científico sin "
+"evaluación competitiva, conforme a tarifas vigentes y procedimiento "
+"administrativo."
+msgstr ""
+"Allow a user to request a technical-scientific service without competitive "
+"evaluation, according to current fees and administrative procedure."
+
+#: .\templates\portal\icts_access.html:157
+msgid "Consultar alcance y tarifas"
+msgstr "Check scope and fees"
+
+#: .\templates\portal\icts_access.html:158
+msgid ""
+"El usuario revisa si el servicio está tarifado y el alcance del trabajo."
+msgstr ""
+"The user reviews whether the service is priced and the scope of the work."
+
+#: .\templates\portal\icts_access.html:160
+msgid "Rellenar formulario oficial"
+msgstr "Fill out the official form"
+
+#: .\templates\portal\icts_access.html:162
+msgid "Se completa el documento “Solicitud de servicios técnicos al CIEMAT”."
+msgstr "The document “Request for technical services to CIEMAT” is completed."
+
+#: .\templates\portal\icts_access.html:168
+msgid ""
+"El propio formulario indica que debe enviarse por e-mail a <a "
+"href=\"mailto:serviciostecnicos@ciemat.es\">serviciostecnicos@ciemat.es</a>."
+msgstr ""
+
+#: .\templates\portal\icts_access.html:172
+#: .\templates\portal\icts_access.html:180
+msgid "PT-CIEMAT-30-03-F01 ed. 10"
+msgstr "PT-CIEMAT-30-03-F01 ed. 10"
+
+#: .\templates\portal\icts_access.html:174
+msgid "Certificados (si aplica)"
+msgstr "Certificates (if applicable)"
+
+#: .\templates\portal\icts_access.html:176
+msgid ""
+"Si se solicita emisión de certificado, el formulario exige email (indica que "
+"es imprescindible) y contempla la firma con certificado electrónico (RD "
+"203/2021)."
+msgstr ""
+"If a certificate is requested, the form requires email (it states it is "
+"mandatory) and contemplates signing with an electronic certificate (RD "
+"203/2021)."
+
+#: .\templates\portal\icts_access.html:182
+msgid "Gestión CIEMAT"
+msgstr "CIEMAT processing"
+
+#: .\templates\portal\icts_access.html:183
+msgid ""
+"CIEMAT revisa la solicitud, confirma condiciones, y gestiona el pedido/"
+"contrato."
+msgstr ""
+"CIEMAT reviews the request, confirms conditions, and manages the order/"
+"contract."
+
+#: .\templates\portal\icts_access.html:185
+msgid "Ejecución y entrega"
+msgstr "Execution and delivery"
+
+#: .\templates\portal\icts_access.html:186
+msgid "Recepción de muestras → análisis → informe/entrega de resultados."
+msgstr "Sample reception → analysis → report/results delivery."
+
+#: .\templates\portal\icts_access.html:189
+msgid "Formulario PT-CIEMAT-30-03-F01:"
+msgstr "Form PT-CIEMAT-30-03-F01:"
+
+#: .\templates\portal\icts_access.html:190
+msgid "descargar y enviar a"
+msgstr "download and send to"
+
+#: .\templates\portal\icts_access.html:194
+msgid "Descargar PDF PT-CIEMAT-30-03-F01"
+msgstr "Download PDF PT-CIEMAT-30-03-F01"
+
+#: .\templates\portal\icts_access.html:200
+msgid "Enviar solicitud directa (subir PDF)"
+msgstr "Submit direct request (upload PDF)"
+
+#: .\templates\portal\icts_access.html:208
+#, fuzzy
+#| msgid "Servicio técnico"
+msgid "Servicio"
+msgstr "Service"
+
+#: .\templates\portal\icts_access.html:209
+msgid "Código"
+msgstr "Code"
+
+#: .\templates\portal\icts_access.html:210
+msgid "Precio"
+msgstr "Price"
+
+#: .\templates\portal\icts_access.html:211
+msgid "Unidad"
+msgstr "Unit"
+
+#: .\templates\portal\icts_access.html:212
+msgid "Notas"
+msgstr "Notes"
+
+#: .\templates\portal\icts_access.html:224
+msgid "Por definir"
+msgstr "To be defined"
+
+#: .\templates\portal\icts_access.html:235
+msgid "Tarifas pueden actualizarse; confirmar vigencia."
+msgstr "Fees may be updated; please confirm validity."
+
+#: .\templates\portal\icts_access.html:240
+#: .\templates\portal\icts_access.html:242
+msgid "Diagrama de flujo de solicitud directa"
+msgstr "Direct request flow diagram"
+
+#: .\templates\portal\icts_access.html:244
+#, fuzzy
+#| msgid "Figura 2 - Flujo de solicitud directa"
+msgid "Figura 2 — Flujo de solicitud directa"
+msgstr "Figure 2 - Direct request flow"
+
+#~ msgid "Aún no has emitido revisiones."
+#~ msgstr "You haven't submitted any reviews yet."

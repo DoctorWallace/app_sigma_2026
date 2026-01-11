@@ -1,0 +1,81 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">⚠️ Eliminar muestra</h2>
+  </div>
+
+  <div class="alert alert-warning" style="background-color: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+    <strong>Atención:</strong> Esta acción marcará la muestra como eliminada. El registro se conservará para auditoría pero no aparecerá en los listados.
+  </div>
+
+  <div class="sem-form-group" style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+    <h4 style="margin-bottom: 0.5rem;">Datos de la muestra</h4>
+    <table style="width: 100%;">
+      <tr>
+        <td style="padding: 0.25rem 0;"><strong>ID SIMS:</strong></td>
+        <td>{{ record.sims_id }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.25rem 0;"><strong>Identificación:</strong></td>
+        <td>{{ record.sample_identification }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.25rem 0;"><strong>Cliente:</strong></td>
+        <td>{{ record.client_name }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.25rem 0;"><strong>Fecha recepción:</strong></td>
+        <td>{{ record.reception_date }}</td>
+      </tr>
+      {% if record.analysis_date %}
+      <tr>
+        <td style="padding: 0.25rem 0;"><strong>Fecha análisis:</strong></td>
+        <td>{{ record.analysis_date }}</td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td style="padding: 0.25rem 0;"><strong>Propuesta:</strong></td>
+        <td>{{ record.request_code|default:"Sin propuesta" }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="id_removal_reason">
+        {{ form.removal_reason.label }} <span style="color: red;">*</span>
+      </label>
+      {{ form.removal_reason }}
+      {% if form.removal_reason.help_text %}
+        <small class="form-text text-muted">{{ form.removal_reason.help_text }}</small>
+      {% endif %}
+      {% if form.removal_reason.errors %}
+        <div class="alert alert-danger" style="margin-top: 0.5rem; padding: 0.5rem; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; border-radius: 4px;">
+          {% for error in form.removal_reason.errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+      <button type="submit" class="sem-btn sem-btn-danger" style="background-color: #dc3545; border-color: #dc3545;">
+        🗑️ Confirmar eliminación
+      </button>
+      {% if record.access_proposal %}
+        <a href="{% url 'icts:sigmasims:proposal_summary' record.access_proposal.pk %}" class="sem-btn sem-btn-secondary">
+          ← Cancelar
+        </a>
+      {% else %}
+        <a href="{% url 'icts:sigmasims:record_list' %}" class="sem-btn sem-btn-secondary">
+          ← Cancelar
+        </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

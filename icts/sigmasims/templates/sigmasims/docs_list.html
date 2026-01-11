@@ -9,12 +9,15 @@
   {% if can_edit %}
     <div class="mb-3">
       <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:doc_upload' %}">
-        Subir documento
+        📄 Subir documento PDF
       </a>
     </div>
   {% endif %}
 
   {% if documents %}
+    <p class="mb-3" style="color: #64748b; font-weight: 600;">
+      Total de documentos: {{ documents|length }}
+    </p>
     <table class="sem-table">
       <thead>
         <tr>
@@ -22,19 +25,27 @@
           <th>Código</th>
           <th>Versión</th>
           <th>Fecha</th>
+          <th>Tamaño</th>
           <th>Descargar</th>
         </tr>
       </thead>
       <tbody>
         {% for doc in documents %}
         <tr>
-          <td>{{ doc.title }}</td>
+          <td><strong>{{ doc.title }}</strong></td>
           <td>{{ doc.code }}</td>
           <td>{{ doc.version }}</td>
-          <td>{{ doc.date }}</td>
+          <td>{{ doc.date|date:"d/m/Y" }}</td>
           <td>
-            <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:doc_download' doc.pk %}">
-              Descargar
+            {% if doc.get_file_size %}
+              {{ doc.get_file_size }} KB
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:doc_download' doc.pk %}" title="Descargar PDF">
+              📥 Descargar PDF
             </a>
           </td>
         </tr>
@@ -42,7 +53,10 @@
       </tbody>
     </table>
   {% else %}
-    <p>No hay documentación activa.</p>
+    <div class="alert alert-info" style="background-color: #e7f3ff; padding: 1.5rem; border-left: 4px solid #2196F3; border-radius: 4px;">
+      <strong>ℹ️ No hay documentación activa.</strong>
+      <p class="mb-0 mt-2">Los documentos subidos aparecerán aquí una vez que estén activos.</p>
+    </div>
   {% endif %}
 </div>
 {% endblock %}

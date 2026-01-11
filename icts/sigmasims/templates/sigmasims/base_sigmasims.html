@@ -8,18 +8,18 @@
 <style>
   /* Usar el esquema de colores de ICTS */
   :root {
-    --sem-primary: #a50943;
-    --sem-primary-dark: #7a0830;
-    --sem-primary-light: #d66788;
-    --sem-accent: #b81735;
-    --sem-accent-light: #20c997;
-    --sem-success: #28a745;
-    --sem-warning: #ffc107;
-    --sem-danger: #dc3545;
-    --sem-info: #ffffff;
-    --sem-dark: #343a40;
-    --sem-light: #f8f9fa;
-    --sem-secondary: #6c757d;
+    --sem-primary: #1f4a7a;
+    --sem-primary-dark: #0f2a4a;
+    --sem-primary-light: #eef4fb;
+    --sem-accent: #3c7bb3;
+    --sem-accent-light: #dbeafe;
+    --sem-success: #1f7a4d;
+    --sem-warning: #b45309;
+    --sem-danger: #b45309;
+    --sem-info: #3c7bb3;
+    --sem-dark: #0f172a;
+    --sem-light: #f8fafc;
+    --sem-secondary: #64748b;
   }
 
   /* Header principal */
@@ -445,6 +445,10 @@
     <a href="{% url 'icts:sigmasims:docs_list' %}" class="nav-item {% if request.resolver_match.url_name == 'docs_list' %}active{% endif %}">
       <i class="bi bi-folder2-open"></i>
       Documentación
+    </a>
+    <a href="{% url 'icts:sigmasims:reference_materials_list' %}" class="nav-item {% if request.resolver_match.url_name == 'reference_materials_list' or request.resolver_match.url_name == 'reference_material_detail' %}active{% endif %}">
+      <i class="bi bi-box-seam"></i>
+      Materiales de Referencia
     </a>
     <a href="{% url 'icts:sigmasims:equipment_list' %}" class="nav-item {% if request.resolver_match.url_name == 'equipment_list' or request.resolver_match.url_name == 'equipment_detail' or request.resolver_match.url_name == 'equipment_create' or request.resolver_match.url_name == 'equipment_edit' %}active{% endif %}">
       <i class="bi bi-tools"></i>

@@ -1,6 +1,6 @@
 {% extends "base_icts.html" %}
-{% load role_filters %}
-{% block title %}Detalle de propuesta - {{ obj.title|default:"Sin título" }}{% endblock %}
+{% load role_filters i18n %}
+{% block title %}{% trans "Detalle de propuesta" %} - {{ obj.title|default:"Sin título" }}{% endblock %}
 {% block page_title %}Detalle de Propuesta{% endblock %}
 
 {% block content %}
@@ -376,34 +376,29 @@
           </a>
           <form method="post" action="{% url 'icts:proposal_submit' obj.pk %}" class="submit-form">
             {% csrf_token %}
-            {% if not obj.scope or not obj.previous_experiments or not obj.references %}
             <div class="submit-acks">
-              {% if not obj.scope %}
               <div class="ack-item">
                 <label for="ack_empty_scope">
-                  <input type="checkbox" name="ack_empty_scope" id="ack_empty_scope">
-                  Confirmo que no anadire mas texto en Alcance.
+                  <input type="checkbox" name="ack_empty_scope" id="ack_empty_scope" {% if obj.scope %}checked disabled{% endif %}>
+                  {% trans "Confirmo que no añadiré más texto en Alcance." %}
+                  {% if obj.scope %}<span class="ack-filled">✓</span>{% endif %}
                 </label>
               </div>
-              {% endif %}
-              {% if not obj.previous_experiments %}
               <div class="ack-item">
                 <label for="ack_empty_previous_experiments">
-                  <input type="checkbox" name="ack_empty_previous_experiments" id="ack_empty_previous_experiments">
-                  Confirmo que no anadire mas texto en Experimentos previos.
+                  <input type="checkbox" name="ack_empty_previous_experiments" id="ack_empty_previous_experiments" {% if obj.previous_experiments %}checked disabled{% endif %}>
+                  {% trans "Confirmo que no añadiré más texto en Experimentos previos." %}
+                  {% if obj.previous_experiments %}<span class="ack-filled">✓</span>{% endif %}
                 </label>
               </div>
-              {% endif %}
-              {% if not obj.references %}
               <div class="ack-item">
                 <label for="ack_empty_references">
-                  <input type="checkbox" name="ack_empty_references" id="ack_empty_references">
-                  Confirmo que no anadire mas texto en Referencias.
+                  <input type="checkbox" name="ack_empty_references" id="ack_empty_references" {% if obj.references %}checked disabled{% endif %}>
+                  {% trans "Confirmo que no añadiré más texto en Referencias." %}
+                  {% if obj.references %}<span class="ack-filled">✓</span>{% endif %}
                 </label>
               </div>
-              {% endif %}
             </div>
-            {% endif %}
             <button type="submit" class="action-btn submit">
               <span class="btn-icon"><i class="bi bi-send"></i></span>
               <span class="btn-text">
@@ -961,6 +956,48 @@
 
 .btn-icon {
   font-size: 1.2rem;
+}
+
+/* Checkboxes de confirmación */
+.submit-acks {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+.ack-item {
+  margin-bottom: 0.5rem;
+}
+
+.ack-item:last-child {
+  margin-bottom: 0;
+}
+
+.ack-item label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.ack-item input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+}
+
+.ack-item input[type="checkbox"]:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.ack-filled {
+  color: #28a745;
+  font-weight: bold;
 }
 
 .action-note {

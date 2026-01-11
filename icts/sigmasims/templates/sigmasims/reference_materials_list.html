@@ -1,0 +1,63 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Materiales de Referencia SIMS</h2>
+  </div>
+
+  {% if can_edit %}
+    <div class="mb-3">
+      <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:reference_material_create' %}">
+        ➕ Añadir Material de Referencia
+      </a>
+    </div>
+  {% endif %}
+
+  {% if materials %}
+    <table class="sem-table">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descripción</th>
+          <th>Responsable</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for material in materials %}
+        <tr>
+          <td>
+            <a href="{% url 'icts:sigmasims:reference_material_detail' material.code %}" 
+               style="color: var(--sem-primary); font-weight: 700; text-decoration: none;">
+              {{ material.code }}
+            </a>
+          </td>
+          <td>{{ material.description|default:"Sin descripción" }}</td>
+          <td>{{ material.responsible|default:"-" }}</td>
+          <td>
+            <div style="display: flex; gap: 0.5rem;">
+              <a class="sem-btn sem-btn-primary" 
+                 href="{% url 'icts:sigmasims:reference_material_detail' material.code %}">
+                Ver detalles
+              </a>
+              {% if can_edit %}
+                <a class="sem-btn sem-btn-secondary" 
+                   href="{% url 'icts:sigmasims:reference_material_edit' material.code %}">
+                  Editar
+                </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info" style="background-color: var(--sem-primary-light); padding: 1.5rem; border-left: 4px solid var(--sem-primary); border-radius: 4px;">
+      <strong>ℹ️ No hay materiales de referencia disponibles.</strong>
+      <p class="mb-0 mt-2">Los materiales de referencia se leen del archivo Excel configurado.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

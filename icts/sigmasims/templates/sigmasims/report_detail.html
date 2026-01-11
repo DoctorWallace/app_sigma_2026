@@ -3,11 +3,24 @@
 {% block sem_content %}
 <div class="sem-card">
   <div class="sem-card-header">
-    <h2 class="sem-card-title">Informe SIMS</h2>
+    <h2 class="sem-card-title">Control de Análisis</h2>
   </div>
 
+  <!-- Información del cliente y proyecto -->
+  {% if report %}
+  <div style="background-color: var(--sem-primary-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+    <h3 style="color: var(--sem-primary); margin-bottom: 1rem; font-size: 1.1rem;">Información del Cliente y Proyecto</h3>
+    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0.75rem; font-size: 0.95rem;">
+      <strong>Cliente:</strong>
+      <div>{{ report.client_identification|default:"-" }}</div>
+      <strong>Proyecto:</strong>
+      <div>{{ report.project|default:"-" }}</div>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="mb-3">
-    <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_edit' proposal.pk %}">Editar informe</a>
+    <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_edit' proposal.pk %}">Editar análisis</a>
     <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create' %}?proposal_id={{ proposal.pk }}">Anadir muestra</a>
     {% if report %}
       <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:report_export_docx' proposal.pk %}">Exportar DOCX</a>
@@ -15,35 +28,95 @@
   </div>
 
   {% if report %}
-    <p><strong>Determinación:</strong> {{ report.determination }}</p>
-    <p><strong>Procedimiento:</strong> {{ report.procedure_used }}</p>
-    <p><strong>Técnica:</strong> {{ report.technique_text }}</p>
+    <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin: 1.5rem 0 1rem 0;">Datos del Control de Análisis</h3>
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+      {% if report.entry_date %}
+        <strong>Fecha de entrada:</strong>
+        <div>{{ report.entry_date|date:"d/m/Y" }}</div>
+      {% endif %}
+      {% if report.analysis_date %}
+        <strong>Fecha de análisis:</strong>
+        <div>{{ report.analysis_date|date:"d/m/Y" }}</div>
+      {% endif %}
+      {% if report.delivery_date %}
+        <strong>Fecha de entrega:</strong>
+        <div>{{ report.delivery_date|date:"d/m/Y" }}</div>
+      {% endif %}
+      {% if report.determination %}
+        <strong>Determinación:</strong>
+        <div>{{ report.determination }}</div>
+      {% endif %}
+      {% if report.procedure_used %}
+        <strong>Procedimiento:</strong>
+        <div>{{ report.procedure_used }}</div>
+      {% endif %}
+      {% if report.technique %}
+        <strong>Técnica:</strong>
+        <div>{{ report.get_technique_display }}</div>
+      {% endif %}
+      {% if report.technique_text %}
+        <strong>Texto de técnica:</strong>
+        <div>{{ report.technique_text }}</div>
+      {% endif %}
+    </div>
   {% else %}
-    <p>No hay informe creado.</p>
+    <p>No hay control de análisis creado. <a href="{% url 'icts:sigmasims:report_edit' proposal.pk %}">Crear control de análisis</a></p>
   {% endif %}
 
-  <h3>Muestras</h3>
+  <h3>Registros de Muestras</h3>
   {% if records %}
     <table class="sem-table">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>ID SIMS</th>
           <th>Identificación</th>
-          <th>Comentarios</th>
+          <th>Fecha Recepción</th>
+          <th>Fecha Análisis</th>
+          <th>Responsable Análisis</th>
+          <th>Informe</th>
+          <th>Original</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         {% for record in records %}
         <tr>
-          <td>{{ record.sims_id }}</td>
-          <td>{{ record.sample_identification }}</td>
-          <td>{{ record.comments }}</td>
+          <td>{{ record.sims_id|default:"-" }}</td>
+          <td>
+            <strong>{{ record.sample_identification }}</strong>
+            {% if record.sample_characteristics %}
+              <br><small style="color: #64748b;">{{ record.sample_characteristics|truncatewords:10 }}</small>
+            {% endif %}
+          </td>
+          <td>{{ record.reception_date|date:"Y-m-d" }}</td>
+          <td>{{ record.analysis_date|date:"Y-m-d"|default:"-" }}</td>
+          <td>{{ record.analysis_responsible|default:"-" }}</td>
+          <td>
+            {% if record.report_code %}
+              <strong>{{ record.report_code }}</strong>
+              {% if record.report_delivery_date %}
+                <br><small>{{ record.report_delivery_date|date:"Y-m-d" }}</small>
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if record.is_original_sample %}
+              <span class="sem-badge sem-badge-success">Sí</span>
+            {% else %}
+              <span class="sem-badge sem-badge-warning">No</span>
+            {% endif %}
+          </td>
+          <td>
+            <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:record_edit' record.pk %}">Editar</a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <p>No hay muestras asociadas.</p>
+    <p>No hay muestras asociadas. <a href="{% url 'icts:sigmasims:record_create' %}?proposal_id={{ proposal.pk }}">Añadir primera muestra</a></p>
   {% endif %}
 </div>
 

@@ -19,13 +19,39 @@ class SIMSRecord(models.Model):
     reception_date = models.DateField(db_index=True)
     sample_identification = models.CharField(max_length=255, db_index=True)
     client_name = models.CharField(max_length=255, db_index=True)
-    sample_characteristics = models.TextField()
-    responsible_name = models.CharField(max_length=255)
-    client_requirements = models.TextField()
+    sample_characteristics = models.TextField(blank=True)
+    responsible_name = models.CharField(max_length=255, blank=True)
+    client_requirements = models.TextField(blank=True)
     analysis_date = models.DateField(null=True, blank=True, db_index=True)
     return_date = models.DateField(null=True, blank=True)
+    is_discarded = models.BooleanField(default=False, help_text="La muestra se desecha (no se devuelve al cliente)")
     incidents = models.TextField(blank=True)
     comments = models.TextField(blank=True)
+    
+    # Campos de análisis (F04 - Control de análisis)
+    analysis_responsible = models.CharField(max_length=255, blank=True, help_text="Responsable del análisis")
+    ion_gun_optimization = models.TextField(blank=True, help_text="Optimización Cañón Iones (O/Cs, Presión vacío, Intensidad de corriente)")
+    acquisition_conditions = models.TextField(blank=True, help_text="Condiciones de la adquisición (en superficie, en profundidad, rango de masas, profundidad, etc.)")
+    ion_beam_verification = models.TextField(blank=True, help_text="Verificación condiciones Ihaz de iones (Variación I haz <25%)")
+    analysis_observations = models.TextField(blank=True, help_text="Observaciones del análisis")
+    report_code = models.CharField(max_length=100, blank=True, help_text="Código del informe (IN-DTF-SIMS-aa-nn)")
+    report_delivery_date = models.DateField(null=True, blank=True, help_text="Fecha de entrega del informe")
+    
+    # Marca si la muestra estaba en la propuesta original
+    is_original_sample = models.BooleanField(default=True, help_text="¿La muestra estaba incluida en la propuesta original?")
+
+    # Campos de auditoría para eliminación/cancelación de muestras
+    is_removed = models.BooleanField(default=False, help_text="Muestra eliminada/cancelada del estudio")
+    removal_reason = models.TextField(blank=True, help_text="Motivo de eliminación (obligatorio si se elimina)")
+    removed_by = models.ForeignKey(
+        'auth.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sims_records_removed",
+        help_text="Usuario que eliminó la muestra"
+    )
+    removed_at = models.DateTimeField(null=True, blank=True, help_text="Fecha y hora de eliminación")
 
     class Meta:
         ordering = ["-reception_date", "-id"]
@@ -89,14 +115,27 @@ class SIMSRecord(models.Model):
 
 
 class SIMSReport(models.Model):
+    TECHNIQUE_CHOICES = [
+        ("d_sims_positivo_o", "D SIMS positivo con O+"),
+        ("d_sims_negativo_cs", "D SIMS negativo con Cs-"),
+    ]
+    
     access_proposal = models.OneToOneField(
         AccessProposal,
         on_delete=models.CASCADE,
         related_name="sims_report",
     )
-    delivery_date = models.DateField(null=True, blank=True)
-    determination = models.CharField(max_length=255, blank=True)
-    procedure_used = models.CharField(max_length=64, default="PT-DTF-05")
+    delivery_date = models.DateField(null=True, blank=True, help_text="Fecha de entrega del informe")
+    determination = models.CharField(max_length=255, blank=True, help_text="Determinación")
+    procedure_used = models.CharField(max_length=64, default="PT-DTF-05", help_text="Procedimiento utilizado")
+    technique = models.CharField(
+        max_length=50,
+        choices=TECHNIQUE_CHOICES,
+        blank=True,
+        help_text="Técnica utilizada"
+    )
+    entry_date = models.DateField(null=True, blank=True, help_text="Fecha de entrada (cuando se acepta la propuesta)")
+    analysis_date = models.DateField(null=True, blank=True, help_text="Fecha definitiva de análisis")
     technique_text = models.TextField(blank=True)
     sample_description = models.TextField(blank=True)
     measurement_conditions = models.TextField(blank=True)
@@ -105,6 +144,31 @@ class SIMSReport(models.Model):
 
     def __str__(self):
         return f"SIMS Report #{self.access_proposal_id}"
+
+    @property
+    def project(self):
+        """Proyecto de la propuesta (título o scope)."""
+        if self.access_proposal:
+            return self.access_proposal.title or self.access_proposal.scope or ""
+        return ""
+
+    @property
+    def client_identification(self):
+        """Identificación del cliente (datos del solicitante)."""
+        if not self.access_proposal or not self.access_proposal.applicant:
+            return ""
+        applicant = self.access_proposal.applicant
+        parts = []
+        if applicant.get_full_name():
+            parts.append(applicant.get_full_name())
+        if hasattr(applicant, 'icts_profile') and applicant.icts_profile:
+            if applicant.icts_profile.user_siglas:
+                parts.append(f"({applicant.icts_profile.user_siglas})")
+            if applicant.icts_profile.center:
+                parts.append(f"- {applicant.icts_profile.center}")
+        if applicant.email:
+            parts.append(f"- {applicant.email}")
+        return " ".join(parts) if parts else applicant.get_username()
 
     @property
     def i2_days(self):
@@ -157,6 +221,22 @@ class SIMSDocument(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.code})"
+
+    def is_pdf(self):
+        """Verifica si el archivo es PDF."""
+        if not self.file:
+            return False
+        return self.file.name.lower().endswith('.pdf')
+
+    def get_file_size(self):
+        """Obtiene el tamaño del archivo en KB."""
+        if not self.file:
+            return None
+        try:
+            size = self.file.size
+            return round(size / 1024, 2)  # KB
+        except (OSError, AttributeError):
+            return None
 
 
 class SIMSEquipment(models.Model):
@@ -378,3 +458,96 @@ class SIMSAnnualPlanChangeLog(models.Model):
     before_data = models.JSONField(null=True, blank=True)
     after_data = models.JSONField(null=True, blank=True)
     message = models.CharField(max_length=255, blank=True)
+
+
+class SIMSReferenceMaterial(models.Model):
+    """Material de referencia SIMS."""
+    # Información básica
+    code = models.CharField(max_length=100, unique=True, db_index=True, help_text="Código del material de referencia")
+    is_pattern = models.BooleanField(default=False, help_text="¿Es patrón?")
+    PATTERN_TYPE_CHOICES = [
+        ("", "---------"),
+        ("Primario", "Primario"),
+        ("Secundario", "Secundario"),
+        ("De trabajo", "De trabajo"),
+    ]
+    pattern_type = models.CharField(
+        max_length=50, 
+        blank=True, 
+        choices=PATTERN_TYPE_CHOICES,
+        help_text="Tipo de patrón"
+    )
+    responsible = models.CharField(max_length=100, blank=True, help_text="Responsable del material")
+    description = models.TextField(blank=True, help_text="Descripción del material")
+    reference = models.CharField(max_length=255, blank=True, help_text="Referencia (inventario, etc.)")
+    reception_date = models.DateField(null=True, blank=True, help_text="Fecha de recepción")
+    supplier = models.CharField(max_length=255, blank=True, help_text="Proveedor")
+    location = models.TextField(blank=True, help_text="Localización")
+    conservation_conditions = models.TextField(blank=True, help_text="Condiciones de conservación")
+    
+    # Propiedades radiactivas (si aplica)
+    emission_type = models.CharField(max_length=100, blank=True, help_text="Tipo de emisión")
+    activity = models.CharField(max_length=100, blank=True, help_text="Actividad")
+    emission_rate = models.CharField(max_length=100, blank=True, help_text="Tasa de emisión")
+    expiry_date = models.DateField(null=True, blank=True, help_text="Caducidad")
+    opening_date = models.DateField(null=True, blank=True, help_text="Fecha apertura (en caso líquidos)")
+    
+    # Calibración
+    calibration_acceptance_criteria = models.TextField(blank=True, help_text="Criterio de aceptación calibraciones")
+    conformity_verification = models.TextField(blank=True, help_text="Verificación de la conformidad del MR con la especificación")
+    
+    # Propiedades físicas
+    physical_properties = models.TextField(blank=True, help_text="Propiedades físicas")
+    
+    # Documentación
+    associated_documentation = models.TextField(blank=True, help_text="Documentación asociada (Manual de instrucciones, Procedimientos, etc.)")
+    
+    # Instrucciones
+    technical_usage_instructions = models.TextField(blank=True, help_text="Instrucciones técnicas de uso")
+    
+    # Incidencias
+    detected_incidents = models.TextField(blank=True, help_text="Incidencias detectadas")
+    
+    # Metadatos
+    is_active = models.BooleanField(default=True, help_text="Material activo")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Cache de datos del Excel (para compatibilidad)
+    excel_data = models.JSONField(null=True, blank=True, help_text="Datos completos leídos del Excel (cache)")
+    
+    class Meta:
+        ordering = ["code"]
+        verbose_name = "Material de Referencia SIMS"
+        verbose_name_plural = "Materiales de Referencia SIMS"
+
+    def __str__(self):
+        return f"{self.code} - {self.description[:50] if self.description else 'Sin descripción'}"
+    
+    def get_filled_fields(self):
+        """Retorna un diccionario con solo los campos que tienen datos."""
+        fields_map = {
+            "Código": self.code,
+            "Patrón": "Sí" if self.is_pattern else None,
+            "Tipo de patrón": self.pattern_type if self.pattern_type else None,
+            "Responsable": self.responsible if self.responsible else None,
+            "Descripción": self.description if self.description else None,
+            "Referencia": self.reference if self.reference else None,
+            "Fecha recepción": self.reception_date.strftime("%Y-%m-%d") if self.reception_date else None,
+            "Proveedor": self.supplier if self.supplier else None,
+            "Localización": self.location if self.location else None,
+            "Condiciones conservación": self.conservation_conditions if self.conservation_conditions else None,
+            "Tipo emisión": self.emission_type if self.emission_type else None,
+            "Actividad": self.activity if self.activity else None,
+            "Tasa emisión": self.emission_rate if self.emission_rate else None,
+            "Caducidad": self.expiry_date.strftime("%Y-%m-%d") if self.expiry_date else None,
+            "Fecha apertura": self.opening_date.strftime("%Y-%m-%d") if self.opening_date else None,
+            "Criterio de aceptación calibraciones": self.calibration_acceptance_criteria if self.calibration_acceptance_criteria else None,
+            "Verificación de la conformidad": self.conformity_verification if self.conformity_verification else None,
+            "Propiedades físicas": self.physical_properties if self.physical_properties else None,
+            "Documentación asociada": self.associated_documentation if self.associated_documentation else None,
+            "Instrucciones técnicas de uso": self.technical_usage_instructions if self.technical_usage_instructions else None,
+            "Incidencias detectadas": self.detected_incidents if self.detected_incidents else None,
+        }
+        # Filtrar campos vacíos o None
+        return {k: v for k, v in fields_map.items() if v is not None and str(v).strip()}

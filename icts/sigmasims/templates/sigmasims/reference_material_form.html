@@ -1,0 +1,147 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+{% load role_filters %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">
+      {% if is_create %}
+        Añadir Material de Referencia
+      {% else %}
+        Editar Material de Referencia: {{ material.code }}
+      {% endif %}
+    </h2>
+  </div>
+
+  <div style="margin-bottom: 1.5rem;">
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:reference_materials_list' %}">
+      ← Volver a la lista
+    </a>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="sem-form-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div style="display: grid; gap: 2rem;">
+      <!-- Información básica -->
+      <div>
+        <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+          Información Básica
+        </h3>
+        {% for field in form %}
+          {% if field.name in "code,is_pattern,pattern_type,responsible,description,reference,reception_date,supplier,location,conservation_conditions" %}
+            <div class="sem-form-group">
+              <label class="sem-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field|add_class:"sem-form-control" }}
+              {% if field.help_text %}
+                <small class="sem-form-help">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="sem-form-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Propiedades radiactivas -->
+      <div>
+        <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+          Propiedades Radiactivas (si aplica)
+        </h3>
+        {% for field in form %}
+          {% if field.name in "emission_type,activity,emission_rate,expiry_date,opening_date" %}
+            <div class="sem-form-group">
+              <label class="sem-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field|add_class:"sem-form-control" }}
+              {% if field.help_text %}
+                <small class="sem-form-help">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="sem-form-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Calibración -->
+      <div>
+        <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+          Calibración
+        </h3>
+        {% for field in form %}
+          {% if field.name in "calibration_acceptance_criteria,conformity_verification" %}
+            <div class="sem-form-group">
+              <label class="sem-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field|add_class:"sem-form-control" }}
+              {% if field.help_text %}
+                <small class="sem-form-help">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="sem-form-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Propiedades físicas y documentación -->
+      <div>
+        <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+          Propiedades Físicas y Documentación
+        </h3>
+        {% for field in form %}
+          {% if field.name in "physical_properties,associated_documentation,technical_usage_instructions,detected_incidents" %}
+            <div class="sem-form-group">
+              <label class="sem-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field|add_class:"sem-form-control" }}
+              {% if field.help_text %}
+                <small class="sem-form-help">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="sem-form-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Estado -->
+      <div>
+        <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+          Estado
+        </h3>
+        {% for field in form %}
+          {% if field.name == "is_active" %}
+            <div class="sem-form-group">
+              <label class="sem-form-label" for="{{ field.id_for_label }}">
+                {{ field }}
+                {{ field.label }}
+              </label>
+              {% if field.help_text %}
+                <small class="sem-form-help">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="sem-form-error">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem; display: flex; gap: 0.75rem;">
+      <button class="sem-btn sem-btn-primary" type="submit">
+        {% if is_create %}Crear Material{% else %}Guardar Cambios{% endif %}
+      </button>
+      <a class="sem-btn sem-btn-secondary" href="{% if is_create %}{% url 'icts:sigmasims:reference_materials_list' %}{% else %}{% url 'icts:sigmasims:reference_material_detail' material.code %}{% endif %}">
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

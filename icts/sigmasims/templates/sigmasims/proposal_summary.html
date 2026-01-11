@@ -1,0 +1,183 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Resumen de Propuesta: {{ proposal.access_code|default:proposal.id }}</h2>
+  </div>
+
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:dashboard' %}">← Volver al Dashboard</a>
+    {% if has_analysis_date %}
+      <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}">📊 Análisis</a>
+    {% endif %}
+    <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create_bulk' %}?proposal_id={{ proposal.pk }}">➕ Añadir Muestras</a>
+  </div>
+
+  <!-- Información básica de la propuesta -->
+  <div style="margin-bottom: 2rem;">
+    <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+      Información de la Propuesta
+    </h3>
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: 1rem; margin-bottom: 1rem;">
+      <strong>Título:</strong>
+      <div>{{ proposal.title }}</div>
+      <strong>Código de acceso:</strong>
+      <div>{{ proposal.access_code|default:"-" }}</div>
+      <strong>Solicitante:</strong>
+      <div>{{ proposal.applicant.get_full_name|default:proposal.applicant.username }}</div>
+      {% if proposal.applicant.icts_profile.user_siglas %}
+        <strong>Siglas:</strong>
+        <div>{{ proposal.applicant.icts_profile.user_siglas }}</div>
+      {% endif %}
+      <strong>Estado:</strong>
+      <div><span class="sem-badge sem-badge-success">{{ proposal.get_status_display }}</span></div>
+      <strong>Fecha creación:</strong>
+      <div>{{ proposal.created_at|date:"Y-m-d H:i" }}</div>
+      {% if proposal.submitted_at %}
+        <strong>Fecha envío:</strong>
+        <div>{{ proposal.submitted_at|date:"Y-m-d H:i" }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Muestras de la propuesta -->
+  {% if available_samples %}
+    <div style="margin-bottom: 2rem;">
+      <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        Muestras en la Propuesta ({{ available_samples|length }})
+      </h3>
+      <table class="sem-table">
+        <thead>
+          <tr>
+            <th>Identificación</th>
+            <th>Detalles</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in available_samples %}
+            <tr>
+              <td><strong>{{ sample.identification }}</strong></td>
+              <td>{{ sample.details|default:"-" }}</td>
+              <td>
+                {% if sample.identification in registered_samples %}
+                  <span class="sem-badge sem-badge-success">Registrada</span>
+                {% else %}
+                  <span class="sem-badge sem-badge-warning">Pendiente</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  <!-- Registros de muestras -->
+  {% if records %}
+    <div style="margin-bottom: 2rem;">
+      <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        Registros de Muestras ({{ records|length }})
+      </h3>
+      <table class="sem-table">
+        <thead>
+          <tr>
+            <th>ID SIMS</th>
+            <th>Identificación</th>
+            <th>Fecha Recepción</th>
+            <th>Fecha Análisis</th>
+            <th>Responsable</th>
+            <th>Original</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in records %}
+            <tr>
+              <td>{{ record.sims_id|default:"-" }}</td>
+              <td><strong>{{ record.sample_identification }}</strong></td>
+              <td>{{ record.reception_date|date:"Y-m-d" }}</td>
+              <td>{{ record.analysis_date|date:"Y-m-d"|default:"-" }}</td>
+              <td>{{ record.responsible_name|default:"-" }}</td>
+              <td>
+                {% if record.is_original_sample %}
+                  <span class="sem-badge sem-badge-success">Sí</span>
+                {% else %}
+                  <span class="sem-badge sem-badge-warning">Extra</span>
+                {% endif %}
+              </td>
+              <td>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:record_edit' record.pk %}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                    ✏️ Editar
+                  </a>
+                  <a class="sem-btn sem-btn-danger" href="{% url 'icts:sigmasims:record_remove' record.pk %}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background-color: #dc3545; border-color: #dc3545;">
+                    🗑️ Eliminar
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info" style="background-color: var(--sem-primary-light); padding: 1.5rem; border-left: 4px solid var(--sem-primary); border-radius: 4px; margin-bottom: 2rem;">
+      <strong>ℹ️ No hay registros de muestras aún.</strong>
+      <p class="mb-0 mt-2">Haz clic en "Añadir Muestras" para registrar la recepción de muestras.</p>
+    </div>
+  {% endif %}
+
+  <!-- Muestras eliminadas (auditoría) -->
+  {% if removed_records %}
+    <div style="margin-bottom: 2rem;">
+      <h3 style="color: #6c757d; border-bottom: 2px solid #6c757d; padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        Muestras Eliminadas ({{ removed_records|length }})
+      </h3>
+      <table class="sem-table" style="opacity: 0.8;">
+        <thead>
+          <tr>
+            <th>ID SIMS</th>
+            <th>Identificación</th>
+            <th>Motivo de eliminación</th>
+            <th>Eliminado por</th>
+            <th>Fecha eliminación</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in removed_records %}
+            <tr style="background-color: #f8f9fa;">
+              <td><del>{{ record.sims_id|default:"-" }}</del></td>
+              <td><del>{{ record.sample_identification }}</del></td>
+              <td>{{ record.removal_reason|truncatewords:20 }}</td>
+              <td>{{ record.removed_by.get_full_name|default:record.removed_by.username|default:"-" }}</td>
+              <td>{{ record.removed_at|date:"Y-m-d H:i"|default:"-" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  <!-- Informe -->
+  {% if report %}
+    <div>
+      <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        Control de Análisis
+      </h3>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: 1rem;">
+        <strong>Determinación:</strong>
+        <div>{{ report.determination|default:"-" }}</div>
+        <strong>Procedimiento:</strong>
+        <div>{{ report.procedure_used|default:"-" }}</div>
+        <strong>Fecha entrega:</strong>
+        <div>{{ report.delivery_date|date:"Y-m-d"|default:"-" }}</div>
+      </div>
+      <div style="margin-top: 1rem;">
+        <a class="sem-btn sem-btn-primary" href="{% url 'icts:sigmasims:report_detail' proposal.pk %}">Ver control de análisis completo</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

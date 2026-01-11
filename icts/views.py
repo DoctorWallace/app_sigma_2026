@@ -537,19 +537,24 @@ def _validate_required_steps_for_submit(obj):
 
 
 def _require_text_or_ack(obj, post):
-    def _is_blank_text(value):
+    """
+    Verifica que los campos de texto estén rellenos o que el usuario haya marcado
+    el checkbox confirmando que no añadirá más texto.
+    """
+    def _has_content(value):
         if value is None:
-            return True
+            return False
         if isinstance(value, str):
-            return value.strip() == ""
-        return False
+            return value.strip() != ""
+        return bool(value)
 
     missing = []
-    if _is_blank_text(getattr(obj, "scope", None)) and not post.get("ack_empty_scope"):
+    # Si el campo tiene contenido, está OK. Si no, debe marcar el checkbox.
+    if not _has_content(getattr(obj, "scope", None)) and not post.get("ack_empty_scope"):
         missing.append("scope")
-    if _is_blank_text(getattr(obj, "previous_experiments", None)) and not post.get("ack_empty_previous_experiments"):
+    if not _has_content(getattr(obj, "previous_experiments", None)) and not post.get("ack_empty_previous_experiments"):
         missing.append("previous_experiments")
-    if _is_blank_text(getattr(obj, "references", None)) and not post.get("ack_empty_references"):
+    if not _has_content(getattr(obj, "references", None)) and not post.get("ack_empty_references"):
         missing.append("references")
     return missing
 

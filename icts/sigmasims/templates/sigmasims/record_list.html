@@ -21,7 +21,6 @@
     </div>
     <button class="sem-btn sem-btn-primary" type="submit">Filtrar</button>
     <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:record_list' %}">Limpiar</a>
-    <a class="sem-btn sem-btn-success" href="{% url 'icts:sigmasims:record_create' %}">Nuevo registro</a>
     <a class="sem-btn sem-btn-info" href="{% url 'icts:sigmasims:record_export_xlsx' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Exportar Excel</a>
   </form>
 

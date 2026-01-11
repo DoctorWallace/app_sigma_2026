@@ -1,0 +1,130 @@
+{% extends "sigmasims/base_sigmasims.html" %}
+{% load role_filters %}
+
+{% block sem_content %}
+<div class="sem-card">
+  <div class="sem-card-header">
+    <h2 class="sem-card-title">Añadir Múltiples Muestras - {{ proposal.access_code|default:proposal.id }}</h2>
+  </div>
+
+  <div style="margin-bottom: 1.5rem;">
+    <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:proposal_summary' proposal.pk %}">← Volver al resumen</a>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Datos comunes -->
+    <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+      Datos Comunes (aplicarán a todas las muestras seleccionadas)
+    </h3>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="reception_date">Fecha de recepción *</label>
+      <input type="date" name="reception_date" id="reception_date" class="sem-form-control" required>
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="client_name">Cliente</label>
+      <input type="text" name="client_name" id="client_name" class="sem-form-control" value="{{ client_name|default:'' }}">
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="responsible_name">Responsable recepción</label>
+      <select name="responsible_name" id="responsible_name" class="sem-form-control">
+        <option value="">---------</option>
+        {% for tech in technicians_list %}
+          <option value="{{ tech.siglas|default:tech.username }}">{{ tech.display }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="client_requirements">Requerimientos cliente</label>
+      <textarea name="client_requirements" id="client_requirements" class="sem-form-control" rows="3"></textarea>
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="analysis_date">Fecha del análisis (provisional)</label>
+      <input type="date" name="analysis_date" id="analysis_date" class="sem-form-control">
+      <small class="sem-form-help">Al asignar fecha de análisis, la propuesta pasa de "Disponible" a "Aceptada".</small>
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="incidents">Observaciones e incidencias</label>
+      <textarea name="incidents" id="incidents" class="sem-form-control" rows="3"></textarea>
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="comments">Comentarios</label>
+      <textarea name="comments" id="comments" class="sem-form-control" rows="3"></textarea>
+    </div>
+
+    <hr style="margin: 2rem 0; border: 1px solid #e2e8f0;">
+
+    <!-- Selección de muestras -->
+    <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+      Seleccionar Muestras de la Propuesta
+    </h3>
+
+    {% if available_samples %}
+      <div style="background-color: var(--sem-primary-light); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+        <div style="display: grid; gap: 0.75rem;">
+          {% for sample in available_samples %}
+            <div style="padding: 0.75rem; background: white; border: 2px solid {% if sample.identification in registered_samples %}#94a3b8{% else %}var(--sem-primary){% endif %}; border-radius: 0.5rem; {% if sample.identification in registered_samples %}opacity: 0.6;{% endif %}">
+              <label style="display: flex; align-items: start; gap: 0.75rem; cursor: {% if sample.identification in registered_samples %}not-allowed{% else %}pointer{% endif %};">
+                <input 
+                  type="checkbox" 
+                  name="selected_samples" 
+                  value="{{ forloop.counter0 }}"
+                  {% if sample.identification in registered_samples %}disabled{% endif %}
+                  style="margin-top: 0.25rem;"
+                >
+                <div style="flex: 1;">
+                  <strong>{{ sample.identification }}</strong>
+                  {% if sample.details %}
+                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 0.25rem;">{{ sample.details }}</div>
+                  {% endif %}
+                  {% if sample.identification in registered_samples %}
+                    <div style="margin-top: 0.5rem;">
+                      <span class="sem-badge sem-badge-success" style="font-size: 0.75rem;">Ya registrada</span>
+                    </div>
+                  {% endif %}
+                </div>
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="alert alert-info" style="background-color: var(--sem-primary-light); padding: 1.5rem; border-left: 4px solid var(--sem-primary); border-radius: 4px;">
+        <strong>ℹ️ No hay muestras definidas en la propuesta.</strong>
+        <p class="mb-0 mt-2">Puede añadir una nueva muestra manualmente más abajo.</p>
+      </div>
+    {% endif %}
+
+    <hr style="margin: 2rem 0; border: 1px solid #e2e8f0;">
+
+    <!-- Añadir nueva muestra -->
+    <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+      Añadir Nueva Muestra (no incluida en la propuesta)
+    </h3>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="new_sample_id">Identificación de la muestra</label>
+      <input type="text" name="new_sample_id" id="new_sample_id" class="sem-form-control" placeholder="Ej: Muestra extra 1">
+      <small class="sem-form-help">Dejar vacío si solo quiere registrar muestras de la propuesta.</small>
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="new_sample_details">Características de la muestra</label>
+      <textarea name="new_sample_details" id="new_sample_details" class="sem-form-control" rows="3" placeholder="Descripción de la muestra..."></textarea>
+    </div>
+
+    <div style="margin-top: 2rem; display: flex; gap: 0.75rem;">
+      <button class="sem-btn sem-btn-primary" type="submit">Guardar Muestras</button>
+      <a class="sem-btn sem-btn-secondary" href="{% url 'icts:sigmasims:proposal_summary' proposal.pk %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -4,7 +4,18 @@
 {% block sem_content %}
 <div class="sem-card">
   <div class="sem-card-header">
-    <h2 class="sem-card-title">Editar informe SIMS</h2>
+    <h2 class="sem-card-title">Editar Control de Análisis</h2>
+  </div>
+
+  <!-- Información del cliente y proyecto (solo lectura) -->
+  <div style="background-color: var(--sem-primary-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+    <h3 style="color: var(--sem-primary); margin-bottom: 1rem; font-size: 1.1rem;">Información del Cliente y Proyecto</h3>
+    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0.75rem; font-size: 0.95rem;">
+      <strong>Cliente:</strong>
+      <div>{{ report.client_identification|default:"-" }}</div>
+      <strong>Proyecto:</strong>
+      <div>{{ report.project|default:"-" }}</div>
+    </div>
   </div>
 
   <form method="post">
@@ -12,6 +23,30 @@
     {% if form.non_field_errors %}
       <div class="sem-form-error">{{ form.non_field_errors }}</div>
     {% endif %}
+
+    <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin: 1.5rem 0 1rem 0;">Fechas</h3>
+    
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.entry_date.id_for_label }}">{{ form.entry_date.label }}</label>
+      {{ form.entry_date|add_class:"sem-form-control" }}
+      {% if form.entry_date.help_text %}
+        <small class="sem-form-help">{{ form.entry_date.help_text }}</small>
+      {% endif %}
+      {% for error in form.entry_date.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.analysis_date.id_for_label }}">{{ form.analysis_date.label }}</label>
+      {{ form.analysis_date|add_class:"sem-form-control" }}
+      {% if form.analysis_date.help_text %}
+        <small class="sem-form-help">{{ form.analysis_date.help_text }}</small>
+      {% endif %}
+      {% for error in form.analysis_date.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
 
     <div class="sem-form-group">
       <label class="sem-form-label" for="{{ form.delivery_date.id_for_label }}">{{ form.delivery_date.label }}</label>
@@ -23,6 +58,8 @@
         <div class="sem-form-error">{{ error }}</div>
       {% endfor %}
     </div>
+
+    <h3 style="color: var(--sem-primary); border-bottom: 2px solid var(--sem-primary); padding-bottom: 0.5rem; margin: 1.5rem 0 1rem 0;">Análisis</h3>
 
     <div class="sem-form-group">
       <label class="sem-form-label" for="{{ form.determination.id_for_label }}">{{ form.determination.label }}</label>
@@ -42,6 +79,17 @@
         <small class="sem-form-help">{{ form.procedure_used.help_text }}</small>
       {% endif %}
       {% for error in form.procedure_used.errors %}
+        <div class="sem-form-error">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="sem-form-group">
+      <label class="sem-form-label" for="{{ form.technique.id_for_label }}">{{ form.technique.label }}</label>
+      {{ form.technique|add_class:"sem-form-control" }}
+      {% if form.technique.help_text %}
+        <small class="sem-form-help">{{ form.technique.help_text }}</small>
+      {% endif %}
+      {% for error in form.technique.errors %}
         <div class="sem-form-error">{{ error }}</div>
       {% endfor %}
     </div>
